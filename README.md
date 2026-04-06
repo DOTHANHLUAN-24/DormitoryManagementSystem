@@ -1,2 +1,1 @@
-# Test redme
 ## Chuyên đề
