@@ -1,0 +1,5 @@
+{
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=.;Database=DormitoryDb;Trusted_Connection=True;TrustServerCertificate=True;"
+    }
+}
