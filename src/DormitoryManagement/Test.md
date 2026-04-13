@@ -1,4 +1,4 @@
 # Kiểm tra cách sử dụng github
-- Họ tên: Đỗ Thành Luân
-- Mã sinh viên: 2221050046
-- Tên lớp: DCCTCT67_05A
+- Họ tên: Đỗ Quang Huy
+- Mã sinh viên: 2321050120
+- Tên lớp: DCCTCT68A
