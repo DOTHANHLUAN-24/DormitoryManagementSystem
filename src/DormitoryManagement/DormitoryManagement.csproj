@@ -10,8 +10,21 @@
     <Folder Include="Data\Interfaces\" />
     <Folder Include="Data\Enums\" />
     <Folder Include="DTOs\" />
-    <Folder Include="Repositories\Implementations\" />
+    <Folder Include="Docs\" />
+    <Folder Include="Repositories\Implementations\Authentication\" />
+    <Folder Include="Repositories\Implementations\Dormitory\" />
+    <Folder Include="Repositories\Implementations\Finance\" />
+    <Folder Include="Repositories\Implementations\Leasing\" />
+    <Folder Include="Repositories\Implementations\Identity\" />
+    <Folder Include="Repositories\Implementations\Operations\" />
+    <Folder Include="Repositories\Interfaces\Authentication\" />
+    <Folder Include="Repositories\Interfaces\Dormitory\" />
+    <Folder Include="Repositories\Interfaces\Leasing\" />
+    <Folder Include="Repositories\Interfaces\Finance\" />
+    <Folder Include="Repositories\Interfaces\Identity\" />
+    <Folder Include="Repositories\Interfaces\Operations\" />
     <Folder Include="Services\Implementations\" />
+    <Folder Include="Services\Interfaces\" />
   </ItemGroup>
 
   <ItemGroup>
