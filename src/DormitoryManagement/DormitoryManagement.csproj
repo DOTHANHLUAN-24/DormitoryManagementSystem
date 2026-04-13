@@ -10,7 +10,6 @@
     <Folder Include="Data\Interfaces\" />
     <Folder Include="Data\Enums\" />
     <Folder Include="DTOs\" />
-    <Folder Include="Docs\" />
     <Folder Include="Repositories\Implementations\Authentication\" />
     <Folder Include="Repositories\Implementations\Dormitory\" />
     <Folder Include="Repositories\Implementations\Finance\" />
