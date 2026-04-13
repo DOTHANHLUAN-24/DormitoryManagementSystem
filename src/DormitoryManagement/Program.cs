@@ -1,5 +1,9 @@
 using DormitoryManagement.Data;
 using DormitoryManagement.Data.Entities;
+using DormitoryManagement.Repositories.Implementations;
+using DormitoryManagement.Repositories.Interfaces;
+using DormitoryManagement.Services.Implementations;
+using DormitoryManagement.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +29,11 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+// Register Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+// Register Services
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
