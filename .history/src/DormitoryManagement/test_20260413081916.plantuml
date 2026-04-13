@@ -1,0 +1,47 @@
+@startuml
+left to right direction
+
+actor "Sinh viên" as Student
+actor "Quản lý KTX" as Admin
+actor "Nhân viên" as Staff
+actor "Hệ thống thanh toán" as PaymentSystem
+
+rectangle "Hệ thống quản lý ký túc xá" {
+
+    ' ===== Sinh viên =====
+    Student --> (Đăng ký tài khoản)
+    Student --> (Đăng nhập)
+    Student --> (Xem phòng)
+    Student --> (Đăng ký ở KTX)
+    Student --> (Xem hợp đồng)
+    Student --> (Thanh toán phí)
+    Student --> (Gửi yêu cầu sửa chữa)
+    Student --> (Xem thông báo)
+
+    ' ===== Quản lý =====
+    Admin --> (Quản lý sinh viên)
+    Admin --> (Quản lý phòng)
+    Admin --> (Phân phòng)
+    Admin --> (Quản lý hợp đồng)
+    Admin --> (Quản lý hóa đơn)
+    Admin --> (Duyệt đăng ký)
+    Admin --> (Thống kê báo cáo)
+    Admin --> (Quản lý thông báo)
+
+    ' ===== Nhân viên =====
+    Staff --> (Xử lý yêu cầu sửa chữa)
+    Staff --> (Kiểm tra phòng)
+    Staff --> (Cập nhật trạng thái phòng)
+
+    ' ===== Payment =====
+    PaymentSystem --> (Xử lý thanh toán)
+
+    ' ===== Relationships =====
+    (Đăng ký ở KTX) ..> (Xem phòng) : <<include>>
+    (Thanh toán phí) ..> (Xử lý thanh toán) : <<include>>
+    (Quản lý hợp đồng) ..> (Tạo hợp đồng) : <<include>>
+    (Phân phòng) ..> (Quản lý phòng) : <<extend>>
+    (Gửi yêu cầu sửa chữa) ..> (Xử lý yêu cầu sửa chữa) : <<include>>
+}
+
+@enduml
