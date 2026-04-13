@@ -39,40 +39,84 @@ Các tác vụ chính của hệ thống:
 ## 🧩 3. Functional Requirements (Yêu cầu chức năng)
 
 ### 👤 Người dùng
+* Chức năng quản lí người dùng:
+  - 1. Phân loại vai trò người dùng
+Các vai trò chính:
+Sinh viên: Người ở ký túc xá
 
-* Đăng ký / đăng nhập (Identity + JWT)
-* Phân quyền theo Role
-* Cập nhật thông tin cá nhân
+Quản lý ký túc xá: Giám sát tổng thể
 
-### 🏢 Hạ tầng
+Nhân viên bảo vệ: Kiểm soát ra vào
 
-* Quản lý Block, Room, Bed
-* Phân loại RoomType
-* Theo dõi tài sản phòng (Asset)
+Nhân viên vệ sinh/bảo trì: Xử lý công việc
 
-### 📜 Hợp đồng
+Admin: Quản trị hệ thống
+  - 2. Chức năng quản lý tài khoản
+Đăng ký & Xác thực:
+Đăng ký tài khoản: Sinh viên tự đăng ký bằng mã số sinh viên, email, số điện thoại
 
-* Tạo / gia hạn / kết thúc hợp đồng
-* Gán User vào Bed
-* Theo dõi trạng thái hợp đồng
+Xác thực email/SĐT: Gửi mã OTP để xác nhận
 
-### ⚡ Điện nước
+Đăng nhập: Bằng tài khoản/mật khẩu hoặc Google/Microsoft
 
-* Nhập chỉ số UtilityUsage
-* Tính toán chi phí theo Utility
+Đăng xuất: Kết thúc phiên làm việc
 
-### 💰 Tài chính
+Quên mật khẩu: Gửi link reset mật khẩu qua email
 
-* Tạo Invoice tự động theo kỳ
-* Gộp nhiều khoản: tiền phòng + điện nước + phụ phí
-* Thanh toán nhiều lần (Payment)
+Đổi mật khẩu: Cho phép thay đổi mật khẩu định kỳ
+ - 3. Chức năng phân quyền 
+Quản lý vai trò:
+Tạo vai trò mới: Admin tạo role tùy chỉnh (vd: Trưởng khu, Giám thị...)
 
-### 🛠️ Vận hành
+Phân quyền chi tiết: Gán quyền (xem, thêm, sửa, xóa, duyệt) cho từng chức năng
 
-* Gửi yêu cầu sửa chữa (MaintenanceRequest)
-* Ghi nhận vi phạm (Violation)
-* Quản lý khách (VisitorLog)
-* Quản lý phương tiện (Vehicle)
+Sửa/xóa vai trò: Điều chỉnh hoặc xóa vai trò không cần thiết
+  - 4. Chức năng quản lý sinh viên (người ở)
+Quản lý hồ sơ sinh viên:
+Thêm sinh viên mới: Nhập thông tin thủ công hoặc import file Excel
+
+Sửa thông tin sinh viên: Cập nhật khi sinh viên thay đổi
+
+Xóa/vô hiệu hóa: Khi sinh viên chuyển đi hoặc thôi học
+
+Tìm kiếm & lọc: Theo mã số, tên, phòng, khóa, khoa...
+
+Xuất danh sách: Export ra Excel/PDF
+  - 5. Chức năng cho nhân viên
+Quản lý nhân viên:
+Thêm nhân viên: Tạo tài khoản cho bảo vệ, lao công, kỹ thuật...
+
+Phân ca làm việc: Gán lịch trực cho bảo vệ, nhân viên vệ sinh
+
+Theo dõi hiệu suất: Đánh giá hoàn thành công việc
+
+  - 6. Chức năng thông báo & liên lạc
+Quản lý thông báo:
+Gửi thông báo cá nhân: Đến từng sinh viên (vd: nhắc đóng phí)
+
+Gửi thông báo nhóm: Theo phòng, theo tòa, theo khoa
+
+Gửi thông báo toàn hệ thống: Thông báo khẩn, lịch cắt điện nước
+
+Xem lịch sử thông báo: Đã gửi, đã đọc, chưa đọc
+  - 7. Chức năng dành riêng cho Admin
+Quản trị hệ thống:
+Khóa/mở khóa tài khoản: Xử lý vi phạm hoặc bảo mật
+
+Đặt lại mật khẩu: Cho người dùng quên mật khẩu
+
+Xóa tài khoản vĩnh viễn: Dọn dẹp dữ liệu cũ
+
+Backup/Restore dữ liệu người dùng: Sao lưu định kỳ
+  - 8. Chức năng thống kê & báo cáo người dùng
+Báo cáo:
+Thống kê số lượng: Tổng số sinh viên, nhân viên, theo vai trò
+
+Tỷ lệ sử dụng hệ thống: Số người đăng nhập hàng ngày/tuần/tháng
+
+Báo cáo sinh viên mới/nghỉ: Theo tháng, theo học kỳ
+
+Xuất báo cáo Excel/PDF: Phục vụ báo cáo định kỳ
 
 ---
 
