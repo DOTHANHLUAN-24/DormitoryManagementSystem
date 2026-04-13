@@ -4,4 +4,4 @@
 - Tên lớp: DCCTCT68A
 - Họ và tên: Lê Thị Cẩm Tú
 - Mã sinh viên: 2321050008
-_ Tên lớp: DCCTCT68_05
+- Tên lớp: DCCTCT68_05
