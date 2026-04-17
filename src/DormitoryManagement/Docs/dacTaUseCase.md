@@ -17,7 +17,7 @@ Tiền điều kiện	                Người dùng đã có tài khoản hợp
                                 - Hệ thống tạo phiên làm việc (session/token)
                                 - Người dùng được chuyển đến giao diện tương ứng với vai trò
 
-### Chuỗi sự kiện chính	
+### Luồng chính	
 1. Người dùng mở giao diện đăng nhập của hệ thống
 2. Hệ thống hiển thị biểu mẫu đăng nhập (Tên đăng nhập, Mật khẩu, nút "Đăng nhập", link "Quên mật khẩu")
 3. Người dùng nhập tên đăng nhập và mật khẩu
@@ -29,7 +29,7 @@ Tiền điều kiện	                Người dùng đã có tài khoản hợp
 9. Hệ thống chuyển hướng đến trang chính tương ứng với vai trò
 10. Kết thúc use case
 
-### Ngoại lệ	
+### Luồng Ngoại Lệ	
     2A. Người dùng chọn "Quên mật khẩu": Chuyển sang use case đặt lại mật khẩu
     5A. Tên đăng nhập không tồn tại: Thông báo lỗi, quay lại bước 2
     5B. Để trống tên hoặc mật khẩu: Thông báo lỗi, quay lại bước 2
@@ -54,7 +54,7 @@ Tiền điều kiện	                Sinh viên đã đăng nhập thành công
                                 - Phòng bị khóa tạm trong 24h để tránh trùng lặp
                                 - Gửi thông báo email cho sinh viên và quản lý
 
-### Chuỗi sự kiện chính	
+### Luồng chính	
 1. Sinh viên chọn chức năng "Đăng ký phòng" từ trang chủ
 2. Hệ thống hiển thị danh sách các phòng trống với bộ lọc (tòa nhà, loại phòng, tầng, giá)
 3. Sinh viên sử dụng bộ lọc để thu hẹp kết quả
@@ -68,32 +68,83 @@ Tiền điều kiện	                Sinh viên đã đăng nhập thành công
 11. Hệ thống gửi email thông báo cho sinh viên và quản lý
 12. Kết thúc use case
 
-### Ngoại lệ	
-    1A. Sinh viên chọn "Đăng ký theo nhóm":
-        1. Hệ thống hiển thị form nhập danh sách MSV muốn ở ghép
-        2. Kiểm tra các MSV đều đủ điều kiện
-        3. Chuyển đến bước 2 để chọn phòng chung cho cả nhóm
-    3A. Sinh viên nhấn "Xem chi tiết phòng":
-        1. Hệ thống hiển thị chi tiết phòng (ảnh, tiện ích, nội quy)
-        2. Quay lại bước 2
-        4A. Sinh viên đã có phòng:
-        1. Hệ thống thông báo "Bạn đã có phòng ở [mã phòng]. Vui lòng liên hệ quản lý nếu muốn đổi phòng."
-        2. Kết thúc use case
-    4B. Sinh viên chưa đóng học phí:
-        1. Hệ thống thông báo "Bạn cần hoàn tất nghĩa vụ học phí trước khi đăng ký ký túc xá."
-        2. Kết thúc use case
-    5A. Phòng không còn chỗ trống:
-        1. Hệ thống thông báo "Phòng này vừa hết chỗ trống. Vui lòng chọn phòng khác."
-        2. Quay lại bước 2
-    5B. Phòng đang bị người khác đặt tạm:
-        1. Hệ thống thông báo "Phòng này đang có người đăng ký trước. Vui lòng chọn phòng khác hoặc thử lại sau 24h."
-        2. Quay lại bước 2
-    5C. Hết thời hạn đăng ký:
-        1. Hệ thống thông báo "Đã hết thời hạn đăng ký phòng học kỳ này."
-        2. Kết thúc use case
-    7A. Sinh viên nhấn "Hủy" thay vì "Gửi đăng ký":
-        1. Hệ thống quay lại bước 2
-        2. Kết thúc use case
-    8A. Để trống thông tin bắt buộc:
-        1. Hệ thống thông báo "Vui lòng nhập đầy đủ thông tin"
-        2. Quay lại bước 6
+### Luồng Ngoại Lệ	
+    1A. Chọn "Đăng ký theo nhóm": Nhập danh sách MSV, kiểm tra điều kiện, rồi chọn phòng
+    3A. Sinh viên đã có phòng: Thông báo, kết thúc
+    3B. Chưa đóng học phí: Thông báo, kết thúc
+    4A. Phòng hết chỗ: Thông báo, quay lại bước 2
+    4B. Phòng đang bị đặt tạm: Thông báo, quay lại bước 2
+    4C. Hết hạn đăng ký: Thông báo, kết thúc
+    6A. Để trống thông tin: Thông báo, quay lại bước 5
+    7A. Lỗi hệ thống: Thông báo, không khóa phòng, kết thúc
+
+## UC-03: TÍNH TIỀN ĐIỆN NƯỚC HÀNG THÁNG
+Tiêu đề	                        Nội dung
+Tên Use case	                Tính tiền điện nước hàng tháng
+Mức	                            Mức hệ thống 
+Tác nhân chính	                Quản lý KTX (kích hoạt), Hệ thống (tự động)
+Các bên liên quan và lợi ích	- Nhân viên: Muốn tính nhanh, chính xác
+                                - Sinh viên: Muốn hóa đơn minh bạch
+                                - Hệ thống: Đảm bảo nhất quán dữ liệu
+Người chịu trách nhiệm	        Hệ thống quản lý ký túc xá
+Tiền điều kiện	                Đã có chỉ số điện/nước đầu kỳ và cuối kỳ. Đã có đơn giá.
+Đảm bảo tối thiểu	            - Không tạo hóa đơn nếu có lỗi
+                                - Ghi log lỗi để xử lý sau
+Đảm bảo thành công	            - Tạo hóa đơn cho từng sinh viên
+                                - Cập nhật công nợ
+                                - Gửi thông báo email
+
+### Luồng chính	
+1. Kích hoạt "Tính hóa đơn tháng X"
+2. Lấy danh sách phòng đang có sinh viên ở
+3. Với mỗi phòng, lấy chỉ số đầu kỳ và cuối kỳ
+4. Tính lượng tiêu thụ = cuối - đầu
+5. Tính thành tiền = lượng × đơn giá
+6. Chia đều cho số sinh viên trong phòng
+7. Tạo hóa đơn, trạng thái "Chưa thanh toán"
+8. Cập nhật công nợ và gửi thông báo
+9. Kết thúc
+
+### Luồng Ngoại Lệ	
+    1A. Tính lại tháng cũ: Cảnh báo, xóa hóa đơn cũ, tính lại, ghi log
+    3A. Chỉ số cuối < chỉ số đầu: Báo lỗi, bỏ qua phòng đó, báo cáo cuối đợt
+    3B. Thiếu chỉ số cuối kỳ: Bỏ qua phòng, ghi vào danh sách lỗi
+    3C. Phòng không có sinh viên: Bỏ qua, không tạo hóa đơn
+    5A. Chưa có đơn giá: Thông báo, dừng toàn bộ
+    7A. Lỗi CSDL: Rollback, thông báo, ghi log
+
+## UC-04: XEM VÀ THANH TOÁN HÓA ĐƠN
+Tiêu đề	                        Nội dung
+Tên Use case	                Xem và thanh toán hóa đơn điện/nước
+Mức	                            Mức người dùng (User-goal level)
+Tác nhân chính	                Sinh viên
+Tác nhân phụ	                Quản lý KTX
+Các bên liên quan và lợi ích	- Sinh viên: Muốn xem và thanh toán hóa đơn tiện lợi
+                                - Nhân viên: Muốn ghi nhận thanh toán chính xác
+Người chịu trách nhiệm	        Hệ thống quản lý ký túc xá
+Tiền điều kiện	                Sinh viên đã đăng nhập. Hóa đơn đã được tạo.
+Đảm bảo tối thiểu	            - Hóa đơn không đổi trạng thái nếu thanh toán thất bại
+                                - Thông báo lỗi rõ ràng
+Đảm bảo thành công	            - Hóa đơn chuyển "Đã thanh toán"
+                                - Cập nhật công nợ
+                                - Tạo biên lai PDF và gửi email
+
+### Luồng chính	
+1. Sinh viên chọn "Hóa đơn điện/nước"
+2. Hệ thống hiển thị danh sách hóa đơn
+3. Sinh viên xem chi tiết hóa đơn
+4. Sinh viên nhấn "Thanh toán"
+5. Hệ thống hiển thị phương thức thanh toán
+6. Sinh viên chọn phương thức và xác nhận
+7. Hệ thống xử lý thanh toán
+8. Hệ thống cập nhật trạng thái, tạo biên lai PDF
+9. Hệ thống gửi email xác nhận
+10. Kết thúc
+
+### Luồng Ngoại Lệ	
+1A. Thanh toán nhiều hóa đơn: Chọn nhiều hóa đơn, thanh toán gộp một lần
+3A. Hóa đơn đã thanh toán: Vô hiệu nút thanh toán, thông báo
+4A. Hóa đơn quá hạn: Tự động tính phí phạt, hiển thị tổng tiền
+6A. Thanh toán online thất bại: Thông báo lỗi, không cập nhật, quay lại bước 4
+
+
