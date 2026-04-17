@@ -223,6 +223,13 @@ Xuất báo cáo Excel/PDF: Phục vụ báo cáo định kỳ
 
 ---
 
+## 12. UML
+### Usecase
+#### Usecase tổng quát
+![UC tổng quát](../Source//image/uml/Use%20Case%20Diagram1.jpg)
+
+---
+
 ## 📌 12. Tổng kết
 
 Hệ thống được thiết kế theo hướng:
