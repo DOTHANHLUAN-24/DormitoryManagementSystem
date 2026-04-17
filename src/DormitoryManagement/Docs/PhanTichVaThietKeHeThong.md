@@ -5,7 +5,8 @@
 ---
 
 ## 🎯 1. Mục tiêu hệ thống
-
+Mô tả bối cảnh: quy mô 3 tòa ktx (2 tòa dành cho sinh viên, 1 tòa dành cho sinh viên nước ngoài)
+Hiện trạng: Quản lý bằng sổ sách, Excel, hoặc phần mềm rời rạc → dễ sai sót, chậm, khó tra cứu, xung đột phòng, chậm báo cáo.
 Hệ thống được xây dựng nhằm:
 
 * Quản lý toàn bộ hoạt động ký túc xá một cách tập trung
@@ -13,15 +14,25 @@ Hệ thống được xây dựng nhằm:
 * Hỗ trợ quản lý hợp đồng, tài chính, và vận hành hiệu quả
 * Đảm bảo bảo mật, phân quyền rõ ràng giữa các vai trò
 
+Các tác vụ chính của hệ thống:
+* Đăng ký phòng, đổi phòng, trả phòng.
+* Quản lý hồ sơ sinh viên nội trú.
+* Quản lý hợp đồng thuê phòng.
+* Quản lý thu – chi phí điện, nước, dịch vụ.
+* Quản lý thiết bị, tài sản phòng.
+* Theo dõi vi phạm nội quy.
+* Báo cáo tình trạng phòng, công nợ, doanh thu.
+* Quản lý khách đến thăm, trực ca ktx.
+
 ---
 
 ## 👥 2. Stakeholders (Các bên liên quan)
 
-* 👨‍🎓 Sinh viên: Đăng ký phòng, xem hóa đơn, gửi yêu cầu
-* 🧑‍💼 Quản lý: Quản lý phòng, hợp đồng, tài chính
-* 👮 Bảo vệ: Kiểm soát ra vào, khách, phương tiện
-* 💰 Kế toán: Xử lý hóa đơn, thanh toán
-* 🧑‍💻 Admin hệ thống: Quản lý người dùng, phân quyền
+* 👨‍🎓 Sinh viên: Đăng ký phòng, tra cứu thông tin phòng, bạn cùng phòng, xem hóa đơn, thanh toán phí/công nợ, gửi yêu cầu sửa chữa thiết bị.
+* 🧑‍💼 Quản lý: Quản lý phòng, hợp đồng, tài chính, duyệt đăng ký, làm/xem báo cáo tổng hợp.
+* 👮 Bảo vệ (sinh viên tình nguyện): Kiểm soát ra vào, khách, phương tiện, báo cáo vi phạm.
+* 💰 Kế toán: Xử lý hóa đơn, thanh toán.
+* 🧑‍💻 Admin hệ thống: Quản lý người dùng, phân quyền, cài đặt cấu hình hệ thống, sao lưu dữ liệu, phục hồi sự cố.
 
 ---
 
@@ -209,6 +220,13 @@ Xuất báo cáo Excel/PDF: Phục vụ báo cáo định kỳ
 * Có thể nâng cấp sang Microservices
 * Tích hợp cache (Memory/Redis)
 * Có thể thêm Mobile App (Flutter)
+
+---
+
+## 12. UML
+### Usecase
+#### Usecase tổng quát
+![UC tổng quát](../Source//image/uml/Use%20Case%20Diagram1.jpg)
 
 ---
 
