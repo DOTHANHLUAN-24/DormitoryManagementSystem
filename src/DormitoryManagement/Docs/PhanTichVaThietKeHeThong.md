@@ -68,6 +68,16 @@
 
 </center>
 
+Các tác vụ chính của hệ thống:
+* Đăng ký phòng, đổi phòng, trả phòng.
+* Quản lý hồ sơ sinh viên nội trú.
+* Quản lý hợp đồng thuê phòng.
+* Quản lý thu – chi phí điện, nước, dịch vụ.
+* Quản lý thiết bị, tài sản phòng.
+* Theo dõi vi phạm nội quy.
+* Báo cáo tình trạng phòng, công nợ, doanh thu.
+* Quản lý khách đến thăm, trực ca ktx.
+
 ---
 
 <center>
@@ -80,40 +90,85 @@
 
 <center>
 
-# DANH MỤC NHỮNG TỪ VIẾT TẮT
+### 👤 Người dùng
+* Chức năng quản lí người dùng:
+  - 1. Phân loại vai trò người dùng
+Các vai trò chính:
+Sinh viên: Người ở ký túc xá
 
-|STT|Từ viết tắt|Từ tiếng anh|Từ và nghĩa tiếng việt|
-|:-:||||
-|1||||
-|2||||
-|3||||
-|4||||
-|5||||
+Quản lý ký túc xá: Giám sát tổng thể
 
-</center>
+Nhân viên bảo vệ: Kiểm soát ra vào
 
----
-<center>
+Nhân viên vệ sinh/bảo trì: Xử lý công việc
 
-# MỞ ĐẦU {#mo-dau}
+Admin: Quản trị hệ thống
+  - 2. Chức năng quản lý tài khoản
+Đăng ký & Xác thực:
+Đăng ký tài khoản: Sinh viên tự đăng ký bằng mã số sinh viên, email, số điện thoại
 
-</center>
+Xác thực email/SĐT: Gửi mã OTP để xác nhận
 
-<div style="text-indent: 2em;">
+Đăng nhập: Bằng tài khoản/mật khẩu hoặc Google/Microsoft
 
-Trong bối cảnh công nghệ thông tin ngày càng phát triển mạnh mẽ, việc ứng dụng các hệ thống phần mềm vào công tác quản lý đã trở thành xu hướng tất yếu nhằm nâng cao hiệu quả hoạt động và giảm thiểu sai sót trong quá trình vận hành. Đặc biệt, trong môi trường giáo dục, công tác quản lý ký túc xá sinh viên đóng vai trò quan trọng trong việc đảm bảo đời sống, sinh hoạt và an ninh cho sinh viên nội trú.
+Đăng xuất: Kết thúc phiên làm việc
 
-Thực tế cho thấy, nhiều ký túc xá hiện nay vẫn đang áp dụng các phương pháp quản lý thủ công hoặc bán thủ công, dẫn đến những hạn chế như khó khăn trong việc lưu trữ, tra cứu thông tin, dễ xảy ra sai sót và tốn nhiều thời gian xử lý. Điều này đặt ra yêu cầu cần có một hệ thống quản lý hiện đại, tự động hóa các quy trình và nâng cao hiệu quả quản lý.
+Quên mật khẩu: Gửi link reset mật khẩu qua email
 
-Xuất phát từ nhu cầu thực tiễn đó, đề tài “Xây dựng hệ thống quản lý ký túc xá” được thực hiện nhằm phân tích, thiết kế và xây dựng một hệ thống phần mềm hỗ trợ quản lý toàn diện các hoạt động trong ký túc xá như quản lý sinh viên, phòng ở, đăng ký nội trú, hợp đồng và các khoản phí liên quan.
+Đổi mật khẩu: Cho phép thay đổi mật khẩu định kỳ
+ - 3. Chức năng phân quyền 
+Quản lý vai trò:
+Tạo vai trò mới: Admin tạo role tùy chỉnh (vd: Trưởng khu, Giám thị...)
 
-Tài liệu đặc tả yêu cầu phần mềm (SRS) này được xây dựng nhằm mô tả một cách đầy đủ và chi tiết các yêu cầu của hệ thống, làm cơ sở cho việc phát triển, kiểm thử và triển khai phần mềm trong các giai đoạn tiếp theo.
+Phân quyền chi tiết: Gán quyền (xem, thêm, sửa, xóa, duyệt) cho từng chức năng
 
-Trong quá trình thực hiện, mặc dù đã có nhiều cố gắng, nhưng tài liệu khó tránh khỏi những thiếu sót. Rất mong nhận được sự góp ý từ giảng viên và các bạn để tài liệu được hoàn thiện hơn.
+Sửa/xóa vai trò: Điều chỉnh hoặc xóa vai trò không cần thiết
+  - 4. Chức năng quản lý sinh viên (người ở)
+Quản lý hồ sơ sinh viên:
+Thêm sinh viên mới: Nhập thông tin thủ công hoặc import file Excel
 
-Xin chân thành cảm ơn!
+Sửa thông tin sinh viên: Cập nhật khi sinh viên thay đổi
 
-</div>
+Xóa/vô hiệu hóa: Khi sinh viên chuyển đi hoặc thôi học
+
+Tìm kiếm & lọc: Theo mã số, tên, phòng, khóa, khoa...
+
+Xuất danh sách: Export ra Excel/PDF
+  - 5. Chức năng cho nhân viên
+Quản lý nhân viên:
+Thêm nhân viên: Tạo tài khoản cho bảo vệ, lao công, kỹ thuật...
+
+Phân ca làm việc: Gán lịch trực cho bảo vệ, nhân viên vệ sinh
+
+Theo dõi hiệu suất: Đánh giá hoàn thành công việc
+
+  - 6. Chức năng thông báo & liên lạc
+Quản lý thông báo:
+Gửi thông báo cá nhân: Đến từng sinh viên (vd: nhắc đóng phí)
+
+Gửi thông báo nhóm: Theo phòng, theo tòa, theo khoa
+
+Gửi thông báo toàn hệ thống: Thông báo khẩn, lịch cắt điện nước
+
+Xem lịch sử thông báo: Đã gửi, đã đọc, chưa đọc
+  - 7. Chức năng dành riêng cho Admin
+Quản trị hệ thống:
+Khóa/mở khóa tài khoản: Xử lý vi phạm hoặc bảo mật
+
+Đặt lại mật khẩu: Cho người dùng quên mật khẩu
+
+Xóa tài khoản vĩnh viễn: Dọn dẹp dữ liệu cũ
+
+Backup/Restore dữ liệu người dùng: Sao lưu định kỳ
+  - 8. Chức năng thống kê & báo cáo người dùng
+Báo cáo:
+Thống kê số lượng: Tổng số sinh viên, nhân viên, theo vai trò
+
+Tỷ lệ sử dụng hệ thống: Số người đăng nhập hàng ngày/tuần/tháng
+
+Báo cáo sinh viên mới/nghỉ: Theo tháng, theo học kỳ
+
+Xuất báo cáo Excel/PDF: Phục vụ báo cáo định kỳ
 
 ---
 
