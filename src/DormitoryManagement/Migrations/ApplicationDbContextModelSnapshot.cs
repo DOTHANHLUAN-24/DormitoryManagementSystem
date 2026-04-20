@@ -22,6 +22,62 @@ namespace DormitoryManagement.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Asset", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssetCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AssetName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Assets");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Bed", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BedNumber")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Beds");
+                });
+
             modelBuilder.Entity("DormitoryManagement.Data.Entities.Block", b =>
                 {
                     b.Property<int>("Id")
@@ -36,7 +92,14 @@ namespace DormitoryManagement.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TotalFloors")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -51,19 +114,30 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Deposit")
+                    b.Property<int>("BedId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContractCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("DepositAmount")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
-                    b.Property<int>("RoomId")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
@@ -72,7 +146,7 @@ namespace DormitoryManagement.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoomId");
+                    b.HasIndex("BedId");
 
                     b.HasIndex("UserId");
 
@@ -87,17 +161,32 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BillingMonth")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BillingYear")
+                        .HasColumnType("int");
+
                     b.Property<int>("ContractId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("MonthYear")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("PaidDate")
+                    b.Property<DateTime>("DueDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("InvoiceCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -124,14 +213,30 @@ namespace DormitoryManagement.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Priority")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequesterId")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Status")
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RequesterId");
 
                     b.HasIndex("RoomId");
 
@@ -146,16 +251,23 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
+                    b.Property<decimal>("AmountPaid")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("InvoiceId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("PaymentDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PaymentMethod")
+                    b.Property<string>("TransactionCode")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -177,8 +289,8 @@ namespace DormitoryManagement.Migrations
                     b.Property<int>("BlockId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsAvailable")
-                        .HasColumnType("bit");
+                    b.Property<int>("Floor")
+                        .HasColumnType("int");
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
@@ -186,6 +298,9 @@ namespace DormitoryManagement.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<int>("RoomTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -205,20 +320,49 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Capacity")
+                    b.Property<decimal>("BasePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("MaxOccupants")
                         .HasColumnType("int");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("TypeName")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("Id");
 
                     b.ToTable("RoomTypes");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Surcharge", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SurchargeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.ToTable("Surcharges");
                 });
 
             modelBuilder.Entity("DormitoryManagement.Data.Entities.User", b =>
@@ -231,6 +375,11 @@ namespace DormitoryManagement.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -242,18 +391,17 @@ namespace DormitoryManagement.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("IdentityCardNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -278,11 +426,8 @@ namespace DormitoryManagement.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("RefreshToken")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("RefreshTokenExpiryTime")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("Role")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -315,10 +460,8 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -326,6 +469,11 @@ namespace DormitoryManagement.Migrations
 
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UtilityName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -343,25 +491,66 @@ namespace DormitoryManagement.Migrations
                     b.Property<double>("CurrentIndex")
                         .HasColumnType("float");
 
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
                     b.Property<double>("PreviousIndex")
                         .HasColumnType("float");
-
-                    b.Property<DateTime>("ReadingDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<double>("UsageQuantity")
+                        .HasColumnType("float");
+
                     b.Property<int>("UtilityId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
 
                     b.HasIndex("RoomId");
 
                     b.HasIndex("UtilityId");
 
                     b.ToTable("UtilityUsages");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("LicensePlate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("VehicleType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("DormitoryManagement.Data.Entities.Violation", b =>
@@ -372,23 +561,29 @@ namespace DormitoryManagement.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateReported")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("ContractId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EvidenceImage")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("FineAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(50)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ViolationDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ContractId");
 
                     b.ToTable("Violations");
                 });
@@ -540,21 +735,43 @@ namespace DormitoryManagement.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("DormitoryManagement.Data.Entities.Contract", b =>
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Asset", b =>
                 {
                     b.HasOne("DormitoryManagement.Data.Entities.Room", "Room")
-                        .WithMany()
+                        .WithMany("Assets")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DormitoryManagement.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Bed", b =>
+                {
+                    b.HasOne("DormitoryManagement.Data.Entities.Room", "Room")
+                        .WithMany("Beds")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Contract", b =>
+                {
+                    b.HasOne("DormitoryManagement.Data.Entities.Bed", "Bed")
+                        .WithMany("Contracts")
+                        .HasForeignKey("BedId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DormitoryManagement.Data.Entities.User", "User")
+                        .WithMany("Contracts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bed");
 
                     b.Navigation("User");
                 });
@@ -562,7 +779,7 @@ namespace DormitoryManagement.Migrations
             modelBuilder.Entity("DormitoryManagement.Data.Entities.Invoice", b =>
                 {
                     b.HasOne("DormitoryManagement.Data.Entities.Contract", "Contract")
-                        .WithMany()
+                        .WithMany("Invoices")
                         .HasForeignKey("ContractId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -572,11 +789,19 @@ namespace DormitoryManagement.Migrations
 
             modelBuilder.Entity("DormitoryManagement.Data.Entities.MaintenanceRequest", b =>
                 {
+                    b.HasOne("DormitoryManagement.Data.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DormitoryManagement.Data.Entities.Room", "Room")
                         .WithMany()
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Requester");
 
                     b.Navigation("Room");
                 });
@@ -601,7 +826,7 @@ namespace DormitoryManagement.Migrations
                         .IsRequired();
 
                     b.HasOne("DormitoryManagement.Data.Entities.RoomType", "RoomType")
-                        .WithMany()
+                        .WithMany("Rooms")
                         .HasForeignKey("RoomTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -611,10 +836,25 @@ namespace DormitoryManagement.Migrations
                     b.Navigation("RoomType");
                 });
 
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Surcharge", b =>
+                {
+                    b.HasOne("DormitoryManagement.Data.Entities.Invoice", "Invoice")
+                        .WithMany("Surcharges")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Invoice");
+                });
+
             modelBuilder.Entity("DormitoryManagement.Data.Entities.UtilityUsage", b =>
                 {
+                    b.HasOne("DormitoryManagement.Data.Entities.Invoice", "Invoice")
+                        .WithMany("UtilityUsages")
+                        .HasForeignKey("InvoiceId");
+
                     b.HasOne("DormitoryManagement.Data.Entities.Room", "Room")
-                        .WithMany()
+                        .WithMany("UtilityUsages")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -625,20 +865,33 @@ namespace DormitoryManagement.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("Invoice");
+
                     b.Navigation("Room");
 
                     b.Navigation("Utility");
                 });
 
-            modelBuilder.Entity("DormitoryManagement.Data.Entities.Violation", b =>
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Vehicle", b =>
                 {
-                    b.HasOne("DormitoryManagement.Data.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("DormitoryManagement.Data.Entities.User", "Owner")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("User");
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Violation", b =>
+                {
+                    b.HasOne("DormitoryManagement.Data.Entities.Contract", "Contract")
+                        .WithMany("Violations")
+                        .HasForeignKey("ContractId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -692,14 +945,51 @@ namespace DormitoryManagement.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Bed", b =>
+                {
+                    b.Navigation("Contracts");
+                });
+
             modelBuilder.Entity("DormitoryManagement.Data.Entities.Block", b =>
                 {
                     b.Navigation("Rooms");
                 });
 
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Contract", b =>
+                {
+                    b.Navigation("Invoices");
+
+                    b.Navigation("Violations");
+                });
+
             modelBuilder.Entity("DormitoryManagement.Data.Entities.Invoice", b =>
                 {
                     b.Navigation("Payments");
+
+                    b.Navigation("Surcharges");
+
+                    b.Navigation("UtilityUsages");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.Room", b =>
+                {
+                    b.Navigation("Assets");
+
+                    b.Navigation("Beds");
+
+                    b.Navigation("UtilityUsages");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.RoomType", b =>
+                {
+                    b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Data.Entities.User", b =>
+                {
+                    b.Navigation("Contracts");
+
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

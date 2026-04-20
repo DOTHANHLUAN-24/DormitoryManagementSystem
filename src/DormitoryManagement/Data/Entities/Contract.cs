@@ -3,26 +3,40 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DormitoryManagement.Data.Entities
 {
+    // Hợp đồng
     [Table("Contracts")]
     public class Contract
     {
+        [Key]
         public int Id { get; set; }
-
-        [Required]
-        public string UserId { get; set; } = string.Empty;
-
-        public User User { get; set; } = null!;
-
-        public int RoomId { get; set; }
         
-        public Room Room { get; set; } = null!;
-
+        [Required, StringLength(50)]
+        
+        public string ContractCode { get; set; } = string.Empty; // Ví dụ: HD001, HD002
+        
         public DateTime StartDate { get; set; }
         
         public DateTime EndDate { get; set; }
         
-        public decimal Deposit { get; set; }
+        public decimal DepositAmount { get; set; }
         
-        public bool IsActive { get; set; } = true;
+        public ContractStatus Status { get; set; } = ContractStatus.Pending;
+        
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        
+        public DateTime? UpdatedAt { get; set; }
+
+        // Map với User và Bed thay vì Room
+        public string UserId { get; set; } = string.Empty;
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; } = null!;
+
+        public int BedId { get; set; }
+        
+        [ForeignKey("BedId")]
+        public virtual Bed Bed { get; set; } = null!;
+
+        public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
     }
 }
