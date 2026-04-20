@@ -142,9 +142,141 @@ Tiền điều kiện	                Sinh viên đã đăng nhập. Hóa đơn 
 10. Kết thúc
 
 ### Luồng Ngoại Lệ	
-1A. Thanh toán nhiều hóa đơn: Chọn nhiều hóa đơn, thanh toán gộp một lần
-3A. Hóa đơn đã thanh toán: Vô hiệu nút thanh toán, thông báo
-4A. Hóa đơn quá hạn: Tự động tính phí phạt, hiển thị tổng tiền
-6A. Thanh toán online thất bại: Thông báo lỗi, không cập nhật, quay lại bước 4
+    1A. Thanh toán nhiều hóa đơn: Chọn nhiều hóa đơn, thanh toán gộp một lần
+    3A. Hóa đơn đã thanh toán: Vô hiệu nút thanh toán, thông báo
+    4A. Hóa đơn quá hạn: Tự động tính phí phạt, hiển thị tổng tiền
+    6A. Thanh toán online thất bại: Thông báo lỗi, không cập nhật, quay lại bước 4
+
+## UC-05: DUYỆT ĐĂNG KÝ PHÒNG (ADMIN)
+Tiêu đề	                                Nội dung
+Tên Use case	                        Duyệt đăng ký phòng
+Mức	                                    Mức người dùng 
+Tác nhân chính	                        Quản lý KTX (Admin)
+Các bên liên quan và lợi ích	        - Quản lý: Muốn phê duyệt đơn nhanh chóng, chính xác
+                                        - Sinh viên: Muốn đơn được xử lý kịp thời
+Người chịu trách nhiệm	                Hệ thống quản lý ký túc xá
+Tiền điều kiện	                        Quản lý đã đăng nhập. Có đơn ở trạng thái "Chờ duyệt".
+Đảm bảo tối thiểu	                    - Đơn không đổi trạng thái nếu duyệt thất bại
+                                        - Thông báo lỗi cho quản lý
+Đảm bảo thành công	                    - Phê duyệt: tạo hợp đồng, cập nhật phòng, thông báo sinh viên
+                                        - Từ chối: mở khóa phòng, thông báo kèm lý do
+
+### Chuỗi sự kiện chính	
+1. Quản lý chọn "Duyệt đăng ký phòng"
+2. Hệ thống hiển thị danh sách đơn "Chờ duyệt"
+3. Quản lý chọn đơn để xem chi tiết
+4. Quản lý chọn "Phê duyệt"
+5. Hệ thống kiểm tra lại phòng
+6. Hệ thống tạo hợp đồng, cập nhật phòng
+7. Hệ thống gửi email thông báo
+8. Kết thúc
+
+### Ngoại lệ	
+    1A. Duyệt hàng loạt: Chọn nhiều đơn, xử lý lần lượt, báo cáo kết quả
+    3A. Chọn "Từ chối": Nhập lý do, mở khóa phòng, gửi email, kết thúc
+    3B. Chọn "Yêu cầu bổ sung": Nhập yêu cầu, cập nhật trạng thái "Chờ bổ sung", gửi thông báo
+    5A. Phòng hết chỗ: Thông báo, đề xuất phòng thay thế
+    5B. Sinh viên đã có phòng: Thông báo, tự động từ chối
+
+## UC-06: CHECK-IN / NHẬN PHÒNG
+Tiêu đề	                                Nội dung
+Tên Use case	                        Check-in / Nhận phòng
+Mức	                                    Mức người dùng 
+Tác nhân chính	                        Nhân viên tiếp tân
+Tác nhân phụ	                        Sinh viên
+Các bên liên quan và lợi ích	        - Sinh viên: Muốn nhận phòng nhanh chóng
+                                        - Nhân viên: Muốn thủ tục chính xác, tránh sai sót
+Người chịu trách nhiệm	                Hệ thống quản lý ký túc xá
+Tiền điều kiện	                        Sinh viên có đơn được duyệt. Hợp đồng đã tạo. Chưa check-in.
+Đảm bảo tối thiểu	                    - Không cập nhật phòng nếu check-in thất bại
+                                        - Thông báo lỗi cho nhân viên
+Đảm bảo thành công	                    - Sinh viên chính thức ở phòng
+                                        - Cập nhật danh sách phòng
+                                        - Phát thẻ từ/chìa khóa, in phiếu nhận phòng
+
+### Chuỗi sự kiện chính	
+1. Sinh viên xuất trình MSSV và CMND
+2. Nhân viên chọn "Check-in", nhập MSSV
+3. Hệ thống hiển thị thông tin sinh viên và đơn đã duyệt
+4. Nhân viên kiểm tra giấy tờ và xác nhận
+5. Nhân viên nhấn "Xác nhận nhận phòng"
+6. Hệ thống cập nhật trạng thái sinh viên và phòng
+7. Nhân viên phát chìa khóa/thẻ từ, in phiếu
+8. Kết thúc
+### Ngoại lệ	
+    1A. Check-in theo nhóm: Check-in đồng loạt cho cả phòng
+    3A. Chưa có đơn duyệt: Thông báo, không cho check-in
+    3B. Đã check-in trước đó: Thông báo, kiểm tra trùng lặp
+    3C. Phòng đã đủ người: Thông báo lỗi, kiểm tra lại dữ liệu
+    4A. Thiếu giấy tờ: Yêu cầu bổ sung, tạm dừng
+
+## UC-07: CHECK-OUT / TRẢ PHÒNG
+Tiêu đề	                                        Nội dung
+Tên Use case	                                Check-out / Trả phòng
+Mức	                                            Mức người dùng 
+Tác nhân chính	                                Nhân viên tiếp tân
+Tác nhân phụ	                                Sinh viên
+Các bên liên quan và lợi ích	                - Sinh viên: Muốn trả phòng nhanh, nhận lại cọc (nếu có)
+                                                - Nhân viên: Muốn kiểm tra tài sản và thanh lý chính xác
+Người chịu trách nhiệm	                        Hệ thống quản lý ký túc xá
+Tiền điều kiện	                                Sinh viên đang ở phòng. Hợp đồng còn hiệu lực hoặc đã kết thúc.
+Đảm bảo tối thiểu	                            - Không cập nhật trạng thái nếu check-out thất bại
+                                                - Thông báo lỗi cho nhân viên
+Đảm bảo thành công	                            - Sinh viên không còn ở phòng
+                                                - Cập nhật phòng (tăng chỗ trống)
+                                                - Xử lý tiền cọc và in phiếu thanh lý
+
+### Chuỗi sự kiện chính	
+1. Sinh viên đến quầy thông báo trả phòng
+2. Nhân viên chọn "Check-out", nhập MSV
+3. Hệ thống hiển thị thông tin sinh viên, phòng, công nợ, tiền cọc
+4. Nhân viên kiểm tra phòng (tài sản hư hỏng)
+5. Nhân viên nhập kết quả kiểm tra
+6. Hệ thống tính toán thanh lý (công nợ, cọc hoàn trả)
+7. Sinh viên thanh toán hoặc nhận lại tiền
+8. Nhân viên nhấn "Xác nhận trả phòng"
+9. Hệ thống cập nhật trạng thái, thu lại chìa khóa
+10. In phiếu thanh lý, kết thúc
+
+### Ngoại lệ	
+    1A. Check-out theo nhóm: Xử lý chung tiền cọc và công nợ cho cả phòng
+    3A. Check-out sớm trước hạn: Tính phí phạt (nếu có quy định)
+    5A. Còn nợ tiền: Yêu cầu thanh toán hết nợ trước khi check-out
+    5B. Hư hỏng tài sản: Tính chi phí sửa chữa, khấu trừ cọc, lập biên bản
+    5C. Mất chìa khóa/thẻ từ: Thu phí làm lại, khấu trừ cọc
+
+## UC-08: CHUYỂN PHÒNG
+Tiêu đề	                                        Nội dung
+Tên Use case	                                Chuyển phòng
+Mức	                                            Mức người dùng
+Tác nhân chính	                                Sinh viên
+Tác nhân phụ	                                Quản lý KTX
+Các bên liên quan và lợi ích	                - Sinh viên: Muốn chuyển sang phòng khác khi có nhu cầu (xung đột, hỏng phòng, nâng cấp)
+                                                - Quản lý: Muốn kiểm soát việc chuyển phòng hợp lý
+Người chịu trách nhiệm	                        Hệ thống quản lý ký túc xá
+Tiền điều kiện	                                Sinh viên đang ở phòng hiện tại. Có phòng đích còn trống.
+Đảm bảo tối thiểu	                            - Sinh viên vẫn ở phòng cũ nếu chuyển thất bại
+                                                - Thông báo lỗi chi tiết
+Đảm bảo thành công	                            - Sinh viên chuyển sang phòng mới
+                                                - Cập nhật phòng cũ (tăng chỗ trống)
+                                                - Cập nhật phòng mới (giảm chỗ trống)
+
+### Chuỗi sự kiện chính	
+1. Sinh viên gửi yêu cầu chuyển phòng
+2. Quản lý xem xét và chấp thuận (hoặc sinh viên tự chọn nếu được phép)
+3. Hệ thống hiển thị danh sách phòng trống
+4. Sinh viên/Quản lý chọn phòng đích
+5. Hệ thống kiểm tra phòng đích còn trống
+6. Hệ thống cập nhật: xóa sinh viên khỏi phòng cũ, thêm vào phòng mới
+7. Hệ thống ghi nhận lịch sử chuyển phòng
+8. Gửi thông báo xác nhận cho sinh viên
+9. Kết thúc
+
+### Ngoại lệ	
+    1A. Chuyển phòng do hỏng hóc: Ưu tiên xử lý nhanh, không tính phí (nếu có)
+    4A. Phòng đích không còn trống: Thông báo, đề xuất phòng khác, quay lại bước 3
+    4B. Sinh viên còn nợ tiền: Yêu cầu thanh toán nợ trước khi chuyển
+    5A. P`hòng đích đang sửa chữa: Thông báo, không cho chuyển, đề xuất phòng khác
+
 
 
