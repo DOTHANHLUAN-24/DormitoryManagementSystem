@@ -1,21 +1,29 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Data.Enums;
 
 namespace DormitoryManagement.Data.Entities
 {
+    // Vi phạm
+    [Table("Violations")]
     public class Violation
     {
+        [Key]
         public int Id { get; set; }
-
-        [Required]
-        public string UserId { get; set; } = string.Empty;
-
-        public User User { get; set; } = null!;
-
-        [Required]
+        
         public string Description { get; set; } = string.Empty;
         
-        public DateTime DateReported { get; set; } = DateTime.Now;
-        
         public decimal FineAmount { get; set; }
+        
+        public DateTime ViolationDate { get; set; }
+        
+        public ViolationStatus Status { get; set; }
+        
+        public string EvidenceImage { get; set; } = string.Empty;
+
+        public int ContractId { get; set; }
+        
+        [ForeignKey("ContractId")]
+        public virtual Contract Contract { get; set; } = null!;
     }
 }
