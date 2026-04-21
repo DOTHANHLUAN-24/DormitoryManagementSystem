@@ -16,7 +16,7 @@ MANAGER	            Quản lý KTX		        Duyệt đăng ký, quản lý phòn
 CASHIER	            Nhân viên thu phí		Ghi nhận thanh toán, in hóa đơn, xem công nợ
 SECURITY	        Nhân viên bảo vệ		Tra cứu sinh viên, đăng ký khách thăm
 TECHNICIAN	        Nhân viên kỹ thuật		Xem và xử lý yêu cầu sửa chữa
-ADMIN	            Quản trị hệ thống		Tạo tài khoản, phân quyền, sao lưu dữ liệu
+ADMIN	            Quản trị hệ thống		Tạo tài khoản, phân quyền, sao lưu dữ liệu, CRUD mọi thứ
 
 ### Ưu điểm của RBAC
 Ưu điểm                 	Mô tả
@@ -51,7 +51,7 @@ Lượng tiêu thụ = Chỉ số cuối kỳ - Chỉ số đầu kỳ	         
 Thành tiền = Lượng tiêu thụ × Đơn giá	                    Tính số tiền phải trả
 Tiền mỗi sinh viên = Tổng hóa đơn phòng / Số sinh viên	    Chia đều sinh viên mỗi phòng
 Xử lý trường hợp đặc biệt:                                  Nếu chỉ số cuối < chỉ số đầu: Báo lỗi do nhập sai, yêu cầu nhập lại
-                                                            Nếu phòng có nhiều sinh viên: Chia đều thành tiền cho các sinh viên
+
 
 ### Tính công nợ
 Công thức	                                                                                Mô tả
@@ -61,7 +61,9 @@ Công nợ mới = Công nợ cũ + Tiền hóa đơn mới - Thanh toán mới	
 ## SOFT DELETE (XÓA MỀM)
 1. Khái niệm
 Soft Delete là kỹ thuật không xóa dữ liệu vật lý khỏi cơ sở dữ liệu, mà chỉ đánh dấu bản ghi là "đã xóa" bằng một cờ (flag) hoặc thời gian xóa.
-
+Nên dùng với:   Dữ liệu quan trọng cần lưu lịch sử
+                Dữ liệu có thể cần khôi phục
+                Quan hệ cha-con cần giữ toàn vẹn
 2. Cấu trúc bảng có Soft Delete
 Trường	        Kiểu dữ liệu	        Mô tả
 id	            INT 	                Khóa chính
