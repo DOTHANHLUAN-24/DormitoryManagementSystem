@@ -1,34 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Data.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace DormitoryManagement.Data.Entities
 {
+    // Người dùng
     [Table("Users")]
     public class User : IdentityUser
     {
-        public User(string id, string userName, string firstName, string lastName, string email, string phoneNumber)
-        {
-            Id = id;
-            UserName = userName;
-            FirstName = firstName;
-            LastName = lastName;
-            PhoneNumber = phoneNumber;
-            Email = email;
-        }
+        
+        [Required, StringLength(100)]
+        public string FullName { get; set; } = string.Empty;
 
-        [Required]
-        [MaxLength(50)]
-        public string FirstName { get; set; } = string.Empty;
+        [Required, StringLength(50)]
 
-        [Required]
-        [MaxLength(50)]
-        public string LastName { get; set; } = string.Empty;
-
+        public string Code { get; set; } = string.Empty; // MSSV hoặc Mã nhân viên
+        
         public bool IsActive { get; set; } = true;
-
-        public string? RefreshToken { get; set; }
-
-        public DateTime? RefreshTokenExpiryTime { get; set; }
+        
+        public string IdentityCardNumber { get; set; } = string.Empty; // CCCD/CMND - 13 số
+        
+        public UserRole Role { get; set; } // Nếu không dùng IdentityRole - để tạm
+        
+        public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
+        
+        public virtual ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }
