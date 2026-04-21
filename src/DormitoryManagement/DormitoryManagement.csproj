@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Interfaces\" />
-    <Folder Include="Data\Enums\" />
     <Folder Include="DTOs\" />
     <Folder Include="Repositories\Implementations\Authentication\" />
     <Folder Include="Repositories\Implementations\Dormitory\" />
