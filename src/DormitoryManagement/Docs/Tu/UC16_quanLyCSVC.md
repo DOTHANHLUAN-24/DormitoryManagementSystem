@@ -37,8 +37,8 @@
 
 ## 1.3. Activity Diagram - AD16
 
-![AD16 - Quản lý cơ sở vật chất]
+![AD16 - Quản lý cơ sở vật chất](../images/AD16_QuanLyCoSoVatChat.png)
 
 ## 1.4. Sequence Diagram - SD16
 
-![SD16 - Quản lý cơ sở vật chất]
+![SD16 - Quản lý cơ sở vật chất](../images/SD16_QuanLyCoSoVatChat.png)
