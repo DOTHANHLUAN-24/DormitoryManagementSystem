@@ -50,5 +50,6 @@ namespace DormitoryManagement.Data
         public DbSet<Utility> utilities { get; set; } = null!;
         public DbSet<UtilityUsage> UtilityUsages { get; set; } = null!;
         public DbSet<Violation> Violations { get; set; } = null!;
+       
     }
 }
