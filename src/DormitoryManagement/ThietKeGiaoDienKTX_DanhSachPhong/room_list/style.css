@@ -283,3 +283,18 @@ body {
     font-size: 13px;
     margin-top: 4px;
 }
+
+/*Danh sách phòng*/
+.danh-sach-phong {
+    background: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.danh-sach-phong table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.danh-sach-phong th {}
