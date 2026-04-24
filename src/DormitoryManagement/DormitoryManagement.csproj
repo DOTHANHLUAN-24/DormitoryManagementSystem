@@ -10,7 +10,6 @@
     <Folder Include="Assignments\images\UML\ActivityDiagrams\" />
     <Folder Include="Assignments\images\UML\SequenceDiagrams\" />
     <Folder Include="Assignments\images\UML\UseCaseDiagrams\" />
-    <Folder Include="Data\Interfaces\" />
     <Folder Include="DTOs\" />
     <Folder Include="Repositories\Implementations\Authentication\" />
     <Folder Include="Repositories\Implementations\Dormitory\" />
@@ -36,6 +35,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
   </ItemGroup>
 
 </Project>

@@ -9,6 +9,8 @@ namespace DormitoryManagement.Data
     {
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
+        public ApplicationDbContext() { }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -48,5 +50,6 @@ namespace DormitoryManagement.Data
         public DbSet<Utility> utilities { get; set; } = null!;
         public DbSet<UtilityUsage> UtilityUsages { get; set; } = null!;
         public DbSet<Violation> Violations { get; set; } = null!;
+       
     }
 }
