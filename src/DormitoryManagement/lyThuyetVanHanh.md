@@ -1,7 +1,3 @@
-Dưới đây là nội dung bạn cung cấp đã được định dạng lại bằng Markdown, giữ nguyên toàn bộ ý tứ và cấu trúc, có bổ sung icon để tăng tính trực quan và thẩm mỹ.
-
----
-
 # 🧠 Về Lý Thuyết Nền Tảng
 
 - 📌 Để xây dựng một hệ thống phần mềm quản lý ký túc xá có khả năng vận hành ổn định, phục vụ đồng thời nhiều đối tượng người dùng khác nhau từ sinh viên, cán bộ quản lý đến nhân viên bảo vệ, chúng ta không thể chỉ tập trung vào việc viết mã lệnh đơn thuần.
