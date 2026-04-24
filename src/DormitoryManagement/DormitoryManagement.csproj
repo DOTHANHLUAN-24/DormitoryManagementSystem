@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="Assignments\images\UML\ActivityDiagrams\" />
+    <Folder Include="Assignments\images\UML\SequenceDiagrams\" />
+    <Folder Include="Assignments\images\UML\UseCaseDiagrams\" />
     <Folder Include="Data\Interfaces\" />
     <Folder Include="DTOs\" />
     <Folder Include="Repositories\Implementations\Authentication\" />
