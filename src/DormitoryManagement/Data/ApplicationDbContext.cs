@@ -9,6 +9,8 @@ namespace DormitoryManagement.Data
     {
         public ApplicationDbContext(DbContextOptions options) : base(options) { }
 
+        public ApplicationDbContext() { }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
