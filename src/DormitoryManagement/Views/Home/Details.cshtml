@@ -1,0 +1,146 @@
+@model dynamic
+
+@{
+    ViewData["Title"] = "Chi tiết phòng";
+}
+
+<style>
+    body {
+        font-family: Arial;
+        margin: 0;
+        background: #f5f5f5;
+    }
+
+    .content {
+        width: 90%;
+        margin: auto;
+        padding: 15px;
+    }
+
+    .block {
+        background: white;
+        padding: 15px;
+        margin-bottom: 12px;
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .row {
+        margin: 5px 0;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    table, th, td {
+        border: 1px solid #ccc;
+    }
+
+    th, td {
+        padding: 8px;
+        text-align: center;
+    }
+
+    th {
+        background: #e0e0e0;
+    }
+
+    .btn-group {
+        margin-top: 10px;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        margin-right: 5px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .blue { background: #2196F3; color: white; }
+    .green { background: #4CAF50; color: white; }
+    .orange { background: #FF9800; color: white; }
+    .red { background: #f44336; color: white; }
+</style>
+
+<div class="content">
+
+    <div class="block">
+        <div class="title">Phòng @Model.RoomName</div>
+        <div class="row">Tòa nhà: @Model.Building</div>
+    </div>
+
+    <div class="block">
+        <div class="title">Thông tin phòng</div>
+        <div class="row">Diện tích: @Model.Area m²</div>
+        <div class="row">Số giường: @Model.TotalBeds</div>
+        <div class="row">Đang ở: @Model.CurrentStudents / @Model.TotalBeds</div>
+        <div class="row">Giá: @Model.Price VNĐ</div>
+    </div>
+
+    <div class="block">
+        <div class="title">Giường trong phòng</div>
+
+        <table>
+            <tr>
+                <th>Giường</th>
+                <th>Trạng thái</th>
+                <th>Sinh viên</th>
+            </tr>
+
+            @foreach (var bed in Model.Beds)
+            {
+                <tr>
+                    <td>@bed.Name</td>
+                    <td>@(bed.IsOccupied ? "Đã có người" : "Trống")</td>
+                    <td>@bed.StudentName</td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div class="block">
+        <div class="title">Dịch vụ</div>
+        <div class="row">Điện: @Model.Electric</div>
+        <div class="row">Nước: @Model.Water</div>
+    </div>
+
+    <div class="block">
+        <div class="title">Hóa đơn</div>
+
+        <table>
+            <tr>
+                <th>Tháng</th>
+                <th>Số tiền</th>
+                <th>Trạng thái</th>
+            </tr>
+
+            @foreach (var bill in Model.Bills)
+            {
+                <tr>
+                    <td>@bill.Month</td>
+                    <td>@bill.Total</td>
+                    <td>@bill.Status</td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div class="block">
+        <div class="title">Chức năng</div>
+
+        <div class="btn-group">
+            <button class="btn blue">Phân giường</button>
+            <button class="btn green">Tạo hợp đồng</button>
+            <button class="btn orange">Dịch vụ</button>
+            <button class="btn red">Báo lỗi</button>
+        </div>
+    </div>
+
+</div>
