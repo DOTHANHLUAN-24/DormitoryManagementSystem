@@ -1,0 +1,41 @@
+@startuml
+|Sinh viên|
+start
+:Truy cập chức năng đăng ký;
+|Hệ thống|
+:Kiểm tra trạng thái nội trú hiện tại;
+if (Đã có phòng?) then (Có)
+  :Hiển thị "Bạn đã có phòng";
+  stop
+else (Không)
+  :Hiển thị form đăng ký;
+endif
+|Sinh viên|
+:Nhập thông tin (thời gian, loại phòng...);
+:Nhấn "Gửi đăng ký";
+|Hệ thống|
+:Validate client;
+if (Dữ liệu hợp lệ?) then (Không)
+  :Hiển thị thông báo lỗi;
+  stop
+else (Có)
+  :Gửi request lên server;
+  :Server validate dữ liệu;
+  if (Dữ liệu hợp lệ?) then (Không)
+    :Trả response lỗi;
+    stop
+  else (Có)
+    :Kiểm tra điều kiện\n(chưa có request Pending, chưa có phòng);
+    if (Trùng yêu cầu Pending?) then (Có)
+      :Trả response lỗi "Yêu cầu đang chờ";
+      stop
+    else (Không)
+      :Tạo bản ghi (Pending) và Lưu DB;
+      :Ghi log;
+      :Trả response thành công;
+      :Hiển thị thông báo thành công;
+      stop
+    endif
+  endif
+endif
+@enduml

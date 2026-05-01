@@ -1,0 +1,50 @@
+@startuml
+autonumber
+actor "Sinh viên" as sv
+participant "Giao diện (Client)" as client
+participant "Máy chủ (Server)" as server
+database "Cơ sở dữ liệu" as db
+
+sv -> client : Truy cập chức năng đăng ký
+client -> server : Yêu cầu kiểm tra trạng thái (GET)
+server -> db : Truy vấn trạng thái (MSSV)
+db --> server : Kết quả trạng thái
+server --> client : Trả về trạng thái
+
+alt Đã có phòng đang hoạt động
+    client --> sv : Hiển thị "Bạn đã có phòng..."
+else Chưa có phòng
+    loop Cho đến khi đăng ký thành công
+        client --> sv : Hiển thị Form đăng ký
+        sv -> client : Nhập thông tin & Submit
+        client -> client : Validate dữ liệu (Client)
+        
+        alt Lỗi Validation (Thiếu/Sai)
+            client --> sv : Highlight lỗi & Báo lỗi
+        else Dữ liệu hợp lệ
+            client -> server : Gửi yêu cầu đăng ký (POST)
+            server -> server : Validate dữ liệu (Server)
+            server -> db : Kiểm tra request Pending
+            db --> server : Trả về kết quả
+            
+            alt Đã có request Pending
+                server --> client : Lỗi "Yêu cầu đang chờ xử lý"
+                client --> sv : Hiển thị lỗi & Dừng thao tác
+            else Không có
+                server -> db : Tạo mới bản ghi (Pending)
+                alt Lỗi CSDL
+                    db --> server : Exception
+                    server -> server : Rollback Transaction & Ghi Log
+                    server --> client : HTTP 500 Lỗi hệ thống
+                    client --> sv : Hiển thị "Có lỗi xảy ra"
+                else Thành công
+                    db --> server : Success
+                    server -> server : Ghi Audit Log
+                    server --> client : HTTP 200 OK
+                    client --> sv : Hiển thị thông báo thành công
+                end
+            end
+        end
+    end
+end
+@enduml

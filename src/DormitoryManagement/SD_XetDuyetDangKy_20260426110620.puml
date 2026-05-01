@@ -1,0 +1,53 @@
+@startuml
+autonumber
+actor "Nhân viên" as nv
+participant "Giao diện (Client)" as client
+participant "Máy chủ (Server)" as server
+database "Cơ sở dữ liệu" as db
+
+nv -> client : Mở danh sách đăng ký
+client -> server : Lấy danh sách Pending (GET)
+server -> db : Truy vấn (Status = Pending)
+db --> server : Danh sách request
+server --> client : Trả về dữ liệu
+
+alt Không có dữ liệu
+    client --> nv : Hiển thị "Không có dữ liệu"
+else Có dữ liệu
+    loop Xử lý từng request
+        client --> nv : Hiển thị danh sách
+        nv -> client : Chọn 1 request & Thao tác
+        
+        alt Chưa chọn
+            client --> nv : Báo lỗi "Vui lòng chọn"
+        else Đã chọn
+            client --> nv : Hiển thị chi tiết
+            nv -> client : Chọn Duyệt/Từ chối & Xác nhận
+            client -> server : Gửi quyết định (POST/PUT)
+            server -> db : Kiểm tra tồn tại & Trạng thái hiện tại
+            db --> server : Request Data
+            
+            alt Không tìm thấy
+                server --> client : Lỗi "Không tồn tại"
+                client --> nv : Hiển thị lỗi
+            else Trạng thái không còn Pending
+                server --> client : Lỗi "Đã được xử lý"
+                client --> nv : Hiển thị lỗi & Refresh danh sách
+            else Hợp lệ
+                server -> db : Cập nhật trạng thái (Duyệt/Từ chối)
+                alt Lỗi CSDL
+                    db --> server : Exception
+                    server -> server : Rollback & Ghi Log
+                    server --> client : Lỗi HTTP 500
+                    client --> nv : Hiển thị "Có lỗi hệ thống"
+                else Thành công
+                    db --> server : Success
+                    server -> server : Ghi Audit Log
+                    server --> client : HTTP 200 OK
+                    client --> nv : Hiển thị thông báo thành công
+                end
+            end
+        end
+    end
+end
+@enduml

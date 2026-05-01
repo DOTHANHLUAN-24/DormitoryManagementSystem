@@ -1,0 +1,8 @@
+@startuml
+left to right direction
+actor "Nhân viên" as nv
+rectangle "Hệ thống Quản lý Ký túc xá" {
+  usecase "Xét duyệt đăng ký" as uc08
+}
+nv --> uc08
+@enduml

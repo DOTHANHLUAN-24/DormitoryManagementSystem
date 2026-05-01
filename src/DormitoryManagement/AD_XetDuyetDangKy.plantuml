@@ -1,0 +1,51 @@
+@startuml
+|Nhân viên|
+start
+:Mở danh sách đăng ký;
+|Hệ thống|
+:Tải danh sách Pending;
+if (Không có dữ liệu?) then (Có)
+  :Hiển thị "Không có dữ liệu";
+  stop
+else (Có dữ liệu)
+endif
+
+repeat
+  |Nhân viên|
+  :Chọn 1 request;
+  |Hệ thống|
+  if (Chưa chọn yêu cầu?) then (Có)
+    :Chặn hành động bước tiếp theo;
+    :Hiển thị "Vui lòng chọn yêu cầu";
+  else (Đã chọn)
+    :Xem chi tiết;
+    |Nhân viên|
+    :Chọn Duyệt/Từ chối;
+    :Gửi request;
+    |Hệ thống|
+    :Server kiểm tra trạng thái;
+    
+    if (Không tìm thấy request trong DB?) then (Có)
+      :Trả response lỗi, Hiển thị "Yêu cầu không tồn tại";
+      :Ghi log;
+      stop
+    elseif (Request không còn Pending?) then (Có)
+      :Từ chối xử lý, không cập nhật DB;
+      :Hiển thị "Yêu cầu đã được xử lý", Ghi log;
+      :Refresh danh sách;
+    else (Hợp lệ)
+      :Cập nhật trạng thái;
+      :Lưu DB;
+      if (Lỗi DB?) then (Có)
+        :Rollback transaction;
+        :Trả lỗi hệ thống, Hiển thị lỗi, Ghi exception log;
+        stop
+      else (Thành công)
+        :Ghi log;
+        :Trả response thành công, Hiển thị thông báo thành công;
+        stop
+      endif
+    endif
+  endif
+repeat while (Xử lý request tiếp theo?) is (Có)
+@enduml

@@ -1,0 +1,8 @@
+@startuml
+left to right direction
+actor "Sinh viên" as sv
+rectangle "Hệ thống Quản lý Ký túc xá" {
+  usecase "Đăng ký nội trú" as uc17
+}
+sv --> uc17
+@enduml
