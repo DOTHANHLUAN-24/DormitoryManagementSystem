@@ -1,5 +1,7 @@
-using DormitoryManagement.Data;
-using DormitoryManagement.Data.Entities;
+using DormitoryManagement.Domain.Application.Services;
+using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Infrastructure.Data;
+using DormitoryManagement.Infrastructure.ExternalServices;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,11 @@ internal class Program
 
         // Add services to the container.
         builder.Services.AddControllersWithViews();
+
+        builder.Services.Configure<MailSettings>(
+        builder.Configuration.GetSection("MailSettings"));
+
+        builder.Services.AddScoped<IEmailService, EmailService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

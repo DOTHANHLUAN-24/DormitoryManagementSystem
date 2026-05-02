@@ -1,5 +1,4 @@
-﻿using DormitoryManagement.Data.Dao;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
@@ -7,10 +6,6 @@ namespace DormitoryManagement.Controllers
     {
         public IActionResult Index()
         {
-            var roomDao = new RoomDao();
-            var listRooms = roomDao.ListAllRoom();
-            var listRoomTypes = roomDao.ListAllRoomType();
-
             return View();
         }
     }
