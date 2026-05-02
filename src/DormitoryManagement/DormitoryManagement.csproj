@@ -7,35 +7,28 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Assignments\images\UML\ActivityDiagrams\" />
-    <Folder Include="Assignments\images\UML\SequenceDiagrams\" />
-    <Folder Include="Assignments\images\UML\UseCaseDiagrams\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="Repositories\Implementations\Authentication\" />
-    <Folder Include="Repositories\Implementations\Dormitory\" />
-    <Folder Include="Repositories\Implementations\Finance\" />
-    <Folder Include="Repositories\Implementations\Leasing\" />
-    <Folder Include="Repositories\Implementations\Identity\" />
-    <Folder Include="Repositories\Implementations\Operations\" />
-    <Folder Include="Repositories\Interfaces\Authentication\" />
-    <Folder Include="Repositories\Interfaces\Dormitory\" />
-    <Folder Include="Repositories\Interfaces\Leasing\" />
-    <Folder Include="Repositories\Interfaces\Finance\" />
-    <Folder Include="Repositories\Interfaces\Identity\" />
-    <Folder Include="Repositories\Interfaces\Operations\" />
-    <Folder Include="Services\Implementations\" />
-    <Folder Include="Services\Interfaces\" />
+    <Compile Remove="Assignments\**" />
+    <Content Remove="Assignments\**" />
+    <EmbeddedResource Remove="Assignments\**" />
+    <None Remove="Assignments\**" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.25" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.25">
+    <PackageReference Include="MailKit" Version="4.16.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.26" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.26" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.26">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PagedList.Mvc" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DormitoryManagement.Application\DormitoryManagement.Application.csproj" />
+    <ProjectReference Include="..\DormitoryManagement.Domain\DormitoryManagement.Domain.csproj" />
+    <ProjectReference Include="..\DormitoryManagement.Infrastructure\DormitoryManagement.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

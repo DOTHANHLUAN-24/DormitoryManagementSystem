@@ -8,15 +8,28 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\.gitignore = ..\..\.gitignore
-		..\..\InformationEntityAndTask.md = ..\..\InformationEntityAndTask.md
 		..\..\README.md = ..\..\README.md
-		RepositoryDocs.md = RepositoryDocs.md
-		Test.md = Test.md
+		Task21_04_2026_20260426111229.md = Task21_04_2026_20260426111229.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "..\Common\Common.csproj", "{233D95BD-7FE2-4E49-BC36-5684F2BD982C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DormitoryManagement.Domain", "..\DormitoryManagement.Domain\DormitoryManagement.Domain.csproj", "{475CAF44-DACB-4E37-875C-B3654E0BD555}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "..\Model\Model.csproj", "{F3927198-3D4C-4099-9E9C-5399C1DBD1C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DormitoryManagement.Infrastructure", "..\DormitoryManagement.Infrastructure\DormitoryManagement.Infrastructure.csproj", "{3393A3A5-0821-42F7-AB06-B80CCCFE2FB4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Diagrams", "Diagrams", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Notes", "Notes", "{00959691-5525-472B-9BFD-87E9F22F90C5}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\InformationEntityAndTask.md = ..\..\InformationEntityAndTask.md
+		khaoSatHienTrang.md = khaoSatHienTrang.md
+		lyThuyetVanHanh.md = lyThuyetVanHanh.md
+		RepositoryDocs.md = RepositoryDocs.md
+		Task21_04_2026_20260426111229.md = Task21_04_2026_20260426111229.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DormitoryManagement.Common", "..\DormitoryManagement.Common\DormitoryManagement.Common.csproj", "{0A55B14B-4EC9-4782-BB9C-FC64E2ED5F61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DormitoryManagement.Application", "..\DormitoryManagement.Application\DormitoryManagement.Application.csproj", "{D6153403-2821-4260-9005-7F84FF85DFF0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,17 +41,29 @@ Global
 		{24BFAB7A-0E66-4417-860C-1691FFB8991D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24BFAB7A-0E66-4417-860C-1691FFB8991D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24BFAB7A-0E66-4417-860C-1691FFB8991D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{233D95BD-7FE2-4E49-BC36-5684F2BD982C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{233D95BD-7FE2-4E49-BC36-5684F2BD982C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{233D95BD-7FE2-4E49-BC36-5684F2BD982C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{233D95BD-7FE2-4E49-BC36-5684F2BD982C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F3927198-3D4C-4099-9E9C-5399C1DBD1C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F3927198-3D4C-4099-9E9C-5399C1DBD1C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F3927198-3D4C-4099-9E9C-5399C1DBD1C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F3927198-3D4C-4099-9E9C-5399C1DBD1C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{475CAF44-DACB-4E37-875C-B3654E0BD555}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{475CAF44-DACB-4E37-875C-B3654E0BD555}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{475CAF44-DACB-4E37-875C-B3654E0BD555}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{475CAF44-DACB-4E37-875C-B3654E0BD555}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3393A3A5-0821-42F7-AB06-B80CCCFE2FB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3393A3A5-0821-42F7-AB06-B80CCCFE2FB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3393A3A5-0821-42F7-AB06-B80CCCFE2FB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3393A3A5-0821-42F7-AB06-B80CCCFE2FB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A55B14B-4EC9-4782-BB9C-FC64E2ED5F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A55B14B-4EC9-4782-BB9C-FC64E2ED5F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A55B14B-4EC9-4782-BB9C-FC64E2ED5F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A55B14B-4EC9-4782-BB9C-FC64E2ED5F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6153403-2821-4260-9005-7F84FF85DFF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6153403-2821-4260-9005-7F84FF85DFF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6153403-2821-4260-9005-7F84FF85DFF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6153403-2821-4260-9005-7F84FF85DFF0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{02EA681E-C7D8-13C7-8484-4AC65E1B71E8} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
+		{00959691-5525-472B-9BFD-87E9F22F90C5} = {8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ABEB84DD-678E-429A-8E1C-3D3F22D0A76F}
