@@ -28,4 +28,4 @@
 
 ## 4.4. Sequence Diagram - SD09
 
-![SD09 - Xử lý sự cố kỹ thuật](../images/SD09_XuLySuCoKyThuat.png)
+![SD09 - Xử lý sự cố kỹ thuật](../images/SD09_XuLySuCoKyThuat.jpg)

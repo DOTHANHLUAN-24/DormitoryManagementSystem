@@ -27,4 +27,4 @@
 
 ## 2.4. Sequence Diagram - SD08
 
-![SD08 - Tạo yêu cầu sửa chữa](../images/SD08_TaoYeuCauSuaChua.png)
+![SD08 - Tạo yêu cầu sửa chữa](../images/SD08_TaoYeuCauSuaChua.jpg)
