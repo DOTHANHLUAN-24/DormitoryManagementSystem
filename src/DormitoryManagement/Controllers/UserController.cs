@@ -1,5 +1,4 @@
-﻿using DormitoryManagement.Data.Dao;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
@@ -7,10 +6,7 @@ namespace DormitoryManagement.Controllers
     {
         public IActionResult Index()
         {
-            var userDao = new UserDao();
-            var listUsers = userDao.ListAllPaging("", 1, 10);
-
-            return View(listUsers);
+            return View();
         }
     }
 }
