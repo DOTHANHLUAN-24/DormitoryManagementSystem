@@ -1,4 +1,4 @@
 ﻿namespace DormitoryManagement.Domain.Enums
 {
-    public enum UserRole { Admin, Manager, Student, Guard, Accountant }
+    public enum UserRole { Admin, ManagementStaff, Student, TechnicalStaff }
 }
