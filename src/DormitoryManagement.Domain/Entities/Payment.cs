@@ -1,16 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Thanh toán
     [Table("Payments")]
-    public class Payment
+    public class Payment : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         public decimal AmountPaid { get; set; }
         
         public DateTime PaymentDate { get; set; }
@@ -21,7 +18,7 @@ namespace DormitoryManagement.Domain.Entities
         
         public string Note { get; set; } = string.Empty;
 
-        public int InvoiceId { get; set; }
+        public Guid InvoiceId { get; set; }
 
         [ForeignKey("InvoiceId")]
         public virtual Invoice Invoice { get; set; } = null!;

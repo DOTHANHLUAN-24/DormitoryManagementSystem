@@ -1,16 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Tài sản
     [Table("Assets")]
-    public class Asset
+    public class Asset : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         [Required, StringLength(100)]
         public string AssetName { get; set; } =  string.Empty;
 
@@ -18,7 +16,7 @@ namespace DormitoryManagement.Domain.Entities
 
         public AssetStatus Status { get; set; } = AssetStatus.Good;
 
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
         
         [ForeignKey("RoomId")]
         public virtual Room Room { get; set; } = null!;

@@ -1,7 +1,7 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using DormitoryManagement.Domain.Application.Services;
+using DormitoryManagement.Application.Services.Interfaces;
 
 namespace DormitoryManagement.Infrastructure.ExternalServices
 {

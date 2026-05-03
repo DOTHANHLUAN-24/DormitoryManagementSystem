@@ -7,11 +7,8 @@ namespace DormitoryManagement.Domain.Entities
 {
     // Phòng
     [Table("Rooms")]
-    public class Room : IDateTimeTracking
+    public class Room : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required, StringLength(20)]
         public string RoomNumber { get; set; } = string.Empty; // Ví dụ: P101, P102
 
@@ -19,15 +16,9 @@ namespace DormitoryManagement.Domain.Entities
 
         public RoomStatus Status { get; set; } = RoomStatus.Available;
 
-        public int BlockId { get; set; }
+        public Guid BlockId { get; set; }
 
-        [ForeignKey("BlockId")]
-        public virtual Block Block { get; set; } = null!;
-
-        public int RoomTypeId { get; set; }
-
-        [ForeignKey("RoomTypeId")]
-        public virtual RoomType RoomType { get; set; } = null!;
+        public Guid RoomTypeId { get; set; }
 
         // Liên kết
         public virtual ICollection<Bed> Beds { get; set; } = new List<Bed>();
@@ -36,8 +27,10 @@ namespace DormitoryManagement.Domain.Entities
 
         public virtual ICollection<Asset> Assets { get; set; } = new List<Asset>();
         
-        public DateTime CreatedDate { get; set; }
-        
-        public DateTime? ModifiedDate { get ; set ; }
+        [ForeignKey("BlockId")]
+        public virtual Block Block { get; set; } = null!;
+
+        [ForeignKey("RoomTypeId")]
+        public virtual RoomType RoomType { get; set; } = null!;
     }
 }

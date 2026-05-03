@@ -1,20 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Phương tiện
     [Table("Vehicles")]
-    public class Vehicle
+    public class Vehicle : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-       
         public string VehicleType { get; set; } = string.Empty;
         
         public string LicensePlate { get; set; } = string.Empty;
 
-        public string OwnerId { get; set; } = string.Empty;
+        public Guid OwnerId { get; set; }
         
         [ForeignKey("OwnerId")]
         public virtual User Owner { get; set; } = null!;

@@ -1,4 +1,4 @@
-﻿namespace DormitoryManagement.Domain.Application.Services
+﻿namespace DormitoryManagement.Application.Services.Interfaces
 {
     public interface IEmailService
     {

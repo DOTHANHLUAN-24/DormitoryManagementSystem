@@ -1,15 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Lưu dữ liệu khách đến thăm
     [Table("VisitorLogs")]
-    public class VisitorLog
+    public class VisitorLog : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         [Required, StringLength(100)]
         public string VisitorName { get; set; } = string.Empty;
         
@@ -21,7 +19,7 @@ namespace DormitoryManagement.Domain.Entities
         
         public string Purpose { get; set; } = string.Empty; // Mục đích thăm
 
-        public int HostId { get; set; } // Người được thăm
+        public Guid HostId { get; set; } // Người được thăm
         
         [ForeignKey("HostId")]
         public virtual User Host { get; set; } = null!;
