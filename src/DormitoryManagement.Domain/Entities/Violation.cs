@@ -1,16 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Vi phạm
     [Table("Violations")]
-    public class Violation
+    public class Violation : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         public string Description { get; set; } = string.Empty;
         
         public decimal FineAmount { get; set; }
@@ -21,7 +19,7 @@ namespace DormitoryManagement.Domain.Entities
         
         public string EvidenceImage { get; set; } = string.Empty;
 
-        public int ContractId { get; set; }
+        public Guid ContractId { get; set; }
         
         [ForeignKey("ContractId")]
         public virtual Contract Contract { get; set; } = null!;

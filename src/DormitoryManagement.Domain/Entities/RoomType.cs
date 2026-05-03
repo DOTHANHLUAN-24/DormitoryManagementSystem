@@ -1,22 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Loại phòng
     [Table("RoomTypes")]
-    public class RoomType
+    public class RoomType : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required, StringLength(50)]
-
         public string TypeName { get; set; } = string.Empty; // Ví dụ: Phòng đơn, Phòng đôi, Phòng tập thể
 
         public decimal BasePrice { get; set; }
 
-        public int MaxOccupants { get; set; } // Bằng số lượng Bed trong phòng
+        public int MaxOccupants { get; set; } // Bằng số lượng giường trong phòng (4 -> 6)
 
         public string Description { get; set; } = string.Empty;
 

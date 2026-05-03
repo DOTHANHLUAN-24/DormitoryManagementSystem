@@ -5,70 +5,46 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    // Cấu hình chuẩn cho Identity dùng Guid
+    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
     {
-        public ApplicationDbContext(DbContextOptions options) : base(options) { }
-
-        public ApplicationDbContext() { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            // Cấu hình tự động cho toàn bộ kiểu decimal trong dự án
             foreach (var property in builder.Model.GetEntityTypes()
                 .SelectMany(t => t.GetProperties())
                 .Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
             {
-                // Phải là dấu đóng ngoặc đơn )
                 property.SetColumnType("decimal(18,2)");
             }
 
-            builder.Entity<IdentityRole>()
-                .Property(x => x.Id).HasMaxLength(50).IsUnicode(false);
+            // Cấu hình các bảng Identity dùng Guid (Sửa lỗi <string> thành <Guid>)
+            builder.Entity<IdentityUserRole<Guid>>().HasKey(p => new { p.UserId, p.RoleId });
+            builder.Entity<IdentityUserLogin<Guid>>().HasKey(p => new { p.LoginProvider, p.ProviderKey });
+            builder.Entity<IdentityUserToken<Guid>>().HasKey(p => new { p.UserId, p.LoginProvider, p.Name });
 
-            builder.Entity<User>()
-                .Property(x => x.Id).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityUserRole<string>>()
-                .Property(x => x.UserId).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityUserRole<string>>()
-                .Property(x => x.RoleId).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityUserClaim<string>>()
-                .Property(x => x.UserId).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityRoleClaim<string>>()
-                .Property(x => x.RoleId).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityUserLogin<string>>()
-                .Property(x => x.UserId).HasMaxLength(50).IsUnicode(false);
-
-            builder.Entity<IdentityUserToken<string>>()
-                .Property(x => x.UserId).HasMaxLength(50).IsUnicode(false);
-
-            // Contract configuration (fixed decimal syntax)
+            // Cấu hình thực thể Contract (Đảm bảo khóa ngoại là Guid)
             builder.Entity<Contract>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.ContractCode)
-                      .IsRequired()
-                      .HasMaxLength(50);
-                entity.HasIndex(e => e.ContractCode);
-                entity.Property(e => e.StartDate)
-                      .IsRequired();
-                entity.Property(e => e.EndDate)
-                      .IsRequired();
+
+                // Sử dụng NEWSEQUENTIALID để tối ưu hiệu năng Index cho Guid trong SQL Server
+                entity.Property(e => e.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                entity.Property(e => e.ContractCode).IsRequired().HasMaxLength(50);
+                entity.HasIndex(e => e.ContractCode).IsUnique(); // Thêm IsUnique để quản lý mã HD tốt hơn
+
                 entity.Property(e => e.DepositAmount)
                       .HasColumnType("decimal(18,2)")
                       .HasDefaultValue(0m);
-                entity.Property(e => e.Status)
-                      .HasConversion<int>();
-                entity.Property(e => e.CreatedAt)
-                      .HasDefaultValueSql("GETUTCDATE()");
-                entity.Property(e => e.UpdatedAt)
-                      .IsRequired(false);
 
+                entity.Property(e => e.Status).HasConversion<int>();
+
+                // Quan hệ với User (User Id lúc này đã là Guid)
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Contracts)
                       .HasForeignKey(e => e.UserId)
@@ -78,17 +54,13 @@ namespace DormitoryManagement.Infrastructure.Data
                       .WithMany(b => b.Contracts)
                       .HasForeignKey(e => e.BedId)
                       .OnDelete(DeleteBehavior.Restrict);
-
-                entity.HasMany(e => e.Invoices)
-                      .WithOne(i => i.Contract)
-                      .HasForeignKey(i => i.ContractId)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                entity.HasMany(e => e.Violations)
-                      .WithOne(v => v.Contract)
-                      .HasForeignKey(v => v.ContractId)
-                      .OnDelete(DeleteBehavior.Cascade);
             });
+
+            builder.Entity<Contract>().HasQueryFilter(c => !c.IsDeleted);
+            builder.Entity<Invoice>().HasQueryFilter(i => !i.IsDeleted);
+            builder.Entity<Payment>().HasQueryFilter(p => !p.IsDeleted);
+            builder.Entity<Surcharge>().HasQueryFilter(s => !s.IsDeleted);
+            builder.Entity<Violation>().HasQueryFilter(v => !v.IsDeleted);
         }
 
         // Entity sets

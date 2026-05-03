@@ -1,4 +1,4 @@
-using DormitoryManagement.Domain.Application.Services;
+using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Infrastructure.Data;
 using DormitoryManagement.Infrastructure.ExternalServices;
@@ -26,7 +26,7 @@ internal class Program
         );
 
         builder.Services
-            .AddIdentity<User, IdentityRole>(options =>
+            .AddIdentity<User, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;

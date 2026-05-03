@@ -1,16 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Yêu cầu bảo trì
     [Table("MaintenanceRequests")]
-    public class MaintenanceRequest
+    public class MaintenanceRequest : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         [Required, StringLength(200)]
         public string Title { get; set; } = string.Empty; // Ví dụ: Sửa điều hòa, Thay bóng đèn
 
@@ -19,20 +17,22 @@ namespace DormitoryManagement.Domain.Entities
         public MaintenancePriority Priority { get; set; }
         
         public MaintenanceStatus Status { get; set; }
-        
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        
+
         public DateTime? ResolvedAt { get; set; }
 
-        public int RoomId { get; set; }
+        public Guid RoomId { get; set; }
         
-        [ForeignKey("RoomId")]
-        
-        public virtual Room Room { get; set; } = null!;
+        public Guid RequesterId { get; set; }
 
-        public string RequesterId { get; set; } = string.Empty;
-        
+        public Guid? HandlerId { get; set; }
+
         [ForeignKey("RequesterId")]
         public virtual User Requester { get; set; } = null!;
+
+        [ForeignKey("HandlerId")]
+        public virtual User? Handler { get; set; }
+
+        [ForeignKey("RoomId")]
+        public virtual Room Room { get; set; } = null!;
     }
 }

@@ -1,20 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Phụ phí kèm theo
     [Table("Surcharges")]
-    public class Surcharge
+    public class Surcharge : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-        
         public string SurchargeName { get; set; } = string.Empty; // Gửi xe, dọn vệ sinh...
         
         public decimal Amount { get; set; }
 
-        public int InvoiceId { get; set; }
+        public Guid InvoiceId { get; set; }
         
         [ForeignKey("InvoiceId")]
         public virtual Invoice Invoice { get; set; } = null!;

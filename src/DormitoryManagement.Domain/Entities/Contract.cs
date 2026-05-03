@@ -1,16 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
     // Hợp đồng
     [Table("Contracts")]
-    public class Contract
+    public class Contract : BaseEntity
     {
-        [Key]
-        public int Id { get; set; }
-
         [Required, StringLength(50)]
         public string ContractCode { get; set; } = string.Empty; // Ví dụ: HD001, HD002
 
@@ -22,17 +20,13 @@ namespace DormitoryManagement.Domain.Entities
 
         public ContractStatus Status { get; set; } = ContractStatus.Pending;
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-
-        public DateTime? UpdatedAt { get; set; }
-
         // Map với User và Bed thay vì Room
-        public string UserId { get; set; } = null!;
+        public Guid UserId { get; set; }
         
         [ForeignKey("UserId")]
         public virtual User User { get; set; } = null!;
 
-        public int BedId { get; set; }
+        public Guid BedId { get; set; }
 
         [ForeignKey("BedId")]
         public virtual Bed Bed { get; set; } = null!;

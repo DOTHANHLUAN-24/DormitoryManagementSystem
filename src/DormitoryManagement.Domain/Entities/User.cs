@@ -8,7 +8,7 @@ namespace DormitoryManagement.Domain.Entities
 {
     // Người dùng
     [Table("Users")]
-    public class User : IdentityUser, IDateTimeTracking
+    public class User : IdentityUser<Guid>, IAuditableEntity
     {
         
         [Required, StringLength(100)]
@@ -25,7 +25,9 @@ namespace DormitoryManagement.Domain.Entities
 
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
-        public DateTime? ModifiedDate { get; set; }
+        public DateTime? LastModified { get; set; }
+        
+        public bool IsDeleted { get; set; } = false;
 
         public virtual ICollection<Contract> Contracts { get; set; } = new List<Contract>();
         

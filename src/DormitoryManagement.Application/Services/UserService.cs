@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DormitoryManagement.Application.Services
+﻿namespace DormitoryManagement.Application.Services
 {
-    internal class UserService
+    public class UserService
     {
     }
 }
