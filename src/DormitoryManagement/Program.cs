@@ -1,9 +1,13 @@
 using System;
+using DormitoryManagement.Application.Services;
+using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
 using DormitoryManagement.Infrastructure.Data.DataGenerator;
 using DormitoryManagement.Infrastructure.ExternalServices;
+using DormitoryManagement.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +23,13 @@ internal class Program
         builder.Services.Configure<MailSettings>(
         builder.Configuration.GetSection("MailSettings"));
 
+        // Dependency Injection Repositories and Services
+        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+
         builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<IRoomService, RoomService>();
+        builder.Services.AddScoped<IUserService, UserService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
