@@ -14,7 +14,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             _db = db;
         }
 
-        public IQueryable<User> GetPagingQuery(string searchString)
+        public IQueryable<User> GetPagingQuery(string searchString, int pageIndex, int pageSize)
         {
             var query = _db.Users.AsQueryable();
             if (!string.IsNullOrEmpty(searchString))
@@ -79,29 +79,76 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return user ?? new User();
         }
 
-        public Task AddAsync(User entity)
+        public async Task AddAsync(User entity)
         {
-            throw new NotImplementedException();
+            entity.CreatedDate = DateTime.Now;
+            await _db.Users.AddAsync(entity);
+            await _db.SaveChangesAsync();
         }
 
-        public Task AddRangeAsync(IEnumerable<User> entities)
+        public async Task AddRangeAsync(IEnumerable<User> entities)
         {
-            throw new NotImplementedException();
+            var now = DateTime.Now;
+            foreach (var e in entities)
+            {
+                e.CreatedDate = now;
+            }
+
+            await _db.Users.AddRangeAsync(entities);
+            await _db.SaveChangesAsync();
         }
 
         void IBaseRepository<User>.Update(User entity)
         {
-            throw new NotImplementedException();
+            var user = _db.Users.Find(entity.Id);
+            if (user == null)
+            {
+                return;
+            }
+
+            user.FullName = entity.FullName;
+            user.PhoneNumber = entity.PhoneNumber;
+            user.Email = entity.Email;
+            user.IsActive = entity.IsActive;
+            user.IdentityCardNumber = entity.IdentityCardNumber;
+            user.Role = entity.Role;
+            user.Code = entity.Code;
+            user.LastModified = DateTime.Now;
+
+            _db.SaveChanges();
         }
 
         public void Delete(User entity)
         {
-            throw new NotImplementedException();
+            var user = _db.Users.Find(entity.Id);
+            if (user == null)
+            {
+                return;
+            }
+
+            // Soft delete
+            user.IsDeleted = true;
+            user.LastModified = DateTime.Now;
+            _db.SaveChanges();
         }
 
         public void DeleteRange(IEnumerable<User> entities)
         {
-            throw new NotImplementedException();
+            var ids = entities.Select(e => e.Id).ToList();
+            var users = _db.Users.Where(u => ids.Contains(u.Id)).ToList();
+            if (!users.Any())
+            {
+                return;
+            }
+
+            var now = DateTime.Now;
+            foreach (var u in users)
+            {
+                u.IsDeleted = true;
+                u.LastModified = now;
+            }
+
+            _db.SaveChanges();
         }
     }
 }
