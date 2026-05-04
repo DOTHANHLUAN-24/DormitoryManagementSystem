@@ -26,6 +26,7 @@ internal class Program
         // Dependency Injection Repositories and Services
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
