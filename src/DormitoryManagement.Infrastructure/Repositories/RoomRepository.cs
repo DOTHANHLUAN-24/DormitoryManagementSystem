@@ -14,7 +14,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             _db = db;
         }
 
-        public IQueryable<Room> GetPagingQuery(string searchString)
+        public IQueryable<Room> GetPagingQuery(string searchString, int pageIndex, int pageSize)
         {
             var query = _db.Rooms.AsQueryable();
             if (!string.IsNullOrEmpty(searchString))
@@ -138,7 +138,17 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
         void IBaseRepository<Room>.Update(Room entity)
         {
-            throw new NotImplementedException();
+            var room = _db.Rooms.Find(entity.Id);
+            if (room == null) return;
+
+            room.RoomNumber = entity.RoomNumber;
+            room.Floor = entity.Floor;
+            room.Status = entity.Status;
+            room.BlockId = entity.BlockId;
+            room.RoomTypeId = entity.RoomTypeId;
+            room.LastModified = DateTime.Now;
+
+            _db.SaveChanges();
         }
     }
 }
