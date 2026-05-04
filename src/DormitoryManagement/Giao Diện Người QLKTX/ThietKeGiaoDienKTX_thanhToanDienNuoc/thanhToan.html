@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Hóa Đơn</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="khung-chinh">
+        <div class="thanh-ben">
+            <div class="logo">
+                <i class="fas fa-building"></i>
+                <span>Quản lý Ký túc xá</span>
+            </div>
+            <nav class="menu-dieu-huong">
+                <a href="#" class="muc-menu active">
+                    <i class="fas fa-door-open"></i>
+                    <span>Danh sách phòng</span>
+                </a>
+                <a href="#" class="muc-menu">
+                    <i class="fas fa-users"></i>
+                    <span>Quản lý sinh viên</span>
+                </a>
+                <a href="#" class="muc-menu">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Hóa đơn</span>
+                </a>
+                <a href="#" class="muc-menu">
+                    <i class="fas fa-tools"></i>
+                    <span>Sửa chữa</span>
+                </a>
+                <a href="#" class="muc-menu">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Thống kê</span>
+                </a>
+            </nav>
+            <div class="thong-tin-nguoi-dung">
+                <img src="https://ui-avatars.com/api/?background=4F46E5&color=fff&name=NV+Quan+Ly" alt="Avatar">
+                <div class="chi-tiet-nguoi-dung">
+                    <span class="ten-nguoi-dung">Nguyễn Văn A</span>
+                    <span class="vai-tro">Quản lý KTX</span>
+                </div>
+            </div>
+        </div>
+        <!-- Nội dung chính -->
+        <main class="noi-dung-chinh">
+            <header class="dau-trang">
+                <h1 class="tieu-de-trang">Thanh Toán Hóa Đơn Hàng Tháng</h1>
+                <div class="hanh-dong-dau-trang">
+                    <button class="nut-loc" id="nut-loc">
+                        <i class="fas fa-sliders-h"></i>
+                        Lọc
+                    </button>
+                    <button class="nut-xuat-file" id="nut-xuat-file">
+                        <i class="fas fa-file-excel"></i>
+                        Xuất file
+                    </button>
+                </div>
+            </header>
+            <!-- Thẻ thống kê -->
+            <div class="the-thong-ke">
+                <div class="the-thong-ke-item">
+                    <div class="icon-thong-ke xanh-duong">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="thong-tin-thong-ke">
+                        <h3 id="tongDoanhThu">0</h3>
+                        <p>Tổng doanh thu</p>
+                    </div>
+                </div>
+                <div class="the-thong-ke-item">
+                    <div class="icon-thong-ke vang">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="thong-tin-thong-ke">
+                        <h3 id="tongNo">0</h3>
+                        <p>Tổng nợ chưa thanh toán</p>
+                    </div>
+                </div>
+                <div class="the-thong-ke-item">
+                    <div class="icon-thong-ke xanh-la">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="thong-tin-thong-ke">
+                        <h3 id="tongDaThanhToan">0</h3>
+                        <p>Đã thanh toán</p>
+                    </div>
+                </div>
+                <div class="the-thong-ke-item">
+                    <div class="icon-thong-ke tim">
+                        <i class="fas fa-receipt"></i>
+                    </div>
+                    <div class="thong-tin-thong-ke">
+                        <h3 id="tongHoaDon">0</h3>
+                        <p>Tổng Hóa Đơn</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Thanh tìm kiếm hóa đơn -->
+            <div class="thanh-tim-kiem">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="timKiem" placeholder="Tìm kiếm theo mã hóa đơn, tên sinh viên, phòng...">
+                </div>
+                <div class="nhom-loc">
+                    <select id="locTheoLoaiHoaDon" class="chon-loc">
+                        <option value="">Tất cả loại</option>
+                        <option value="tien_phong">Tiền phòng</option>
+                        <option value="dien_nuoc">Điện nước</option>
+                        <option value="dich_vu">Dịch vụ</option>
+                    </select>
+                    <select id="locTheoTrangThai" class="chon-loc">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="da_thanh_toan">Đã thanh toán</option>
+                        <option value="chua_thanh_toan">Chưa thanh toán</option>
+                        <option value="qua_han">Quá hạn</option>
+                    </select>
+                    <select id="locTheoThang" class="chon-loc">
+                        <option value="">Tất cả tháng</option>
+                        <option value="1">Tháng 1</option>
+                        <option value="2">Tháng 2</option>
+                        <option value="3">Tháng 3</option>
+                        <option value="4">Tháng 4</option>
+                        <option value="5">Tháng 5</option>
+                        <option value="6">Tháng 6</option>
+                        <option value="7">Tháng 7</option>
+                        <option value="8">Tháng 8</option>
+                        <option value="9">Tháng 9</option>
+                        <option value="10">Tháng 10</option>
+                        <option value="11">Tháng 11</option>
+                        <option value="12">Tháng 12</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Bảng danh sách hóa đơn -->
+            <div class="bang-hoa-don">
+                <table class="bang">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="chonTatCa"></th>
+                            <th>Mã hóa đơn</th>
+                            <th>Sinh viên</th>
+                            <th>Phòng</th>
+                            <th>Loại hóa đơn</th>
+                            <th>Số tiền</th>
+                            <th>Ngày tạo</th>
+                            <th>Hạn thanh toán</th>
+                            <th>Trạng thái</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bangHoaDon">
+                        <!-- Dữ liệu sẽ được hiển thị động bằng JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
