@@ -72,10 +72,10 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var room = await _roomService.GetRoomDetailAsync(id);
-            if (room == null)
-            {
-                return NotFound();
-            }
+            // if (room == null)
+            // {
+            //     return NotFound();
+            // }
             return View(room);
         }
 
