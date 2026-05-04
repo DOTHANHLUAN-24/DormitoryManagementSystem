@@ -1,6 +1,58 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Chính Sách Bảo Mật";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white p-4 rounded-top-3">
+                    <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <p class="lead text-secondary mb-5">
+                        Hệ thống Quản lý Ký túc xá cam kết bảo vệ thông tin cá nhân của người dùng. Vui lòng đọc kỹ các chính sách dưới đây để hiểu rõ cách chúng tôi thu thập, sử dụng và bảo vệ dữ liệu của bạn.
+                    </p>
+
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3">1. Mục Đích Thu Thập Thông Tin</h4>
+                        <p class="text-muted">
+                            Chúng tôi chỉ thu thập các thông tin cần thiết (như họ tên, mã số sinh viên, số CCCD, email, số điện thoại) phục vụ cho việc:
+                        </p>
+                        <ul class="text-muted">
+                            <li>Xác thực danh tính và cấp quyền truy cập hệ thống.</li>
+                            <li>Quản lý hồ sơ nội trú, phân bổ phòng và giường.</li>
+                            <li>Liên lạc, gửi thông báo về hóa đơn điện nước, cước phí và các thông tin quan trọng.</li>
+                            <li>Hỗ trợ xử lý các yêu cầu bảo trì, khiếu nại, hoặc các vấn đề an ninh tại ký túc xá.</li>
+                        </ul>
+                    </div>
+
+                    <hr class="text-muted my-4" />
+
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3">2. Bảo Mật Và Lưu Trữ Dữ Liệu</h4>
+                        <p class="text-muted">
+                            Thông tin cá nhân của bạn được lưu trữ an toàn trong cơ sở dữ liệu của hệ thống. Chúng tôi áp dụng các biện pháp kỹ thuật (như mã hóa mật khẩu, phân quyền truy cập RBAC) để ngăn chặn việc truy cập, thay đổi hoặc rò rỉ dữ liệu trái phép. Thông tin sẽ không được chia sẻ cho bất kỳ bên thứ ba nào ngoài mục đích quản lý nếu không có sự đồng ý của bạn.
+                        </p>
+                    </div>
+
+                    <hr class="text-muted my-4" />
+
+                    <div class="mb-4">
+                        <h4 class="text-primary mb-3">3. Quyền Của Người Dùng</h4>
+                        <p class="text-muted">
+                            Người dùng có quyền đăng nhập vào hệ thống để kiểm tra, cập nhật hoặc yêu cầu chỉnh sửa thông tin cá nhân của mình. Trong trường hợp có sai sót về dữ liệu hợp đồng hoặc hóa đơn, bạn có thể gửi phản hồi trực tiếp tới Ban Quản lý Ký túc xá.
+                        </p>
+                    </div>
+
+                    <div class="alert alert-info mt-5" role="alert">
+                        <strong>Lưu ý:</strong> Chính sách bảo mật này có thể được cập nhật theo thời gian để phù hợp với các quy định mới của Nhà trường và Pháp luật. Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với Ban Quản lý Ký túc xá.
+                    </div>
+                </div>
+                <div class="card-footer bg-light p-3 text-center text-muted">
+                    <small>&copy; @DateTime.Now.Year - Hệ Thống Quản Lý Ký Túc Xá. Đồ án môn chuyên đề.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
