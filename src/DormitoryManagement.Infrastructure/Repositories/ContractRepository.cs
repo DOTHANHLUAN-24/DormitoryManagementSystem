@@ -28,10 +28,15 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                query = query.Where(
-                    c => c.ContractCode.Contains(searchString) ||
-                         (c.User != null && c.User.UserName!.Contains(searchString))
+                query = query.Where(c =>
+                    c.ContractCode.Contains(searchString) ||
+                    (c.User != null && c.User.UserName != null && c.User.UserName.Contains(searchString)) ||
+                    (c.User != null && c.User.FullName != null && c.User.FullName.Contains(searchString))
                 );
+            }
+            else
+            {
+                query = query.Where(c => false);
             }
 
             return query.OrderByDescending(c => c.CreatedDate);
@@ -54,9 +59,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(c => c.Bed)
                 .FirstOrDefaultAsync(c => c.BedId == bedId);
 
-            // Interface yêu cầu trả về Task<Contract> chứ không phải Task<Contract?>
-            // Vì vậy nếu null thì khởi tạo hợp đồng rỗng để tránh Warning/Error
+            // Interface yêu cầu trả về Task<Contract> (không nullable)
             return contract ?? new Contract();
         }
-    }
+}
 }
