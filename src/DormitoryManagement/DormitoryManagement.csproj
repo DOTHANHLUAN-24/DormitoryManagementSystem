@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+  <None Update="appsettings.Development.json">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
+</ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Assignments\**" />
     <Content Remove="Assignments\**" />
     <EmbeddedResource Remove="Assignments\**" />

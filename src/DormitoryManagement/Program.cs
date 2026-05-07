@@ -1,11 +1,9 @@
-using System;
 using DormitoryManagement.Application.Services;
 using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
-using DormitoryManagement.Infrastructure.Data.DataGenerator;
 using DormitoryManagement.Infrastructure.ExternalServices;
 using DormitoryManagement.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -37,6 +35,11 @@ internal class Program
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
         );
+
+        // Check biến môi trường và chuỗi kết nối
+        Console.WriteLine($"ENV: {builder.Environment.EnvironmentName}");
+        Console.WriteLine($"CONN: {builder.Configuration.GetConnectionString("DefaultConnection")}");
+        Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
 
         builder.Services
             .AddIdentity<User, IdentityRole<Guid>>(options =>
