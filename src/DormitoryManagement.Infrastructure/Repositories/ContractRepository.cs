@@ -33,6 +33,10 @@ namespace DormitoryManagement.Infrastructure.Repositories
                          (c.User != null && c.User.UserName!.Contains(searchString))
                 );
             }
+            else
+            {
+                query = query.Where(c => false);
+            }
 
             return query.OrderByDescending(c => c.CreatedDate);
         }
