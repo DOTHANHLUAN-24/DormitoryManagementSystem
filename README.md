@@ -99,9 +99,9 @@ Chúng tôi áp dụng mô hình Agile (Scrum) và tuân thủ các nguyên tắ
 
 ## 👥 Đội Ngũ Phát Triển (Nhóm 02)
 - **Đỗ Thành Luân** (Trưởng nhóm - 2221050046)
-- **Lê Thị Cẩm Tú** (2321050120)
+- **Lê Thị Cẩm Tú** (2321050008)
 - **Đỗ Quang Huy** (2221050047)
 - **Vũ Thị Kim Oanh** (2221050566)
 
-**Giảng viên hướng dẫn:** Cô Ngô Ngọc Anh  
+**Giảng viên hướng dẫn:** Thầy Ngô Ngọc Anh  
 *Trường Đại học Mỏ - Địa chất | Hà Nội, Năm 2026*

@@ -5,53 +5,62 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
-    public class ContractRepository : IContractRepository{
-        public async Task<Contract> GetByContractCodeAsync (string contractCode)
+    public class ContractRepository : BaseRepository<Contract>, IContractRepository
+    {
+        public ContractRepository(ApplicationDbContext db) : base(db)
+        {
+        }
+
+        public async Task<Contract?> GetByContractCodeAsync(string contractCode)
         {
             return await _dbSet
                 .Include(c => c.User)
                 .Include(c => c.Bed)
-                .FirstOrDefaultAsync(c => c.ContractCode == ContractCode);
+                .FirstOrDefaultAsync(c => c.ContractCode == contractCode);
         }
 
-        public IQueryable<Contract> GetPagingQuery (string searchString)
+        public IQueryable<Contract> GetPagingQuery(string searchString)
         {
             var query = _dbSet
-            .Include(c => c.User)
-            .Include(c => c.Bed)
-            .AsQueryable();
+                .Include(c => c.User)
+                .Include(c => c.Bed)
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
                 query = query.Where(
-                    c => ContractCode.Contains(searchString) ||
-                    c.User.UserName!.Contains(searchString)
-
+                    c => c.ContractCode.Contains(searchString) ||
+                         (c.User != null && c.User.UserName!.Contains(searchString))
                 );
+            }
+            else
+            {
+                query = query.Where(c => false);
             }
 
             return query.OrderByDescending(c => c.CreatedDate);
         }
-        
-        public Task<IEnumerable<Contract>> GetByUserIdAsync(Guid userId)
+
+        public async Task<IEnumerable<Contract>> GetByUserIdAsync(Guid userId)
         {
             return await _dbSet
-            .Include(c => c.User)
-            .Include(c => c.Bed)
-            .Where(c => c.UserId == userId)
-            .OrderByDescending(c => c.CreatedDate)
-            .ToListAsync();
+                .Include(c => c.User)
+                .Include(c => c.Bed)
+                .Where(c => c.UserId == userId)
+                .OrderByDescending(c => c.CreatedDate)
+                .ToListAsync();
         }
 
-        public Task<Contract> GetByBedIdAsync(Guid bedId)
+        public async Task<Contract> GetByBedIdAsync(Guid bedId)
         {
-            return await _dbSet
-            .Include(c => c.User)
-            .Include(c => c.Bed)
-            .FirstOrDefaultAsync(c => c.BedId == bedId);
+            var contract = await _dbSet
+                .Include(c => c.User)
+                .Include(c => c.Bed)
+                .FirstOrDefaultAsync(c => c.BedId == bedId);
+
+            // Interface yêu cầu trả về Task<Contract> chứ không phải Task<Contract?>
+            // Vì vậy nếu null thì khởi tạo hợp đồng rỗng để tránh Warning/Error
+            return contract ?? new Contract();
         }
-    
     }
-
-    
 }
