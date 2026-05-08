@@ -28,10 +28,14 @@ internal class Program
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
+        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IBlockService, BlockService>();
+        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
