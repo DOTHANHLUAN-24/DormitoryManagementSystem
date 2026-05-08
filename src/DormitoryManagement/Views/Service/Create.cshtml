@@ -1,0 +1,91 @@
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <!-- Điều hướng nhanh -->
+            <div class="mb-4">
+                <a asp-action="Index" class="text-decoration-none text-muted">
+                    <i class="bi bi-arrow-left"></i> Quay lại danh sách
+                </a>
+            </div>
+
+            <div class="card border-0 shadow-lg">
+                <!-- Header trang trí -->
+                <div class="card-header bg-white border-0 pt-4 ps-4">
+                    <h4 class="fw-bold text-dark mb-0">Tạo dịch vụ mới</h4>
+                    <p class="text-muted small">Vui lòng điền đầy đủ thông tin dịch vụ cho KTX</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form>
+                        <div class="row">
+                            <!-- Tên dịch vụ mẫu -->
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-semibold">Tên dịch vụ</label>
+                                <input type="text" class="form-control" placeholder="Ví dụ: Giặt đồ bằng máy">
+                            </div>
+
+                            <!-- Phân loại mẫu -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Phân loại</label>
+                                <select class="form-select">
+                                    <option selected disabled>-- Chọn loại dịch vụ --</option>
+                                    <option>Điện & Nước</option>
+                                    <option>Internet & Truyền hình</option>
+                                    <option>Dịch vụ phòng</option>
+                                    <option>Gửi xe</option>
+                                </select>
+                            </div>
+
+                            <!-- Đơn vị tính mẫu -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold">Đơn vị tính</label>
+                                <select class="form-select">
+                                    <option>Số (kWh/m³)</option>
+                                    <option>Tháng</option>
+                                    <option>Lần sử dụng</option>
+                                    <option>Người / Tháng</option>
+                                </select>
+                            </div>
+
+                            <!-- Đơn giá mẫu -->
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-semibold">Đơn giá dự kiến</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light fw-bold">VNĐ</span>
+                                    <input type="number" class="form-control" placeholder="0.000">
+                                </div>
+                                <div class="form-text text-info">
+                                    <i class="bi bi-info-circle"></i> Giá này sẽ được áp dụng cho tất cả các phòng.
+                                </div>
+                            </div>
+
+                            <!-- Trạng thái switch mẫu -->
+                            <div class="col-md-12 mb-4">
+                                <div class="p-3 bg-light rounded-3 border">
+                                    <div class="form-check form-switch mb-0">
+                                        <input class="form-check-input" type="checkbox" id="statusSwitch" checked>
+                                        <label class="form-check-label fw-bold" for="statusSwitch">Kích hoạt dịch vụ này ngay</label>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-1">Cho phép cư dân đăng ký và sử dụng dịch vụ ngay sau khi tạo.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Khu vực nút bấm -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end pt-3">
+                            <button type="button" class="btn btn-light px-4 border">Lưu nháp</button>
+                            <button type="button" class="btn btn-primary px-5 shadow">
+                                <i class="bi bi-check2-circle me-1"></i> Xác nhận thêm
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Chân trang hỗ trợ -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">Cần hỗ trợ? Liên hệ <span class="text-primary">Quản trị viên hệ thống</span></p>
+            </div>
+        </div>
+    </div>
+</div>
