@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using DormitoryManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
+    [Authorize]
     [Route("/")]
     public class HomeController : Controller
     {
@@ -31,6 +33,18 @@ namespace DormitoryManagement.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        [Route("Contact")]
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        [Route("Guide")]
+        public IActionResult Guide()
+        {
+            return View();
         }
     }
 }
