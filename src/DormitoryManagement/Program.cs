@@ -28,16 +28,25 @@ internal class Program
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
+        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IBlockService, BlockService>();
+        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString)
         );
+
+        // Check biến môi trường và chuỗi kết nối
+        Console.WriteLine($"ENV: {builder.Environment.EnvironmentName}");
+        Console.WriteLine($"CONN: {builder.Configuration.GetConnectionString("DefaultConnection")}");
+        Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
 
         builder.Services
             .AddIdentity<User, IdentityRole<Guid>>(options =>
