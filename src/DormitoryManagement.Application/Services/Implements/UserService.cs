@@ -16,7 +16,7 @@ namespace DormitoryManagement.Application.Services
         public async Task<IEnumerable<User>> GetAllActiveUsersAsync()
         {
             var users = await _userRepo.GetAllAsync();
-            return users.Where(u => u.IsActive && !u.IsDeleted);
+            return users.Where(u => u.IsActive && !u.IsDeleted).ToList();
         }
 
         public async Task<User?> GetUserByIdAsync(Guid id)

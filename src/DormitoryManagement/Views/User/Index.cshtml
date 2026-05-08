@@ -1,4 +1,6 @@
-﻿@*
+﻿@model List<DormitoryManagement.Domain.Entities.User>
+
+@*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
 @{
@@ -42,7 +44,7 @@
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
                             <tr>
-                                <th class="ps-4">Mã (Code)</th>
+                                <th class="ps-4">STT</th>
                                 <th>Họ và Tên</th>
                                 <th>Liên hệ</th>
                                 <th>CCCD/CMND</th>
@@ -53,66 +55,49 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Dữ liệu mẫu -->
-                            <tr>
-                                <td class="ps-4 fw-medium">SV2024001</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2 bg-secondary-subtle rounded-circle p-2">
-                                            <i class="bi bi-person text-secondary"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold">Nguyễn Văn A</div>
-                                            <small class="text-muted">ID: 550e8400...</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div><i class="bi bi-envelope me-1"></i>vana@email.com</div>
-                                    <div><i class="bi bi-telephone me-1"></i>0987.654.321</div>
-                                </td>
-                                <td>123456789012</td>
-                                <td><span class="badge bg-info-subtle text-info border">Student</span></td>
-                                <td>
-                                    <span class="badge bg-success status-badge">Active</span>
-                                </td>
-                                <td>04/05/2024</td>
-                                <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-outline-primary" title="Xem hợp đồng"><i class="bi bi-file-earmark-text"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary" title="Chỉnh sửa"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td class="ps-4 fw-medium">NV2024005</td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-sm me-2 bg-secondary-subtle rounded-circle p-2">
-                                            <i class="bi bi-person text-secondary"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold">Trần Thị B</div>
-                                            <small class="text-muted">ID: 721f9211...</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div><i class="bi bi-envelope me-1"></i>thib@email.com</div>
-                                    <div><i class="bi bi-telephone me-1"></i>0912.345.678</div>
-                                </td>
-                                <td>987654321098</td>
-                                <td><span class="badge bg-warning-subtle text-warning border">Staff</span></td>
-                                <td>
-                                    <span class="badge bg-danger status-badge">Inactive</span>
-                                </td>
-                                <td>01/05/2024</td>
-                                <td class="text-end pe-4">
-                                    <button class="btn btn-sm btn-outline-primary" title="Xem hợp đồng"><i class="bi bi-file-earmark-text"></i></button>
-                                    <button class="btn btn-sm btn-outline-secondary" title="Chỉnh sửa"><i class="bi bi-pencil"></i></button>
-                                    <button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
-                                </td>
-                            </tr>
+                            @if (Model.Count > 0)
+                            {
+                                var count = 0;
+                                foreach (var user in Model)
+                                {
+                                    count++;
+                                    <tr>
+                                        <td class="ps-4 fw-medium">@count</td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm me-2 bg-secondary-subtle rounded-circle p-2">
+                                                    <i class="bi bi-person text-secondary"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@(user.Role == DormitoryManagement.Domain.Enums.UserRole.Admin ? "Admin" : user.FullName)</div>
+                                                    <small class="text-muted">@user.Code</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div><i class="bi bi-envelope me-1"></i>@user.Email</div>
+                                            <div><i class="bi bi-telephone me-1"></i>@user.PhoneNumber</div>
+                                        </td>
+                                        <td>@user.IdentityCardNumber</td>
+                                        <td>
+                                            <span class="badge bg-info-subtle text-info border">
+                                                @(user.Role == DormitoryManagement.Domain.Enums.UserRole.Admin ? "Quản trị viên" :
+                                            (user.Role == DormitoryManagement.Domain.Enums.UserRole.ManagementStaff ? "Quản lý ký túc xá" :
+                                            (user.Role == DormitoryManagement.Domain.Enums.UserRole.TechnicalStaff ? "Nhân viên kỹ thuật" : "Sinh viên")))
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success status-badge">@(user.IsActive == true ? "Hoạt động" : "Bị khóa")</span>
+                                        </td>
+                                        <td>04/05/2024</td>
+                                        <td class="text-end pe-4">
+                                            <button class="btn btn-sm btn-outline-primary" title="Xem hợp đồng"><i class="bi bi-file-earmark-text"></i></button>
+                                            <button class="btn btn-sm btn-outline-secondary" title="Chỉnh sửa"><i class="bi bi-pencil"></i></button>
+                                            <button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
                         </tbody>
                     </table>
                 </div>
