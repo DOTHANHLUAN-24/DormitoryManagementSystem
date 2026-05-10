@@ -9,16 +9,21 @@ namespace DormitoryManagement.Application.Services.Interfaces
     {
         Task<IEnumerable<User>> GetAllActiveUsersAsync();
 
+        Task<(List<User> Users, int TotalCount)> GetActiveUsersPagedAsync(
+            int page,
+            int pageSize,
+            string? search);
+
         Task<IEnumerable<User>> GetAllBanUserAsync();
-        
+
         Task<User?> GetUserByIdAsync(Guid id);
-        
+
         Task<User?> GetByUsernameAsync(string username);
-        
+
         Task CreateUserAsync(User user);
-        
+
         Task UpdateUserProfileAsync(User user);
-        
-        Task DeactivateUserAsync(Guid id); 
+
+        Task DeactivateUserAsync(Guid id);
     }
 }

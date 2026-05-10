@@ -39,10 +39,10 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Details(Guid id)
         {
             var room = await _roomService.GetRoomDetailAsync(id);
-            if (room == null)
-            {
-                return NotFound();
-            }
+            // if (room == null)
+            // {
+            //     return NotFound();
+            // }
 
             // Tường minh chỉ định trả về file "Details.cshtml" ở bên trong thư mục Views/Room
             return View(room);

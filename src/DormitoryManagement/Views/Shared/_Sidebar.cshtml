@@ -1,0 +1,113 @@
+﻿<div class="sidebar p-2">
+
+    <!-- BRAND -->
+    <div class="text-center text-white fw-bold mb-3">
+        <i class="fas fa-building"></i>
+        <span class="text">KTX System</span>
+    </div>
+
+    <!-- NGƯỜI DÙNG -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <a data-bs-toggle="collapse" href="#userMenu" class="menu-toggle">
+            <i class="fas fa-users"></i>
+            <span class="text">Người dùng</span>
+        </a>
+        <div class="collapse submenu" id="userMenu">
+            <a asp-controller="User" asp-action="Index">
+                <i class="fas fa-list me-2"></i> Danh sách
+            </a>
+            <a asp-controller="User" asp-action="Create">
+                <i class="fas fa-user-plus me-2"></i> Thêm
+            </a>
+            <a asp-controller="User" asp-action="Banned">
+                <i class="fas fa-user-slash me-2"></i> Bị ban
+            </a>
+        </div>
+    }
+
+    <!-- HỢP ĐỒNG -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <a data-bs-toggle="collapse" href="#contractMenu" class="menu-toggle">
+            <i class="fas fa-file-contract"></i>
+            <span class="text">Hợp đồng</span>
+        </a>
+        <div class="collapse submenu" id="contractMenu">
+            <a asp-controller="Contract" asp-action="Index">
+                <i class="fas fa-list me-2"></i> Danh sách
+            </a>
+            <a asp-controller="Contract" asp-action="Create">
+                <i class="fas fa-file-circle-plus me-2"></i> Thêm
+            </a>
+            <a asp-controller="Contract" asp-action="Pending">
+                <i class="fas fa-clock me-2"></i> Chờ duyệt
+            </a>
+        </div>
+    }
+
+    <!-- HÓA ĐƠN -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <a data-bs-toggle="collapse" href="#invoiceMenu" class="menu-toggle">
+            <i class="fas fa-file-invoice"></i>
+            <span class="text">Hóa đơn</span>
+        </a>
+        <div class="collapse submenu" id="invoiceMenu">
+            <a asp-controller="Invoice" asp-action="Index">
+                <i class="fas fa-list me-2"></i> Danh sách
+            </a>
+            <a asp-controller="Invoice" asp-action="Create">
+                <i class="fas fa-file-circle-plus me-2"></i> Thêm
+            </a>
+        </div>
+    }
+
+    <!-- THANH TOÁN -->
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Student"))
+    {
+        <a data-bs-toggle="collapse" href="#paymentMenu" class="menu-toggle">
+            <i class="fas fa-credit-card"></i>
+            <span class="text">Thanh toán</span>
+        </a>
+        <div class="collapse submenu" id="paymentMenu">
+            <a asp-controller="Payment" asp-action="Index">
+                <i class="fas fa-list me-2"></i> Danh sách
+            </a>
+            @if (!User.IsInRole("Student"))
+            {
+                <a asp-controller="Payment" asp-action="Create">
+                    <i class="fas fa-plus-circle me-2"></i> Thêm
+                </a>
+            }
+        </div>
+    }
+
+    <!-- SIMPLE -->
+    <a asp-controller="Notification" asp-action="Index">
+        <i class="fas fa-bell"></i>
+        <span class="text">Thông báo</span>
+    </a>
+
+    <a asp-controller="Rule" asp-action="Index">
+        <i class="fas fa-book"></i>
+        <span class="text">Nội quy</span>
+    </a>
+
+    @if (User.IsInRole("Student") || User.IsInRole("Manager"))
+    {
+        <a asp-controller="Attendance" asp-action="Index">
+            <i class="fas fa-check-circle"></i>
+            <span class="text">Điểm danh</span>
+        </a>
+    }
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Technical"))
+    {
+        <a asp-controller="Report" asp-action="Index">
+            <i class="fas fa-chart-line"></i>
+            <span class="text">Báo cáo</span>
+        </a>
+    }
+
+</div>

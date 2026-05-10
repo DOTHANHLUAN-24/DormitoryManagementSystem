@@ -17,6 +17,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [Route("")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -42,6 +43,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [Route("Guide")]
+        [AllowAnonymous]
         public IActionResult Guide()
         {
             return View();

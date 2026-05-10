@@ -50,8 +50,9 @@ namespace DormitoryManagement.Controllers
             Response.Cookies.Append("JWTToken", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict, // Ngăn chặn tấn công CSRF
+                Secure = false, // DEV phải false
+                SameSite = SameSiteMode.Strict,
+                Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 
@@ -87,11 +88,19 @@ namespace DormitoryManagement.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        [HttpPost] // Logout nên dùng HttpPost để bảo mật hơn
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("JWTToken");
-            return RedirectToAction("Login");
+            Response.Cookies.Delete("JWTToken", new CookieOptions
+            {
+                Path = "/",
+                SameSite = SameSiteMode.Strict,
+                Secure = false
+            });
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
