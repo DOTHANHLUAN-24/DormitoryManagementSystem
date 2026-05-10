@@ -15,5 +15,10 @@ namespace DormitoryManagement.Controllers
         {
             return View();
         }
+        [Route("Edit/{id}")]
+        public IActionResult Edit(int id)
+        {
+            return View();
+        }
     }
 }
