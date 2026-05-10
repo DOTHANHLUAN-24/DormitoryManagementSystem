@@ -1,6 +1,7 @@
 ﻿using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Application.Services
 {
@@ -17,6 +18,14 @@ namespace DormitoryManagement.Application.Services
         {
             var users = await _userRepo.GetAllAsync();
             return users.Where(u => u.IsActive && !u.IsDeleted).ToList();
+        }
+
+        public async Task<(List<User> Users, int TotalCount)> GetActiveUsersPagedAsync(
+         int page,
+         int pageSize,
+         string? search)
+        {
+            return await _userRepo.GetActiveUsersPagedAsync(page, pageSize, search);
         }
 
         public async Task<User?> GetUserByIdAsync(Guid id)
