@@ -14,6 +14,43 @@ namespace DormitoryManagement.Infrastructure.Repositories
             _db = db;
         }
 
+        public IQueryable<User> GetQuery()
+        {
+            return _db.Users.AsQueryable();
+        }
+
+        public async Task<IEnumerable<User>> GetAllAsync()
+        {
+            return await _db.Users.ToListAsync();
+        }
+
+        public async Task<(List<User> Users, int TotalCount)> GetActiveUsersPagedAsync(
+            int page,
+            int pageSize,
+            string? search)
+        {
+            var query = _db.Users
+                .Where(x => !x.IsDeleted && x.IsActive);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(x =>
+                    x.UserName!.Contains(search) ||
+                    x.PhoneNumber!.Contains(search) ||
+                    x.Email!.Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+
+            var users = await query
+                .OrderByDescending(x => x.CreatedDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (users, totalCount);
+        }
+
         public IQueryable<User> GetPagingQuery(string searchString, int pageIndex, int pageSize)
         {
             var query = _db.Users.AsQueryable();
@@ -67,15 +104,10 @@ namespace DormitoryManagement.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<User>> GetAllAsync()
-        {
-            return await _db.Users.ToListAsync();
-        }
-
         public async Task<User?> GetByIdAsync(Guid id)
         {
             var user = await _db.Users.FindAsync(id.ToString());
-            
+
             return user ?? new User();
         }
 

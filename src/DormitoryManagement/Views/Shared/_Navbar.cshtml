@@ -1,0 +1,190 @@
+﻿<div class="d-flex flex-column flex-shrink-0 p-3 text-white"
+     style="width: 260px; height: 100vh; position: fixed; background:#0f6b6d;">
+
+    <a asp-controller="Home" asp-action="Index"
+       class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+        <span class="fs-4 fw-bold">KTX System</span>
+    </a>
+
+    <hr />
+
+    <ul class="nav nav-pills flex-column mb-auto">
+
+        <!-- ================= NGƯỜI DÙNG ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#userMenu">
+                    👥 Người dùng
+                </a>
+                <div class="collapse" id="userMenu">
+                    <ul class="btn-toggle-nav list-unstyled fw-normal small ms-3">
+                        <li><a asp-controller="User" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="User" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                        <li><a asp-controller="User" asp-action="Banned" class="nav-link text-white">Bị ban</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= HỢP ĐỒNG ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#contractMenu">
+                    📄 Hợp đồng
+                </a>
+                <div class="collapse" id="contractMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Contract" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Contract" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                        <li><a asp-controller="Contract" asp-action="Pending" class="nav-link text-white">Chờ duyệt</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= HÓA ĐƠN ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#invoiceMenu">
+                    🧾 Hóa đơn
+                </a>
+                <div class="collapse" id="invoiceMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Invoice" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Invoice" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= THANH TOÁN ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Student"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#paymentMenu">
+                    💳 Thanh toán
+                </a>
+                <div class="collapse" id="paymentMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Payment" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        @if (!User.IsInRole("Student"))
+                        {
+                            <li><a asp-controller="Payment" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                        }
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= DỊCH VỤ ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#serviceMenu">
+                    ⚙️ Dịch vụ
+                </a>
+                <div class="collapse" id="serviceMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Service" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Service" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= VẬT TƯ ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#assetMenu">
+                    🛠️ Vật tư
+                </a>
+                <div class="collapse" id="assetMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Asset" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Asset" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= PHÒNG ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#roomMenu">
+                    🏢 Phòng
+                </a>
+                <div class="collapse" id="roomMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Room" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Room" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= VI PHẠM ================= -->
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <li>
+                <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#violationMenu">
+                    ⚠️ Vi phạm
+                </a>
+                <div class="collapse" id="violationMenu">
+                    <ul class="ms-3 list-unstyled">
+                        <li><a asp-controller="Violation" asp-action="Index" class="nav-link text-white">Danh sách</a></li>
+                        <li><a asp-controller="Violation" asp-action="Create" class="nav-link text-white">Thêm</a></li>
+                    </ul>
+                </div>
+            </li>
+        }
+
+        <!-- ================= SIMPLE ================= -->
+        <li>
+            <a asp-controller="Notification" asp-action="Index" class="nav-link text-white">🔔 Thông báo</a>
+        </li>
+
+        <li>
+            <a asp-controller="Rule" asp-action="Index" class="nav-link text-white">📘 Nội quy</a>
+        </li>
+
+        @if (User.IsInRole("Student") || User.IsInRole("Manager"))
+        {
+            <li>
+                <a asp-controller="Attendance" asp-action="Index" class="nav-link text-white">📍 Điểm danh</a>
+            </li>
+        }
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Technical"))
+        {
+            <li>
+                <a asp-controller="Report" asp-action="Index" class="nav-link text-white">📊 Báo cáo</a>
+            </li>
+        }
+    </ul>
+
+    <hr />
+
+    <!-- USER -->
+    <div>
+        @if (User.Identity!.IsAuthenticated)
+        {
+            <div class="mb-2">👋 @User.Identity.Name</div>
+
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-light w-100">Đăng xuất</button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="btn btn-light w-100">
+                Đăng nhập
+            </a>
+        }
+    </div>
+</div>

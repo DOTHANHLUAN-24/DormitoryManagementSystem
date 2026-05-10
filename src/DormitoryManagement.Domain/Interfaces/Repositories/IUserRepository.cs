@@ -6,6 +6,8 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
     {
         Task<User?> GetByUsernameAsync(string username);
 
-        IQueryable<User> GetPagingQuery(string searchString, int pageIndex, int pageSize);
+        Task<(List<User> Users, int TotalCount)> GetActiveUsersPagedAsync(int page, int pageSize, string? search);
+
+        IQueryable<User> GetQuery();
     }
 }
