@@ -24,19 +24,17 @@ internal class Program
         builder.Services.AddControllersWithViews();
 
         builder.Services.Configure<MailSettings>(
-        builder.Configuration.GetSection("MailSettings"));
+            builder.Configuration.GetSection("MailSettings"));
 
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         // Dependency Injection Repositories and Services
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
-        builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
+        builder.Services.AddScoped<IContractService, ContractService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
