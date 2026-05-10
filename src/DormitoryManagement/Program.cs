@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
 using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -25,18 +26,17 @@ internal class Program
         builder.Services.Configure<MailSettings>(
         builder.Configuration.GetSection("MailSettings"));
 
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
         // Dependency Injection Repositories and Services
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
-        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
-        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
         builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IBlockService, BlockService>();
-        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+        builder.Services.AddScoped<IRoomService, RoomService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

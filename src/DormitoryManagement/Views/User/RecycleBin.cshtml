@@ -1,0 +1,59 @@
+﻿@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Application.Dtos.Responses
+@model PagedResult<UserResponseDto>
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h4 class="text-danger"><i class="fas fa-trash-alt me-2"></i> Thùng rác người dùng</h4>
+        <p class="text-muted small">Danh sách sinh viên đã rời đi hoặc bị xóa tạm thời.</p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-3">Họ tên</th>
+                        <th>Ngày xóa</th>
+                        <th class="text-end pe-3">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="ps-3">@item.FullName</td>
+                            <td>@item.LastModified?.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-end pe-3">
+                                <button onclick="restoreUser('@item.Id')" class="btn btn-sm btn-success">
+                                    <i class="fas fa-undo me-1"></i> Khôi phục
+                                </button>
+                                <button onclick="deletePermanently('@item.Id')" class="btn btn-sm btn-outline-danger ms-1">
+                                    <i class="fas fa-eraser"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @await Html.PartialAsync("_Pagination", Model)
+</div>
+
+@section Scripts {
+    <script>
+        function restoreUser(id) {
+            $.post('/User/Restore/' + id, function (res) {
+                if (res.success) location.reload();
+            });
+        }
+        function deletePermanently(id) {
+            if (confirm('CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn và không thể khôi phục. Bạn chắc chắn?')) {
+                $.post('/User/DeletePermanently/' + id, function (res) {
+                    if (res.success) location.reload();
+                });
+            }
+        }
+    </script>
+}

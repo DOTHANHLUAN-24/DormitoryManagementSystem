@@ -1,4 +1,5 @@
 ﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Interfaces.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -56,11 +57,57 @@ namespace DormitoryManagement.Infrastructure.Data
                       .OnDelete(DeleteBehavior.Restrict);
             });
 
-            builder.Entity<Contract>().HasQueryFilter(c => !c.IsDeleted);
-            builder.Entity<Invoice>().HasQueryFilter(i => !i.IsDeleted);
-            builder.Entity<Payment>().HasQueryFilter(p => !p.IsDeleted);
-            builder.Entity<Surcharge>().HasQueryFilter(s => !s.IsDeleted);
-            builder.Entity<Violation>().HasQueryFilter(v => !v.IsDeleted);
+            // TỰ ĐỘNG CẤU HÌNH SOFT DELETE FILTER
+            // Quét qua tất cả thực thể có kế thừa IAuditableEntity để áp dụng lọc IsDeleted = false
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                if (typeof(IAuditableEntity).IsAssignableFrom(entityType.ClrType))
+                {
+                    var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "e");
+                    var property = System.Linq.Expressions.Expression.Property(parameter, nameof(IAuditableEntity.IsDeleted));
+                    var falseConstant = System.Linq.Expressions.Expression.Constant(false);
+                    var comparison = System.Linq.Expressions.Expression.Equal(property, falseConstant);
+                    var lambda = System.Linq.Expressions.Expression.Lambda(comparison, parameter);
+
+                    builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ghi đè phương thức lưu thay đổi để tự động cập nhật các trường thông tin Audit:
+        /// CreatedDate, LastModified, IsActive, IsDeleted.
+        /// </summary>
+        /// <param name="cancellationToken">Token hủy bỏ tác vụ.</param>
+        /// <returns>Số lượng bản ghi bị ảnh hưởng.</returns>
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            // Lấy các thực thể IAuditableEntity đang ở trạng thái Thêm hoặc Sửa
+            var entries = ChangeTracker.Entries()
+                .Where(e => e.Entity is IAuditableEntity &&
+                           (e.State == EntityState.Added || e.State == EntityState.Modified));
+
+            foreach (var entityEntry in entries)
+            {
+                var entity = (IAuditableEntity)entityEntry.Entity;
+                var now = DateTime.Now;
+
+                // Luôn luôn cập nhật ngày sửa đổi cuối cùng
+                entity.LastModified = now;
+
+                if (entityEntry.State == EntityState.Added)
+                {
+                    // Chỉ cập nhật khi thêm mới
+                    if (entity.CreatedDate == default) entity.CreatedDate = now;
+                    entity.IsDeleted = false;
+
+                    // Chỉ set IsActive = true nếu nó chưa được set (mặc định)
+                    if (entityEntry.Property(nameof(IAuditableEntity.IsActive)).CurrentValue == null)
+                        entity.IsActive = true;
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
         }
 
         // Entity sets

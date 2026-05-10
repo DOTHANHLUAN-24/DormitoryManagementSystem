@@ -1,154 +1,103 @@
-﻿@model List<DormitoryManagement.Domain.Entities.User>
-
-@{
-    ViewData["Title"] = "Danh sách Người dùng";
-    var currentPage = ViewBag.CurrentPage ?? 1;
-    var totalPages = ViewBag.TotalPages ?? 1;
-}
+﻿@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Application.Dtos.Responses
+@model PagedResult<DormitoryManagement.Application.Dtos.Responses.UserResponseDto>
 
 <div class="container-fluid">
-
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-primary mb-0">Danh sách Người dùng</h4>
-        <a asp-action="Create" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Thêm người dùng
-        </a>
+        <h4 class="mb-0"><i class="fas fa-users me-2 text-primary"></i> Quản lý Người dùng</h4>
+        <div>
+            <a asp-action="RecycleBin" class="btn btn-outline-secondary btn-sm">
+                <i class="fas fa-trash-restore me-1"></i> Thùng rác
+            </a>
+            <a asp-action="Create" class="btn btn-primary btn-sm ms-2">
+                <i class="fas fa-plus me-1"></i> Thêm sinh viên
+            </a>
+        </div>
     </div>
 
-    <div class="card">
-        <div class="card-body p-0">
+    @* Thanh tìm kiếm *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" value="@ViewBag.Search" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, email, SĐT...">
+                    </div>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-dark">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+    @* Bảng *@
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-3">Tên đăng nhập</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
                         <tr>
-                            <th class="ps-4">#</th>
-                            <th>Họ và Tên</th>
-                            <th>Liên hệ</th>
-                            <th>CCCD</th>
-                            <th>Vai trò</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày tạo</th>
-                            <th class="text-end pe-4">Thao tác</th>
+                            <td class="ps-3"><strong>@item.UserName</strong></td>
+                            <td>@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td>
+                                @if (item.IsActive)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">Đang ở</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Đang khóa</span>
+                                }
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-light text-info" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light text-warning" title="Sửa"><i class="fas fa-edit"></i></a>
+                                    <button onclick="deactivateUser('@item.Id')" class="btn btn-sm btn-light text-danger" title="Khóa"><i class="fas fa-user-times"></i></button>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-
-                    <tbody>
-                        @{
-                            int index = (currentPage - 1) * 10;
-                        }
-
-                        @foreach (var user in Model)
-                        {
-                            index++;
-
-                            <tr>
-                                <td class="ps-4 fw-medium">@index</td>
-
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2 bg-secondary-subtle rounded-circle p-2">
-                                            <i class="bi bi-person"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold">@user.FullName</div>
-                                            <small class="text-muted">@user.Code</small>
-                                        </div>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <div><i class="bi bi-envelope me-1"></i>@user.Email</div>
-                                    <div><i class="bi bi-telephone me-1"></i>@user.PhoneNumber</div>
-                                </td>
-
-                                <td>@user.IdentityCardNumber</td>
-
-                                <td>
-                                    <span class="badge bg-info-subtle text-info border">
-                                        @(user.Role == DormitoryManagement.Domain.Enums.UserRole.Admin ? "Admin" :
-                                          user.Role == DormitoryManagement.Domain.Enums.UserRole.ManagementStaff ? "Quản lý" :
-                                          user.Role == DormitoryManagement.Domain.Enums.UserRole.TechnicalStaff ? "Kỹ thuật" : "Sinh viên")
-                                    </span>
-                                </td>
-
-                                <td>
-                                    <span class="badge @(user.IsActive ? "bg-success" : "bg-danger")">
-                                        @(user.IsActive ? "Hoạt động" : "Bị khóa")
-                                    </span>
-                                </td>
-
-                                <td>@user.CreatedDate.ToString("dd/MM/yyyy")</td>
-
-                                <td class="text-end pe-4">
-
-                                    <a asp-action="Contract" asp-route-id="@user.Id"
-                                       class="btn btn-sm btn-outline-primary"
-                                       data-bs-toggle="tooltip"
-                                       title="Hợp đồng">
-                                        <i class="fa-solid fa-file-lines"></i>
-                                    </a>
-
-                                    <a asp-action="Edit" asp-route-id="@user.Id"
-                                       class="btn btn-sm btn-outline-secondary"
-                                       data-bs-toggle="tooltip"
-                                       title="Sửa">
-                                        <i class="fa-solid fa-pen-to-square"></i>
-                                    </a>
-
-                                    <a asp-action="Delete" asp-route-id="@user.Id"
-                                       class="btn btn-sm btn-outline-danger"
-                                       data-bs-toggle="tooltip"
-                                       title="Xóa">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </a>
-
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-        <!-- PAGINATION -->
-        <div class="card-footer d-flex justify-content-between align-items-center">
-
-            <small class="text-muted">
-                Trang @currentPage / @totalPages
-            </small>
-
-            <ul class="pagination pagination-sm mb-0">
-
-                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(currentPage - 1)">
-                        Trước
-                    </a>
-                </li>
-
-                @for (int i = 1; i <= totalPages; i++)
-                {
-                    <li class="page-item @(i == currentPage ? "active" : "")">
-                        <a class="page-link"
-                           asp-action="Index"
-                           asp-route-page="@i">
-                            @i
-                        </a>
-                    </li>
-                }
-
-                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
-                    <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(currentPage + 1)">
-                        Tiếp
-                    </a>
-                </li>
-
-            </ul>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
+
+    @await Html.PartialAsync("_Pagination", Model)
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deactivateUser(id) {
+            Swal.fire({
+                title: 'Xác nhận khóa?',
+                text: "Người dùng này sẽ bị chuyển vào thùng rác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.post('/User/Deactivate/' + id, function (data) {
+                        if (data.success) location.reload();
+                    });
+                }
+            })
+        }
+    </script>
+}

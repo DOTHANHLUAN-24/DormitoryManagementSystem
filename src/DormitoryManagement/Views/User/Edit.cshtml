@@ -1,0 +1,68 @@
+﻿@model DormitoryManagement.Application.Dtos.Responses.UserResponseDto
+@using DormitoryManagement.Application.Dtos.Requests
+
+@{
+    // Tạo object RequestDto từ Model hiện tại để binding form nếu cần
+    var requestDto = new UserRequestDto
+    {
+        UserName = Model.UserName,
+        FullName = Model.FullName,
+        Email = Model.Email,
+        PhoneNumber = Model.PhoneNumber
+    };
+}
+
+<div class="container-fluid">
+    <div class="mb-4">
+        <h4 class="mb-0"><i class="fas fa-user-edit me-2 text-warning"></i> Cập nhật thông tin</h4>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase">Tên đăng nhập (Không thể sửa)</label>
+                            <input type="text" class="form-control bg-light" value="@Model.UserName" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase">Họ và tên</label>
+                            <input name="FullName" value="@Model.FullName" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase">Email</label>
+                            <input name="Email" type="email" value="@Model.Email" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase">Số điện thoại</label>
+                            <input name="PhoneNumber" value="@Model.PhoneNumber" class="form-control" />
+                        </div>
+
+                        <div class="pt-3 border-top d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-light btn-sm">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary btn-sm px-4">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="alert alert-info border-0 shadow-sm">
+                <h6 class="alert-heading fw-bold"><i class="fas fa-lightbulb me-2"></i> Lưu ý</h6>
+                <ul class="mb-0 small">
+                    <li>Tên đăng nhập là định danh duy nhất và không thể thay đổi.</li>
+                    <li>Email sẽ được dùng để nhận thông báo và lấy lại mật khẩu.</li>
+                    <li>Để thay đổi mật khẩu, vui lòng vào mục <strong>Đổi mật khẩu</strong> riêng.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
