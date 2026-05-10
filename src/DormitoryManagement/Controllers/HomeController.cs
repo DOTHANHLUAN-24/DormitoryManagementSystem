@@ -43,6 +43,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [Route("Guide")]
+        [AllowAnonymous]
         public IActionResult Guide()
         {
             return View();

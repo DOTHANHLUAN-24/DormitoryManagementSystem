@@ -107,7 +107,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
         public async Task<User?> GetByIdAsync(Guid id)
         {
             var user = await _db.Users.FindAsync(id.ToString());
-            
+
             return user ?? new User();
         }
 

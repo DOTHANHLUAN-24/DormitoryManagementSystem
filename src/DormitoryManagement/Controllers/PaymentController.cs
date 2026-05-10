@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
+    [Authorize]
     public class PaymentController : Controller
     {
         // Đường dẫn sẽ là /Payment hoặc /Payment/Index
