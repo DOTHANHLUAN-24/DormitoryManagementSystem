@@ -13,6 +13,7 @@
             <i class="fas fa-users"></i>
             <span class="text">Người dùng</span>
         </a>
+        <!-- Trong phần NGƯỜI DÙNG của _Sidebar.cshtml -->
         <div class="collapse submenu" id="userMenu">
             <a asp-controller="User" asp-action="Index">
                 <i class="fas fa-list me-2"></i> Danh sách
@@ -20,8 +21,13 @@
             <a asp-controller="User" asp-action="Create">
                 <i class="fas fa-user-plus me-2"></i> Thêm
             </a>
-            <a asp-controller="User" asp-action="Banned">
+            <a asp-controller="User" asp-action="BannedList">
+                <!-- Sửa lại tên action -->
                 <i class="fas fa-user-slash me-2"></i> Bị ban
+            </a>
+            <a asp-controller="User" asp-action="RecycleBin">
+                <!-- Thêm link thùng rác -->
+                <i class="fas fa-trash-alt me-2"></i> Thùng rác
             </a>
         </div>
     }

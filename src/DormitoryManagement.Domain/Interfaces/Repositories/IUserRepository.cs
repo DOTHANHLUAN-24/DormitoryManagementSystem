@@ -1,4 +1,5 @@
-﻿using DormitoryManagement.Domain.Entities;
+﻿using DormitoryManagement.Domain.Common;
+using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Domain.Interfaces.Repositories
 {
@@ -6,8 +7,6 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
     {
         Task<User?> GetByUsernameAsync(string username);
 
-        Task<(List<User> Users, int TotalCount)> GetActiveUsersPagedAsync(int page, int pageSize, string? search);
-
-        IQueryable<User> GetQuery();
+        Task<bool> IsEmailUniqueAsync(string email);
     }
 }
