@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DormitoryManagement.Common\DormitoryManagement.Common.csproj" />
-    <ProjectReference Include="..\DormitoryManagement.Domain\DormitoryManagement.Domain.csproj" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mappings\" />
+    <ProjectReference Include="..\DormitoryManagement.Common\DormitoryManagement.Common.csproj" />
+    <ProjectReference Include="..\DormitoryManagement.Domain\DormitoryManagement.Domain.csproj" />
   </ItemGroup>
 
 </Project>

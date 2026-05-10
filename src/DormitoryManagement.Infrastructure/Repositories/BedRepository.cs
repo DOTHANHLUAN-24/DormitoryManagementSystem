@@ -1,7 +1,7 @@
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
@@ -33,12 +33,20 @@ namespace DormitoryManagement.Infrastructure.Repositories
             await _db.SaveChangesAsync();
         }
 
-        public void Delete(Bed entity)
+        public async void DeleteAsync(Bed entity)
         {
-            throw new NotImplementedException();
+            var bed = await _db.Beds.FindAsync(entity.Id);
+            if (bed == null)
+                return;
+
+            bed.IsDeleted = true;
+            bed.LastModified = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
         }
 
-        public void DeleteRange(IEnumerable<Bed> entities)
+        public void DeleteRangeAsync(IEnumerable<Bed> entities)
         {
             throw new NotImplementedException();
         }
@@ -53,12 +61,17 @@ namespace DormitoryManagement.Infrastructure.Repositories
             throw new NotImplementedException();
         }
 
+        public Task<List<Bed>> GetAllBedByStatusAsync(BedStatus status)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Bed?> GetByIdAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public void Update(Bed entity)
+        public void UpdateAsync(Bed entity)
         {
             throw new NotImplementedException();
         }

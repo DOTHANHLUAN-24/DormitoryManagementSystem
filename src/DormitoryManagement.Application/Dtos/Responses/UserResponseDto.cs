@@ -14,6 +14,8 @@ namespace DormitoryManagement.Application.Dtos.Responses
 
         public string PhoneNumber { get; set; } = string.Empty;
 
+        public bool IsActive { get; set; } = true;
+
         public UserRole Role { get; set; }
 
         public DateTime CreatedDate { get; set; }
