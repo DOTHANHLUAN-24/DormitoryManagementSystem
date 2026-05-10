@@ -12,10 +12,16 @@ namespace DormitoryManagement.Controllers
         {
             _userService = userService;
         }
-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1, string search = "")
         {
-            var users = await _userService.GetAllActiveUsersAsync();
+            int pageSize = 5;
+
+            var (users, total) = await _userService
+                .GetActiveUsersPagedAsync(page, pageSize, search);
+
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)total / pageSize);
+            ViewBag.Search = search;
 
             return View(users);
         }

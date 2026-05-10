@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace DormitoryManagement.Controllers
 {
+    [Route("Account")]
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -21,15 +22,15 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Login")]
         public IActionResult Login() => View();
 
         [HttpPost]
+        [Route("Login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            // Kiểm tra tính hợp lệ của dữ liệu đầu vào (Validation)
             if (!ModelState.IsValid) return View(request);
 
-            // 1. Kiểm tra tài khoản
             var user = await _userManager.FindByNameAsync(request.Username);
             if (user == null)
             {
@@ -37,45 +38,40 @@ namespace DormitoryManagement.Controllers
                 return View(request);
             }
 
-            // 2. Kiểm tra mật khẩu
             var result = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!result)
             {
-                ModelState.AddModelError(string.Empty, "Mật khẩu sai rồi Luân ơi!");
+                ModelState.AddModelError(string.Empty, "Mật khẩu sai rồi bạn ơi!");
                 return View(request);
             }
 
-            // 3. Tạo JWT Token
             var token = CreateToken(user);
 
-            // 4. LƯU TOKEN VÀO COOKIE
             Response.Cookies.Append("JWTToken", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict, // Ngăn chặn tấn công CSRF
+                Secure = false, // DEV phải false
+                SameSite = SameSiteMode.Strict,
+                Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 
-            // Redirect về trang chủ sau khi thành công
             return RedirectToAction("Index", "Home");
         }
 
         private string CreateToken(User user)
         {
-            // Lấy Key từ cấu hình, thêm dấu ! để báo với trình biên dịch là nó không null
             var keyStr = _configuration["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyStr));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            // Tạo các thông tin định danh (Claims)
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? "Unknown"),
                 new Claim(ClaimTypes.Name, user.FullName), // Để hiển thị tên thật lên giao diện
                 new Claim(ClaimTypes.Role, user.Role.ToString())
-            };
+            };  
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -92,11 +88,19 @@ namespace DormitoryManagement.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        [HttpPost] // Logout nên dùng HttpPost để bảo mật hơn
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("Logout")]
         public IActionResult Logout()
         {
-            Response.Cookies.Delete("JWTToken");
-            return RedirectToAction("Login");
+            Response.Cookies.Delete("JWTToken", new CookieOptions
+            {
+                Path = "/",
+                SameSite = SameSiteMode.Strict,
+                Secure = false
+            });
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }
