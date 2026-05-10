@@ -1,4 +1,6 @@
-﻿@model DormitoryManagement.Domain.Common.PagedResult<dynamic>
+﻿@using DormitoryManagement.Domain.Common
+@model BasePagedResult
+
 @{
     var action = ViewContext.RouteData.Values["action"]?.ToString();
     var search = ViewBag.Search as string;

@@ -1,154 +1,88 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
+using DormitoryManagement.Domain.Common;
+using DormitoryManagement.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
-    public class RoomRepository : IRoomRepository
+    public class RoomRepository : BaseRepository<Room>, IRoomRepository
     {
-        private readonly ApplicationDbContext _db;
+        public RoomRepository(ApplicationDbContext db) : base(db) { }
 
-        public RoomRepository(ApplicationDbContext db)
+        public override async Task<Room?> GetByIdAsync(Guid id)
         {
-            _db = db;
+            return await _dbSet
+                .Include(r => r.Block)
+                .Include(r => r.RoomType)
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
-        public IQueryable<Room> GetPagingQuery(string searchString, int pageIndex, int pageSize)
+        public async Task<Room?> GetRoomWithDetailsAsync(Guid id)
         {
-            var query = _db.Rooms.AsQueryable();
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(x => x.RoomNumber.Contains(searchString));
-            }
-
-            return query.OrderByDescending(x => x.CreatedDate);
+            return await _dbSet
+                .Include(r => r.Block)
+                .Include(r => r.RoomType)
+                .Include(r => r.Beds)
+                .Include(r => r.Assets)
+                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
-        public async Task<IEnumerable<Room>> ListAllRoomAsync()
+        public async Task<PagedResult<Room>> SearchRoomsAsync(
+            string? searchTerm,
+            Guid? blockId,
+            Guid? roomTypeId,
+            RoomStatus? status,
+            int pageIndex,
+            int pageSize)
         {
-            return await _db.Rooms
-                .OrderByDescending(x => x.CreatedDate)
+            var query = _dbSet
+                .Include(r => r.Block)
+                .Include(r => r.RoomType)
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted);
+
+            // Filter logic
+            if (blockId.HasValue && blockId != Guid.Empty)
+                query = query.Where(r => r.BlockId == blockId.Value);
+
+            if (roomTypeId.HasValue && roomTypeId != Guid.Empty)
+                query = query.Where(r => r.RoomTypeId == roomTypeId.Value);
+
+            if (status.HasValue)
+                query = query.Where(r => r.Status == status.Value);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+                query = query.Where(r => r.RoomNumber.Contains(searchTerm));
+
+            int totalCount = await query.CountAsync();
+
+            var items = await query
+                .OrderBy(r => r.Block.BlockName)
+                .ThenBy(r => r.RoomNumber)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return new PagedResult<Room>(items, totalCount, pageIndex, pageSize);
         }
 
-        public async Task<IEnumerable<RoomType>> ListAllRoomTypeAsync()
+        public async Task<bool> IsRoomNumberDuplicateAsync(string roomNumber, Guid blockId, Guid? excludeId = null)
         {
-            return await _db.RoomTypes
-                .OrderByDescending(x => x.Id)
+            return await _dbSet.AnyAsync(r =>
+                r.RoomNumber.ToLower() == roomNumber.ToLower() &&
+                r.BlockId == blockId &&
+                r.Id != (excludeId ?? Guid.Empty) &&
+                !r.IsDeleted);
+        }
+
+        public async Task<IEnumerable<Room>> GetRoomsByBlockAsync(Guid blockId)
+        {
+            return await _dbSet
+                .AsNoTracking()
+                .Where(r => r.BlockId == blockId && !r.IsDeleted)
                 .ToListAsync();
-        }
-
-        public async Task<bool> Insert(Room entity)
-        {
-            entity.CreatedDate = DateTime.Now;
-            await _db.Rooms.AddAsync(entity);
-            return await _db.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> Update(Room entity)
-        {
-            try
-            {
-                var room = await _db.Rooms.FindAsync(entity.Id);
-                if (room == null)
-                    return false;
-
-                room.RoomNumber = entity.RoomNumber;
-                room.Floor = entity.Floor;
-                room.Status = entity.Status;
-                room.BlockId = entity.BlockId;
-                room.RoomTypeId = entity.RoomTypeId;
-                room.LastModified = DateTime.Now;
-
-                await _db.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<bool> Delete(Guid id)
-        {
-            try
-            {
-                var room = await _db.Rooms.FindAsync(id);
-                if (room == null)
-                    return false;
-
-                _db.Rooms.Remove(room);
-                await _db.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public async Task<IEnumerable<Room>> GetAllAsync()
-        {
-            return await _db.Rooms.ToListAsync();
-        }
-
-        public async Task<Room?> GetByIdAsync(Guid id)
-        {
-            return await _db.Rooms.FindAsync(id);
-        }
-
-        public async Task AddAsync(Room entity)
-        {
-            entity.CreatedDate = DateTime.Now;
-            await _db.Rooms.AddAsync(entity);
-            await _db.SaveChangesAsync();
-        }
-
-        public async Task AddRangeAsync(IEnumerable<Room> entities)
-        {
-            var now = DateTime.Now;
-            foreach (var e in entities)
-            {
-                e.CreatedDate = now;
-            }
-
-            await _db.Rooms.AddRangeAsync(entities);
-            await _db.SaveChangesAsync();
-        }
-
-        public void Delete(Room entity)
-        {
-            var room = _db.Rooms.Find(entity.Id);
-            if (room == null) return;
-
-            _db.Rooms.Remove(room);
-            _db.SaveChanges();
-        }
-
-        public void DeleteRange(IEnumerable<Room> entities)
-        {
-            var ids = entities.Select(e => e.Id).ToList();
-            var rooms = _db.Rooms.Where(r => ids.Contains(r.Id)).ToList();
-            if (!rooms.Any()) return;
-
-            _db.Rooms.RemoveRange(rooms);
-            _db.SaveChanges();
-        }
-
-        void IBaseRepository<Room>.Update(Room entity)
-        {
-            var room = _db.Rooms.Find(entity.Id);
-            if (room == null) return;
-
-            room.RoomNumber = entity.RoomNumber;
-            room.Floor = entity.Floor;
-            room.Status = entity.Status;
-            room.BlockId = entity.BlockId;
-            room.RoomTypeId = entity.RoomTypeId;
-            room.LastModified = DateTime.Now;
-
-            _db.SaveChanges();
         }
     }
 }
