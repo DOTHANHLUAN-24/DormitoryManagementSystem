@@ -4,26 +4,24 @@
     var search = ViewBag.Search as string;
 }
 
-<nav aria-label="Page navigation">
-    <ul class="pagination justify-content-center mt-3">
-        @* Nút Trang trước *@
+<nav class="mt-4">
+    <ul class="pagination pagination-sm justify-content-center">
         <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-            <a class="page-item" href="@Url.Action(action, new { page = Model.PageNumber - 1, search = search })">
-                <span class="page-link">&laquo;</span>
+            <a class="page-link shadow-none" href="@Url.Action(action, new { page = Model.PageNumber - 1, search = search })">
+                <i class="fas fa-chevron-left"></i>
             </a>
         </li>
 
         @for (int i = 1; i <= Model.TotalPages; i++)
         {
             <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                <a class="page-link" href="@Url.Action(action, new { page = i, search = search })">@i</a>
+                <a class="page-link shadow-none" href="@Url.Action(action, new { page = i, search = search })">@i</a>
             </li>
         }
 
-        @* Nút Trang sau *@
         <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-            <a class="page-link" href="@Url.Action(action, new { page = Model.PageNumber + 1, search = search })">
-                <span>&raquo;</span>
+            <a class="page-link shadow-none" href="@Url.Action(action, new { page = Model.PageNumber + 1, search = search })">
+                <i class="fas fa-chevron-right"></i>
             </a>
         </li>
     </ul>

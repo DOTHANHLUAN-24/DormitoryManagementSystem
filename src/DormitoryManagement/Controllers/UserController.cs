@@ -73,7 +73,7 @@ namespace DormitoryManagement.Controllers
             if (ModelState.IsValid)
             {
                 // Kiểm tra trùng username trước
-                if (await _userService.IsUsernameExistAsync(userDto.FullName))
+                if (await _userService.IsUsernameExistAsync(userDto.UserName))
                 {
                     ModelState.AddModelError("UserName", "Tên đăng nhập đã tồn tại.");
                     return View(userDto);
