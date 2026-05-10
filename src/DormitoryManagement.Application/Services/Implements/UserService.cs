@@ -1,80 +1,187 @@
-﻿using DormitoryManagement.Application.Services.Interfaces;
+﻿using AutoMapper;
+using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Responses;
+using DormitoryManagement.Application.Mappings;
+using DormitoryManagement.Application.Services.Interfaces;
+using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 
-namespace DormitoryManagement.Application.Services
+namespace DormitoryManagement.Application.Services.Implements
 {
     public class UserService : IUserService
     {
-        private readonly IUserRepository _userRepo;
+        private readonly IUserRepository _userRepository;
+        private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepo)
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
-            _userRepo = userRepo;
+            _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<User>> GetAllActiveUsersAsync()
+        // ================= QUERY (Đọc dữ liệu) =================
+
+        public async Task<PagedResult<UserResponseDto>> GetActiveUsersPagedAsync(int page, int pageSize, string? search)
         {
-            var users = await _userRepo.GetAllAsync();
-            return users.Where(u => u.IsActive && !u.IsDeleted);
+            var result = await _userRepository.GetByStatusPagedAsync(
+                page, pageSize,
+                isActive: true,
+                isDeleted: false,
+                predicate: u => string.IsNullOrEmpty(search) ||
+                                u.UserName!.Contains(search) ||
+                                u.Email!.Contains(search) ||
+                                u.PhoneNumber!.Contains(search)
+            );
+
+            return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid id)
+        public async Task<PagedResult<UserResponseDto>> GetBannedUsersPagedAsync(int page, int pageSize, string? search)
         {
-            var user = await _userRepo.GetByIdAsync(id);
-            if (user == null || user.IsDeleted) return null;
-            return user;
+            var result = await _userRepository.GetByStatusPagedAsync(
+                page, pageSize,
+                isActive: false,
+                isDeleted: false,
+                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search)
+            );
+
+            return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
-        public async Task<User?> GetByUsernameAsync(string username)
+        public async Task<PagedResult<UserResponseDto>> GetDeletedUsersPagedAsync(int page, int pageSize, string? search)
         {
-            return await _userRepo.GetByUsernameAsync(username);
+            var result = await _userRepository.GetByStatusPagedAsync(
+                page, pageSize,
+                isActive: null, // Không quan tâm active hay không
+                isDeleted: true,
+                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search)
+            );
+
+            return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
-        public async Task CreateUserAsync(User user)
+        public async Task<UserResponseDto?> GetUserByIdAsync(Guid id)
         {
-            var existingUser = await _userRepo.GetByUsernameAsync(user.UserName!);
+            var user = await _userRepository.GetByIdAsync(id);
+            return _mapper.Map<UserResponseDto>(user);
+        }
+
+        public async Task<UserResponseDto?> GetByUsernameAsync(string username)
+        {
+            var user = await _userRepository.GetByUsernameAsync(username);
+            return _mapper.Map<UserResponseDto>(user);
+        }
+
+        // ================= COMMAND (Thay đổi dữ liệu) =================
+
+        public async Task CreateUserAsync(UserRequestDto userDto)
+        {
+            var user = _mapper.Map<User>(userDto);
+            // Bạn có thể xử lý Hash mật khẩu ở đây nếu cần
+            await _userRepository.AddAsync(user);
+        }
+
+        public async Task CreateUsersAsync(IEnumerable<UserRequestDto> userDtos)
+        {
+            var users = _mapper.Map<IEnumerable<User>>(userDtos);
+            await _userRepository.AddRangeAsync(users);
+        }
+
+        public async Task UpdateUserProfileAsync(Guid id, UserRequestDto userDto)
+        {
+            var existingUser = await _userRepository.GetByIdAsync(id);
             if (existingUser != null)
             {
-                throw new Exception("Tên đăng nhập đã tồn tại.");
+                _mapper.Map(userDto, existingUser); // Map đè dữ liệu mới vào entity cũ
+                await _userRepository.UpdateAsync(existingUser);
             }
-
-            user.IsActive = true;
-            user.IsDeleted = false;
-
-            await _userRepo.AddAsync(user);
         }
 
-        public async Task UpdateUserProfileAsync(User user)
+        public async Task ToggleUserStatusAsync(Guid id)
         {
-            var userInDb = await _userRepo.GetByIdAsync(user.Id);
-            if (userInDb == null || userInDb.IsDeleted)
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
             {
-                throw new KeyNotFoundException("Người dùng không tồn tại hoặc đã bị xóa.");
+                user.IsActive = !user.IsActive;
+                await _userRepository.UpdateAsync(user);
             }
-
-            userInDb.FullName = user.FullName;
-            userInDb.PhoneNumber = user.PhoneNumber;
-            userInDb.Email = user.Email;
-            userInDb.IdentityCardNumber = user.IdentityCardNumber;
-            userInDb.Role = user.Role;
-
-            ((IBaseRepository<User>)_userRepo).Update(userInDb);
         }
+
+        public async Task BanUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
+            {
+                user.IsActive = false;
+                await _userRepository.UpdateAsync(user);
+            }
+        }
+
+        public async Task UnbanUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
+            {
+                user.IsActive = true;
+                await _userRepository.UpdateAsync(user);
+            }
+        }
+
+        // ================= DELETE & RESTORE =================
 
         public async Task DeactivateUserAsync(Guid id)
         {
-            var user = await _userRepo.GetByIdAsync(id);
+            var user = await _userRepository.GetByIdAsync(id);
             if (user != null)
             {
-                _userRepo.Delete(user);
+                await _userRepository.DeleteAsync(user, isSoftDelete: true);
             }
         }
 
-        public async Task<IEnumerable<User>> GetAllBanUserAsync()
+        public async Task DeactivateUsersAsync(IEnumerable<Guid> ids)
         {
-            var users = await _userRepo.GetAllAsync();
-            return users.Where(u => !u.IsActive && !u.IsDeleted);
+            var users = await _userRepository.FindAsync(u => ids.Contains(u.Id));
+            await _userRepository.DeleteRangeAsync(users, isSoftDelete: true);
+        }
+
+        public async Task RestoreUserAsync(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
+            {
+                await _userRepository.RestoreAsync(user);
+            }
+        }
+
+        public async Task RestoreUsersAsync(IEnumerable<Guid> ids)
+        {
+            var users = await _userRepository.FindAsync(u => ids.Contains(u.Id));
+            foreach (var user in users)
+            {
+                await _userRepository.RestoreAsync(user);
+            }
+        }
+
+        public async Task DeletePermanentlyAsync(Guid id)
+        {
+            var user = await _userRepository.GetByIdAsync(id);
+            if (user != null)
+            {
+                await _userRepository.DeleteAsync(user, isSoftDelete: false);
+            }
+        }
+
+        // ================= VALIDATION =================
+
+        public async Task<bool> IsUsernameExistAsync(string username)
+        {
+            return await _userRepository.AnyAsync(u => u.UserName == username);
+        }
+
+        public async Task<bool> IsEmailExistAsync(string email)
+        {
+            return !await _userRepository.IsEmailUniqueAsync(email);
         }
     }
 }

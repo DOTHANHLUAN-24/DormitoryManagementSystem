@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using System.Text;
+using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
 using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -24,18 +26,17 @@ internal class Program
         builder.Services.Configure<MailSettings>(
         builder.Configuration.GetSection("MailSettings"));
 
+        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
         // Dependency Injection Repositories and Services
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
-        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
-        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
         builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<IBlockService, BlockService>();
-        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+        builder.Services.AddScoped<IRoomService, RoomService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -66,28 +67,55 @@ internal class Program
         })
         .AddJwtBearer(options =>
         {
+            var key = Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!);
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:Key"]!)),
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+
                 ValidateIssuer = true,
                 ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+
                 ValidateAudience = true,
-                ValidAudience = builder.Configuration["JwtSettings:Audience"]
+                ValidAudience = builder.Configuration["JwtSettings:Audience"],
+
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+
+                // 🔥 QUAN TRỌNG để Navbar nhận đúng
+                RoleClaimType = ClaimTypes.Role,
+                NameClaimType = ClaimTypes.Name
             };
 
-            // ĐOẠN NÀY QUAN TRỌNG: MVC lấy token từ Cookie
             options.Events = new JwtBearerEvents
             {
+                // 🔥 Lấy token từ Cookie
                 OnMessageReceived = context =>
                 {
-                    context.Token = context.Request.Cookies["JWTToken"];
+                    var token = context.Request.Cookies["JWTToken"];
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        context.Token = token;
+                    }
                     return Task.CompletedTask;
                 },
+
+                // ❌ Tránh redirect vòng lặp API
                 OnChallenge = context =>
                 {
                     context.HandleResponse();
-                    context.Response.Redirect("/Account/Login"); // Đá về trang login của bạn
+
+                    // Nếu là request từ trình duyệt → redirect login
+                    if (context.Request.Path.StartsWithSegments("/api"))
+                    {
+                        context.Response.StatusCode = 401;
+                    }
+                    else
+                    {
+                        context.Response.Redirect("/Account/Login");
+                    }
+
                     return Task.CompletedTask;
                 }
             };

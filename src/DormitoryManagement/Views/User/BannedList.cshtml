@@ -1,0 +1,78 @@
+﻿@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Application.Dtos.Responses
+@model PagedResult<UserResponseDto>
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-warning"><i class="fas fa-user-slash me-2"></i> Danh sách bị chặn</h4>
+        <a asp-action="Index" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+    </div>
+
+    @* Search *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="BannedList" class="row g-2">
+                <div class="col-md-10">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control bg-light" placeholder="Tìm kiếm người dùng bị chặn...">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-warning text-white">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* Table *@
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-3">Tên đăng nhập</th>
+                        <th>Họ và tên</th>
+                        <th>Email</th>
+                        <th class="text-end pe-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Items.Any())
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">Không có người dùng nào bị chặn.</td>
+                        </tr>
+                    }
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="ps-3"><strong>@item.UserName</strong></td>
+                            <td>@item.FullName</td>
+                            <td>@item.Email</td>
+                            <td class="text-end pe-3">
+                                <button onclick="unbanUser('@item.Id')" class="btn btn-sm btn-success">
+                                    <i class="fas fa-user-check me-1"></i> Mở khóa
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @await Html.PartialAsync("_Pagination", Model)
+</div>
+
+@section Scripts {
+    <script>
+        function unbanUser(id) {
+            if(confirm('Bạn có chắc chắn muốn mở khóa cho người dùng này?')) {
+                $.post('/User/ToggleStatus/' + id, function (data) {
+                    if (data.success) location.reload();
+                    else alert(data.message);
+                });
+            }
+        }
+    </script>
+}
