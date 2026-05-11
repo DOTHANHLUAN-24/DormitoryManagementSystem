@@ -1,4 +1,4 @@
-﻿<div class="d-flex flex-column flex-shrink-0 p-3 text-white"
+﻿﻿<div class="d-flex flex-column flex-shrink-0 p-3 text-white"
      style="width: 260px; height: 100vh; position: fixed; background:#0f6b6d;">
 
     <a asp-controller="Home" asp-action="Index"
@@ -11,7 +11,7 @@
     <ul class="nav nav-pills flex-column mb-auto">
 
         <!-- ================= NGƯỜI DÙNG ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#userMenu">
@@ -28,7 +28,7 @@
         }
 
         <!-- ================= HỢP ĐỒNG ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#contractMenu">
@@ -45,7 +45,7 @@
         }
 
         <!-- ================= HÓA ĐƠN ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#invoiceMenu">
@@ -61,7 +61,7 @@
         }
 
         <!-- ================= THANH TOÁN ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Student"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("Student"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#paymentMenu">
@@ -80,7 +80,7 @@
         }
 
         <!-- ================= DỊCH VỤ ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#serviceMenu">
@@ -96,7 +96,7 @@
         }
 
         <!-- ================= VẬT TƯ ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#assetMenu">
@@ -112,7 +112,7 @@
         }
 
         <!-- ================= PHÒNG ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Technical"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#roomMenu">
@@ -128,7 +128,7 @@
         }
 
         <!-- ================= VI PHẠM ================= -->
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a class="nav-link text-white dropdown-toggle" data-bs-toggle="collapse" href="#violationMenu">
@@ -152,14 +152,14 @@
             <a asp-controller="Rule" asp-action="Index" class="nav-link text-white">📘 Nội quy</a>
         </li>
 
-        @if (User.IsInRole("Student") || User.IsInRole("Manager"))
+        @if (User.IsInRole("Student") || User.IsInRole("ManagementStaff"))
         {
             <li>
                 <a asp-controller="Attendance" asp-action="Index" class="nav-link text-white">📍 Điểm danh</a>
             </li>
         }
 
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Technical"))
+        @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("TechnicalStaff"))
         {
             <li>
                 <a asp-controller="Report" asp-action="Index" class="nav-link text-white">📊 Báo cáo</a>

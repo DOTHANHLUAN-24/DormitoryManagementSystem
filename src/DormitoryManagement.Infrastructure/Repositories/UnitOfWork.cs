@@ -3,7 +3,7 @@ using DormitoryManagement.Infrastructure.Data;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
-    internal class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _db;
 

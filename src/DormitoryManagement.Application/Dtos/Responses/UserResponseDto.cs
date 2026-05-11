@@ -18,12 +18,14 @@ namespace DormitoryManagement.Application.Dtos.Responses
 
         public bool IsActive { get; set; } = true;
 
+        public string IdentityCardNumber { get; set; } = string.Empty;
+
         public UserRole Role { get; set; }
 
         public DateTime CreatedDate { get; set; }
-        
+
         public DateTime? LastModified { get; set; }
-        
+
         public int ContractCount { get; set; }
 
         public List<int> ListContractIds { get; set; } = new List<int>();

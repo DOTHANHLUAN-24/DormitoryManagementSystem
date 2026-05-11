@@ -5,19 +5,20 @@ using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 
 namespace DormitoryManagement.Application.Services
 {
     public class RoomService : IRoomService
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
-        // Giả sử bạn có IUnitOfWork để SaveChanges, nếu không bạn có thể inject DbContext
-        // Ở đây tôi minh họa dùng Repository trực tiếp
 
-        public RoomService(IRoomRepository roomRepository, IMapper mapper)
+        public RoomService(IRoomRepository roomRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _roomRepository = roomRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -63,7 +64,7 @@ namespace DormitoryManagement.Application.Services
 
             // 3. Lưu vào DB
             await _roomRepository.AddAsync(room);
-            // await _unitOfWork.SaveChangesAsync(); // Thường sẽ gọi ở đây
+            await _unitOfWork.SaveChangesAsync();
 
             return room.Id;
         }
@@ -81,7 +82,8 @@ namespace DormitoryManagement.Application.Services
             _mapper.Map(request, room);
 
             await _roomRepository.UpdateAsync(room);
-            return true;
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
         }
 
         public async Task<bool> DeleteRoomAsync(Guid id)
@@ -90,7 +92,8 @@ namespace DormitoryManagement.Application.Services
             if (room == null) return false;
 
             await _roomRepository.DeleteAsync(room, isSoftDelete: true);
-            return true;
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
         }
 
         public async Task<bool> RestoreRoomAsync(Guid id)
@@ -99,7 +102,8 @@ namespace DormitoryManagement.Application.Services
             if (room == null) return false;
 
             await _roomRepository.RestoreAsync(room);
-            return true;
+            var result = await _unitOfWork.SaveChangesAsync();
+            return result > 0;
         }
 
         public async Task<IEnumerable<RoomResponse>> GetRoomsByBlockAsync(Guid blockId)
