@@ -32,6 +32,7 @@ internal class Program
         // Repositories
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<IBedRepository, BedRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
         // Services
