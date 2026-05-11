@@ -1,140 +1,138 @@
-<div class="container-fluid py-4">
-    <!-- Tiêu đề và Nút thêm mới -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold text-primary mb-1">QUẢN LÝ DỊCH VỤ</h3>
-            <p class="text-muted small mb-0">Danh sách các dịch vụ đang cung cấp tại ký túc xá</p>
+@{
+    ViewData["Title"] = "Danh sách Dịch vụ";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <!-- Header & Navigation -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h2 class="fw-bold text-dark"><i class="fas fa-concierge-bell me-2"></i>Quản lý Dịch vụ</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Hệ thống</a></li>
+                    <li class="breadcrumb-item active">Dịch vụ</li>
+                </ol>
+            </nav>
         </div>
-        <a asp-action="Create" class="btn btn-primary shadow-sm px-4">
-            <i class="bi bi-plus-lg me-2"></i>Thêm dịch vụ mới
-        </a>
+        <div class="col-md-6 text-md-end">
+            <!-- Nút Trỏ sang trang THÊM DỊCH VỤ -->
+            <a asp-controller="Service" asp-action="Create" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus-circle me-2"></i>Thêm dịch vụ mới
+            </a>
+        </div>
     </div>
 
-    <!-- Thanh tìm kiếm và lọc nhanh -->
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0"><i
-                            class="bi bi-search text-muted"></i></span>
-                            <input type="text" class="form-control border-start-0" placeholder="Tìm tên dịch vụ...">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-select">
-                            <option value="">-- Tất cả loại --</option>
-                            <option value="1">Điện/Nước</option>
-                            <option value="2">Viễn thông</option>
-                            <option value="3">Khác</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-outline-secondary w-100">Lọc dữ liệu</button>
-                    </div>
+    <!-- Main Content Card -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 fw-bold">Danh sách chi tiết</h5>
+                <div class="input-group style="width: 250px;">
+                    <input type="text" class="form-control" placeholder="Tìm tên dịch vụ...">
+                    <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
+        
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="ps-4">Mã</th>
+                            <th>Tên dịch vụ</th>
+                            <th>Đơn giá</th>
+                            <th>Đơn vị</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dữ liệu mẫu 1 -->
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">#DV-01</td>
+                            <td>
+                                <div>Điện sinh hoạt</div>
+                                <small class="text-muted">Định mức nhà nước</small>
+                            </td>
+                            <td>3.500 đ</td>
+                            <td>kWh</td>
+                            <td><span class="badge rounded-pill bg-success">Đang cung cấp</span></td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <!-- Nút Trỏ sang trang SỬA DỊCH VỤ (Giả sử Id = 1) -->
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger" title="Xóa dịch vụ" onclick="confirmDelete('Điện sinh hoạt')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-        <!-- Bảng hiển thị dữ liệu mẫu -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="bg-light">
-                            <tr class="text-secondary">
-                                <th class="ps-4 py-3">MÃ</th>
-                                <th class="py-3">TÊN DỊCH VỤ</th>
-                                <th class="py-3">PHÂN LOẠI</th>
-                                <th class="py-3">ĐƠN GIÁ</th>
-                                <th class="py-3">ĐƠN VỊ</th>
-                                <th class="py-3">TRẠNG THÁI</th>
-                                <th class="py-3 text-end pe-4">THAO TÁC</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Dữ liệu mẫu 1 -->
-                            <tr>
-                                <td class="ps-4 text-muted">#SVC001</td>
-                                <td><span class="fw-bold">Điện sinh hoạt</span></td>
-                                <td><span class="badge bg-info-subtle text-info px-3">Điện/Nước</span></td>
-                                <td class="fw-semibold">3,500 <small>₫</small></td>
-                                <td>kWh</td>
-                                <td><span class="badge bg-success-subtle text-success border border-success">Đang hoạt
-                                    động</span></td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light border me-1 text-warning"><i
-                                            class="bi bi-pencil-square"></i></button>
-                                            <button class="btn btn-sm btn-light border text-danger"><i
-                                                class="bi bi-trash"></i></button>
-                                            </td>
-                                        </tr>
+                        <!-- Dữ liệu mẫu 2 -->
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">#DV-02</td>
+                            <td>
+                                <div>Nước sạch</div>
+                                <small class="text-muted">Tính theo m3 tiêu thụ</small>
+                            </td>
+                            <td>12.000 đ</td>
+                            <td>m³</td>
+                            <td><span class="badge rounded-pill bg-success">Đang cung cấp</span></td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
 
-                                        <!-- Dữ liệu mẫu 2 -->
-                                        <tr>
-                                            <td class="ps-4 text-muted">#SVC002</td>
-                                            <td><span class="fw-bold">Nước sạch</span></td>
-                                            <td><span class="badge bg-info-subtle text-info px-3">Điện/Nước</span></td>
-                                            <td class="fw-semibold">12,000 <small>₫</small></td>
-                                            <td>m³</td>
-                                            <td><span class="badge bg-success-subtle text-success border border-success">Đang hoạt
-                                                động</span></td>
-                                                <td class="text-end pe-4">
-                                                    <button class="btn btn-sm btn-light border me-1 text-warning"><i
-                                                        class="bi bi-pencil-square"></i></button>
-                                                        <button class="btn btn-sm btn-light border text-danger"><i
-                                                            class="bi bi-trash"></i></button>
-                                                        </td>
-                                                    </tr>
+                        <!-- Dữ liệu mẫu 3 -->
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">#DV-03</td>
+                            <td>
+                                <div>Internet Wifi</div>
+                                <small class="text-muted">Trọn gói theo phòng</small>
+                            </td>
+                            <td>150.000 đ</td>
+                            <td>Tháng</td>
+                            <td><span class="badge rounded-pill bg-danger">Tạm ngưng</span></td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-outline-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                                                    <!-- Dữ liệu mẫu 3 -->
-                                                    <tr>
-                                                        <td class="ps-4 text-muted">#SVC003</td>
-                                                        <td><span class="fw-bold">Internet cáp quang</span></td>
-                                                        <td><span class="badge bg-primary-subtle text-primary px-3">Viễn thông</span></td>
-                                                        <td class="fw-semibold">150,000 <small>₫</small></td>
-                                                        <td>Tháng</td>
-                                                        <td><span class="badge bg-success-subtle text-success border border-success">Đang hoạt
-                                                            động</span></td>
-                                                            <td class="text-end pe-4">
-                                                                <button class="btn btn-sm btn-light border me-1 text-warning"><i
-                                                                    class="bi bi-pencil-square"></i></button>
-                                                                    <button class="btn btn-sm btn-light border text-danger"><i
-                                                                        class="bi bi-trash"></i></button>
-                                                                    </td>
-                                                                </tr>
+        <div class="card-footer bg-white border-0 py-3">
+            <p class="text-muted small mb-0">Lưu ý: Sinh viên không thể chỉnh sửa đơn giá dịch vụ.</p>
+        </div>
+    </div>
+</div>
 
-                                                                <!-- Dữ liệu mẫu 4 -->
-                                                                <tr>
-                                                                    <td class="ps-4 text-muted">#SVC004</td>
-                                                                    <td><span class="fw-bold">Giặt ủi đồ</span></td>
-                                                                    <td><span class="badge bg-secondary-subtle text-secondary px-3">Khác</span></td>
-                                                                    <td class="fw-semibold">5,000 <small>₫</small></td>
-                                                                    <td>Lần</td>
-                                                                    <td><span class="badge bg-light text-muted border">Tạm ngưng</span></td>
-                                                                    <td class="text-end pe-4">
-                                                                        <button class="btn btn-sm btn-light border me-1 text-warning"><i
-                                                                            class="bi bi-pencil-square"></i></button>
-                                                                            <button class="btn btn-sm btn-light border text-danger"><i
-                                                                                class="bi bi-trash"></i></button>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </tbody>
-                                                                </table>
-                                                            </div>
-                                                        </div>
-                                                        <div class="card-footer bg-white py-3 border-0">
-                                                            <div class="d-flex justify-content-between align-items-center">
-                                                                <span class="text-muted small">Hiển thị 4 trên tổng số 12 dịch vụ</span>
-                                                                <nav>
-                                                                    <ul class="pagination pagination-sm mb-0">
-                                                                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                                                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                                                        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                                                                    </ul>
-                                                                </nav>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+@section Scripts {
+    <script>
+        function confirmDelete(name) {
+            if (confirm(`Bạn có chắc chắn muốn xóa dịch vụ: ${name}?`)) {
+                alert("Đã gửi yêu cầu xóa!");
+                // Logic xóa thực tế sẽ gọi bằng Ajax hoặc Form tại đây
+            }
+        }
+    </script>
+}

@@ -89,6 +89,29 @@
         </div>
     }
 
+   <!-- DỊCH VỤ -->
+@if (User.IsInRole("Admin") || User.IsInRole("Manager") || User.IsInRole("Student"))
+{
+    <a data-bs-toggle="collapse" href="#serviceMenu" class="menu-toggle">
+        <i class="fas fa-concierge-bell"></i>
+        <span class="text">Dịch Vụ</span>
+    </a>
+    <div class="collapse submenu" id="serviceMenu">
+        <!-- Link trỏ vào Index -->
+        <a asp-controller="Service" asp-action="Index">
+            <i class="fas fa-list me-2"></i> Danh sách
+        </a>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <!-- Link trỏ vào Create -->
+            <a asp-controller="Service" asp-action="Create">
+                <i class="fas fa-plus-circle me-2"></i> Thêm
+            </a>
+        }
+    </div>
+}
+
     <!-- SIMPLE -->
     <a asp-controller="Notification" asp-action="Index">
         <i class="fas fa-bell"></i>
