@@ -217,7 +217,59 @@
                 border-collapse: collapse;
             }
 
-            .danh-sach-phong th {}
+            .danh-sach-phong th {
+                padding: 16px;
+                text-align: left;
+                background: #f8fafc;
+                color: #64748b;
+                font-weight: 600;
+                font-size: 13px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                border-bottom: 2px solid #e2e8f0;
+            }
+
+            .danh-sach-phong td {
+                padding: 16px;
+                border-bottom: 1px solid #f1f5f9;
+                font-size: 14px;
+                vertical-align: middle;
+            }
+
+            .trang-thai {
+                padding: 6px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                display: inline-block;
+            }
+
+            .trang-thai.con-trong { background: #ecfdf5; color: #10b981; }
+            .trang-thai.day { background: #fff7ed; color: #f97316; }
+            .trang-thai.bao-tri { background: #fef2f2; color: #ef4444; }
+
+            .nhom-nut-hanh-dong {
+                display: flex;
+                gap: 8px;
+            }
+
+            .nut-hanh-dong {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: none;
+            }
+
+            .nut-sua { background: #eff6ff; color: #3b82f6; }
+            .nut-sua:hover { background: #dbeafe; }
+
+            .nut-xoa { background: #fef2f2; color: #ef4444; }
+            .nut-xoa:hover { background: #fee2e2; }
     </style>
 </head>
 
@@ -347,6 +399,51 @@
                         <th>Trạng thái</th>
                         <th>Thông tin sinh viên</th>
                         <th>Hành động</th>
+                    </tr>
+                    <!-- Dữ liệu mẫu 1 -->
+                    <tr>
+                        <td><strong>P101</strong></td>
+                        <td>Phòng 101</td>
+                        <td>Tòa A</td>
+                        <td>4 Giường</td>
+                        <td><span class="trang-thai con-trong">Còn trống</span></td>
+                        <td>-</td>
+                        <td>
+                            <div class="nhom-nut-hanh-dong">
+                                <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
+                                <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Dữ liệu mẫu 2 -->
+                    <tr>
+                        <td><strong>P205</strong></td>
+                        <td>Phòng 205</td>
+                        <td>Tòa B</td>
+                        <td>8 Giường</td>
+                        <td><span class="trang-thai day">Đã đầy</span></td>
+                        <td>Nguyễn Văn A, Trần Thị B...</td>
+                        <td>
+                            <div class="nhom-nut-hanh-dong">
+                                <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
+                                <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Dữ liệu mẫu 3 -->
+                    <tr>
+                        <td><strong>P302</strong></td>
+                        <td>Phòng 302</td>
+                        <td>Tòa A</td>
+                        <td>4 Giường</td>
+                        <td><span class="trang-thai bao-tri">Đang bảo trì</span></td>
+                        <td>-</td>
+                        <td>
+                            <div class="nhom-nut-hanh-dong">
+                                <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
+                                <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 </table>
             </div>
