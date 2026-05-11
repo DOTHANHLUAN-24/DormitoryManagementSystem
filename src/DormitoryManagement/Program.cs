@@ -20,23 +20,25 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        // MVC
         builder.Services.AddControllersWithViews();
 
+        // Mail settings
         builder.Services.Configure<MailSettings>(
-        builder.Configuration.GetSection("MailSettings"));
+            builder.Configuration.GetSection("MailSettings"));
 
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        // Dependency Injection Repositories and Services
+        // Repositories
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
 
+        // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IContractService, ContractService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -44,11 +46,7 @@ internal class Program
             options.UseSqlServer(connectionString)
         );
 
-        // Check biến môi trường và chuỗi kết nối
-        Console.WriteLine($"ENV: {builder.Environment.EnvironmentName}");
-        Console.WriteLine($"CONN: {builder.Configuration.GetConnectionString("DefaultConnection")}");
-        Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
-
+        // Identity
         builder.Services
             .AddIdentity<User, IdentityRole<Guid>>(options =>
             {
@@ -60,6 +58,7 @@ internal class Program
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        // JWT
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,14 +82,12 @@ internal class Program
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,
 
-                // 🔥 QUAN TRỌNG để Navbar nhận đúng
                 RoleClaimType = ClaimTypes.Role,
                 NameClaimType = ClaimTypes.Name
             };
 
             options.Events = new JwtBearerEvents
             {
-                // 🔥 Lấy token từ Cookie
                 OnMessageReceived = context =>
                 {
                     var token = context.Request.Cookies["JWTToken"];
@@ -101,12 +98,10 @@ internal class Program
                     return Task.CompletedTask;
                 },
 
-                // ❌ Tránh redirect vòng lặp API
                 OnChallenge = context =>
                 {
                     context.HandleResponse();
 
-                    // Nếu là request từ trình duyệt → redirect login
                     if (context.Request.Path.StartsWithSegments("/api"))
                     {
                         context.Response.StatusCode = 401;
@@ -123,7 +118,6 @@ internal class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
