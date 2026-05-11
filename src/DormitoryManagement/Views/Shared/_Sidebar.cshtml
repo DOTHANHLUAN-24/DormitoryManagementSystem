@@ -100,6 +100,11 @@
         <span class="text">Nội quy</span>
     </a>
 
+    <a asp-controller="Service" asp-action="Index">
+        <i class="fas fa-book"></i>
+        <span class="text">Dịch vụ</span>
+    </a>
+
     @if (User.IsInRole("Student") || User.IsInRole("Manager"))
     {
         <a asp-controller="Attendance" asp-action="Index">
