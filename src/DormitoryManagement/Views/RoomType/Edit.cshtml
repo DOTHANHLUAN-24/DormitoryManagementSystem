@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa loại phòng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: #f5f7fa; 
+            color: #1e293b; 
+            padding: 40px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+        }
+        .form-container { 
+            background: #fff; 
+            width: 100%; 
+            max-width: 600px; 
+            padding: 32px; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
+        }
+        .tieu-de { 
+            font-size: 24px; 
+            font-weight: 700; 
+            margin-bottom: 24px; 
+            color: #1e293b; 
+            text-align: center; 
+        }
+        .nhom-nhap { 
+            margin-bottom: 20px; 
+        }
+        .nhom-nhap label { 
+            display: block; 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #64748b; 
+            text-transform: uppercase; 
+            letter-spacing: 0.5px; 
+        }
+        .nhom-nhap input, .nhom-nhap textarea, .nhom-nhap select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            outline: none; 
+            transition: all 0.2s; 
+            color: #334155;
+        }
+        .nhom-nhap input:focus { 
+            border-color: #3b82f6; 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .nhom-nut { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 32px;
+        }
+        .nut { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            font-size: 14px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            text-decoration: none; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            border: none; 
+            flex: 1; 
+        }
+        .nut-luu { 
+            background: #3b82f6; 
+            color: #fff; 
+        }
+        .nut-luu:hover { 
+            background: #2563eb; 
+        }
+        .nut-huy { 
+            background: #f1f5f9; 
+            color: #475569; 
+        }
+        .nut-huy:hover { 
+            background: #e2e8f0; 
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="tieu-de">Chỉnh sửa loại phòng</h2>
+        <form action="/RoomType/Edit" method="post">
+            <div class="nhom-nhap">
+                <label>Tên loại phòng</label>
+                <input type="text" value="Phòng Tiêu Chuẩn" placeholder="Ví dụ: Phòng Tiêu Chuẩn">
+            </div>
+            <div class="nhom-nhap">
+                <label>Giá cơ bản (VND/Tháng)</label>
+                <input type="number" value="1500000" placeholder="Ví dụ: 1500000">
+            </div>
+            <div class="nhom-nhap">
+                <label>Sức chứa (Người)</label>
+                <select>
+                    <option>1 Người</option>
+                    <option>2 Người</option>
+                    <option selected>4 Người</option>
+                    <option>8 Người</option>
+                </select>
+            </div>
+            <div class="nhom-nhap">
+                <label>Mô tả</label>
+                <textarea rows="4" placeholder="Nhập mô tả ngắn gọn về tiện ích...">Phòng 4 giường tầng cơ bản, quạt trần</textarea>
+            </div>
+            <div class="nhom-nut">
+                <a href="/RoomType" class="nut nut-huy">Hủy bỏ</a>
+                <button type="submit" class="nut nut-luu">Cập nhật thay đổi</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
