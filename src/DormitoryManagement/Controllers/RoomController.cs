@@ -67,7 +67,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var room = await _roomService.GetRoomByIdAsync(id);
-            if (room == null) return NotFound();
+            // if (room == null) return NotFound();
 
             // Chuyển từ Response DTO sang Request DTO
             var updateRequest = new UpdateRoomRequest { /* map properties */ };
