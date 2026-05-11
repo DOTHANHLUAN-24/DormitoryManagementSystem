@@ -2,15 +2,14 @@ using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
-
+using DormitoryManagement.Infrastructure.Repositories;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
     public class BedRepository : IBedRepository
     {
+        private readonly ApplicationDbContext _context;
 
-       private readonly ApplicationDbContext _context;
-      
         public BedRepository(ApplicationDbContext context)
         {
             _context = context;
@@ -18,10 +17,11 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
         public async Task<Bed?> GetByBedNumberAsync(string bedNumber)
         {
-            if(string.IsNullOrEmpty(bedNumber))
+            if (string.IsNullOrEmpty(bedNumber))
             {
                 return null;
             }
+
             return await _context.Beds
                 .FirstOrDefaultAsync(b => !b.IsDeleted && b.BedNumber == bedNumber);
         }
@@ -33,34 +33,35 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Where(b => !b.IsDeleted)
                 .AsQueryable();
 
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                return query
+                    .Where(_ => false)
+                    .OrderByDescending(b => b.CreatedDate)
+                    .ToList();
+            }
 
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                query = query.Where(b => b.BedNumber.Contains(searchString));
-            }
-            else
-            {
-                query = query.Where(b => false);
-            }
+            query = query.Where(b => b.BedNumber.Contains(searchString));
 
             return query
                 .OrderByDescending(b => b.CreatedDate)
                 .ToList();
         }
+
         public async Task<IEnumerable<Bed>> GetAllAsync()
         {
             return await _context.Beds
-            .Include(b => b.Room)
-            .Where(b => !b.IsDeleted)
-            .OrderByDescending(b => b.CreatedDate)
-            .ToListAsync();
-        }   
+                .Include(b => b.Room)
+                .Where(b => !b.IsDeleted)
+                .OrderByDescending(b => b.CreatedDate)
+                .ToListAsync();
+        }
 
         public async Task<Bed?> GetByIdAsync(Guid id)
         {
             return await _context.Beds
-            .Include(b => b.Room)
-            .FirstOrDefaultAsync(b => b.Id == id);
+                .Include(b => b.Room)
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task AddAsync(Bed entity)
@@ -74,7 +75,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             await _context.Beds.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
-        
+
         public async Task AddRangeAsync(IEnumerable<Bed> entities)
         {
             var now = DateTime.Now;
