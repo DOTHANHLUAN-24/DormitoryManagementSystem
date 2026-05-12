@@ -37,6 +37,7 @@ internal class Program
         builder.Services.AddScoped<IBedRepository, BedRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
