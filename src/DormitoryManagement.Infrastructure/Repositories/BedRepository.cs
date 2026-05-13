@@ -47,10 +47,11 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .FirstOrDefaultAsync(b => !b.IsDeleted && b.BedNumber == bedNumber);
         }
 
-        public IEnumerable<Bed> GetPagingQuery(string searchString)
+        public IQueryable<Bed> GetPagingQuery(string searchString)
         {
             var query = _dbSet
                 .Include(b => b.Room)
+                .AsNoTracking()
                 .Where(b => !b.IsDeleted)
                 .AsQueryable();
 
@@ -58,15 +59,13 @@ namespace DormitoryManagement.Infrastructure.Repositories
             {
                 return query
                     .Where(_ => false)
-                    .OrderByDescending(b => b.CreatedDate)
-                    .ToList();
+                    .OrderByDescending(b => b.CreatedDate);
             }
 
             query = query.Where(b => b.BedNumber.Contains(searchString));
 
             return query
-                .OrderByDescending(b => b.CreatedDate)
-                .ToList();
+                .OrderByDescending(b => b.CreatedDate);
         }
     }
 }
