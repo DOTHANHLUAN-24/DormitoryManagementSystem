@@ -59,7 +59,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Bed", b =>
@@ -95,7 +95,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("Beds");
+                    b.ToTable("Beds", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Block", b =>
@@ -130,7 +130,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Blocks");
+                    b.ToTable("Blocks", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Contract", b =>
@@ -186,7 +186,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Contracts");
+                    b.ToTable("Contracts", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Invoice", b =>
@@ -238,7 +238,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("ContractId");
 
-                    b.ToTable("Invoices");
+                    b.ToTable("Invoices", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.MaintenanceRequest", b =>
@@ -294,7 +294,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("RoomId");
 
-                    b.ToTable("MaintenanceRequests");
+                    b.ToTable("MaintenanceRequests", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Payment", b =>
@@ -339,7 +339,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Room", b =>
@@ -383,7 +383,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("RoomTypeId");
 
-                    b.ToTable("Rooms");
+                    b.ToTable("Rooms", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.RoomType", b =>
@@ -421,7 +421,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RoomTypes");
+                    b.ToTable("RoomTypes", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Surcharge", b =>
@@ -456,7 +456,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("Surcharges");
+                    b.ToTable("Surcharges", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.User", b =>
@@ -586,7 +586,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Utilities");
+                    b.ToTable("Utilities", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.UtilityUsage", b =>
@@ -642,7 +642,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("UtilityId");
 
-                    b.ToTable("UtilityUsages");
+                    b.ToTable("UtilityUsages", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Vehicle", b =>
@@ -678,7 +678,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Vehicles");
+                    b.ToTable("Vehicles", (string)null);
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.Violation", b =>
@@ -723,7 +723,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.HasIndex("ContractId");
 
-                    b.ToTable("Violations");
+                    b.ToTable("Violations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
