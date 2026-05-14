@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using System.Text;
+using DormitoryManagement.Application.Common.Configurations;
 using DormitoryManagement.Application.Interfaces;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
