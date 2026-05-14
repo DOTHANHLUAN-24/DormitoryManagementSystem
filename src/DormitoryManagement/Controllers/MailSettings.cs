@@ -1,4 +1,4 @@
-﻿namespace DormitoryManagement.Application.Common.Configurations
+namespace DormitoryManagement.Application.Common.Configurations
 {
     public class MailSettings
     {

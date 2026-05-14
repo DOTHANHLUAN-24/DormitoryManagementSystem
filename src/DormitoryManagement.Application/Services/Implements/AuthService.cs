@@ -25,9 +25,16 @@ namespace DormitoryManagement.Application.Services.Implements
                 return null;
             }
 
-            if(user != null)
+            if (user != null)
             {
-                var userRole = user.Role == Domain.Enums.UserRole.Admin ? "Admin" : (user.Role == Domain.Enums.UserRole.TechnicalStaff ? "Technical staff" : (user.Role == Domain.Enums.UserRole.ManagementStaff ? "Management staff" : "Student"));
+                var userRole = user.Role switch
+                {
+                    Domain.Enums.UserRole.Admin => "Admin",
+                    Domain.Enums.UserRole.ManagementStaff => "ManagementStaff",
+                    Domain.Enums.UserRole.TechnicalStaff => "TechnicalStaff",
+                    Domain.Enums.UserRole.Student => "Student",
+                    _ => "Student"
+                };
                 var token = _jwtTokenGenerator.GenerateToken(user.Id, user.UserName!, userRole);
 
                 return new LoginResponse

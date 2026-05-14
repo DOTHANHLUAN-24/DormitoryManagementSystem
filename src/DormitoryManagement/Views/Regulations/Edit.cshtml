@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "Chỉnh sửa Nội quy";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold text-dark"><i class="fas fa-edit me-2 text-primary"></i>Chỉnh sửa Nội Quy</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a asp-controller="Regulations" asp-action="Index">Nội quy</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger mb-4">@TempData["Error"]</div>
+            }
+
+            <form asp-controller="Regulations" asp-action="Edit" method="post">
+                <div class="mb-4">
+                    <label for="editor" class="form-label fw-bold text-primary">Nội dung Nội quy</label>
+                    <!-- Thuộc tính name="Content" sẽ map với tham số trong Controller -->
+                    <textarea id="editor" name="Content" class="form-control" rows="15">
+                        @ViewBag.CurrentContent
+                    </textarea>
+                </div>
+
+                <div class="text-end mt-4">
+                    <a asp-controller="Regulations" asp-action="Index" class="btn btn-light border me-2">
+                        <i class="fas fa-times me-1"></i>Hủy bỏ
+                    </a>
+                    <button type="submit" class="btn btn-primary shadow-sm">
+                        <i class="fas fa-save me-1"></i>Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Nhúng thư viện CKEditor 4 để tạo trình soạn thảo văn bản -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        CKEDITOR.replace('editor');
+    </script>
+}

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/_Layout.css" />
-
+    @RenderSection("Styles", required: false)
     <style>
     </style>
 </head>
@@ -22,7 +22,7 @@
     <div class="main" id="main">
 
         <!-- TOPBAR -->
-        <div class="topbar d-flex justify-content-between align-items-center">
+        <div class="topbar d-flex justify-content-between align-items-center sticky-top" style="z-index: 1030;">
 
             <!-- Toggle button -->
             <button class="btn btn-light" onclick="toggleSidebar()">
@@ -39,7 +39,22 @@
                     <div class="avatar">
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            <i class="fas fa-user-check"></i>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <i class="fas fa-user-shield text-danger" title="Quản trị viên"></i>
+                            }
+                            else if (User.IsInRole("ManagementStaff"))
+                            {
+                                <i class="fas fa-user-tie text-primary" title="Quản lý KTX"></i>
+                            }
+                            else if (User.IsInRole("TechnicalStaff"))
+                            {
+                                <i class="fas fa-user-cog text-warning" title="Nhân viên kỹ thuật"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-user-graduate text-success" title="Sinh viên"></i>
+                            }
                         }
                         else
                         {
@@ -68,8 +83,8 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
-                                <i class="fas fa-user me-2"></i> Hồ sơ
+                            <a class="dropdown-item" asp-controller="User" asp-action="Profile">
+                                <i class="fas fa-id-card me-2"></i> Hồ sơ cá nhân
                             </a>
                         </li>
 
@@ -111,6 +126,21 @@
 
         <!-- CONTENT -->
         <div class="p-4">
+            @* Di chuyển Alert vào đây để nó hiển thị trong vùng nội dung chính *@
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             @RenderBody()
         </div>
 
@@ -138,6 +168,12 @@
     @RenderSection("Scripts", required: false)
 
     <script>
+        // Tự động ẩn thông báo sau 5 giây
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 5000);
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
         const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
     </script>

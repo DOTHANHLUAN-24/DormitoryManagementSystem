@@ -1,7 +1,5 @@
 ﻿using DormitoryManagement.Application.Dtos.Requests;
-using DormitoryManagement.Application.Dtos.Responses;
 using DormitoryManagement.Application.Services.Interfaces;
-using DormitoryManagement.Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
@@ -62,7 +60,8 @@ namespace DormitoryManagement.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            // Truyền DTO rỗng để View render form chính xác
+            return View(new UserRequestDto());
         }
 
         // 6. Thêm mới - POST
@@ -70,27 +69,32 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserRequestDto userDto)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // Kiểm tra trùng username trước
-                if (await _userService.IsUsernameExistAsync(userDto.UserName))
-                {
-                    ModelState.AddModelError("UserName", "Tên đăng nhập đã tồn tại.");
-                    return View(userDto);
-                }
-
-                try
-                {
-                    await _userService.CreateUserAsync(userDto);
-                    TempData["Success"] = "Thêm người dùng thành công!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Thêm người dùng thất bại: " + ex.Message);
-                }
+                // MÔI TRƯỜNG DEV: In lỗi ra Console để bạn biết chính xác trường nào đang bị thiếu/sai
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine(">>> LỖI TẠI FORM CREATE USER: " + string.Join(", ", errors));
+                return View(userDto);
             }
-            return View(userDto);
+
+            // Kiểm tra trùng username trước
+            if (await _userService.IsUsernameExistAsync(userDto.UserName))
+            {
+                ModelState.AddModelError("UserName", "Tên đăng nhập đã tồn tại.");
+                return View(userDto);
+            }
+
+            try
+            {
+                await _userService.CreateUserAsync(userDto);
+                TempData["Success"] = "Thêm người dùng thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Thêm người dùng thất bại: " + ex.Message);
+                return View(userDto);
+            }
         }
 
         // 7. Chỉnh sửa - GET
@@ -100,9 +104,19 @@ namespace DormitoryManagement.Controllers
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
-            // Lưu ý: Nếu view Edit yêu cầu RequestDto, bạn có thể cần map ngược lại 
-            // hoặc dùng chính ResponseDto nếu các trường tương ứng.
-            return View(user);
+            // Map sang Dto để view Edit có thể dùng chung Model với lúc Create
+            // (Giả sử Dto của bạn có các trường cơ bản sau, bạn có thể bổ sung thêm nếu cần)
+            var userDto = new UserRequestDto
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                FullName = user.FullName,
+                Code = user.Code,
+                PhoneNumber = user.PhoneNumber,
+                IdentityCardNumber = user.IdentityCardNumber
+            };
+
+            return View(userDto);
         }
 
         // 8. Chỉnh sửa - POST
@@ -110,6 +124,9 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UserRequestDto userDto)
         {
+            // Khi Update thường không yêu cầu nhập lại mật khẩu nên ta gỡ validation cho thuộc tính này
+            ModelState.Remove("Password");
+
             if (ModelState.IsValid)
             {
                 try
@@ -184,6 +201,24 @@ namespace DormitoryManagement.Controllers
             {
                 return Json(new { success = false, message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Profile()
+        {
+            // Lấy ID của người dùng đang đăng nhập từ Claims trong JWT Token
+            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            return View(user);
         }
     }
 }

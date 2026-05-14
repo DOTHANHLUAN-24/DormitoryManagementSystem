@@ -1,11 +1,14 @@
 using System.Security.Claims;
 using System.Text;
+using DormitoryManagement.Application.Common.Configurations;
+using DormitoryManagement.Application.Interfaces;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
 using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Infrastructure.Data;
 using DormitoryManagement.Infrastructure.ExternalServices;
 using DormitoryManagement.Infrastructure.Repositories;
@@ -20,23 +23,32 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
+        // MVC
         builder.Services.AddControllersWithViews();
 
+        // Mail settings
         builder.Services.Configure<MailSettings>(
-        builder.Configuration.GetSection("MailSettings"));
+            builder.Configuration.GetSection("MailSettings"));
 
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-        // Dependency Injection Repositories and Services
+        // Repositories
         builder.Services.AddScoped<IRoomRepository, RoomRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
-        builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+        builder.Services.AddScoped<IBedRepository, BedRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
+        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
 
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
-        builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IContractService, ContractService>();
+        builder.Services.AddScoped<IBlockService, BlockService>();
+        builder.Services.AddScoped<IBedService, BedService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -44,11 +56,7 @@ internal class Program
             options.UseSqlServer(connectionString)
         );
 
-        // Check biến môi trường và chuỗi kết nối
-        Console.WriteLine($"ENV: {builder.Environment.EnvironmentName}");
-        Console.WriteLine($"CONN: {builder.Configuration.GetConnectionString("DefaultConnection")}");
-        Console.WriteLine(builder.Configuration["ConnectionStrings:DefaultConnection"]);
-
+        // Identity
         builder.Services
             .AddIdentity<User, IdentityRole<Guid>>(options =>
             {
@@ -60,6 +68,7 @@ internal class Program
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+        // JWT
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -83,14 +92,12 @@ internal class Program
                 ValidateLifetime = true,
                 ClockSkew = TimeSpan.Zero,
 
-                // 🔥 QUAN TRỌNG để Navbar nhận đúng
                 RoleClaimType = ClaimTypes.Role,
                 NameClaimType = ClaimTypes.Name
             };
 
             options.Events = new JwtBearerEvents
             {
-                // 🔥 Lấy token từ Cookie
                 OnMessageReceived = context =>
                 {
                     var token = context.Request.Cookies["JWTToken"];
@@ -101,12 +108,10 @@ internal class Program
                     return Task.CompletedTask;
                 },
 
-                // ❌ Tránh redirect vòng lặp API
                 OnChallenge = context =>
                 {
                     context.HandleResponse();
 
-                    // Nếu là request từ trình duyệt → redirect login
                     if (context.Request.Path.StartsWithSegments("/api"))
                     {
                         context.Response.StatusCode = 401;
@@ -123,7 +128,6 @@ internal class Program
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
