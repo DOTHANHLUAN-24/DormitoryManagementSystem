@@ -1,291 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
+@using DormitoryManagement.Domain.Common
+@model PagedResult<DormitoryManagement.Domain.Entities.RoomType>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh sách loại phòng</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
+@{
+    ViewData["Title"] = "Quản lý Loại phòng";
+}
 
-            body {
-                font-family: 'Inter', sans-serif;
-                background: #f5f7fa;
-                color: #1e293b;
-            }
-
-            /* Khung chính */
-            .khung-chinh {
-                display: flex;
-                min-height: 100vh;
-            }
-
-            .noi-dung-chinh {
-                flex: 1;
-                margin: 0 auto;
-                padding: 24px 32px;
-            }
-
-            /* Đầu trang */
-            .dau-trang {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 28px;
-            }
-
-            .tieu-de-trang {
-                font-size: 28px;
-                font-weight: 700;
-                background: linear-gradient(135deg, #1e293b, #4f46e5);
-                background-clip: text;
-                -webkit-background-clip: text;
-                color: transparent;
-            }
-
-            .nut-them {
-                background: #4f46e5;
-                color: #fff;
-                padding: 10px 20px;
-                border-radius: 10px;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                border: none;
-                font-size: 14px;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                text-decoration: none;
-            }
-
-            .nut-them:hover {
-                background: #4338ca;
-                transform: translateY(-2px);
-            }
-
-            /* Thẻ thống kê nhanh */
-            .the-thong-ke {
-                display: grid;
-                grid-template-columns: repeat(3, 1fr);
-                gap: 20px;
-                margin-bottom: 32px;
-            }
-
-            .the-thong-ke-item {
-                background: #fff;
-                border-radius: 20px;
-                padding: 20px;
-                display: flex;
-                align-items: center;
-                gap: 16px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-                transition: all 0.3s ease;
-            }
-
-            .the-thong-ke-item:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            }
-
-            .icon-thong-ke {
-                width: 56px;
-                height: 56px;
-                border-radius: 16px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 24px;
-            }
-
-            .icon-thong-ke.xanh { background: #eef2ff; color: #4f46e5; }
-            .icon-thong-ke.vang { background: #fffbeb; color: #d97706; }
-            .icon-thong-ke.tim { background: #f5f3ff; color: #7c3aed; }
-
-            .thong-tin-thong-ke h3 { font-size: 24px; font-weight: 700; margin: 0; }
-            .thong-tin-thong-ke p { color: #64748b; font-size: 13px; margin-top: 4px; }
-
-            /* Bảng danh sách */
-            .khung-bang {
-                background: #fff;
-                border-radius: 20px;
-                padding: 24px;
-                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-                overflow-x: auto;
-            }
-
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                min-width: 800px;
-            }
-
-            th {
-                text-align: left;
-                padding: 16px;
-                background: #f8fafc;
-                color: #64748b;
-                font-weight: 600;
-                font-size: 13px;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                border-bottom: 2px solid #e2e8f0;
-            }
-
-            td {
-                padding: 16px;
-                border-bottom: 1px solid #f1f5f9;
-                font-size: 14px;
-                color: #334155;
-            }
-
-            tr:hover { background: #fbfcfd; }
-
-            .gia-tien {
-                font-weight: 600;
-                color: #4f46e5;
-            }
-
-            .suc-chua {
-                padding: 4px 10px;
-                background: #f1f5f9;
-                border-radius: 6px;
-                font-size: 12px;
-                font-weight: 600;
-                color: #475569;
-            }
-
-            /* Nút hành động */
-            .nhom-nut-hanh-dong {
-                display: flex;
-                gap: 8px;
-            }
-
-            .nut-hanh-dong {
-                width: 32px;
-                height: 32px;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                transition: all 0.2s;
-                border: none;
-                font-size: 14px;
-            }
-
-            .nut-sua { background: #eff6ff; color: #3b82f6; }
-            .nut-sua:hover { background: #dbeafe; }
-
-            .nut-xoa { background: #fef2f2; color: #ef4444; }
-            .nut-xoa:hover { background: #fee2e2; }
-    </style>
-</head>
-
-<body>
-    <div class="khung-chinh">
-        <div class="noi-dung-chinh">
-            <header class="dau-trang">
-                <h1 class="tieu-de-trang">Danh sách loại phòng</h1>
-                <button class="nut-them">
-                    <i class="fas fa-plus"></i>
-                    Thêm loại phòng
-                </button>
-            </header>
-
-            <!-- Thẻ thống kê nhanh -->
-            <div class="the-thong-ke">
-                <div class="the-thong-ke-item">
-                    <div class="icon-thong-ke xanh"><i class="fas fa-layer-group"></i></div>
-                    <div class="thong-tin-thong-ke"><h3>4</h3><p>Tổng loại phòng</p></div>
-                </div>
-                <div class="the-thong-ke-item">
-                    <div class="icon-thong-ke vang"><i class="fas fa-users"></i></div>
-                    <div class="thong-tin-thong-ke"><h3>8</h3><p>Sức chứa tối đa</p></div>
-                </div>
-                <div class="the-thong-ke-item">
-                    <div class="icon-thong-ke tim"><i class="fas fa-tags"></i></div>
-                    <div class="thong-tin-thong-ke"><h3>4.0M</h3><p>Giá cao nhất</p></div>
-                </div>
-            </div>
-
-            <!-- Bảng danh sách -->
-            <div class="khung-bang">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mã loại</th>
-                            <th>Tên loại phòng</th>
-                            <th>Giá cơ bản (Tháng)</th>
-                            <th>Sức chứa</th>
-                            <th>Mô tả</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>RT01</strong></td>
-                            <td>Phòng Tiêu Chuẩn</td>
-                            <td class="gia-tien">1,500,000 đ</td>
-                            <td><span class="suc-chua">4 Người</span></td>
-                            <td>Phòng 4 giường tầng cơ bản, quạt trần</td>
-                            <td>
-                                <div class="nhom-nut-hanh-dong">
-                                    <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>RT02</strong></td>
-                            <td>Phòng Dịch Vụ</td>
-                            <td class="gia-tien">2,500,000 đ</td>
-                            <td><span class="suc-chua">2 Người</span></td>
-                            <td>Phòng 2 giường đơn, trang bị điều hòa</td>
-                            <td>
-                                <div class="nhom-nut-hanh-dong">
-                                    <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>RT03</strong></td>
-                            <td>Phòng VIP</td>
-                            <td class="gia-tien">4,000,000 đ</td>
-                            <td><span class="suc-chua">1 Người</span></td>
-                            <td>Phòng đơn cao cấp, đầy đủ tiện nghi</td>
-                            <td>
-                                <div class="nhom-nut-hanh-dong">
-                                    <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>RT04</strong></td>
-                            <td>Phòng Tập Thể</td>
-                            <td class="gia-tien">1,000,000 đ</td>
-                            <td><span class="suc-chua">8 Người</span></td>
-                            <td>Phòng lớn 8 giường tầng cho nhóm</td>
-                            <td>
-                                <div class="nhom-nut-hanh-dong">
-                                    <button class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></button>
-                                    <button class="nut-hanh-dong nut-xoa" title="Xóa"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+<div class="container-fluid">
+    @* Tiêu đề và nút chức năng *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0 text-primary fw-bold">
+            <i class="fas fa-layer-group me-2"></i> Quản lý Loại phòng
+        </h4>
+        <div>
+            @* Sau này bạn có thể làm thêm trang RecycleBin cho RoomType *@
+            <a asp-action="Create" class="btn btn-primary btn-sm ms-2">
+                <i class="fas fa-plus me-1"></i> Thêm loại phòng
+            </a>
         </div>
-    </body>
+    </div>
 
-</html>
+    @* Thanh tìm kiếm *@
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" class="row g-2">
+                <div class="col-md-10">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
+                        <input type="text" name="search" value="@ViewBag.Search" class="form-control bg-light border-start-0" placeholder="Tìm theo tên loại phòng...">
+                    </div>
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-dark">Tìm kiếm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @* Bảng danh sách *@
+    <div class="card border-0 shadow-sm overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-3" style="width: 20%">Tên loại phòng</th>
+                        <th style="width: 15%">Giá cơ bản</th>
+                        <th style="width: 15%">Sức chứa</th>
+                        <th style="width: 25%">Mô tả</th>
+                        <th style="width: 10%">Trạng thái</th>
+                        <th class="text-end pe-3" style="width: 15%">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-3">
+                                    <span class="fw-bold text-dark">@item.TypeName</span>
+                                </td>
+                                <td>
+                                    <span class="text-primary fw-semibold">@item.BasePrice.ToString("N0") đ</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info-subtle text-info border border-info-subtle px-3">
+                                        <i class="fas fa-users me-1"></i> @item.MaxOccupants Người
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 250px;">
+                                        @item.Description
+                                    </small>
+                                </td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success-subtle text-success">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-subtle text-secondary">Ngừng</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3">
+                                    <div class="btn-group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-light text-warning" title="Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button onclick="deleteRoomType('@item.Id', '@item.TypeName')" class="btn btn-sm btn-light text-danger" title="Xóa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-box-open d-block mb-2 fa-2x"></i>
+                                Không tìm thấy loại phòng nào.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    @* Phân trang *@
+    <div class="mt-4">
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function deleteRoomType(id, name) {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: `Bạn có chắc muốn xóa loại phòng "${name}"?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gọi action Delete bằng POST
+                    $.ajax({
+                        url: '/RoomType/Delete/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (response) {
+                            location.reload();
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Không thể xóa loại phòng này (có thể đang có phòng thuộc loại này).', 'error');
+                        }
+                    });
+                }
+            })
+        }
+    </script>
+}

@@ -1,5 +1,4 @@
-﻿using DormitoryManagement.Domain.Common;
-using DormitoryManagement.Domain.Entities;
+﻿using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Domain.Interfaces.Repositories
 {

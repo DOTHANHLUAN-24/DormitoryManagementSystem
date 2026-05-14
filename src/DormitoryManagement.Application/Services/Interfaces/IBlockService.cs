@@ -12,10 +12,10 @@ namespace DormitoryManagement.Application.Services.Interfaces
         Task<Block?> GetBlockWithRoomsAsync(Guid id);
 
         // Thao tác nghiệp vụ
-        Task CreateBlockAsync(Block block);
-        Task UpdateBlockAsync(Block block);
-        Task DeleteBlockAsync(Guid id, bool isSoftDelete = true);
-        Task RestoreBlockAsync(Guid id);
+        Task<bool> CreateBlockAsync(Block block);
+        Task<bool> UpdateBlockAsync(Block block);
+        Task<bool> DeleteBlockAsync(Guid id, bool isSoftDelete = true);
+        Task<bool> RestoreBlockAsync(Guid id);
 
         // Kiểm tra
         Task<bool> IsNameDuplicateAsync(string name, Guid? excludeId = null);

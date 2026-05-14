@@ -67,5 +67,17 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return query
                 .OrderByDescending(b => b.CreatedDate);
         }
+
+        public async Task<IEnumerable<Bed>> GetAvailableBedsByRoomIdAsync(Guid roomId)
+        {
+            return await _dbSet.Where(b => b.RoomId == roomId && !b.IsDeleted && b.IsActive)
+                .ToListAsync();
+        }
+
+        public async Task<bool> IsBedAvailableAsync(Guid bedId)
+        {
+            var bed = await _dbSet.FindAsync(bedId);
+            return bed != null && !bed.IsDeleted && bed.IsActive;
+        }
     }
 }

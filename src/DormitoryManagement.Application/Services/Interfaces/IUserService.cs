@@ -23,29 +23,29 @@ namespace DormitoryManagement.Application.Services.Interfaces
 
         // ================= COMMAND (Thay đổi dữ liệu) =================
 
-        Task CreateUserAsync(UserRequestDto userDto);
-        Task CreateUsersAsync(IEnumerable<UserRequestDto> userDtos);
+        Task<bool> CreateUserAsync(UserRequestDto userDto);
+        Task<bool> CreateUsersAsync(IEnumerable<UserRequestDto> userDtos);
 
-        Task UpdateUserProfileAsync(Guid id, UserRequestDto userDto);
+        Task<bool> UpdateUserProfileAsync(Guid id, UserRequestDto userDto);
 
         // Thay đổi trạng thái Hoạt động/Bị chặn (IsActive true/false)
-        Task ToggleUserStatusAsync(Guid id); // Đảo ngược trạng thái hoặc dùng hàm Ban/Unban bên dưới
-        Task BanUserAsync(Guid id);
-        Task UnbanUserAsync(Guid id);
+        Task<bool> ToggleUserStatusAsync(Guid id); // Đảo ngược trạng thái hoặc dùng hàm Ban/Unban bên dưới
+        Task<bool> BanUserAsync(Guid id);
+        Task<bool> UnbanUserAsync(Guid id);
 
 
         // ================= DELETE & RESTORE (Xóa và Khôi phục) =================
 
         // Xóa mềm (IsDeleted = true)
-        Task DeactivateUserAsync(Guid id);
-        Task DeactivateUsersAsync(IEnumerable<Guid> ids);
+        Task<bool> DeactivateUserAsync(Guid id);
+        Task<bool> DeactivateUsersAsync(IEnumerable<Guid> ids);
 
         // Khôi phục (IsDeleted = false)
-        Task RestoreUserAsync(Guid id);
-        Task RestoreUsersAsync(IEnumerable<Guid> ids);
+        Task<bool> RestoreUserAsync(Guid id);
+        Task<bool> RestoreUsersAsync(IEnumerable<Guid> ids);
 
         // Xóa vĩnh viễn (Hard Delete)
-        Task DeletePermanentlyAsync(Guid id);
+        Task<bool> DeletePermanentlyAsync(Guid id);
 
 
         // ================= VALIDATION (Kiểm tra) =================

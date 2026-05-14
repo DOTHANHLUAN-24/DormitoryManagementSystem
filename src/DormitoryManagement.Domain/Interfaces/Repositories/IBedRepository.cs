@@ -7,7 +7,11 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
     {
         Task<Bed?> GetByBedNumberAsync(string bedNumber);
 
-        // Phân trang + tìm kiếm (trả về IQueryable để layer service/controller tự áp dụng paging)
-        IQueryable<Bed> GetPagingQuery(string searchString);
+        // Tìm giường theo từ tìm kiếm
+        IEnumerable<Bed> GetPagingQuery(string searchString);
+
+        Task<IEnumerable<Bed>> GetAvailableBedsByRoomIdAsync(Guid roomId);
+
+        Task<bool> IsBedAvailableAsync(Guid bedId);
     }
 }

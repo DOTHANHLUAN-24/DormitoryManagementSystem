@@ -1,7 +1,6 @@
 ﻿using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DormitoryManagement.Controllers
 {

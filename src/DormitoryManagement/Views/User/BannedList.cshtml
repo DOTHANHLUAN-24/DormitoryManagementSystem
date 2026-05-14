@@ -1,16 +1,18 @@
-﻿@using DormitoryManagement.Domain.Common
-@using DormitoryManagement.Application.Dtos.Responses
-@model PagedResult<UserResponseDto>
+﻿@*
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0 text-warning"><i class="fas fa-user-slash me-2"></i> Danh sách bị chặn</h4>
-        <a asp-action="Index" class="btn btn-outline-primary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
-        </a>
-    </div>
 
-    @* Search *@
+        @using DormitoryManagement.Domain.Common
+        @using DormitoryManagement.Application.Dtos.Responses
+        @model PagedResult<UserResponseDto>
+
+        <div class="container-fluid">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0 text-warning"><i class="fas fa-user-slash me-2"></i> Danh sách bị chặn</h4>
+                <a asp-action="Index" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
+
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="get" asp-action="BannedList" class="row g-2">
@@ -24,7 +26,6 @@
         </div>
     </div>
 
-    @* Table *@
     <div class="card border-0 shadow-sm">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -62,17 +63,66 @@
     </div>
 
     @await Html.PartialAsync("_Pagination", Model)
-</div>
+    </div>
 
-@section Scripts {
-    <script>
-        function unbanUser(id) {
-            if(confirm('Bạn có chắc chắn muốn mở khóa cho người dùng này?')) {
-                $.post('/User/ToggleStatus/' + id, function (data) {
-                    if (data.success) location.reload();
-                    else alert(data.message);
-                });
+    @section Scripts {
+        <script>
+            function unbanUser(id) {
+                if (confirm('Bạn có chắc chắn muốn mở khóa cho người dùng này?')) {
+                    $.post('/User/ToggleStatus/' + id, function (data) {
+                        if (data.success) location.reload();
+                        else alert(data.message);
+                    });
+                }
             }
-        }
-    </script>
+        </script>
+    }
+
+*@
+
+
+@model List<Guid>
+
+@{
+    ViewData["Title"] = "Danh sách";
 }
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header text-center fw-bold">
+            Danh sách dữ liệu
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-bordered table-hover text-center mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 80px;">STT</th>
+                        <th>Nội dung</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        int stt = 1;
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@stt</td>
+                                <td class="text-start">@item</td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="2" class="text-muted">Không có dữ liệu</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,11 +1,14 @@
 using System.Security.Claims;
 using System.Text;
+using DormitoryManagement.Application.Common.Configurations;
+using DormitoryManagement.Application.Interfaces;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
 using DormitoryManagement.Application.Services.Implements;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Infrastructure.Data;
 using DormitoryManagement.Infrastructure.ExternalServices;
 using DormitoryManagement.Infrastructure.Repositories;
@@ -34,12 +37,18 @@ internal class Program
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<IBedRepository, BedRepository>();
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
+        builder.Services.AddScoped<IBlockRepository, BlockRepository>();
+        builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
+
+        builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IContractService, ContractService>();
+        builder.Services.AddScoped<IBlockService, BlockService>();
+        builder.Services.AddScoped<IBedService, BedService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
