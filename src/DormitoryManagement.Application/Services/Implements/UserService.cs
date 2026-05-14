@@ -7,6 +7,7 @@ using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
+using Microsoft.AspNetCore.Identity;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -15,12 +16,15 @@ namespace DormitoryManagement.Application.Services.Implements
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<User> _userManager;
 
-        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper)
+
+        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         // ================= QUERY (Đọc dữ liệu) =================
@@ -33,8 +37,9 @@ namespace DormitoryManagement.Application.Services.Implements
                 isDeleted: false,
                 predicate: u => string.IsNullOrEmpty(search) ||
                                 u.UserName!.Contains(search) ||
-                                u.Email!.Contains(search) ||
-                                u.PhoneNumber!.Contains(search)
+                                u.FullName.Contains(search) || // Thêm tìm kiếm theo tên
+                                u.Code.Contains(search) ||     // Thêm tìm kiếm theo MSSV
+                                u.Email!.Contains(search)
             );
 
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
@@ -46,7 +51,7 @@ namespace DormitoryManagement.Application.Services.Implements
                 page, pageSize,
                 isActive: false,
                 isDeleted: false,
-                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search)
+                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search) || u.FullName.Contains(search)
             );
 
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
@@ -58,7 +63,7 @@ namespace DormitoryManagement.Application.Services.Implements
                 page, pageSize,
                 isActive: null, // Không quan tâm active hay không
                 isDeleted: true,
-                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search)
+                predicate: u => string.IsNullOrEmpty(search) || u.UserName!.Contains(search) || u.FullName.Contains(search)
             );
 
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
@@ -72,7 +77,7 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<UserResponseDto?> GetByUsernameAsync(string username)
         {
-            var user = await _userRepository.GetByUsernameAsync(username);
+            var user = await _userManager.FindByNameAsync(username);
             return _mapper.Map<UserResponseDto>(user);
         }
 
@@ -80,11 +85,24 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<bool> CreateUserAsync(UserRequestDto userDto)
         {
+            // 1. Map dữ liệu cơ bản (Trừ password)
             var user = _mapper.Map<User>(userDto);
-            // Bạn có thể xử lý Hash mật khẩu ở đây nếu cần
-            await _userRepository.AddAsync(user);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+
+            // Đảm bảo các trường mặc định được thiết lập
+            user.IsActive = true;
+            user.IsDeleted = false;
+            user.CreatedDate = DateTime.Now;
+
+            // 2. Sử dụng UserManager để tạo user và HASH MẬT KHẨU
+            var result = await _userManager.CreateAsync(user, userDto.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception("Lỗi Identity: " + errors);
+            }
+
+            return true;
         }
 
         public async Task<bool> CreateUsersAsync(IEnumerable<UserRequestDto> userDtos)
@@ -100,17 +118,16 @@ namespace DormitoryManagement.Application.Services.Implements
             var existingUser = await _userRepository.GetByIdAsync(id);
             if (existingUser == null) return false;
 
-            // Tạm thời lưu lại các thông tin quan trọng không cho phép sửa/tránh bị ghi đè null
-            var originalUserName = existingUser.UserName;
-            var originalNormalizedUserName = existingUser.NormalizedUserName;
-            var originalEmail = existingUser.Email; // Giữ lại email nếu bạn cũng không muốn form update profile đổi email
+            // Chỉ map những trường được phép sửa
+            existingUser.FullName = userDto.FullName;
+            existingUser.Email = userDto.Email;
+            existingUser.PhoneNumber = userDto.PhoneNumber;
+            existingUser.IdentityCardNumber = userDto.IdentityCardNumber;
+            existingUser.Code = userDto.Code;
+            existingUser.Role = userDto.Role;
+            existingUser.LastModified = DateTime.Now;
 
-            _mapper.Map(userDto, existingUser); // Map đè dữ liệu mới vào entity cũ
-
-            // Phục hồi lại tên đăng nhập và các trường quan trọng
-            existingUser.UserName = originalUserName;
-            existingUser.NormalizedUserName = originalNormalizedUserName;
-
+            // Cập nhật qua Repository
             await _userRepository.UpdateAsync(existingUser);
             var result = await _unitOfWork.SaveChangesAsync();
             return result > 0;
