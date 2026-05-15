@@ -56,6 +56,11 @@ internal class Program
             options.UseSqlServer(connectionString)
         );
 
+        builder.Services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "RequestVerificationToken";
+        });
+
         // Identity
         builder.Services
             .AddIdentity<User, IdentityRole<Guid>>(options =>

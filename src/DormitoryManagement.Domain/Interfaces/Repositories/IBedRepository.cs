@@ -1,5 +1,4 @@
 using DormitoryManagement.Domain.Entities;
-using DormitoryManagement.Domain.Interfaces.Repositories;
 
 namespace DormitoryManagement.Domain.Interfaces.Repositories
 {
