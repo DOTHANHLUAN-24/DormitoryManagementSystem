@@ -7,18 +7,18 @@ namespace DormitoryManagement.Application.Dtos.Responses.Rooms
         public Guid Id { get; set; }
         public string RoomNumber { get; set; } = string.Empty;
         public int Floor { get; set; }
-        public RoomStatus Status { get; set; } // Chuyển Enum sang String/Description
+        public RoomStatus Status { get; set; }
 
-        // Thông tin từ các bảng liên kết (Chỉ lấy Name để UI hiển thị)
+        // Hiển thị tên Enum tiếng Việt hoặc string nếu cần
+        public string StatusDisplay => Status.ToString();
+
         public Guid BlockId { get; set; }
-        public string BlockName { get; set; } = string.Empty;
+        public string? BlockName { get; set; } // Lấy từ virtual Block
 
         public Guid RoomTypeId { get; set; }
-        public string RoomTypeName { get; set; } = string.Empty;
-        public decimal Price { get; set; } // Lấy từ RoomType
+        public string? RoomTypeName { get; set; } // Lấy từ virtual RoomType
 
-        // Thống kê nhanh
-        public int TotalBeds { get; set; }
-        public int AvailableBeds { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }
