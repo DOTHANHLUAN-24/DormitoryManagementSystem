@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DormitoryManagement.Domain.Enums;
 
 namespace DormitoryManagement.Application.Dtos.Requests.Rooms
 {
@@ -8,13 +9,15 @@ namespace DormitoryManagement.Application.Dtos.Requests.Rooms
         [StringLength(20)]
         public string RoomNumber { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Vui lòng nhập số tầng")]
+        [Required]
         public int Floor { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn tòa nhà")]
+        [Required]
         public Guid BlockId { get; set; }
 
-        [Required(ErrorMessage = "Vui lòng chọn loại phòng")]
+        [Required]
         public Guid RoomTypeId { get; set; }
+
+        public RoomStatus Status { get; set; } = RoomStatus.Available;
     }
 }

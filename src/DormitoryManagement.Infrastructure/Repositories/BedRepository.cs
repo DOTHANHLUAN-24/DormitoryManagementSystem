@@ -1,6 +1,5 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
-using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -45,27 +44,6 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return await _dbSet
                 .Include(b => b.Room)
                 .FirstOrDefaultAsync(b => !b.IsDeleted && b.BedNumber == bedNumber);
-        }
-
-        public IQueryable<Bed> GetPagingQuery(string searchString)
-        {
-            var query = _dbSet
-                .Include(b => b.Room)
-                .AsNoTracking()
-                .Where(b => !b.IsDeleted)
-                .AsQueryable();
-
-            if (string.IsNullOrWhiteSpace(searchString))
-            {
-                return query
-                    .Where(_ => false)
-                    .OrderByDescending(b => b.CreatedDate);
-            }
-
-            query = query.Where(b => b.BedNumber.Contains(searchString));
-
-            return query
-                .OrderByDescending(b => b.CreatedDate);
         }
 
         public async Task<IEnumerable<Bed>> GetAvailableBedsByRoomIdAsync(Guid roomId)
