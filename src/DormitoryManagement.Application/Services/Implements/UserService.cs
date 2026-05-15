@@ -85,15 +85,14 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<bool> CreateUserAsync(UserRequestDto userDto)
         {
-            // 1. Map dữ liệu cơ bản (Trừ password)
             var user = _mapper.Map<User>(userDto);
 
-            // Đảm bảo các trường mặc định được thiết lập
             user.IsActive = true;
             user.IsDeleted = false;
             user.CreatedDate = DateTime.Now;
 
-            // 2. Sử dụng UserManager để tạo user và HASH MẬT KHẨU
+            user.Role = userDto.Role;
+
             var result = await _userManager.CreateAsync(user, userDto.Password);
 
             if (!result.Succeeded)
@@ -101,6 +100,8 @@ namespace DormitoryManagement.Application.Services.Implements
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception("Lỗi Identity: " + errors);
             }
+
+            await _userManager.AddToRoleAsync(user, userDto.Role.ToString());
 
             return true;
         }
