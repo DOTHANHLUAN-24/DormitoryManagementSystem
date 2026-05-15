@@ -1,61 +1,115 @@
 ﻿@using DormitoryManagement.Application.Dtos.Requests
+@using DormitoryManagement.Domain.Enums
 @model DormitoryManagement.Application.Dtos.Requests.UserRequestDto
 
-<div class="container mt-4">
+<div class="container-fluid py-4">
     <div class="row justify-content-center">
-        <div class="col-md-6 shadow p-4 rounded bg-white">
-            <h3 class="text-center mb-4">Thêm sinh viên mới</h3>
-            <form asp-action="Create" method="post">
-                <!-- Chuyển thành All để hiển thị mọi lỗi của ModelState lên đầu form -->
-                <div asp-validation-summary="All" class="text-danger mb-3 fw-bold"></div>
-
-                <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập <span class="text-danger">*</span></label>
-                    <input asp-for="UserName" class="form-control" placeholder="Nhập mã sinh viên..." />
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+        <div class="col-xl-10">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="card-title mb-0"><i class="bi bi-person-plus-fill me-2"></i>Thêm người dùng hệ thống</h5>
                 </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <!-- Hiển thị lỗi tổng hợp -->
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger small"></div>
 
-                <div class="mb-3">
-                    <label class="form-label">Họ và tên <span class="text-danger">*</span></label>
-                    <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên..." />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
-                </div>
+                        <div class="row">
+                            <!-- CỘT TRÁI: THÔNG TIN TÀI KHOẢN -->
+                            <div class="col-md-6 border-end">
+                                <h6 class="text-primary mb-3 fw-bold border-bottom pb-2">
+                                    <i class="bi bi-shield-lock me-1"></i> Thông tin tài khoản
+                                </h6>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Tên đăng nhập <span class="text-danger">*</span></label>
+                                    <input asp-for="UserName" class="form-control" placeholder="Ví dụ: 2221050046" />
+                                    <span asp-validation-for="UserName" class="text-danger small"></span>
+                                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Mã số (MSSV/MNV) <span class="text-danger">*</span></label>
-                    <input asp-for="Code" class="form-control" placeholder="Ví dụ: 2221050046" />
-                    <span asp-validation-for="Code" class="text-danger"></span>
-                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input asp-for="Password" type="password" class="form-control" id="passwordInput" />
+                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                                            <i class="bi bi-eye" id="passwordIcon"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="Password" class="text-danger small"></span>
+                                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Số CMND/CCCD <span class="text-danger">*</span></label>
-                    <input asp-for="IdentityCardNumber" class="form-control" placeholder="Nhập số CCCD..." />
-                    <span asp-validation-for="IdentityCardNumber" class="text-danger"></span>
-                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Vai trò hệ thống <span class="text-danger">*</span></label>
+                                    <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()">
+                                        <option value="">-- Chọn vai trò --</option>
+                                    </select>
+                                    <span asp-validation-for="Role" class="text-danger small"></span>
+                                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Số điện thoại</label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại..." />
-                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Email liên hệ <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                                    <span asp-validation-for="Email" class="text-danger small"></span>
+                                </div>
+                            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Email <span class="text-danger">*</span></label>
-                    <input asp-for="Email" type="email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+                            <!-- CỘT PHẢI: THÔNG TIN CÁ NHÂN -->
+                            <div class="col-md-6 ps-md-4">
+                                <h6 class="text-primary mb-3 fw-bold border-bottom pb-2">
+                                    <i class="bi bi-person-badge me-1"></i> Thông tin cá nhân
+                                </h6>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                    <input asp-for="FullName" class="form-control" placeholder="Nhập đầy đủ họ tên..." />
+                                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
-                    <input asp-for="Password" type="password" class="form-control" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Mã số (MSSV/MNV) <span class="text-danger">*</span></label>
+                                    <input asp-for="Code" class="form-control" placeholder="Nhập mã định danh..." />
+                                    <span asp-validation-for="Code" class="text-danger small"></span>
+                                </div>
 
-                <div class="d-flex justify-content-between">
-                    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
-                    <button type="submit" class="btn btn-primary">Lưu thông tin</button>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Số CCCD/CMND <span class="text-danger">*</span></label>
+                                    <input asp-for="IdentityCardNumber" class="form-control" placeholder="Nhập 12 số CCCD" />
+                                    <span asp-validation-for="IdentityCardNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Số điện thoại</label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="09xx xxx xxx" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-light border">
+                                <i class="bi bi-x-circle me-1"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-check-circle me-1"></i> Lưu thông tin
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('passwordInput');
+            const icon = document.getElementById('passwordIcon');
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+    </script>
+}

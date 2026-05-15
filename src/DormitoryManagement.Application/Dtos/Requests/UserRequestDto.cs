@@ -26,6 +26,8 @@ namespace DormitoryManagement.Application.Dtos.Requests
         [StringLength(12, MinimumLength = 9, ErrorMessage = "CCCD không hợp lệ")]
         public string IdentityCardNumber { get; set; } = string.Empty;
 
+        [Required(ErrorMessage = "Vui lòng chọn vai trò")]
         public UserRole Role { get; set; }
+
     }
 }

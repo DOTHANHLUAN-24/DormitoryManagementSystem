@@ -15,7 +15,7 @@ namespace DormitoryManagement.Application.Mappings
             // === USER MAPPINGS ===
             CreateMap<User, UserResponseDto>();
             CreateMap<UserRequestDto, User>();
-
+            CreateMap<UserResponseDto, UserRequestDto>();
 
             // === ROOM MAPPINGS ===
             // Entity -> Response
