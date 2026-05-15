@@ -45,6 +45,13 @@ namespace DormitoryManagement.Application.Mappings
                     ? src.Beds.Count(b => b.Status == BedStatus.Available) // Thay BedStatus theo Enum của bạn
                     : 0));
 
+            // Map từ Response DTO sang Update Request (để load dữ liệu vào Form Edit)
+            CreateMap<RoomResponse, UpdateRoomRequest>();
+
+            // Map từ Request sang Entity (để lưu vào Database)
+            CreateMap<CreateRoomRequest, Room>();
+            CreateMap<UpdateRoomRequest, Room>();
+
             CreateMap<Room, RoomDetailResponse>().IncludeBase<Room, RoomResponse>();
             CreateMap<Bed, BedResponse>();
             CreateMap<Asset, AssetResponse>();
