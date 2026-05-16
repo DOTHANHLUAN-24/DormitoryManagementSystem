@@ -38,11 +38,12 @@
 
     <!-- Nội dung Nội Quy -->
     <div class="card border-0 shadow-sm mb-4">
-        
         <div class="card-body p-4 p-md-5">
             @if (!string.IsNullOrEmpty(ViewBag.Content as string))
             {
-                @Html.Raw(ViewBag.Content)
+                <div class="regulations-display">
+                    @Html.Raw(ViewBag.Content)
+                </div>
             }
             else
             {
@@ -56,13 +57,32 @@
 </div>
 
 <style>
-    .regulation-section ul li {
-        background: transparent;
-        padding-left: 0;
+    /* Tự động biến các tiêu đề (Điều 1, Điều 2...) thành các khối riêng biệt */
+    .regulations-display h2,
+    .regulations-display h3,
+    .regulations-display h4 {
+        color: #0d6efd;
+        border-left: 5px solid #0d6efd;
+        background-color: #f8f9fa;
+        padding: 12px 20px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-radius: 0 5px 5px 0;
+        font-weight: 700;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
-    .regulation-section p, .regulation-section li {
+
+    .regulations-display h2:first-child,
+    .regulations-display h3:first-child,
+    .regulations-display h4:first-child {
+        margin-top: 0;
+    }
+
+    .regulations-display p,
+    .regulations-display li {
         line-height: 1.7;
         color: #4a5568;
         font-size: 1.05rem;
+        margin-bottom: 1rem;
     }
 </style>

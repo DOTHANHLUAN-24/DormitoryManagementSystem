@@ -28,28 +28,36 @@
                 <div class="mb-4">
                     <label for="editor" class="form-label fw-bold text-primary">Nội dung Nội quy</label>
                     <!-- Thuộc tính name="Content" sẽ map với tham số trong Controller -->
-                    <textarea id="editor" name="Content" class="form-control" rows="15">
-                        @ViewBag.CurrentContent
-                    </textarea>
-                </div>
+                    <div class="text-muted small mb-2"><i class="fas fa-info-circle me-1"></i>Sử dụng các định dạng tiêu
+                        đề (Heading) để phân tách các điều khoản rõ ràng hơn.</div>
+                        <textarea id="editor" name="Content" class="form-control"
+                                  rows="15">@ViewBag.CurrentContent</textarea>
+                    </div>
 
-                <div class="text-end mt-4">
-                    <a asp-controller="Regulations" asp-action="Index" class="btn btn-light border me-2">
-                        <i class="fas fa-times me-1"></i>Hủy bỏ
-                    </a>
-                    <button type="submit" class="btn btn-primary shadow-sm">
-                        <i class="fas fa-save me-1"></i>Lưu thay đổi
-                    </button>
-                </div>
-            </form>
+                    <div class="text-end mt-4">
+                        <a asp-controller="Regulations" asp-action="Index" class="btn btn-light border me-2">
+                            <i class="fas fa-times me-1"></i>Hủy bỏ
+                        </a>
+                        <button type="submit" class="btn btn-primary shadow-sm">
+                            <i class="fas fa-save me-1"></i>Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-@section Scripts {
-    <!-- Nhúng thư viện CKEditor 4 để tạo trình soạn thảo văn bản -->
-    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-    <script>
-        CKEDITOR.replace('editor');
-    </script>
-}
+    @section Scripts {
+        <!-- Nhúng thư viện CKEditor 4 để tạo trình soạn thảo văn bản -->
+        <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+        <script>
+            CKEDITOR.replace('editor');
+
+            // Đảm bảo dữ liệu được cập nhật từ CKEditor vào textarea trước khi submit
+            document.querySelector('form').onsubmit = function () {
+            for (var instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+            }
+            };
+        </script>
+    }
