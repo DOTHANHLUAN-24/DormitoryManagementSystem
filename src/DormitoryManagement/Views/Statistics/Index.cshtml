@@ -1,0 +1,165 @@
+@{
+    ViewData["Title"] = "Báo cáo Thống kê";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3 class="fw-bold text-dark"><i class="fas fa-chart-line me-2 text-primary"></i>Báo cáo Thống kê</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Báo cáo thống kê</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Tổng quan nhanh (Summary Cards) -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small fw-bold">Tổng Sinh viên</h6>
+                    <h2 class="mb-0">@ViewBag.TotalStudents</h2>
+                    <i class="fas fa-users position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small fw-bold">Phòng đang trống</h6>
+                    <h2 class="mb-0">@ViewBag.EmptyRooms</h2>
+                    <i class="fas fa-door-open position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small fw-bold">Hóa đơn chưa thu</h6>
+                    <h2 class="mb-0">@ViewBag.UnpaidInvoices</h2>
+                    <i
+                    class="fas fa-file-invoice-dollar position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-danger text-white">
+                <div class="card-body">
+                    <h6 class="text-uppercase small fw-bold">Vi phạm mới</h6>
+                    <h2 class="mb-0">@String.Format("{0:00}", ViewBag.NewViolations)</h2>
+                    <i
+                    class="fas fa-exclamation-triangle position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Đồ thị tình trạng phòng -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 fw-bold text-primary">Tình trạng Phòng</h6>
+                </div>
+                <div class="card-body d-flex align-items-center">
+                    <canvas id="roomStatusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Đồ thị doanh thu theo tháng -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold text-primary">Doanh thu 6 tháng gần nhất</h6>
+                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download me-1"></i>Xuất
+                        Excel</button>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="revenueChart" style="min-height: 300px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // 1. Đồ thị Tình trạng Phòng (Pie Chart)
+            const roomCtx = document.getElementById('roomStatusChart').getContext('2d');
+            new Chart(roomCtx, {
+            type: 'doughnut',
+            data: {
+            labels: ['Đã đầy', 'Còn trống', 'Bảo trì'],
+            datasets: [{
+            data: @Html.Raw(Json.Serialize(ViewBag.RoomStatusData)),
+            backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
+            hoverOffset: 4
+            }]
+            },
+            options: {
+            plugins: {
+            legend: { position: 'bottom' }
+            }
+            }
+            });
+
+            // 2. Đồ thị Doanh thu (Bar Chart)
+            const revCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revCtx, {
+            type: 'bar',
+            data: {
+            labels: @Html.Raw(Json.Serialize(ViewBag.RevenueLabels)),
+            datasets: [
+            {
+            label: 'Đã thu (Triệu VNĐ)',
+            data: @Html.Raw(Json.Serialize(ViewBag.RevenuePaid)),
+            backgroundColor: '#0d6efd',
+            borderRadius: 5
+            },
+            {
+            label: 'Còn nợ (Triệu VNĐ)',
+            data: @Html.Raw(Json.Serialize(ViewBag.RevenueUnpaid)),
+            backgroundColor: '#e74a3b',
+            borderRadius: 5
+            }
+            ]
+            },
+            options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+            y: {
+            beginAtZero: true,
+            ticks: {
+            callback: function (value) { return value + ' Tr'; }
+            }
+            }
+            },
+            plugins: {
+            legend: { position: 'top' }
+            }
+            }
+            });
+        </script>
+    }
+
+    <style>
+        .card {
+        transition: transform 0.2s;
+        }
+
+        .card:hover {
+        transform: translateY(-3px);
+        }
+
+        canvas {
+        max-width: 100% !important;
+        }
+    </style>
