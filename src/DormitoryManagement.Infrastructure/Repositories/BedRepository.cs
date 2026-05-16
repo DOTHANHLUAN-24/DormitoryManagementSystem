@@ -1,6 +1,5 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
-using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,7 +45,6 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(b => b.Room)
                 .FirstOrDefaultAsync(b => !b.IsDeleted && b.BedNumber == bedNumber);
         }
-
 
         public async Task<IEnumerable<Bed>> GetAvailableBedsByRoomIdAsync(Guid roomId)
         {
