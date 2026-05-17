@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
+using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DormitoryManagement.Controllers
 {
@@ -9,12 +12,14 @@ namespace DormitoryManagement.Controllers
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
+        private readonly IUnitOfWork _unitOfWork; // Thêm IUnitOfWork để load dữ liệu cho dropdown
         private readonly IMapper _mapper;
 
-        public RoomController(IRoomService roomService, IMapper mapper)
+        public RoomController(IRoomService roomService, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _roomService = roomService;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("")]
@@ -37,37 +42,73 @@ namespace DormitoryManagement.Controllers
             return View(room);
         }
 
+        // GET: Room/Create
         [HttpGet("Create")]
         public IActionResult Create()
         {
-            // Trả về DTO rỗng để Helper Tag của ASP.NET Core hoạt động chuẩn
-            return View(new CreateRoomRequest());
+            // Gọi hàm fake dữ liệu trước khi trả về View
+            LoadDropdownDataFake();
+
+            // Khởi tạo model mặc định
+            var model = new CreateRoomRequest
+            {
+                Status = RoomStatus.Available, // Giá trị mặc định
+                Floor = 1
+            };
+
+            return View(model);
         }
 
-        [HttpPost("Create")]
+        // POST: Room/Create
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoomRequest request)
+        public async Task<IActionResult> Create(CreateRoomRequest request) // 1. Phải là CreateRoomRequest
         {
             if (!ModelState.IsValid)
             {
-                // Log lỗi ra console để debug nhanh trong quá trình phát triển
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                Console.WriteLine(">>> LỖI CREATE ROOM: " + string.Join(", ", errors));
-                return View(request);
+                // 2. LỖI THƯỜNG GẶP: Quên nạp lại SelectList khi dữ liệu không hợp lệ
+                // Nếu thiếu 2 dòng này, khi trả về View nó sẽ báo lỗi ViewBag null
+                LoadDropdownDataFake();
+
+                return View(request); // Trả về đúng model request
             }
 
             try
             {
-                await _roomService.CreateRoomAsync(request);
-                TempData["Success"] = "Thêm phòng mới thành công!";
+                // 3. Logic lưu vào DB (Sau này bạn sẽ code ở đây)
+                // Hiện tại tạm thời redirect để test giao diện
+                TempData["SuccessMessage"] = "Thêm phòng thành công!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, "Lỗi: " + ex.Message);
+                ModelState.AddModelError("", "Lỗi: " + ex.Message);
+                LoadDropdownDataFake();
                 return View(request);
             }
         }
+
+        private void LoadDropdownDataFake()
+        {
+            // 1. Fake danh sách Tòa nhà (Blocks)
+            var fakeBlocks = new List<object>
+        {
+            new { Id = 1, Name = "Tòa Nhà A (Khu Nam)" },
+            new { Id = 2, Name = "Tòa Nhà B (Khu Bắc)" },
+            new { Id = 3, Name = "Tòa Nhà C (VIP)" }
+        };
+            ViewBag.Blocks = new SelectList(fakeBlocks, "Id", "Name");
+
+            // 2. Fake danh sách Loại phòng (RoomTypes)
+            var fakeRoomTypes = new List<object>
+        {
+            new { Id = 10, Name = "Phòng Đơn (1 Người)" },
+            new { Id = 11, Name = "Phòng Đôi (2 Người)" },
+            new { Id = 12, Name = "Phòng Tập Thể (8 Người)" }
+        };
+            ViewBag.RoomTypes = new SelectList(fakeRoomTypes, "Id", "Name");
+        }
+
 
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)

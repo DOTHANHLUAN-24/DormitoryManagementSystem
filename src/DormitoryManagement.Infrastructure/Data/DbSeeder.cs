@@ -17,31 +17,43 @@ namespace DormitoryManagement.Infrastructure.Data
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
+            // Luôn đảm bảo DB đã được migrate lên bản mới nhất
             await context.Database.MigrateAsync();
 
-            if (context.Users.Any())
-                return;
-
+            // Lấy data từ Builder (chỉ lấy 1 lần để dùng chung bên dưới)
             var data = SeedDataBuilder.Build();
 
-            // 🔵 1. Seed Roles trước
-            await RoleSeeder.SeedAsync(roleManager);
+            // 🔵 1. Seed Roles (Kiểm tra nếu chưa có Role nào thì mới Seed)
+            if (!await roleManager.Roles.AnyAsync())
+            {
+                await RoleSeeder.SeedAsync(roleManager);
+            }
 
-            // 🔵 2. Seed Users (Identity)
-            await IdentitySeeder.SeedAsync(userManager, data.Users);
+            // 🔵 2. Seed Users (Kiểm tra nếu chưa có User nào thì mới Seed)
+            if (!await userManager.Users.AnyAsync())
+            {
+                await IdentitySeeder.SeedAsync(userManager, data.Users);
+            }
 
-            // 🟢 3. Business data (KHÔNG phụ thuộc User)
-            context.RoomTypes.AddRange(data.RoomTypes);
-            context.Blocks.AddRange(data.Blocks);
-            context.Rooms.AddRange(data.Rooms);
-            context.Beds.AddRange(data.Beds);
+            // 🟢 3. Seed Business Data (Dãy nhà, Loại phòng, Phòng, Giường)
+            // Kiểm tra một bảng đại diện, ví dụ: RoomTypes hoặc Blocks
+            if (!await context.Blocks.AnyAsync())
+            {
+                if (data.RoomTypes.Any()) await context.RoomTypes.AddRangeAsync(data.RoomTypes);
+                if (data.Blocks.Any()) await context.Blocks.AddRangeAsync(data.Blocks);
+                if (data.Rooms.Any()) await context.Rooms.AddRangeAsync(data.Rooms);
+                if (data.Beds.Any()) await context.Beds.AddRangeAsync(data.Beds);
 
-            await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
+            }
 
-            // 🔴 4. Contract (PHỤ THUỘC User + Bed → để cuối)
-            context.Contracts.AddRange(data.Contracts);
-
-            await context.SaveChangesAsync();
+            // 🔴 4. Seed Contracts (Hợp đồng)
+            // Chỉ seed nếu chưa có hợp đồng nào và có dữ liệu mẫu
+            if (!await context.Contracts.AnyAsync() && data.Contracts.Any())
+            {
+                await context.Contracts.AddRangeAsync(data.Contracts);
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

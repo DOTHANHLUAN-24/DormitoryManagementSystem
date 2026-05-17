@@ -224,7 +224,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             entity.IsDeleted = false;
             entity.LastModified = DateTime.UtcNow;
             _dbSet.Update(entity);
-            await Task.CompletedTask; // Vì _db.SaveChangesAsync() sẽ được gọi ở UnitOfWork hoặc cuối Service
+            await Task.CompletedTask;
         }
 
         public virtual async Task<PagedResult<T>> GetByStatusPagedAsync(

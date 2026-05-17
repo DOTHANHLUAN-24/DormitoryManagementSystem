@@ -35,15 +35,7 @@ namespace DormitoryManagement.Application.Mappings
 
                 // Map từ RoomType
                 .ForMember(dest => dest.RoomTypeId, opt => opt.MapFrom(src => src.RoomTypeId))
-                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.ToString() : string.Empty))
-                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.BasePrice : 0))
-
-                // Thống kê giường (Beds)
-                // Giả sử thực thể Bed có thuộc tính Status hoặc IsOccupied
-                .ForMember(dest => dest.TotalBeds, opt => opt.MapFrom(src => src.Beds != null ? src.Beds.Count : 0))
-                .ForMember(dest => dest.AvailableBeds, opt => opt.MapFrom(src => src.Beds != null
-                    ? src.Beds.Count(b => b.Status == BedStatus.Available) // Thay BedStatus theo Enum của bạn
-                    : 0));
+                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.ToString() : string.Empty));
 
             // Map từ Response DTO sang Update Request (để load dữ liệu vào Form Edit)
             CreateMap<RoomResponse, UpdateRoomRequest>();

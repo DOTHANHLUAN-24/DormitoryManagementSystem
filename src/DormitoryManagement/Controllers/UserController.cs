@@ -122,7 +122,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
-        public async Task<IActionResult> Deactivate([FromRoute]Guid id)
+        public async Task<IActionResult> Deactivate([FromRoute] Guid id)
 
         {
             if (id == Guid.Empty) return Json(new { success = false, message = "ID không hợp lệ" });
@@ -170,17 +170,20 @@ namespace DormitoryManagement.Controllers
             }
         }
 
+        // Trong UserController.cs
         [HttpPost]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
             try
             {
-                await _userService.DeletePermanentlyAsync(id);
-                return Json(new { success = true, message = "Đã xóa vĩnh viễn người dùng." });
+                var result = await _userService.DeletePermanentlyAsync(id);
+                return Json(new { success = true, message = "Xóa thành công" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                // Lấy thông báo lỗi chi tiết nhất từ SQL
+                var message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return Json(new { success = false, message = "Lỗi hệ thống: " + message });
             }
         }
 
@@ -200,6 +203,46 @@ namespace DormitoryManagement.Controllers
             if (user == null) return NotFound();
 
             return View(user);
+        }
+        /*
+                [HttpPost]
+                [ValidateAntiForgeryToken]
+                // Thêm [FromRoute] để chắc chắn lấy ID từ URL
+                public async Task<IActionResult> ToggleLock([FromRoute] Guid id)
+                {
+                    if (id == Guid.Empty)
+                        return Json(new { success = false, message = "ID không hợp lệ" });
+
+                    try
+                    {
+                        var result = await _userService.ToggleUserStatusAsync(id);
+                        if (result)
+                        {
+                            var user = await _userService.GetUserByIdAsync(id);
+                            // Sau khi mở khóa, IsActive sẽ là true
+                            string msg = user!.IsActive ? "Đã mở khóa tài khoản thành công!" : "Đã khóa tài khoản thành công!";
+                            return Json(new { success = true, message = msg });
+                        }
+                        return Json(new { success = false, message = "Cập nhật thất bại." });
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new { success = false, message = ex.Message });
+                    }
+                }
+                */
+        [HttpPost]
+        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
+        public async Task<IActionResult> ToggleLock(Guid id)
+        {
+            // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService
+            var result = await _userService.ToggleUserStatusAsync(id);
+
+            if (result)
+            {
+                return Json(new { success = true, message = "Đã thay đổi trạng thái tài khoản thành công." });
+            }
+            return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
         }
     }
 }
