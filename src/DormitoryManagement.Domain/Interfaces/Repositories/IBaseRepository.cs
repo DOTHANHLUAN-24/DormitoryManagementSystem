@@ -43,6 +43,7 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
             int pageSize,
             bool? isActive = null,
             bool? isDeleted = null,
-            Expression<Func<T, bool>>? predicate = null);
+            Expression<Func<T, bool>>? predicate = null,
+            params Expression<Func<T, object>>[] includeProperties);
     }
 }

@@ -6,25 +6,19 @@ namespace DormitoryManagement.Application.Interfaces.Services
 {
     public interface IRoomService
     {
-        // Lấy danh sách phân trang và tìm kiếm
+        // --- TRUY VẤN (QUERY) ---
         Task<PagedResult<RoomResponse>> GetPagedRoomsAsync(RoomFilterRequest filter);
-
-        // Lấy chi tiết một phòng
+        Task<PagedResult<RoomResponse>> GetDeletedRoomsPagedAsync(RoomFilterRequest filter);
         Task<RoomDetailResponse?> GetRoomByIdAsync(Guid id);
-
-        // Tạo mới phòng
-        Task<Guid> CreateRoomAsync(CreateRoomRequest request);
-
-        // Cập nhật thông tin phòng
-        Task<bool> UpdateRoomAsync(Guid id, UpdateRoomRequest request);
-
-        // Xóa phòng (mặc định xóa mềm)
-        Task<bool> DeleteRoomAsync(Guid id);
-
-        // Khôi phục phòng đã xóa
-        Task<bool> RestoreRoomAsync(Guid id);
-
-        // Lấy danh sách phòng theo Block (cho dropdown)
         Task<IEnumerable<RoomResponse>> GetRoomsByBlockAsync(Guid blockId);
+
+        // --- THAO TÁC (COMMAND) ---
+        Task<bool> CreateRoomAsync(CreateRoomRequest request);
+        Task<bool> UpdateRoomAsync(Guid id, UpdateRoomRequest request);
+        Task<bool> DeleteRoomAsync(Guid id);
+        Task<bool> RestoreRoomAsync(Guid id);
+        Task<bool> DeletePermanentlyAsync(Guid id);
+
+        Task<RoomStatisticsDto> GetRoomStatisticsAsync();
     }
 }
