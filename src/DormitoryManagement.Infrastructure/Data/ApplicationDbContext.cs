@@ -49,29 +49,13 @@ namespace DormitoryManagement.Infrastructure.Data
                 entity.HasOne(e => e.User)
                       .WithMany(u => u.Contracts)
                       .HasForeignKey(e => e.UserId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.SetNull);
 
                 entity.HasOne(e => e.Bed)
                       .WithMany(b => b.Contracts)
                       .HasForeignKey(e => e.BedId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
-
-            // TỰ ĐỘNG CẤU HÌNH SOFT DELETE FILTER
-            // Quét qua tất cả thực thể có kế thừa IAuditableEntity để áp dụng lọc IsDeleted = false
-            foreach (var entityType in builder.Model.GetEntityTypes())
-            {
-                if (typeof(IAuditableEntity).IsAssignableFrom(entityType.ClrType))
-                {
-                    var parameter = System.Linq.Expressions.Expression.Parameter(entityType.ClrType, "e");
-                    var property = System.Linq.Expressions.Expression.Property(parameter, nameof(IAuditableEntity.IsDeleted));
-                    var falseConstant = System.Linq.Expressions.Expression.Constant(false);
-                    var comparison = System.Linq.Expressions.Expression.Equal(property, falseConstant);
-                    var lambda = System.Linq.Expressions.Expression.Lambda(comparison, parameter);
-
-                    builder.Entity(entityType.ClrType).HasQueryFilter(lambda);
-                }
-            }
         }
 
         /// <summary>

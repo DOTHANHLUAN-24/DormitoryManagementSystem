@@ -1,23 +1,23 @@
-﻿using DormitoryManagement.Domain.Common;
+﻿using DormitoryManagement.Application.Dtos.Requests.Blocks;
+using DormitoryManagement.Application.Dtos.Responses.Blocks;
+using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Application.Services.Interfaces
 {
     public interface IBlockService
     {
-        // Truy vấn dữ liệu
-        Task<IEnumerable<Block>> GetAllBlocksAsync(bool includeDeleted = false);
-        Task<PagedResult<Block>> GetPagedBlocksAsync(int pageIndex, int pageSize, string? searchTerm = null);
-        Task<Block?> GetBlockByIdAsync(Guid id);
-        Task<Block?> GetBlockWithRoomsAsync(Guid id);
+        // Truy vấn
+        Task<PagedResult<BlockResponseDto>> GetActiveBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm);
+        Task<PagedResult<BlockResponseDto>> GetDeletedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm);
+        Task<BlockResponseDto?> GetBlockByIdAsync(Guid id);
+        Task<IEnumerable<BlockResponseDto>> GetAllBlocksAsync(); // Dùng cho Dropdown
 
-        // Thao tác nghiệp vụ
-        Task<bool> CreateBlockAsync(Block block);
-        Task<bool> UpdateBlockAsync(Block block);
-        Task<bool> DeleteBlockAsync(Guid id, bool isSoftDelete = true);
+        // Thao tác
+        Task<bool> CreateBlockAsync(BlockRequestDto request);
+        Task<bool> UpdateBlockAsync(Guid id, BlockRequestDto request);
+        Task<bool> SoftDeleteBlockAsync(Guid id);
         Task<bool> RestoreBlockAsync(Guid id);
-
-        // Kiểm tra
-        Task<bool> IsNameDuplicateAsync(string name, Guid? excludeId = null);
+        Task<bool> DeletePermanentlyAsync(Guid id);
     }
 }

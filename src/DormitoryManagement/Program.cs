@@ -49,6 +49,7 @@ internal class Program
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<IBlockService, BlockService>();
         builder.Services.AddScoped<IBedService, BedService>();
+        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

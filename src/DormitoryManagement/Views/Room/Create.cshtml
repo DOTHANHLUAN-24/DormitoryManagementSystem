@@ -1,91 +1,91 @@
+@model DormitoryManagement.Application.Dtos.Requests.Rooms.CreateRoomRequest
+@using DormitoryManagement.Domain.Enums
+
 @{
     ViewData["Title"] = "Thêm phòng mới";
     Layout = "_Layout";
 }
-@model DormitoryManagement.Domain.Entities.Room
-@using DormitoryManagement.Domain.Enums
 
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-lg-9">
-            <div class="card border-0 shadow-lg">
-                <div class="card-header bg-success bg-gradient text-white py-3">
+            <div class="card border-0 shadow-lg" style="border-radius: 20px;">
+                <div class="card-header bg-primary bg-gradient text-white py-3" style="border-radius: 20px 20px 0 0;">
                     <h5 class="mb-0">
-                        <i class="bi bi-plus-circle me-2"></i>Thêm phòng mới
+                        <i class="fas fa-plus-circle me-2"></i>Thêm phòng mới
                     </h5>
                 </div>
                 <div class="card-body p-5">
-                    <form asp-action="Create" asp-controller="Room" method="post">
-                        <div class="row g-3">
-                            <!-- Số phòng (RoomNumber) -->
+                    <form asp-action="Create" method="post">
+                        @* Hiển thị lỗi tổng quát nếu có *@
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-4">
+                            <!-- Số phòng -->
                             <div class="col-md-6">
-                                <label class="form-label fw-semibold">Số phòng <span
-                                    class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-door-closed"></i></span>
-                                        <input asp-for="RoomNumber" type="text" class="form-control" placeholder="VD: P.101"
-                                               required />
-                                    </div>
-                                    <span asp-validation-for="RoomNumber" class="text-danger"></span>
+                                <label asp-for="RoomNumber" class="form-label fw-bold">Số phòng</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-door-open"></i></span>
+                                    <input asp-for="RoomNumber" class="form-control" placeholder="Ví dụ: 101, 202..." />
                                 </div>
-
-                                <!-- Tầng (Floor) -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tầng số</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-layers"></i></span>
-                                        <input asp-for="Floor" type="number" class="form-control" placeholder="VD: 1"
-                                               min="1" />
-                                    </div>
-                                    <span asp-validation-for="Floor" class="text-danger"></span>
-                                </div>
-
-                                <!-- Trạng thái (Status) -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Trạng thái ban đầu</label>
-                                    <select asp-for="Status" asp-items="Html.GetEnumSelectList<RoomStatus>()"
-                                            class="form-select border-primary-subtle">
-                                    </select>
-                                    <span asp-validation-for="Status" class="text-danger"></span>
-                                </div>
-
-                                <!-- Tòa nhà (BlockId) -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Thuộc tòa nhà (Block)</label>
-                                    <select asp-for="BlockId" asp-items="ViewBag.Blocks" class="form-select">
-                                        <option value="">-- Chọn tòa nhà --</option>
-                                    </select>
-                                    <span asp-validation-for="BlockId" class="text-danger"></span>
-                                </div>
-
-                                <!-- Loại phòng (RoomTypeId) -->
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Loại phòng</label>
-                                    <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="form-select">
-                                        <option value="">-- Chọn loại phòng --</option>
-                                    </select>
-                                    <span asp-validation-for="RoomTypeId" class="text-danger"></span>
-                                </div>
+                                <span asp-validation-for="RoomNumber" class="text-danger small"></span>
                             </div>
 
-                            <hr class="my-4">
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <a href="#" class="btn btn-outline-secondary px-4">
-                                    <i class="bi bi-x-circle me-1"></i> Hủy bỏ
-                                </a>
-                                <button type="submit" class="btn btn-success px-5 shadow-sm">
-                                    <i class="bi bi-check-lg me-1"></i> Lưu thông tin
-                                </button>
+                            <!-- Tầng -->
+                            <div class="col-md-6">
+                                <label asp-for="Floor" class="form-label fw-bold">Tầng</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light"><i class="fas fa-layer-group"></i></span>
+                                    <input asp-for="Floor" class="form-control" type="number" />
+                                </div>
+                                <span asp-validation-for="Floor" class="text-danger small"></span>
                             </div>
-                        </form>
-                    </div>
+
+                            <!-- Tòa nhà (Block) -->
+                            <div class="col-md-6">
+                                <label asp-for="BlockId" class="form-label fw-bold">Tòa nhà</label>
+                                <select asp-for="BlockId" asp-items="ViewBag.Blocks" class="form-select">
+                                    <option value="">-- Chọn tòa nhà --</option>
+                                </select>
+                                <span asp-validation-for="BlockId" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Loại phòng (RoomType) -->
+                            <div class="col-md-6">
+                                <label asp-for="RoomTypeId" class="form-label fw-bold">Loại phòng</label>
+                                <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="form-select">
+                                    <option value="">-- Chọn loại phòng --</option>
+                                </select>
+                                <span asp-validation-for="RoomTypeId" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Trạng thái -->
+                            <div class="col-md-12">
+                                <label asp-for="Status" class="form-label fw-bold">Trạng thái ban đầu</label>
+                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<RoomStatus>()" class="form-select"></select>
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="d-flex justify-content-between">
+                            @* Nút Hủy bỏ quay lại trang danh sách *@
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 10px;">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                            @* Nút Submit *@
+                            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 10px;">
+                                <i class="fas fa-save me-1"></i> Lưu thông tin
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        @section Scripts {
-            @{
-                await Html.RenderPartialAsync("_ValidationScriptsPartial");
-            }
-        }
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

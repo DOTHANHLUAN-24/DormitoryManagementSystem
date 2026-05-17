@@ -224,7 +224,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             entity.IsDeleted = false;
             entity.LastModified = DateTime.UtcNow;
             _dbSet.Update(entity);
-            await Task.CompletedTask; // Vì _db.SaveChangesAsync() sẽ được gọi ở UnitOfWork hoặc cuối Service
+            await Task.CompletedTask;
         }
 
         public virtual async Task<PagedResult<T>> GetByStatusPagedAsync(
@@ -232,20 +232,28 @@ namespace DormitoryManagement.Infrastructure.Repositories
             int pageSize,
             bool? isActive = null,
             bool? isDeleted = null,
-            Expression<Func<T, bool>>? predicate = null)
+            Expression<Func<T, bool>>? predicate = null,
+            params Expression<Func<T, object>>[] includeProperties)
         {
-            var query = _dbSet.AsNoTracking();
+            IQueryable<T> query = _dbSet.AsNoTracking();
 
-            if (isActive.HasValue) query = query.Where(x => x.IsActive == isActive.Value);
             if (isDeleted.HasValue) query = query.Where(x => x.IsDeleted == isDeleted.Value);
+            if (isActive.HasValue) query = query.Where(x => x.IsActive == isActive.Value);
+
             if (predicate != null) query = query.Where(predicate);
 
-            int totalCount = await query.CountAsync();
-            var items = await query
-                .OrderByDescending(x => x.CreatedDate)
-                .Skip((pageIndex - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            query = query.OrderByDescending(x => x.CreatedDate);
+
+            var items = await query.Skip((pageIndex - 1) * pageSize)
+                                   .Take(pageSize)
+                                   .ToListAsync();
 
             return new PagedResult<T>(items, totalCount, pageIndex, pageSize);
         }

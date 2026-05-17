@@ -4,13 +4,19 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
 {
     public interface IRoomTypeRepository : IBaseRepository<RoomType>
     {
-        // Kiểm tra tên loại phòng đã tồn tại chưa (để tránh trùng lặp)
+        /// <summary>
+        /// Kiểm tra tên loại phòng đã tồn tại chưa?
+        /// </summary>
         Task<bool> IsTypeNameDuplicateAsync(string typeName, Guid? excludeId = null);
 
-        // Lấy chi tiết loại phòng bao gồm danh sách các phòng thuộc loại đó
+        /// <summary>
+        /// Lấy chi tiết loại phòng kèm danh sách các phòng thuộc loại đó.
+        /// </summary>
         Task<RoomType?> GetRoomTypeWithRoomsAsync(Guid id);
 
-        // Thống kê số lượng phòng theo từng loại
+        /// <summary>
+        /// Thống kê số lượng phòng cho mỗi loại phòng (dùng cho dashboard)
+        /// </summary>
         Task<Dictionary<string, int>> GetRoomCountByTypeAsync();
     }
 }
