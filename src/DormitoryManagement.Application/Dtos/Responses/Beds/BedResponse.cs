@@ -1,4 +1,4 @@
-﻿namespace DormitoryManagement.Application.Dtos.Responses.Rooms
+﻿namespace DormitoryManagement.Application.Dtos.Responses.Beds
 {
     public class BedResponse
     {

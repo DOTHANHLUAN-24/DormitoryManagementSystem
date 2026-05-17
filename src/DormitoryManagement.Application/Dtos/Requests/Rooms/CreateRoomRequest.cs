@@ -5,19 +5,11 @@ namespace DormitoryManagement.Application.Dtos.Requests.Rooms
 {
     public class CreateRoomRequest
     {
-        [Required(ErrorMessage = "Số phòng không được để trống")]
-        [StringLength(20)]
-        public string RoomNumber { get; set; } = string.Empty;
-
-        [Required]
+        [Required(ErrorMessage = "Số phòng là bắt buộc")]
+        public string RoomNumber { get; set; } = null!;
         public int Floor { get; set; }
-
-        [Required]
-        public Guid BlockId { get; set; }
-
-        [Required]
-        public Guid RoomTypeId { get; set; }
-
         public RoomStatus Status { get; set; } = RoomStatus.Available;
+        public Guid BlockId { get; set; }
+        public Guid RoomTypeId { get; set; }
     }
 }

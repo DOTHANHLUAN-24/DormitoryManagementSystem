@@ -1,7 +1,9 @@
-﻿using AutoMapper;
+﻿using System.Linq.Expressions;
+using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Dtos.Responses.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
+using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
@@ -15,58 +17,76 @@ namespace DormitoryManagement.Application.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public RoomService(IRoomRepository roomRepository, IUnitOfWork unitOfWork, IMapper mapper)
+        public RoomService(
+            IRoomRepository roomRepository,
+            IUnitOfWork unitOfWork,
+            IMapper mapper)
         {
             _roomRepository = roomRepository;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
+        // Đồng bộ cách viết Paged bằng Predicate giống User
         public async Task<PagedResult<RoomResponse>> GetPagedRoomsAsync(RoomFilterRequest filter)
         {
-            var pagedResult = await _roomRepository.SearchRoomsAsync(
-                filter.SearchTerm,
-                filter.BlockId,
-                filter.RoomTypeId,
-                filter.Status,
+            var result = await _roomRepository.GetByStatusPagedAsync(
                 filter.PageNumber,
-                filter.PageSize
+                filter.PageSize,
+                isActive: true,
+                isDeleted: false,
+                predicate: r =>
+                    (string.IsNullOrEmpty(filter.SearchTerm) || r.RoomNumber.Contains(filter.SearchTerm)) &&
+                    (!filter.BlockId.HasValue || r.BlockId == filter.BlockId) &&
+                    (!filter.RoomTypeId.HasValue || r.RoomTypeId == filter.RoomTypeId) &&
+                    (!filter.Status.HasValue || r.Status == filter.Status) &&
+                    (!filter.MinPrice.HasValue || r.RoomType.BasePrice >= filter.MinPrice) &&
+                    (!filter.MaxPrice.HasValue || r.RoomType.BasePrice <= filter.MaxPrice),
+                // Đảm bảo lấy đủ thông tin tòa và loại phòng
+                includeProperties: new Expression<Func<Room, object>>[] { r => r.Block, r => r.RoomType }
             );
 
-            // Map từ PagedResult<Room> sang PagedResult<RoomResponse>
-            var dtos = _mapper.Map<IEnumerable<RoomResponse>>(pagedResult.Items);
+            return result.MapToPagedResult<Room, RoomResponse>(_mapper);
+        }
 
-            return new PagedResult<RoomResponse>(
-                dtos,
-                pagedResult.TotalCount,
-                pagedResult.PageNumber,
-                pagedResult.PageSize);
+        public async Task<PagedResult<RoomResponse>> GetDeletedRoomsPagedAsync(RoomFilterRequest filter)
+        {
+            var result = await _roomRepository.GetByStatusPagedAsync(
+                filter.PageNumber,
+                filter.PageSize,
+                isActive: null,
+                isDeleted: true,
+                predicate: r => string.IsNullOrEmpty(filter.SearchTerm) || r.RoomNumber.Contains(filter.SearchTerm),
+                // Ngay cả thùng rác cũng cần include để biết nó thuộc tòa nào khi hiển thị
+                includeProperties: new Expression<Func<Room, object>>[] { r => r.Block, r => r.RoomType }
+            );
+
+            return result.MapToPagedResult<Room, RoomResponse>(_mapper);
         }
 
         public async Task<RoomDetailResponse?> GetRoomByIdAsync(Guid id)
         {
-            var room = await _roomRepository.GetRoomWithDetailsAsync(id);
-            if (room == null) return null;
-
+            var room = await _roomRepository.GetRoomWithFullDetailsAsync(id);
             return _mapper.Map<RoomDetailResponse>(room);
         }
 
-        public async Task<Guid> CreateRoomAsync(CreateRoomRequest request)
+        public async Task<IEnumerable<RoomResponse>> GetRoomsByBlockAsync(Guid blockId)
         {
-            // 1. Kiểm tra trùng số phòng trong tòa nhà
-            var isDuplicate = await _roomRepository.IsRoomNumberDuplicateAsync(request.RoomNumber, request.BlockId);
-            if (isDuplicate)
+            var rooms = await _roomRepository.GetRoomsByBlockAsync(blockId);
+            return _mapper.Map<IEnumerable<RoomResponse>>(rooms);
+        }
+
+        public async Task<bool> CreateRoomAsync(CreateRoomRequest request)
+        {
+            if (await _roomRepository.IsRoomNumberDuplicateAsync(request.RoomNumber, request.BlockId))
                 throw new Exception("Số phòng này đã tồn tại trong tòa nhà.");
 
-            // 2. Map DTO sang Entity
             var room = _mapper.Map<Room>(request);
             room.Id = Guid.NewGuid();
+            room.CreatedDate = DateTime.UtcNow;
 
-            // 3. Lưu vào DB
             await _roomRepository.AddAsync(room);
-            await _unitOfWork.SaveChangesAsync();
-
-            return room.Id;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> UpdateRoomAsync(Guid id, UpdateRoomRequest request)
@@ -74,16 +94,14 @@ namespace DormitoryManagement.Application.Services
             var room = await _roomRepository.GetByIdAsync(id);
             if (room == null) return false;
 
-            // Kiểm tra trùng số phòng (trừ chính nó)
-            var isDuplicate = await _roomRepository.IsRoomNumberDuplicateAsync(request.RoomNumber, request.BlockId, id);
-            if (isDuplicate) throw new Exception("Số phòng bị trùng.");
+            if (await _roomRepository.IsRoomNumberDuplicateAsync(request.RoomNumber, request.BlockId, id))
+                throw new Exception("Số phòng bị trùng với phòng khác.");
 
-            // Map dữ liệu từ request vào entity đã có
             _mapper.Map(request, room);
+            room.LastModified = DateTime.UtcNow;
 
             await _roomRepository.UpdateAsync(room);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> DeleteRoomAsync(Guid id)
@@ -92,24 +110,26 @@ namespace DormitoryManagement.Application.Services
             if (room == null) return false;
 
             await _roomRepository.DeleteAsync(room, isSoftDelete: true);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> RestoreRoomAsync(Guid id)
         {
+            // Lấy trực tiếp từ repo (bao gồm cả trạng thái xóa)
             var room = await _roomRepository.GetByIdAsync(id);
-            if (room == null) return false;
+            if (room == null || !room.IsDeleted) return false;
 
             await _roomRepository.RestoreAsync(room);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<RoomResponse>> GetRoomsByBlockAsync(Guid blockId)
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
-            var rooms = await _roomRepository.GetRoomsByBlockAsync(blockId);
-            return _mapper.Map<IEnumerable<RoomResponse>>(rooms);
+            var room = await _roomRepository.GetByIdAsync(id);
+            if (room == null || !room.IsDeleted) return false;
+
+            await _roomRepository.DeleteAsync(room, isSoftDelete: false);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }
