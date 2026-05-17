@@ -6,6 +6,7 @@ using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 
@@ -109,6 +110,10 @@ namespace DormitoryManagement.Application.Services
             var room = await _roomRepository.GetByIdAsync(id);
             if (room == null) return false;
 
+            // Ví dụ: Không cho xóa phòng đang trạng thái "Full" (Đã đầy)
+            if (room.Status == RoomStatus.Full)
+                throw new Exception("Không thể xóa phòng đang có sinh viên cư trú.");
+
             await _roomRepository.DeleteAsync(room, isSoftDelete: true);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
@@ -131,5 +136,18 @@ namespace DormitoryManagement.Application.Services
             await _roomRepository.DeleteAsync(room, isSoftDelete: false);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
+
+        public async Task<RoomStatisticsDto> GetRoomStatisticsAsync()
+        {
+            var allRooms = await _roomRepository.GetAllAsync(); // Hoặc dùng IQueryable để tối ưu hiệu năng
+            return new RoomStatisticsDto
+            {
+                TotalRooms = allRooms.Count(),
+                AvailableRooms = allRooms.Count(r => r.Status == RoomStatus.Available),
+                OccupiedRooms = allRooms.Count(r => r.Status == RoomStatus.Full),
+                MaintenanceRooms = allRooms.Count(r => r.Status == RoomStatus.Maintenance)
+            };
+        }
+
     }
 }

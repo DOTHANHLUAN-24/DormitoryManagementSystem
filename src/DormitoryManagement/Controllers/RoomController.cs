@@ -31,24 +31,32 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
-        // ==========================================
-        // 1. DANH SÁCH (INDEX)
-        // ==========================================
         [HttpGet("")]
         public async Task<IActionResult> Index(RoomFilterRequest filter)
         {
-            // RoomService mới sử dụng Predicate lọc ngay tại tầng Service
+            // 1. Thiết lập phân trang mặc định
+            filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
+            filter.PageSize = 5;
+
+            // 2. Lấy danh sách phòng đã phân trang từ Service
             var pagedRooms = await _roomService.GetPagedRoomsAsync(filter);
 
+            // 3. Lấy thông số thống kê thực tế từ database
+            var stats = await _roomService.GetRoomStatisticsAsync();
+            ViewBag.TotalRooms = stats.TotalRooms;
+            ViewBag.AvailableRooms = stats.AvailableRooms;
+            ViewBag.OccupiedRooms = stats.OccupiedRooms;
+            ViewBag.MaintenanceRooms = stats.MaintenanceRooms;
+
+            // 4. Load các Dropdown (Tòa nhà, Loại phòng, Trạng thái)
             await PopulateDropdownsAsync(filter.BlockId, filter.RoomTypeId);
 
-            ViewBag.Filter = filter; // Để View hiển thị lại các giá trị đã lọc
+            // 5. Gán filter vào ViewBag để View giữ trạng thái các ô Search/Filter
+            ViewBag.Filter = filter;
+
             return View(pagedRooms);
         }
 
-        // ==========================================
-        // 2. CHI TIẾT (DETAILS)
-        // ==========================================
         [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
@@ -58,9 +66,6 @@ namespace DormitoryManagement.Controllers
             return View(room);
         }
 
-        // ==========================================
-        // 3. THÊM MỚI (CREATE)
-        // ==========================================
         [HttpGet("Create")]
         public async Task<IActionResult> Create()
         {
@@ -73,41 +78,35 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateRoomRequest request)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
-                return View(request);
-            }
-
-            try
-            {
-                var result = await _roomService.CreateRoomAsync(request);
-                if (result)
+                try
                 {
-                    TempData["Success"] = "Thêm phòng mới thành công!";
-                    return RedirectToAction(nameof(Index));
+                    var result = await _roomService.CreateRoomAsync(request);
+                    if (result)
+                    {
+                        TempData["Success"] = "Thêm phòng mới thành công!";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    ModelState.AddModelError("", "Không thể tạo phòng.");
                 }
-                ModelState.AddModelError("", "Không thể tạo phòng.");
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
+                catch (Exception ex)
+                {
+                    TempData["Error"] = ex.Message;
+                }
             }
 
             await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
             return View(request);
         }
 
-        // ==========================================
-        // 4. CẬP NHẬT (EDIT)
-        // ==========================================
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var room = await _roomService.GetRoomByIdAsync(id);
             if (room == null) return NotFound();
 
-            // Ánh xạ từ RoomDetailResponse sang UpdateRoomRequest
+            // Ánh xạ từ RoomResponse sang UpdateRoomRequest
             var updateRequest = _mapper.Map<UpdateRoomRequest>(room);
 
             await PopulateDropdownsAsync(room.BlockId, room.RoomTypeId);
@@ -118,47 +117,28 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UpdateRoomRequest request)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
-                return View(request);
-            }
-
-            try
-            {
-                var result = await _roomService.UpdateRoomAsync(id, request);
-                if (result)
+                try
                 {
-                    TempData["Success"] = "Cập nhật thông tin phòng thành công!";
-                    return RedirectToAction(nameof(Index));
+                    var result = await _roomService.UpdateRoomAsync(id, request);
+                    if (result)
+                    {
+                        TempData["Success"] = "Cập nhật thông tin phòng thành công!";
+                        return RedirectToAction(nameof(Index));
+                    }
+                    TempData["Error"] = "Cập nhật thất bại.";
                 }
-                TempData["Error"] = "Cập nhật thất bại.";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = ex.Message;
+                catch (Exception ex)
+                {
+                    TempData["Error"] = ex.Message;
+                }
             }
 
             await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
             return View(request);
         }
 
-        // ==========================================
-        // 5. THÙNG RÁC (RECYCLE BIN)
-        // ==========================================
-        [HttpGet("Trash")]
-        public async Task<IActionResult> Trash(RoomFilterRequest filter)
-        {
-            var deletedRooms = await _roomService.GetDeletedRoomsPagedAsync(filter);
-            ViewBag.Filter = filter;
-            return View(deletedRooms);
-        }
-
-        // ==========================================
-        // 6. THAO TÁC (DELETE, RESTORE, PERMANENT)
-        // ==========================================
-
-        // Xóa mềm (Đưa vào thùng rác)
         [HttpPost("Delete/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
@@ -168,44 +148,24 @@ namespace DormitoryManagement.Controllers
             return Json(new { success = false, message = "Xóa thất bại." });
         }
 
-        // Khôi phục
-        [HttpPost("Restore/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Restore(Guid id)
-        {
-            var result = await _roomService.RestoreRoomAsync(id);
-            if (result) return Json(new { success = true, message = "Khôi phục phòng thành công." });
-            return Json(new { success = false, message = "Không thể khôi phục." });
-        }
+        // --- CÁC PHƯƠNG THỨC BỔ TRỢ ---
 
-        // Xóa vĩnh viễn
-        [HttpPost("DeletePermanent/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeletePermanent(Guid id)
-        {
-            var result = await _roomService.DeletePermanentlyAsync(id);
-            if (result) return Json(new { success = true, message = "Đã xóa vĩnh viễn phòng này." });
-            return Json(new { success = false, message = "Không thể xóa vĩnh viễn." });
-        }
-
-        // ==========================================
-        // HÀM HỖ TRỢ (HELPERS)
-        // ==========================================
         private async Task PopulateDropdownsAsync(Guid? selectedBlock = null, Guid? selectedType = null)
         {
+            // Lấy dữ liệu từ các service tương ứng
             var blocks = await _blockService.GetAllBlocksAsync();
             var roomTypes = await _roomTypeService.GetAllRoomTypesAsync();
 
-            // Lưu ý: Đảm bảo thuộc tính hiển thị (BlockName, TypeName) khớp với DTO của bạn
+            // Đưa vào ViewBag dưới dạng SelectList để dễ dàng dùng asp-items trong View
             ViewBag.Blocks = new SelectList(blocks, "Id", "BlockName", selectedBlock);
             ViewBag.RoomTypes = new SelectList(roomTypes, "Id", "TypeName", selectedType);
 
-            // Tạo danh sách trạng thái từ Enum
+            // Tạo danh sách trạng thái phòng (Nếu bạn muốn dùng dropdown cho trạng thái)
             var statusItems = Enum.GetValues(typeof(RoomStatus))
                 .Cast<RoomStatus>()
                 .Select(s => new
                 {
-                    Value = s, // Giữ nguyên kiểu Enum để binding vào RoomFilterRequest.Status
+                    Value = s,
                     Text = s switch
                     {
                         RoomStatus.Available => "Còn trống",
@@ -214,8 +174,7 @@ namespace DormitoryManagement.Controllers
                         RoomStatus.Reserved => "Đã đặt trước",
                         _ => s.ToString()
                     }
-                })
-                .ToList();
+                }).ToList();
 
             ViewBag.Statuses = new SelectList(statusItems, "Value", "Text");
         }

@@ -18,5 +18,7 @@ namespace DormitoryManagement.Application.Interfaces.Services
         Task<bool> DeleteRoomAsync(Guid id);
         Task<bool> RestoreRoomAsync(Guid id);
         Task<bool> DeletePermanentlyAsync(Guid id);
+
+        Task<RoomStatisticsDto> GetRoomStatisticsAsync();
     }
 }

@@ -5,5 +5,6 @@ namespace DormitoryManagement.Application.Dtos.Requests.Rooms
 {
     public class UpdateRoomRequest : CreateRoomRequest
     {
+        public Guid Id { get; set; }
     }
 }
