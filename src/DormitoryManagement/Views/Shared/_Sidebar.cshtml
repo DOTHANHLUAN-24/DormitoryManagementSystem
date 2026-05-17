@@ -144,10 +144,17 @@
             <a asp-controller="Vehicle" asp-action="Index">
                 <i class="fas fa-motorcycle me-2"></i> Phương tiện
             </a>
+            
+            <!-- ĐƯA RA NGOÀI ĐỂ TẤT CẢ USER ĐÃ ĐĂNG NHẬP ĐỀU THẤY -->
+            <a asp-controller="Violation" asp-action="Index">
+                <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
+            </a>
+            
+            <!-- CHỈ ADMIN/STAFF MỚI THẤY LỆNH TẠO MỚI -->
             @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("TechnicalStaff"))
             {
-                <a asp-controller="Violation" asp-action="Index">
-                    <i class="fas fa-exclamation-triangle me-2"></i> Vi phạm kỷ luật
+                <a asp-controller="Violation" asp-action="Create">
+                    <i class="fas fa-plus me-2"></i> Tạo vi phạm mới
                 </a>
             }
         </div>

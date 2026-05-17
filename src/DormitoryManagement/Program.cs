@@ -27,9 +27,7 @@ internal class Program
         builder.Services.AddControllersWithViews();
 
         // Mail settings
-        builder.Services.Configure<MailSettings>(
-            builder.Configuration.GetSection("MailSettings"));
-
+        builder.Services.Configure<dynamic>(builder.Configuration.GetSection("MailSettings"));
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         // Repositories
@@ -49,12 +47,18 @@ internal class Program
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<IBlockService, BlockService>();
         builder.Services.AddScoped<IBedService, BedService>();
+        builder.Services.AddScoped<IViolationService, ViolationService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString)
         );
+
+        builder.Services.AddAntiforgery(options =>
+        {
+            options.HeaderName = "RequestVerificationToken";
+        });
 
         // Identity
         builder.Services

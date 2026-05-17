@@ -85,15 +85,14 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<bool> CreateUserAsync(UserRequestDto userDto)
         {
-            // 1. Map dữ liệu cơ bản (Trừ password)
             var user = _mapper.Map<User>(userDto);
 
-            // Đảm bảo các trường mặc định được thiết lập
             user.IsActive = true;
             user.IsDeleted = false;
             user.CreatedDate = DateTime.Now;
 
-            // 2. Sử dụng UserManager để tạo user và HASH MẬT KHẨU
+            user.Role = userDto.Role;
+
             var result = await _userManager.CreateAsync(user, userDto.Password);
 
             if (!result.Succeeded)
@@ -101,6 +100,8 @@ namespace DormitoryManagement.Application.Services.Implements
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception("Lỗi Identity: " + errors);
             }
+
+            await _userManager.AddToRoleAsync(user, userDto.Role.ToString());
 
             return true;
         }
@@ -135,13 +136,24 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<bool> ToggleUserStatusAsync(Guid id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null) return false;
 
             user.IsActive = !user.IsActive;
-            await _userRepository.UpdateAsync(user);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            user.LastModified = DateTime.Now;
+
+            if (user.IsActive)
+            {
+                await _userManager.SetLockoutEndDateAsync(user, null);
+            }
+            else
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.MaxValue);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
         }
 
         public async Task<bool> BanUserAsync(Guid id)
@@ -211,12 +223,19 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
-            var user = await _userRepository.GetByIdAsync(id);
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
             if (user == null) return false;
 
-            await _userRepository.DeleteAsync(user, isSoftDelete: false);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            var result = await _userManager.DeleteAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception("Lỗi Identity: " + errors);
+            }
+
+            return true;
         }
 
         // ================= VALIDATION =================

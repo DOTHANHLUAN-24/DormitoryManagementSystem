@@ -1,4 +1,5 @@
-﻿using DormitoryManagement.Application.Dtos.Requests;
+﻿using AutoMapper;
+using DormitoryManagement.Application.Dtos.Requests;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,13 +8,14 @@ namespace DormitoryManagement.Controllers
     public class UserController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
 
-        // 1. Danh sách người dùng đang hoạt động
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -24,7 +26,6 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        // 2. Danh sách người dùng bị khóa (Banned)
         [HttpGet]
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
@@ -35,7 +36,6 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        // 3. Thùng rác (Danh sách người dùng đã bị xóa mềm)
         [HttpGet]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
@@ -46,7 +46,6 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        // 4. Chi tiết người dùng
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
@@ -56,7 +55,6 @@ namespace DormitoryManagement.Controllers
             return View(user);
         }
 
-        // 5. Thêm mới - GET
         [HttpGet]
         public IActionResult Create()
         {
@@ -64,7 +62,6 @@ namespace DormitoryManagement.Controllers
             return View(new UserRequestDto());
         }
 
-        // 6. Thêm mới - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserRequestDto userDto)
@@ -97,60 +94,47 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        // 7. Chỉnh sửa - GET
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var user = await _userService.GetUserByIdAsync(id);
-            if (user == null) return NotFound();
+            var userResponse = await _userService.GetUserByIdAsync(id);
+            if (userResponse == null) return NotFound();
 
-            // Map sang Dto để view Edit có thể dùng chung Model với lúc Create
-            // (Giả sử Dto của bạn có các trường cơ bản sau, bạn có thể bổ sung thêm nếu cần)
-            var userDto = new UserRequestDto
-            {
-                UserName = user.UserName,
-                Email = user.Email,
-                FullName = user.FullName,
-                Code = user.Code,
-                PhoneNumber = user.PhoneNumber,
-                IdentityCardNumber = user.IdentityCardNumber
-            };
+            // Mapping phải đảm bảo: userRequest.Role = userResponse.Role;
+            var userRequest = _mapper.Map<UserRequestDto>(userResponse);
 
-            return View(userDto);
+            return View(userRequest);
         }
 
-        // 8. Chỉnh sửa - POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UserRequestDto userDto)
+        public async Task<IActionResult> Edit(Guid id, UserRequestDto userRequest)
         {
-            // Khi Update thường không yêu cầu nhập lại mật khẩu nên ta gỡ validation cho thuộc tính này
-            ModelState.Remove("Password");
-
+            // Kiểm tra xem dữ liệu có vào đến đây không bằng cách đặt Breakpoint
             if (ModelState.IsValid)
             {
-                try
-                {
-                    await _userService.UpdateUserProfileAsync(id, userDto);
-                    TempData["Success"] = "Cập nhật hồ sơ thành công!";
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    ModelState.AddModelError("", "Cập nhật thất bại: " + ex.Message);
-                }
+                await _userService.UpdateUserProfileAsync(id, userRequest);
+                return RedirectToAction(nameof(Index));
             }
-            return View(userDto);
+            // Nếu không vào được if, trang sẽ load lại và hiện lỗi nhờ asp-validation-summary="All"
+            return View(userRequest);
         }
 
-        // 9. Xóa mềm (Gửi qua AJAX)
         [HttpPost]
-        public async Task<IActionResult> Deactivate(Guid id)
+        [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
+        public async Task<IActionResult> Deactivate([FromRoute] Guid id)
+
         {
+            if (id == Guid.Empty) return Json(new { success = false, message = "ID không hợp lệ" });
+
             try
             {
-                await _userService.DeactivateUserAsync(id);
-                return Json(new { success = true, message = "Đã chuyển người dùng vào thùng rác." });
+                var result = await _userService.DeactivateUserAsync(id);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đã chuyển vào thùng rác thành công." });
+                }
+                return Json(new { success = false, message = "Không thể thực hiện xóa mềm." });
             }
             catch (Exception ex)
             {
@@ -158,7 +142,6 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        // 10. Khôi phục người dùng (Gửi qua AJAX hoặc POST)
         [HttpPost]
         public async Task<IActionResult> Restore(Guid id)
         {
@@ -173,7 +156,6 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        // 11. Chặn/Bỏ chặn (Toggle Status)
         [HttpPost]
         public async Task<IActionResult> ToggleStatus(Guid id)
         {
@@ -188,18 +170,20 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        // 12. Xóa vĩnh viễn
+        // Trong UserController.cs
         [HttpPost]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
             try
             {
-                await _userService.DeletePermanentlyAsync(id);
-                return Json(new { success = true, message = "Đã xóa vĩnh viễn người dùng." });
+                var result = await _userService.DeletePermanentlyAsync(id);
+                return Json(new { success = true, message = "Xóa thành công" });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                // Lấy thông báo lỗi chi tiết nhất từ SQL
+                var message = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return Json(new { success = false, message = "Lỗi hệ thống: " + message });
             }
         }
 
@@ -219,6 +203,46 @@ namespace DormitoryManagement.Controllers
             if (user == null) return NotFound();
 
             return View(user);
+        }
+        /*
+                [HttpPost]
+                [ValidateAntiForgeryToken]
+                // Thêm [FromRoute] để chắc chắn lấy ID từ URL
+                public async Task<IActionResult> ToggleLock([FromRoute] Guid id)
+                {
+                    if (id == Guid.Empty)
+                        return Json(new { success = false, message = "ID không hợp lệ" });
+
+                    try
+                    {
+                        var result = await _userService.ToggleUserStatusAsync(id);
+                        if (result)
+                        {
+                            var user = await _userService.GetUserByIdAsync(id);
+                            // Sau khi mở khóa, IsActive sẽ là true
+                            string msg = user!.IsActive ? "Đã mở khóa tài khoản thành công!" : "Đã khóa tài khoản thành công!";
+                            return Json(new { success = true, message = msg });
+                        }
+                        return Json(new { success = false, message = "Cập nhật thất bại." });
+                    }
+                    catch (Exception ex)
+                    {
+                        return Json(new { success = false, message = ex.Message });
+                    }
+                }
+                */
+        [HttpPost]
+        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
+        public async Task<IActionResult> ToggleLock(Guid id)
+        {
+            // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService
+            var result = await _userService.ToggleUserStatusAsync(id);
+
+            if (result)
+            {
+                return Json(new { success = true, message = "Đã thay đổi trạng thái tài khoản thành công." });
+            }
+            return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
         }
     }
 }
