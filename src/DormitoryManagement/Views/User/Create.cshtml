@@ -1,44 +1,77 @@
 ﻿@using DormitoryManagement.Application.Dtos.Requests
 @using DormitoryManagement.Domain.Enums
-@model DormitoryManagement.Application.Dtos.Requests.UserRequestDto
+@model DormitoryManagement.Application.Dtos.Requests.Users.UserRequestDto;
+
+@section Styles {
+    <style>
+        /* Đảm bảo ô input và nút icon dính liền nhau, bo góc chuẩn */
+        .password-group .form-control {
+            border-top-right-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+            border-right: none !important;
+        }
+
+        .password-group .btn-toggle {
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-left: 1px solid #ced4da !important;
+            background-color: #fff !important;
+            color: #666;
+            z-index: 4;
+        }
+
+        .password-group .btn-toggle:hover {
+            color: #0d6efd;
+            background-color: #f8f9fa !important;
+        }
+
+        /* Hiệu ứng khi nhấn chuột vào ô nhập mật khẩu */
+        .password-group:focus-within .form-control,
+        .password-group:focus-within .btn-toggle {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+}
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
         <div class="col-xl-10">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white py-3">
-                    <h5 class="card-title mb-0"><i class="bi bi-person-plus-fill me-2"></i>Thêm người dùng hệ thống</h5>
+                    <h5 class="card-title mb-0"><i class="bi bi-person-plus-fill me-2"></i>THÊM NGƯỜI DÙNG HỆ THỐNG</h5>
                 </div>
                 <div class="card-body p-4">
-                    <form asp-action="Create" method="post">
-                        <!-- Hiển thị lỗi tổng hợp -->
+                    <form asp-action="Create" method="post" autocomplete="off">
+                        <!-- Hiển thị lỗi tổng hợp từ Server -->
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger small"></div>
 
-                        <div class="row">
+                        <div class="row g-4">
                             <!-- CỘT TRÁI: THÔNG TIN TÀI KHOẢN -->
                             <div class="col-md-6 border-end">
                                 <h6 class="text-primary mb-3 fw-bold border-bottom pb-2">
                                     <i class="bi bi-shield-lock me-1"></i> Thông tin tài khoản
                                 </h6>
+                                
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Tên đăng nhập <span class="text-danger">*</span></label>
-                                    <input asp-for="UserName" class="form-control" placeholder="Ví dụ: 2221050046" />
+                                    <label class="form-label fw-bold small">Tên đăng nhập <span class="text-danger">*</span></label>
+                                    <input asp-for="UserName" class="form-control" placeholder="Ví dụ: admin_01 hoặc mã số" />
                                     <span asp-validation-for="UserName" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Mật khẩu <span class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <input asp-for="Password" type="password" class="form-control" id="passwordInput" />
-                                        <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
-                                            <i class="bi bi-eye" id="passwordIcon"></i>
+                                    <label class="form-label fw-bold small">Mật khẩu <span class="text-danger">*</span></label>
+                                    <div class="input-group password-group">
+                                        <input asp-for="Password" type="password" class="form-control" id="createPasswordInput" placeholder="Nhập mật khẩu" autocomplete="new-password" />
+                                        <button class="btn btn-outline-secondary btn-toggle" type="button" onclick="toggleCreatePasswordVisibility()">
+                                            <i class="bi bi-eye" id="createPasswordIcon"></i>
                                         </button>
                                     </div>
                                     <span asp-validation-for="Password" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Vai trò hệ thống <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold small">Vai trò hệ thống <span class="text-danger">*</span></label>
                                     <select asp-for="Role" class="form-select" asp-items="Html.GetEnumSelectList<UserRole>()">
                                         <option value="">-- Chọn vai trò --</option>
                                     </select>
@@ -46,8 +79,8 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Email liên hệ <span class="text-danger">*</span></label>
-                                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                                    <label class="form-label fw-bold small">Email liên hệ <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="nguyenvana@gmail.com" />
                                     <span asp-validation-for="Email" class="text-danger small"></span>
                                 </div>
                             </div>
@@ -58,37 +91,38 @@
                                     <i class="bi bi-person-badge me-1"></i> Thông tin cá nhân
                                 </h6>
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold small">Họ và tên <span class="text-danger">*</span></label>
                                     <input asp-for="FullName" class="form-control" placeholder="Nhập đầy đủ họ tên..." />
                                     <span asp-validation-for="FullName" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Mã số (MSSV/MNV) <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold small">Mã số (MSSV/MNV) <span class="text-danger">*</span></label>
                                     <input asp-for="Code" class="form-control" placeholder="Nhập mã định danh..." />
                                     <span asp-validation-for="Code" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Số CCCD/CMND <span class="text-danger">*</span></label>
+                                    <label class="form-label fw-bold small">Số CCCD/CMND <span class="text-danger">*</span></label>
                                     <input asp-for="IdentityCardNumber" class="form-control" placeholder="Nhập 12 số CCCD" />
                                     <span asp-validation-for="IdentityCardNumber" class="text-danger small"></span>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label fw-semibold">Số điện thoại</label>
+                                    <label class="form-label fw-bold small">Số điện thoại</label>
                                     <input asp-for="PhoneNumber" class="form-control" placeholder="09xx xxx xxx" />
                                     <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- NÚT ĐIỀU KHIỂN -->
                         <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
-                            <a asp-action="Index" class="btn btn-light border">
-                                <i class="bi bi-x-circle me-1"></i> Hủy bỏ
+                            <a asp-action="Index" class="btn btn-light border px-4">
+                                <i class="bi bi-arrow-left me-1"></i> Quay lại
                             </a>
-                            <button type="submit" class="btn btn-primary px-4">
-                                <i class="bi bi-check-circle me-1"></i> Lưu thông tin
+                            <button type="submit" class="btn btn-primary px-5 fw-bold shadow-sm">
+                                <i class="bi bi-check-lg me-1"></i> TẠO NGƯỜI DÙNG
                             </button>
                         </div>
                     </form>
@@ -99,16 +133,49 @@
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        function togglePassword() {
-            const input = document.getElementById('passwordInput');
-            const icon = document.getElementById('passwordIcon');
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.replace('bi-eye', 'bi-eye-slash');
-            } else {
-                input.type = "password";
-                icon.classList.replace('bi-eye-slash', 'bi-eye');
+        $(document).ready(function () {
+            // 1. Thông báo lỗi từ ModelState (nếu có)
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi nhập liệu',
+                    text: 'Vui lòng kiểm tra lại các trường thông tin màu đỏ.',
+                    confirmButtonColor: '#0d6efd'
+                });
+                </text>
+            }
+
+            // 2. Thông báo lỗi từ Catch Exception (TempData)
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#dc3545'
+                });
+                </text>
+            }
+        });
+
+        function toggleCreatePasswordVisibility() {
+            const passwordField = document.getElementById('createPasswordInput');
+            const passwordIcon = document.getElementById('createPasswordIcon');
+            if (passwordField && passwordIcon) {
+                if (passwordField.type === "password") {
+                    passwordField.type = "text";
+                    passwordIcon.classList.replace('bi-eye', 'bi-eye-slash');
+                } else {
+                    passwordField.type = "password";
+                    passwordIcon.classList.replace('bi-eye-slash', 'bi-eye');
+                }
             }
         }
     </script>

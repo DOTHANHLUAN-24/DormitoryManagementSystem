@@ -3,8 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using DormitoryManagement.Application.Dtos.Requests; // Đảm bảo folder Dtos hay DTOs viết đúng chính tả nhé
 using DormitoryManagement.Application.Dtos.Requests.Authentications;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -12,25 +15,59 @@ using Microsoft.IdentityModel.Tokens;
 namespace DormitoryManagement.Controllers
 {
     [Route("Account")]
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly IUserService _userService;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
-        public AccountController(UserManager<User> userManager, IConfiguration configuration, IEmailService emailService)
+        public AccountController(UserManager<User> userManager, IUserService userService, IConfiguration configuration, IEmailService emailService)
         {
             _userManager = userManager;
+            _userService = userService;
             _configuration = configuration;
             _emailService = emailService;
         }
 
-        [HttpGet]
-        [Route("Login")]
+        [HttpGet("Register")]
+        public IActionResult Register()
+        {
+            // Đã đăng nhập rồi thì không cho vào trang đăng ký nữa, chuyển hướng về Home
+            if (User.Identity!.IsAuthenticated) return RedirectToAction("Index", "Home");
+            return View(new UserRequestDto());
+        }
+
+        [HttpPost("Register")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(UserRequestDto request)
+        {
+            if (!ModelState.IsValid) return View(request);
+
+            try
+            {
+                // Mặc định Role là sinh viên khi đăng ký ngoài
+                request.Role = UserRole.Student;
+
+                var result = await _userService.CreateUserAsync(request);
+                if (result)
+                {
+                    TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
+                    return RedirectToAction("Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+            }
+            return View(request);
+        }
+
+        [HttpGet("Login")]
         public IActionResult Login() => View();
 
-        [HttpPost]
-        [Route("Login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
             if (!ModelState.IsValid) return View(request);
@@ -63,6 +100,7 @@ namespace DormitoryManagement.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+
         private string CreateToken(User user)
         {
             var keyStr = _configuration["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
@@ -92,9 +130,8 @@ namespace DormitoryManagement.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        [HttpPost]
+        [HttpPost("Logout")]
         [ValidateAntiForgeryToken]
-        [Route("Logout")]
         public IActionResult Logout()
         {
             Response.Cookies.Delete("JWTToken", new CookieOptions
@@ -107,14 +144,11 @@ namespace DormitoryManagement.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // --- QUÊN MẬT KHẨU ---
 
-        [HttpGet]
-        [Route("ForgotPassword")]
+        [HttpGet("ForgotPassword")]
         public IActionResult ForgotPassword() => View();
 
-        [HttpPost]
-        [Route("ForgotPassword")]
+        [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
         {
             if (!ModelState.IsValid) return View(request);
@@ -155,15 +189,13 @@ namespace DormitoryManagement.Controllers
             return RedirectToAction("ForgotPasswordConfirmation");
         }
 
-        [HttpGet]
-        [Route("ForgotPasswordConfirmation")]
+        [HttpGet("ForgotPasswordConfirmation")]
         public IActionResult ForgotPasswordConfirmation() => View();
 
 
         // --- ĐẶT LẠI MẬT KHẨU ---
 
-        [HttpGet]
-        [Route("ResetPassword")]
+        [HttpGet("ResetPassword")]
         public IActionResult ResetPassword(string token = null!, string email = null!)
         {
             if (token == null || email == null) return BadRequest("Token hoặc Email không hợp lệ");
@@ -172,8 +204,7 @@ namespace DormitoryManagement.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [Route("ResetPassword")]
+        [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
         {
             if (!ModelState.IsValid) return View(request);
@@ -195,8 +226,7 @@ namespace DormitoryManagement.Controllers
             return View(request);
         }
 
-        [HttpGet]
-        [Route("ResetPasswordConfirmation")]
+        [HttpGet("ResetPasswordConfirmation")]
         public IActionResult ResetPasswordConfirmation() => View();
     }
 }

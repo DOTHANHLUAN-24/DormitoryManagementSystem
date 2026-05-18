@@ -27,7 +27,7 @@ Dự án được xây dựng dựa trên các tiêu chuẩn và công nghệ hi
 
 ### Backend
 - **Ngôn ngữ:** C#
-- **Framework:** ASP.NET Core 8 Web API
+- **Framework:** ASP.NET Core 8
 - **Kiến trúc:** Clean Architecture / 3-Layer Architecture kết hợp Repository Pattern & Dependency Injection.
 - **Cơ sở dữ liệu:** SQL Server
 - **ORM:** Entity Framework Core (Code First)
