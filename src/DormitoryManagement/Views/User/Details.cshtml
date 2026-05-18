@@ -1,60 +1,176 @@
 ﻿@model DormitoryManagement.Application.Dtos.Responses.UserResponseDto
+@{
+    ViewData["Title"] = "Chi tiết người dùng";
+
+    // Phân loại style Avatar dựa theo Vai trò (Tận dụng lại logic đồng bộ)
+    string roleStr = Model.Role.ToString();
+    string avatarClass = "avatar-student";
+    string badgeClass = "badge-student";
+    string iconClass = "fa-user-graduate";
+
+    if (roleStr == "Admin")
+    {
+        avatarClass = "avatar-admin";
+        badgeClass = "badge-admin";
+        iconClass = "fa-user-shield";
+    }
+    else if (roleStr == "ManagementStaff")
+    {
+        avatarClass = "avatar-manager";
+        badgeClass = "badge-manager";
+        iconClass = "fa-user-tie";
+    }
+    else if (roleStr == "TechnicalStaff")
+    {
+        avatarClass = "avatar-tech";
+        badgeClass = "badge-tech";
+        iconClass = "fa-user-cog";
+    }
+}
+
+@section Styles {
+    <style>
+        /* 1. Header & Tổng thể */
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* 2. Cụm nút trên Header */
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; }
+        
+        /* Nút Quay lại */
+        .btn-header-back { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-header-back:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); color: #1e293b !important; background: #f8fafc; }
+        
+        /* Nút Chỉnh sửa (Đồng bộ với nút btn-edit) */
+        .btn-edit { background: #4f46e5; color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-edit:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); background: #4338ca; }
+
+        /* 3. Card */
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; padding: 24px; overflow: hidden; }
+        
+        /* 4. Avatar (Bo tròn nổi bật) */
+        .avatar-box { width: 110px; height: 110px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto; font-size: 45px; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: transform 0.3s; }
+        .avatar-box:hover { transform: scale(1.05); }
+        
+        .avatar-admin { color: #ef4444; background: #fef2f2; }
+        .avatar-manager { color: #4f46e5; background: #eef2ff; }
+        .avatar-tech { color: #f59e0b; background: #fffbeb; }
+        .avatar-student { color: #10b981; background: #ecfdf5; }
+
+        /* 5. Badge Vai trò mềm mại */
+        .badge-soft { padding: 6px 16px; border-radius: 12px; font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.5px; }
+        .badge-admin { background: #fef2f2; color: #ef4444; }
+        .badge-manager { background: #eef2ff; color: #4f46e5; }
+        .badge-tech { background: #fffbeb; color: #f59e0b; }
+        .badge-student { background: #ecfdf5; color: #10b981; }
+
+        /* 6. Tiêu đề khu vực */
+        .section-title { font-size: 16px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px dashed #f1f5f9; }
+        .section-icon { width: 38px; height: 38px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
+        /* 7. Khung thông tin chi tiết (Info Group) */
+        .info-group { background: #f8fafc; border-radius: 16px; padding: 16px 20px; height: 100%; border: 1px solid #f1f5f9; }
+        .info-label { font-size: 13px; color: #64748b; font-weight: 600; margin-bottom: 6px; display: block; }
+        .info-value { font-size: 15px; color: #1e293b; font-weight: 700; word-break: break-word; }
+
+        /* 8. Trạng thái */
+        .status-badge { padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+        .status-active { background: #ecfdf5; color: #10b981; }
+        .status-inactive { background: #fef2f2; color: #ef4444; }
+    </style>
+}
 
 <div class="container-fluid">
-    <div class="mb-4">
-        <a asp-action="Index" class="text-decoration-none text-muted small">
-            <i class="fas fa-chevron-left me-1"></i> Quay lại danh sách
-        </a>
-        <h4 class="mt-2"><i class="fas fa-info-circle me-2 text-info"></i> Chi tiết người dùng</h4>
-    </div>
+    <!-- HEADER -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-info-circle me-2"></i>Chi tiết người dùng</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-custom-header btn-header-back text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+            <!-- Chuyển nút Chỉnh sửa lên Header -->
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn-custom-header btn-edit text-decoration-none">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+        </div>
+    </header>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm text-center p-4 mb-4">
-                <div class="mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 100px; height: 100px;">
-                    <i class="fas fa-user fa-3x text-secondary"></i>
-                </div>
-                <h5 class="mb-1">@Model.FullName</h5>
-                <p class="text-muted small">@Model.UserName</p>
-                <div class="mt-2">
-                    @if (Model.IsActive)
-                    {
-                        <span class="badge bg-success">Đang hoạt động</span>
-                    }
-                    else
-                    {
-                        <span class="badge bg-danger">Đang bị khóa</span>
-                    }
+    <div class="row g-4">
+        <!-- CỘT TRÁI: AVATAR & TÓM TẮT -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card card-custom h-100 text-center">
+                <div class="mb-4">
+                    <div class="avatar-box @avatarClass">
+                        <i class="fas @iconClass"></i>
+                    </div>
+                    <h4 class="fw-bold text-dark mb-1">@Model.FullName</h4>
+                    <p class="text-muted small mb-3 font-monospace">@@@Model.UserName</p>
+                    
+                    <div class="d-flex flex-column align-items-center gap-2">
+                        <!-- Huy hiệu Vai trò -->
+                        <span class="badge-soft @badgeClass">
+                            <i class="fas fa-tag"></i> @Model.Role.ToString()
+                        </span>
+
+                        <!-- Huy hiệu Trạng thái -->
+                        @if (Model.IsActive)
+                        {
+                            <span class="status-badge status-active">
+                                <i class="fas fa-check-circle"></i> Đang hoạt động
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-inactive">
+                                <i class="fas fa-lock"></i> Đã bị khóa
+                            </span>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3">
-                    <h6 class="mb-0 fw-bold">Thông tin tài khoản</h6>
+
+        <!-- CỘT PHẢI: THÔNG TIN CHI TIẾT TÀI KHOẢN -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card card-custom h-100">
+                <div class="section-title">
+                    <div class="section-icon"><i class="fas fa-user-circle"></i></div>
+                    Thông tin tài khoản
                 </div>
-                <div class="card-body">
-                    <div class="row mb-3">
-                        <div class="col-sm-4 text-muted">Email:</div>
-                        <div class="col-sm-8 fw-semibold">@Model.Email</div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <span class="info-label">Email liên hệ</span>
+                            <span class="info-value">@Model.Email</span>
+                        </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-4 text-muted">Số điện thoại:</div>
-                        <div class="col-sm-8 fw-semibold">@Model.PhoneNumber</div>
+                    
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <span class="info-label">Số điện thoại</span>
+                            <span class="info-value">
+                                @(string.IsNullOrEmpty(Model.PhoneNumber) ? "Chưa cập nhật" : Model.PhoneNumber)
+                            </span>
+                        </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-sm-4 text-muted">Ngày tạo:</div>
-                        <div class="col-sm-8">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</div>
+
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <span class="info-label">Ngày tạo tài khoản</span>
+                            <span class="info-value">
+                                <i class="far fa-calendar-alt me-1 text-muted"></i> @Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                            </span>
+                        </div>
                     </div>
-                    <div class="row mb-0">
-                        <div class="col-sm-4 text-muted">Cập nhật lần cuối:</div>
-                        <div class="col-sm-8">@(Model.LastModified?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có cập nhật")</div>
+
+                    <div class="col-md-6">
+                        <div class="info-group">
+                            <span class="info-label">Cập nhật lần cuối</span>
+                            <span class="info-value">
+                                <i class="fas fa-history me-1 text-muted"></i> @(Model.LastModified?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có cập nhật")
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer bg-white py-3 text-end">
-                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning text-white btn-sm">
-                        <i class="fas fa-edit me-1"></i> Chỉnh sửa
-                    </a>
                 </div>
             </div>
         </div>
