@@ -3,17 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    public class RegulationsController : Controller
+    [Authorize(Roles = "Admin, Manager")]
+    [Route("Regulation")]
+    public class RegulationController : Controller
     {
         private readonly string _filePath;
 
-        public RegulationsController(IWebHostEnvironment env)
+        public RegulationController(IWebHostEnvironment env)
         {
             // Tự động trỏ vào đúng thư mục wwwroot bất kể chạy ở máy nào
             _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
         }
 
-        // [GET] Hiển thị nội quy (Ai cũng xem được)
+        [HttpGet("")]
         public IActionResult Index()
         {
             string content = "";
@@ -26,8 +28,7 @@ namespace DormitoryManagement.Controllers
             return View();
         }
 
-        // [GET] Giao diện chỉnh sửa (Chỉ Admin/Manager)
-        [Authorize(Roles = "Admin, Manager")]
+        [HttpGet("Edit")]
         public IActionResult Edit()
         {
             string content = "Nhập nội quy ở đây...";
@@ -40,9 +41,7 @@ namespace DormitoryManagement.Controllers
             return View();
         }
 
-        // [POST] Xử lý lưu nội dung
-        [HttpPost]
-        [Authorize(Roles = "Admin, Manager")]
+        [HttpPost("Edit/{Content}")]
         public IActionResult Edit(string Content)
         {
             try

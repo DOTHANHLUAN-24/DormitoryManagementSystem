@@ -7,10 +7,10 @@ namespace DormitoryManagement.Controllers
     /// Controller xử lý các logic liên quan đến Báo cáo và Thống kê
     /// </summary>
     [Authorize(Roles = "Admin,Manager")]
-    public class StatisticsController : Controller
+    [Route("Statistic")]
+    public class StatisticController : Controller
     {
-        [HttpGet]
-        [Route("Statistics")]
+        [HttpGet("")]
         public IActionResult Index()
         {
             // Mock dữ liệu cho các thẻ tóm tắt (Summary Cards)

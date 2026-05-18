@@ -16,33 +16,33 @@ namespace DormitoryManagement.Controllers
             _logger = logger;
         }
 
-        [Route("")]
+        [HttpGet("")]
         [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
-        [Route("Privacy")]
+        [HttpGet("Privacy")]
         public IActionResult Privacy()
         {
             return View();
         }
 
-        [Route("Error")]
+        [HttpGet("Error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        [Route("Contact")]
+        [HttpGet("Contact")]
         public IActionResult Contact()
         {
             return View();
         }
 
-        [Route("Guide")]
+        [HttpGet("Guide")]
         [AllowAnonymous]
         public IActionResult Guide()
         {

@@ -1,10 +1,12 @@
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
     [Route("Contract")]
+    [Authorize(Roles = "Admin,ManagerStaff")]
     public class ContractController : Controller
     {
         private readonly IContractService _contractService;

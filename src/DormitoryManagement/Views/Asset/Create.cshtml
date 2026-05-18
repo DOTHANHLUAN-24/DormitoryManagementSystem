@@ -1,0 +1,66 @@
+@model DormitoryManagement.Domain.Entities.Asset
+@{
+    ViewData["Title"] = "Thêm Vật tư";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="mb-0 fw-bold"><i class="fas fa-plus-circle me-2 text-primary"></i>Thêm vật tư mới</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="AssetCode" class="form-label fw-semibold">Mã vật tư</label>
+                            <input asp-for="AssetCode" class="form-control" placeholder="Ví dụ: ĐH-A101-01" required />
+                            <span asp-validation-for="AssetCode" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AssetName" class="form-label fw-semibold">Tên vật tư / Thiết bị</label>
+                            <input asp-for="AssetName" class="form-control"
+                                   placeholder="Ví dụ: Điều hòa Daikin 12000BTU" required />
+                            <span asp-validation-for="AssetName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="RoomId" class="form-label fw-semibold">Phòng lắp đặt</label>
+                                <select asp-for="RoomId" class="form-select" asp-items="ViewBag.Rooms">
+                                    <option value="">-- Chọn phòng --</option>
+                                </select>
+                                <span asp-validation-for="RoomId" class="text-danger small"></span>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Status" class="form-label fw-semibold">Trạng thái hiện tại</label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Good">Tốt / Hoạt động</option>
+                                    <option value="Broken">Hỏng</option>
+                                    <option value="UnderRepair">Đang sửa chữa</option>
+                                    <option value="Lost">Mất</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <div class="border-top pt-3 mt-4 d-flex justify-content-end">
+                            <a asp-action="Index" class="btn btn-light border px-4 me-2">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4">Lưu vật tư</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

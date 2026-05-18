@@ -12,42 +12,21 @@
         /* 1. Header & Tổng thể */
         .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 2. Nút Thùng rác & Thêm mới (Giống bên User) */
+        /* 2. Nút Thùng rác & Thêm mới */
         .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
         .btn-add { background: #4f46e5; color: white !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
         .btn-trash { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
         .btn-custom-header:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
 
-        /* 3. THÀNH TÌM KIẾM (SỬA LẠI THEO ẢNH MẪU) */
+        /* 3. Thanh tìm kiếm */
         .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
-        
-        .input-custom { 
-            height: 46px; 
-            border-radius: 12px !important; 
-            border: 1px solid #e2e8f0 !important; 
-            font-size: 14px; 
-            color: #1e293b;
-        }
-        
-        .input-custom:focus { 
-            border-color: #4f46e5 !important; 
-            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; 
-        }
-
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; }
         .khung-tim-kiem { position: relative; }
         .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
         .khung-tim-kiem input { padding-left: 40px; }
 
-        .btn-filter-action { 
-            height: 46px; 
-            width: 46px; 
-            border-radius: 12px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border: none; 
-            transition: all 0.2s;
-        }
+        .btn-filter-action { height: 46px; width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
         .btn-apply { background: #0d6efd; color: white; }
         .btn-apply:hover { background: #0b5ed7; transform: scale(1.05); }
         .btn-refresh { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; }
@@ -68,9 +47,7 @@
         .day { background: #fff7ed; color: #f97316; }
         .bao-tri { background: #fef2f2; color: #ef4444; }
         .da-dat { background: #f3e8ff; color: #7e22ce; }
-        
         .ma-phong-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
-        
         .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
         .nut-sua { background: #eff6ff; color: #3b82f6; }
         .nut-xoa { background: #fef2f2; color: #ef4444; }
@@ -114,7 +91,7 @@
         </div>
     </div>
 
-    <!-- THANH TÌM KIẾM HIỆN ĐẠI (ĐÃ SỬA) -->
+    <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
     <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
         <div class="row g-2 align-items-center">
             <div class="col-lg-3 col-md-6">
@@ -242,39 +219,95 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // 1. Hiển thị thông báo thành công từ TempData
             @if (TempData["Success"] != null)
             {
                 <text>
-                Swal.fire({ icon: 'success', title: 'Thành công', text: '@TempData["Success"]', timer: 2000, showConfirmButton: false });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: '@TempData["Success"]',
+                    timer: 2500,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+                </text>
+            }
+
+            // 2. Hiển thị thông báo lỗi từ TempData (nếu có)
+            @if (TempData["Error"] != null)
+            {
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: '@TempData["Error"]',
+                    confirmButtonColor: '#ef4444'
+                });
                 </text>
             }
         });
 
-        function confirmDelete(id, code) {
+        // 3. Hàm xử lý xóa phòng bằng Ajax + SweetAlert2
+        function confirmDelete(id, roomNumber) {
             Swal.fire({
                 title: 'Xác nhận xóa?',
-                text: "Đưa phòng " + code + " vào thùng rác?",
+                text: "Bạn có chắc chắn muốn đưa phòng " + roomNumber + " vào thùng rác không?",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Đồng ý xóa',
-                cancelButtonText: 'Hủy bỏ'
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Hiển thị trạng thái đang xử lý
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
                     $.ajax({
-                        url: '@Url.Action("Delete", "Room")/' + id, 
+                        url: '/Room/Delete/' + id,
                         type: 'POST',
-                        data: { __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() },
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire({ title: 'Đã xóa!', text: res.message, icon: 'success', timer: 1500, showConfirmButton: false }).then(() => location.reload());
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã xóa!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload(); // Reload để cập nhật danh sách
+                                });
                             } else {
-                                Swal.fire('Lỗi!', res.message, 'error');
+                                // Hiển thị lỗi nghiệp vụ (ví dụ: Phòng đang có sinh viên cư trú)
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Không thể xóa!',
+                                    text: res.message,
+                                    confirmButtonColor: '#0d6efd'
+                                });
                             }
+                        },
+                        error: function (xhr) {
+                            // Hiển thị lỗi hệ thống hoặc kết nối
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi hệ thống',
+                                text: 'Đã có lỗi xảy ra hoặc bạn không có quyền thực hiện thao tác này.'
+                            });
                         }
                     });
                 }
