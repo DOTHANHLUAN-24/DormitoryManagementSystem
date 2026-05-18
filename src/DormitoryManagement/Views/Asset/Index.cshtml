@@ -1,0 +1,109 @@
+@{
+    ViewData["Title"] = "Quản lý Vật tư";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row align-items-center mb-4">
+        <div class="col-md-6">
+            <h3 class="fw-bold text-dark"><i class="fas fa-tools me-2 text-primary"></i>Quản lý Vật tư</h3>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Vật tư</li>
+                </ol>
+            </nav>
+            <p class="text-muted mb-0">Theo dõi trang thiết bị và tài sản tại các phòng </p>
+        </div>
+        <div class="col-md-6 text-md-end">
+            <a asp-action="Create" class="btn btn-primary shadow-sm">
+                <i class="fas fa-plus-circle me-2"></i>Thêm vật tư mới
+            </a>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Mã vật tư</th>
+                            <th>Tên vật tư</th>
+                            <th>Vị trí (Phòng)</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Mock Data Item 1 -->
+                        <tr>
+                            <td class="ps-4 fw-bold text-primary">VT-001</td>
+                            <td>Máy lạnh Daikin 1.5 HP</td>
+                            <td><i class="fas fa-door-open me-1 text-muted"></i>P.105</td>
+                            <td>
+                                <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">
+                                    <i class="fas fa-check-circle me-1"></i>Tốt
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
+                                        class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
+                                            class="fas fa-trash"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Mock Data Item 2 -->
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">VT-042</td>
+                                    <td>Quạt trần Senko</td>
+                                    <td><i class="fas fa-door-open me-1 text-muted"></i>P.202</td>
+                                    <td>
+                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm border">
+                                            <i class="fas fa-tools me-1"></i>Đang sửa
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
+                                                class="fas fa-edit"></i></button>
+                                                <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
+                                                    class="fas fa-trash"></i></button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        <!-- Mock Data Item 3 -->
+                                        <tr>
+                                            <td class="ps-4 fw-bold text-primary">VT-015</td>
+                                            <td>Giường sắt tầng 1.2m</td>
+                                            <td><i class="fas fa-door-open me-1 text-muted"></i>P.101</td>
+                                            <td>
+                                                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>Hỏng
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
+                                                        class="fas fa-edit"></i></button>
+                                                        <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
+                                                            class="fas fa-trash"></i></button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 py-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <p class="text-muted small mb-0">Tổng số: 3 vật tư </p>
+                                        <p class="text-muted small mb-0 fw-bold text-uppercase">Hệ thống quản lý KTX</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
