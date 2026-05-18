@@ -26,7 +26,6 @@ namespace DormitoryManagement.Application.Mappings
 
             // 1. Entity -> RoomResponse (Dùng cho danh sách)
             CreateMap<Room, RoomResponse>()
-<<<<<<< HEAD
                 // Map các thuộc tính cơ bản (AutoMapper tự map nếu cùng tên, 
                 // nhưng ID và Status nên viết rõ nếu có xử lý)
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
@@ -50,12 +49,6 @@ namespace DormitoryManagement.Application.Mappings
             // Map từ Request sang Entity (để lưu vào Database)
             CreateMap<CreateRoomRequest, Room>();
             CreateMap<UpdateRoomRequest, Room>();
-=======
-                .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Block.BlockName))
-                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType.TypeName))
-                .ForMember(dest => dest.BasePrice, opt => opt.MapFrom(src => src.RoomType.BasePrice))
-                .ForMember(dest => dest.MaxOccupants, opt => opt.MapFrom(src => src.RoomType.MaxOccupants));
->>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
 
             // Chi tiết kế thừa từ cơ bản
             CreateMap<Room, RoomDetailResponse>().IncludeBase<Room, RoomResponse>();

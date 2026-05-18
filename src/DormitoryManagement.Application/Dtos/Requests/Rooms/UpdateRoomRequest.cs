@@ -6,7 +6,6 @@ namespace DormitoryManagement.Application.Dtos.Requests.Rooms
     public class UpdateRoomRequest : CreateRoomRequest
     {
         public Guid Id { get; set; }
-<<<<<<< HEAD
 
         [Required(ErrorMessage = "Số phòng không được để trống")]
         [StringLength(20, ErrorMessage = "Số phòng không được vượt quá 20 ký tự")]
@@ -32,7 +31,5 @@ namespace DormitoryManagement.Application.Dtos.Requests.Rooms
 
         [Display(Name = "Trạng thái hoạt động")]
         public bool IsActive { get; set; }
-=======
->>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
     }
 }

@@ -19,10 +19,6 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
-<<<<<<< HEAD
-=======
-        [Route("")]
->>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -134,10 +130,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
-<<<<<<< HEAD
-=======
         [Route("Deactivate/{id}")]
->>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> Deactivate([FromRoute] Guid id)
 
         {
@@ -224,42 +217,10 @@ namespace DormitoryManagement.Controllers
 
             return View(user);
         }
-<<<<<<< HEAD
-        /*
-                [HttpPost]
-                [ValidateAntiForgeryToken]
-                // Thêm [FromRoute] để chắc chắn lấy ID từ URL
-                public async Task<IActionResult> ToggleLock([FromRoute] Guid id)
-                {
-                    if (id == Guid.Empty)
-                        return Json(new { success = false, message = "ID không hợp lệ" });
-
-                    try
-                    {
-                        var result = await _userService.ToggleUserStatusAsync(id);
-                        if (result)
-                        {
-                            var user = await _userService.GetUserByIdAsync(id);
-                            // Sau khi mở khóa, IsActive sẽ là true
-                            string msg = user!.IsActive ? "Đã mở khóa tài khoản thành công!" : "Đã khóa tài khoản thành công!";
-                            return Json(new { success = true, message = msg });
-                        }
-                        return Json(new { success = false, message = "Cập nhật thất bại." });
-                    }
-                    catch (Exception ex)
-                    {
-                        return Json(new { success = false, message = ex.Message });
-                    }
-                }
-                */
-        [HttpPost]
-        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
-=======
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
         [Route("ToggleLock/{id}")]
->>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> ToggleLock(Guid id)
         {
             // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService

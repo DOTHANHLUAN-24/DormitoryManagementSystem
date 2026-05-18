@@ -1,0 +1,126 @@
+@{
+    ViewData["Title"] = "Chỉnh sửa thông tin khách đến thăm";
+    var visitorId = ViewData["VisitorId"]?.ToString();
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <a href="/Visitor" class="btn btn-sm btn-outline-secondary mb-2">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+        <h1 class="h3 mb-0 text-gray-800 fw-bold">Cập Nhật Thông Tin Khách</h1>
+        <p class="text-muted small">Chỉnh sửa thông tin chi tiết của lượt khách thăm mang mã bản ghi <strong class="text-primary">@visitorId</strong></p>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="m-0 fw-bold text-primary"><i class="fas fa-user-edit me-2"></i>Thông tin chi tiết</h6>
+                </div>
+                <div class="card-body">
+                    <form id="editVisitorForm" onsubmit="saveVisitorData(event)">
+                        <input type="hidden" id="visitorId" value="@visitorId" />
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Tên khách đến thăm</label>
+                                <input type="text" id="visitorName" class="form-control" required placeholder="Nhập họ tên khách...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Số CCCD/CMND</label>
+                                <input type="text" id="identityCard" class="form-control font-monospace" required placeholder="Nhập 12 số CCCD...">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Sinh viên được thăm</label>
+                                <input type="text" id="studentName" class="form-control" required placeholder="Nhập tên sinh viên trong ký túc xá...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Thuộc phòng</label>
+                                <input type="text" id="room" class="form-control" required placeholder="Ví dụ: P.302-A1">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Giờ vào</label>
+                                <input type="datetime-local" id="checkIn" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Giờ ra (Dự kiến)</label>
+                                <input type="datetime-local" id="checkOut" class="form-control" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label small fw-bold text-secondary">Trạng thái lưu trú</label>
+                                <select id="status" class="form-select">
+                                    <option value="Đang ở trong">Đang ở trong</option>
+                                    <option value="Đã rời đi">Đã rời đi</option>
+                                    <option value="Quá giờ">Quá giờ quy định</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr class="text-muted my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/Visitor" class="btn btn-light px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-warning text-dark px-4fw-medium">
+                                <i class="fas fa-save me-1"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Mảng dữ liệu giống y hệt trang Index để tìm kiếm thông tin theo ID (Dùng chung bộ Mock Data 2026)
+        const mockData = [
+            { id: "VIS001", name: "Nguyễn Thành Long", identityCard: "001098001234", studentName: "Nguyễn Văn Anh", room: "P.302-A1", checkIn: "2026-05-18T08:30", checkOut: "2026-05-18T11:00", status: "Đã rời đi" },
+            { id: "VIS002", name: "Trần Thị Lan (Phụ huynh)", identityCard: "038175004321", studentName: "Trần Thị Bình", room: "P.105-B2", checkIn: "2026-05-18T14:15", checkOut: "2026-05-18T17:00", status: "Đang ở trong" },
+            { id: "VIS003", name: "Lê Hoàng Nam", identityCard: "024099005678", studentName: "Lê Hoàng Chí", room: "P.404-A2", checkIn: "2026-05-18T09:00", checkOut: "2026-05-18T11:30", status: "Quá giờ" },
+            { id: "VIS004", name: "Phạm Minh Quang", identityCard: "017095009876", studentName: "Phạm Hồng Duy", room: "P.201-B1", checkIn: "2026-05-17T19:00", checkOut: "2026-05-17T21:00", status: "Đã rời đi" },
+            { id: "VIS005", name: "Hoàng Ngọc Mai", identityCard: "031197002468", studentName: "Hoàng Đức Em", room: "P.305-A1", checkIn: "2026-05-18T15:00", checkOut: "2026-05-18T18:00", status: "Đang ở trong" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Lấy ID hiện tại từ input ẩn
+            const currentId = document.getElementById("visitorId").value;
+            
+            // Tìm kiếm đối tượng dữ liệu tương ứng trong mảng Mock
+            const visitor = mockData.find(v => v.id === currentId);
+
+            if (visitor) {
+                // Điền ngược dữ liệu vào Form
+                document.getElementById("visitorName").value = visitor.name;
+                document.getElementById("identityCard").value = visitor.identityCard;
+                document.getElementById("studentName").value = visitor.studentName;
+                document.getElementById("room").value = visitor.room;
+                document.getElementById("checkIn").value = visitor.checkIn;
+                document.getElementById("checkOut").value = visitor.checkOut;
+                document.getElementById("status").value = visitor.status;
+            } else {
+                alert("Không tìm thấy thông tin khách phù hợp với ID này!");
+            }
+        });
+
+        // Giả lập hành động submit form lưu dữ liệu
+        function saveVisitorData(event) {
+            event.preventDefault(); // Chặn sự kiện load lại trang mặc định
+
+            const name = document.getElementById("visitorName").value;
+            const currentId = document.getElementById("visitorId").value;
+
+            alert(`Thành công: Đã cập nhật thông tin của khách ${name} (Mã: ${currentId}) lên hệ thống quản lý!`);
+            
+            // Chuyển hướng quay ngược trở lại trang danh sách chính
+            window.location.href = "/Visitor";
+        }
+    </script>
+}
