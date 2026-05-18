@@ -39,8 +39,12 @@ internal class Program
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
         builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
-
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        builder.Services.AddScoped<IAssetRepository, AssetRepository>();
+        builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
+        builder.Services.AddScoped<IViolationRepository, IViolationRepository>();
+
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
@@ -50,6 +54,7 @@ internal class Program
         builder.Services.AddScoped<IBlockService, BlockService>();
         builder.Services.AddScoped<IBedService, BedService>();
         builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
