@@ -129,6 +129,7 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Hiển thị thông báo TempData từ thẻ ẩn
@@ -145,6 +146,8 @@
 
         // Logic Xóa (Soft Delete)
         function deactivateUser(id) {
+            console.log("Đang gọi deactivate cho ID:", id); // Kiểm tra xem hàm có chạy không
+            
             Swal.fire({
                 title: 'Xác nhận xóa?',
                 text: "Người dùng này sẽ bị chuyển vào thùng rác!",

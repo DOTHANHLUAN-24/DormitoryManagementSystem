@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Ghi nhận khách đến thăm KTX";
+}
+
+<div class="container-fluid py-4">
+    <div class="mb-4">
+        <a href="/Visitor" class="btn btn-sm btn-outline-secondary mb-2">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+        <h1 class="h3 mb-0 text-gray-800 fw-bold">Ghi Nhận Lượt Khách Mới</h1>
+        <p class="text-muted small">Nhập thông tin chi tiết của khách và sinh viên được thăm khi vào khu vực ký túc xá.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-8 col-lg-10">
+            <div class="card shadow border-0 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="m-0 fw-bold text-primary"><i class="fas fa-user-plus me-2"></i>Đăng ký thông tin ra vào</h6>
+                </div>
+                <div class="card-body">
+                    <form id="createVisitorForm" onsubmit="createNewVisitor(event)">
+                        
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Tên khách đến thăm</label>
+                                <input type="text" id="visitorName" class="form-control" required placeholder="Nhập họ tên khách...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Số CCCD/CMND</label>
+                                <input type="text" id="identityCard" class="form-control font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Sinh viên được thăm</label>
+                                <input type="text" id="studentName" class="form-control" required placeholder="Nhập tên sinh viên trong ký túc xá...">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Thuộc phòng</label>
+                                <input type="text" id="room" class="form-control" required placeholder="Ví dụ: P.302-A1">
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Giờ vào</label>
+                                <input type="datetime-local" id="checkIn" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-secondary">Giờ ra (Dự kiến)</label>
+                                <input type="datetime-local" id="checkOut" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <hr class="text-muted my-4">
+
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/Visitor" class="btn btn-light px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-primary px-4 fw-medium">
+                                <i class="fas fa-check me-1"></i> Ghi nhận vào sổ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Tự động điền ngày giờ hiện tại khi mở form ghi nhận
+            const now = new Date();
+            
+            // Định dạng chuỗi YYYY-MM-DDTHH:mm cho input datetime-local
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            
+            const currentDateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
+            document.getElementById("checkIn").value = currentDateTimeStr;
+
+            // Tính toán giờ ra dự kiến mặc định (ví dụ: cho thăm 3 tiếng)
+            const defaultCheckOut = new Date(now.getTime() + 3 * 60 * 60 * 1000);
+            const outYear = defaultCheckOut.getFullYear();
+            const outMonth = String(defaultCheckOut.getMonth() + 1).padStart(2, '0');
+            const outDay = String(defaultCheckOut.getDate()).padStart(2, '0');
+            const outHours = String(defaultCheckOut.getHours()).padStart(2, '0');
+            const outMinutes = String(defaultCheckOut.getMinutes()).padStart(2, '0');
+            
+            document.getElementById("checkOut").value = `${outYear}-${outMonth}-${outDay}T${outHours}:${outMinutes}`;
+        });
+
+        // Xử lý khi nhấn nút lưu thông tin khách mới
+        function createNewVisitor(event) {
+            event.preventDefault(); // Ngăn hành động tải lại trang
+
+            const name = document.getElementById("visitorName").value;
+            const cccd = document.getElementById("identityCard").value;
+            const checkInTime = document.getElementById("checkIn").value;
+            const checkOutTime = document.getElementById("checkOut").value;
+
+            // Kiểm tra logic thời gian cơ bản
+            if (new Date(checkInTime) >= new Date(checkOutTime)) {
+                alert("Lỗi: Thời gian ra dự kiến phải lớn hơn thời gian khách vào!");
+                return;
+            }
+
+            // Tạo mã ngẫu nhiên để giả lập ID mới thành công
+            const randomId = "VIS" + Math.floor(100 + Math.random() * 900);
+
+            alert(`Thành công: Đã ghi nhận khách ${name} (Mã số cấp: ${randomId}) vào sổ theo dõi!`);
+            
+            // Điều hướng quay trở về trang danh sách chính
+            window.location.href = "/Visitor";
+        }
+    </script>
+}

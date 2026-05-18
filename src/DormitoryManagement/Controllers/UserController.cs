@@ -19,7 +19,6 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
-        [Route("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = 5;

@@ -61,7 +61,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Create")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> CreateAsync()
         {
             await PopulateDropdownsAsync();
             var model = new CreateRoomRequest { Status = RoomStatus.Available, Floor = 1 };
@@ -70,7 +70,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoomRequest request)
+        public async Task<IActionResult> Create(CreateRoomRequest request) // 1. Phải là CreateRoomRequest
         {
             if (ModelState.IsValid)
             {

@@ -1,0 +1,213 @@
+@{
+    ViewData["Title"] = "Danh sách khách đến thăm KTX";
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800 fw-bold">Quản Lý Khách Đến Thăm</h1>
+            <p class="text-muted small mb-0">Theo dõi, ghi nhận thông tin khách ra vào và quản lý thời gian lưu trú tại ký túc xá.</p>
+        </div>
+        <a href="/Visitor/Create" class="btn btn-primary shadow-sm">
+            <i class="fas fa-user-plus me-2"></i>Ghi Nhận Khách Đến
+        </a>
+    </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body py-3">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text bg-white border-end-0 text-muted">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Tìm theo tên khách, CMND/CCCD...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="statusFilter" class="form-select form-select-sm">
+                        <option value="All">-- Tất cả trạng thái --</option>
+                        <option value="Đang ở trong">Đang ở trong</option>
+                        <option value="Đã rời đi">Đã rời đi</option>
+                        <option value="Quá giờ">Quá giờ quy định</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-sm btn-secondary w-100" onclick="resetFilters()">
+                        <i class="fas fa-sync-alt me-1"></i>Làm mới
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow mb-4 border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="visitorTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4" style="width: 100px;">Mã khách</th>
+                            <th style="width: 180px;">Tên khách đến thăm</th>
+                            <th style="width: 140px;">Số CCCD/CMND</th>
+                            <th style="width: 180px;">Sinh viên được thăm</th>
+                            <th style="width: 100px;">Phòng</th>
+                            <th style="width: 150px;">Giờ vào</th>
+                            <th style="width: 150px;">Giờ ra (Dự kiến)</th>
+                            <th style="width: 140px;">Trạng thái</th>
+                            <th class="text-end pe-4" style="width: 220px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card-footer bg-white border-top py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="text-muted small" id="paginationInfo">
+                    Hiển thị từ 1 đến 5 trên tổng số 5 bản ghi
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Sau</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Mảng dữ liệu ảo Mock Data cho năm 2026
+        const mockVisitors = [
+            { id: "VIS001", name: "Nguyễn Thành Long", identityCard: "001098001234", studentName: "Nguyễn Văn Anh", room: "P.302-A1", checkIn: "2026-05-18T08:30:00", checkOut: "2026-05-18T11:00:00", isCheckedOut: true, status: "Đã rời đi" },
+            { id: "VIS002", name: "Trần Thị Lan", identityCard: "038175004321", studentName: "Trần Thị Bình", room: "P.105-B2", checkIn: "2026-05-18T14:15:00", checkOut: "2026-05-18T17:00:00", isCheckedOut: false, status: "Đang ở trong" },
+            { id: "VIS003", name: "Lê Hoàng Nam", identityCard: "024099005678", studentName: "Lê Hoàng Chí", room: "P.404-A2", checkIn: "2026-05-18T09:00:00", checkOut: "2026-05-18T11:30:00", isCheckedOut: false, status: "Quá giờ" },
+            { id: "VIS004", name: "Phạm Minh Quang", identityCard: "017095009876", studentName: "Phạm Hồng Duy", room: "P.201-B1", checkIn: "2026-05-17T19:00:00", checkOut: "2026-05-17T21:00:00", isCheckedOut: true, status: "Đã rời đi" },
+            { id: "VIS005", name: "Hoàng Ngọc Mai", identityCard: "031197002468", studentName: "Hoàng Đức Em", room: "P.305-A1", checkIn: "2026-05-18T15:00:00", checkOut: "2026-05-18T18:00:00", isCheckedOut: false, status: "Đang ở trong" }
+        ];
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayTableData(mockVisitors);
+
+            // Gắn sự kiện tìm kiếm và lọc dữ liệu trực tiếp
+            document.getElementById("searchInput").addEventListener("input", filterData);
+            document.getElementById("statusFilter").addEventListener("change", filterData);
+        });
+
+        function displayTableData(data) {
+            const tableBody = document.getElementById("tableBody");
+            tableBody.innerHTML = "";
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">Không tìm thấy lịch sử khách nào phù hợp.</td></tr>`;
+                document.getElementById("paginationInfo").innerText = "Hiển thị 0 trên tổng số 0 bản ghi";
+                return;
+            }
+
+            data.forEach(visitor => {
+                // Định dạng hiển thị màu sắc theo từng Trạng thái
+                let statusBadge = '';
+                if (visitor.status === 'Đã rời đi') {
+                    statusBadge = `<span class="badge bg-success px-2 py-1"><i class="fas fa-door-open me-1"></i>Đã rời đi</span>`;
+                } else if (visitor.status === 'Đang ở trong') {
+                    statusBadge = `<span class="badge bg-primary px-2 py-1"><i class="fas fa-user-clock me-1"></i>Đang ở trong</span>`;
+                } else {
+                    statusBadge = `<span class="badge bg-danger px-2 py-1"><i class="fas fa-exclamation-triangle me-1"></i>Quá giờ</span>`;
+                }
+
+                // Thiết lập hiển thị các nút hành động
+                let actionButtons = '';
+                if (!visitor.isCheckedOut) {
+                    actionButtons = `
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="checkOutVisitor('${visitor.id}')" title="Xác nhận rời đi">
+                            <i class="fas fa-sign-out-alt"></i> Ra về
+                        </button>`;
+                }
+                
+                // Khớp nút Sửa màu vàng với Route mới: /Visitor/Edit/{id}
+                actionButtons += `
+                    <a href="/Visitor/Edit/${visitor.id}" class="btn btn-sm btn-warning text-dark me-1" title="Sửa thông tin">
+                        <i class="fas fa-edit"></i> Sửa
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" onclick="deleteVisitor('${visitor.id}')" title="Xóa bản ghi">
+                        <i class="fas fa-trash"></i>
+                    </button>`;
+
+                let row = `<tr>
+                    <td class="ps-4 fw-bold text-secondary">${visitor.id}</td>
+                    <td class="fw-semibold">${visitor.name}</td>
+                    <td><span class="badge bg-light text-dark border font-monospace">${visitor.identityCard}</span></td>
+                    <td>${visitor.studentName}</td>
+                    <td><span class="text-primary fw-medium">${visitor.room}</span></td>
+                    <td class="small text-muted">${formatDateTime(visitor.checkIn)}</td>
+                    <td class="small text-muted">${formatDateTime(visitor.checkOut)}</td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end pe-4">${actionButtons}</td>
+                </tr>`;
+
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+
+            document.getElementById("paginationInfo").innerText = `Hiển thị từ 1 đến ${data.length} trên tổng số ${data.length} bản ghi`;
+        }
+
+        // Xử lý tìm kiếm động (Real-time Filter)
+        function filterData() {
+            const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
+            const statusVal = document.getElementById("statusFilter").value;
+
+            const filtered = mockVisitors.filter(visitor => {
+                const matchesSearch = visitor.name.toLowerCase().includes(searchVal) || visitor.identityCard.includes(searchVal);
+                const matchesStatus = statusVal === "All" || visitor.status === statusVal;
+                return matchesSearch && matchesStatus;
+            });
+
+            displayTableData(filtered);
+        }
+
+        // Đặt lại bộ lọc về ban đầu
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("statusFilter").value = "All";
+            displayTableData(mockVisitors);
+        }
+
+        // Chức năng bấm nút Ra về giả lập
+        function checkOutVisitor(id) {
+            const visitor = mockVisitors.find(v => v.id === id);
+            if (visitor) {
+                if (confirm(`Xác nhận khách ${visitor.name} đã rời khỏi khu ký túc xá?`)) {
+                    visitor.isCheckedOut = true;
+                    visitor.status = "Đã rời đi";
+                    visitor.checkOut = new Date().toISOString();
+                    displayTableData(mockVisitors);
+                }
+            }
+        }
+
+        // Chức năng bấm nút Xóa lịch sử giả lập
+        function deleteVisitor(id) {
+            if (confirm("Bạn có chắc chắn muốn xóa lịch sử lượt đến thăm này không?")) {
+                alert(`Đã xóa thành công bản ghi khách mang mã: ${id}`);
+            }
+        }
+
+        // Định dạng hiển thị Ngày/Tháng/Năm - Giờ:Phút
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return "";
+            const date = new Date(dateTimeStr);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} - ${hours}:${minutes}`;
+        }
+    </script>
+}
