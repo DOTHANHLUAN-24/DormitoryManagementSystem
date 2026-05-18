@@ -10,6 +10,8 @@ namespace DormitoryManagement.Application.Services.Interfaces
         // Truy vấn
         Task<PagedResult<BlockResponseDto>> GetActiveBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm);
         Task<PagedResult<BlockResponseDto>> GetDeletedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm);
+        Task<PagedResult<BlockResponseDto>> GetSuspendedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm);
+
         Task<BlockResponseDto?> GetBlockByIdAsync(Guid id);
         Task<IEnumerable<BlockResponseDto>> GetAllBlocksAsync(); // Dùng cho Dropdown
 
@@ -19,5 +21,6 @@ namespace DormitoryManagement.Application.Services.Interfaces
         Task<bool> SoftDeleteBlockAsync(Guid id);
         Task<bool> RestoreBlockAsync(Guid id);
         Task<bool> DeletePermanentlyAsync(Guid id);
+        Task<bool> ToggleBlockStatusAsync(Guid id);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using DormitoryManagement.Application.Dtos.Requests;
 using DormitoryManagement.Application.Dtos.Requests.Blocks;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Dtos.Requests.RoomTypes;
@@ -28,22 +27,14 @@ namespace DormitoryManagement.Application.Mappings
 
             // === ROOM MAPPINGS ===
 
-            // 1. Entity -> RoomResponse (Dùng cho danh sách)
             CreateMap<Room, RoomResponse>()
-                // Map các thuộc tính cơ bản (AutoMapper tự map nếu cùng tên, 
-                // nhưng ID và Status nên viết rõ nếu có xử lý)
+                .ForMember(dest => dest.BasePrice, opt => opt.MapFrom(src => src.RoomType.BasePrice))
+                .ForMember(dest => dest.MaxOccupants, opt => opt.MapFrom(src => src.RoomType.MaxOccupants))
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.RoomNumber, opt => opt.MapFrom(src => src.RoomNumber))
-
-                // Chuyển Enum Status sang String (Ví dụ: Available -> "Available")
-                // Nếu bạn có hàm Helper để lấy Description của Enum thì dùng ở đây
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
-
-                // Map từ Block (Lưu ý kiểm tra null để tránh lỗi)
                 .ForMember(dest => dest.BlockId, opt => opt.MapFrom(src => src.BlockId))
                 .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Block != null ? src.Block.BlockName : string.Empty))
-
-                // Map từ RoomType
                 .ForMember(dest => dest.RoomTypeId, opt => opt.MapFrom(src => src.RoomTypeId))
                 .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.ToString() : string.Empty));
 
@@ -76,8 +67,14 @@ namespace DormitoryManagement.Application.Mappings
 
             // === BLOCK MAPPINGS ===
             CreateMap<Block, BlockResponseDto>()
-                .ForMember(dest => dest.RoomCount, opt => opt.MapFrom(src => src.Rooms != null ? src.Rooms.Count : 0));
-            CreateMap<BlockRequestDto, Block>();
+                .ForMember(dest => dest.TotalRooms, opt => opt.MapFrom(src => src.Rooms != null ? src.Rooms.Count(r => !r.IsDeleted) : 0));
+
+            CreateMap<BlockRequestDto, Block>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.Rooms, opt => opt.Ignore());
 
             // === ROOM TYPE MAPPINGS ===
             CreateMap<RoomType, RoomTypeResponseDto>();

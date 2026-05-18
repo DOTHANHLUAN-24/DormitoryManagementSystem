@@ -1,0 +1,191 @@
+@model DormitoryManagement.Application.Dtos.Responses.Blocks.BlockResponseDto
+
+@{
+    ViewData["Title"] = "Chi Tiết Tòa Nhà";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .info-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; height: 100%; }
+        
+        .stat-card { background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px; padding: 20px; border: 1px solid #e2e8f0; display: flex; align-items: center; gap: 15px; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; }
+        
+        .bg-icon-floors { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .bg-icon-rooms { background: linear-gradient(135deg, #10b981, #059669); }
+        
+        .info-label { font-size: 13px; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-value { font-size: 16px; font-weight: 600; color: #1e293b; }
+        
+        .trang-thai-badge { padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .dang-hoat-dong { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
+        .da-khoa { background: #fff7ed; color: #f59e0b; border: 1px solid #fde68a; }
+
+        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+        
+        .nut-sua-to { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #3b82f6; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2); }
+        .nut-sua-to:hover { background: #2563eb; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3); }
+        
+        .nut-xoa-to { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; border: none; background: #fef2f2; color: #ef4444 !important; border: 1px solid #fecaca; }
+        .nut-xoa-to:hover { background: #fee2e2; transform: translateY(-1px); }
+    </style>
+}
+
+<div class="container-fluid max-w-7xl mx-auto">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="tieu-de-trang">
+                <i class="fas fa-building me-2 text-info"></i> Thông tin chi tiết: @Model.BlockName
+            </h1>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Trở về danh sách
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="nut-sua-to">
+                <i class="fas fa-edit"></i> Chỉnh sửa
+            </a>
+            @Html.AntiForgeryToken()
+            <button type="button" onclick="softDeleteBlock('@Model.Id')" class="nut-xoa-to">
+                <i class="fas fa-trash"></i> Xóa
+            </button>
+        </div>
+    </header>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="info-card">
+                <h5 class="fw-bold mb-4 border-bottom pb-3"><i class="fas fa-info-circle text-primary me-2"></i> Tổng quan tòa nhà</h5>
+                
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="info-label">Tên tòa nhà</div>
+                        <div class="info-value fs-5 text-primary">@Model.BlockName</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-label">Trạng thái hoạt động</div>
+                        <div class="mt-1">
+                            @if (Model.IsActive)
+                            {
+                                <span class="trang-thai-badge dang-hoat-dong"><i class="fas fa-check-circle"></i> Đang hoạt động</span>
+                            }
+                            else
+                            {
+                                <span class="trang-thai-badge da-khoa"><i class="fas fa-pause-circle"></i> Đang tạm ngưng</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6">
+                        <div class="info-label">Ngày tạo</div>
+                        <div class="info-value"><i class="far fa-calendar-alt text-muted me-2"></i> @Model.CreatedDate.ToString("dd/MM/yyyy - HH:mm")</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="info-label">ID Hệ thống</div>
+                        <div class="info-value font-monospace small text-muted">@Model.Id</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="info-label mb-2">Mô tả thêm</div>
+                    <div class="p-3 bg-light rounded-3 border">
+                        @if (!string.IsNullOrWhiteSpace(Model.Description))
+                        {
+                            <span class="text-dark">@Model.Description</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Không có mô tả nào cho tòa nhà này.</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="info-card">
+                <h5 class="fw-bold mb-4 border-bottom pb-3"><i class="fas fa-chart-pie text-success me-2"></i> Thống kê</h5>
+                
+                <div class="d-flex flex-column gap-3">
+                    <div class="stat-card shadow-sm">
+                        <div class="stat-icon bg-icon-floors">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Tổng số tầng</div>
+                            <div class="info-value fs-4">@Model.TotalFloors <span class="fs-6 text-muted fw-normal">tầng</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card shadow-sm">
+                        <div class="stat-icon bg-icon-rooms">
+                            <i class="fas fa-door-open"></i>
+                        </div>
+                        <div>
+                            <div class="info-label">Tổng số phòng hiện có</div>
+                            <div class="info-value fs-4">@Model.TotalRooms <span class="fs-6 text-muted fw-normal">phòng</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top">
+                    <p class="small text-muted mb-0">
+                        <i class="fas fa-lightbulb text-warning me-1"></i> 
+                        <strong>Gợi ý:</strong> Để xem chi tiết danh sách các phòng thuộc tòa nhà này, vui lòng truy cập chức năng <a asp-controller="Room" asp-action="Index" class="text-decoration-none fw-bold">Quản lý Phòng</a> và lọc theo tên tòa nhà.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function softDeleteBlock(id) {
+            Swal.fire({
+                title: 'Chuyển vào thùng rác?',
+                text: "Tòa nhà này sẽ bị ẩn khỏi hệ thống!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Đồng ý xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Block/SoftDelete/' + id,
+                        type: 'POST',
+                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ 
+                                    icon: 'success', 
+                                    title: 'Đã xóa!', 
+                                    text: data.message, 
+                                    timer: 1500, 
+                                    showConfirmButton: false 
+                                }).then(() => {
+                                    window.location.href = '/Block';
+                                });
+                            } else {
+                                Swal.fire('Lỗi!', data.message, 'error');
+                            }
+                        },
+                        error: function () { 
+                            Swal.fire('Lỗi!', 'Không thể kết nối đến máy chủ.', 'error'); 
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

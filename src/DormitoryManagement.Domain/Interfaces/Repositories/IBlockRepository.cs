@@ -11,13 +11,9 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
         Task<Block?> GetBlockWithRoomsAsync(Guid id);
 
         /// <summary>
-        /// Kiểm tra tên tòa nhà đã tồn tại chưa (để tránh trùng lặp khi thêm/sửa)
+        /// Kiểm tra tên tòa nhà đã tồn tại chưa (để tránh trùng lặp khi thêm/sửa).
+        /// Chỉ kiểm tra các tòa nhà chưa bị xóa mềm.
         /// </summary>
         Task<bool> IsBlockNameExistsAsync(string blockName, Guid? excludeId = null);
-
-        /// <summary>
-        /// Tìm kiếm tòa nhà theo tên hoặc mô tả, hỗ trợ phân trang
-        /// </summary>
-        Task<PagedResult<Block>> SearchBlocksAsync(string searchTerm, int pageIndex, int pageSize);
     }
 }
