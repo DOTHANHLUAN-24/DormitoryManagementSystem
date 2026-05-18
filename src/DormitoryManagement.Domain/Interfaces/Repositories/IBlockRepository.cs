@@ -5,16 +5,19 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
 {
     public interface IBlockRepository : IBaseRepository<Block>
     {
-        // Lấy thông tin Block kèm theo danh sách phòng (Rooms)
+        /// <summary>
+        /// Lấy thông tin tòa nhà kèm theo danh sách phòng chưa bị xóa
+        /// </summary>
         Task<Block?> GetBlockWithRoomsAsync(Guid id);
 
-        // Kiểm tra tên Block đã tồn tại chưa (để tránh trùng tên khi tạo mới/cập nhật)
+        /// <summary>
+        /// Kiểm tra tên tòa nhà đã tồn tại chưa (để tránh trùng lặp khi thêm/sửa)
+        /// </summary>
         Task<bool> IsBlockNameExistsAsync(string blockName, Guid? excludeId = null);
 
-        // Lấy danh sách Block kèm số lượng phòng hiện có (Ví dụ cho dashboard/thống kê)
-        Task<IEnumerable<Block>> GetAllWithRoomCountAsync();
-
-        // Tìm kiếm Block
+        /// <summary>
+        /// Tìm kiếm tòa nhà theo tên hoặc mô tả, hỗ trợ phân trang
+        /// </summary>
         Task<PagedResult<Block>> SearchBlocksAsync(string searchTerm, int pageIndex, int pageSize);
     }
 }

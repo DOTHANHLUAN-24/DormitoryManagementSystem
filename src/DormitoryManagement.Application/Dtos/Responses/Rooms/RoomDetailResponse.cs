@@ -1,10 +1,16 @@
-﻿namespace DormitoryManagement.Application.Dtos.Responses.Rooms
+﻿using DormitoryManagement.Application.Dtos.Responses.Assets;
+using DormitoryManagement.Application.Dtos.Responses.Beds;
+
+namespace DormitoryManagement.Application.Dtos.Responses.Rooms
 {
-    // DTO hiển thị chi tiết phòng (Bao gồm các danh sách liên quan)
     public class RoomDetailResponse : RoomResponse
     {
-        public List<BedResponse> Beds { get; set; } = new();
-        public List<AssetResponse> Assets { get; set; } = new();
+        public string Description { get; set; } = string.Empty;
+
         public DateTime CreatedDate { get; set; }
+
+        public List<BedResponse> Beds { get; set; } = new();
+
+        public List<AssetResponse> Assets { get; set; } = new();
     }
 }

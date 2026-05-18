@@ -1,109 +1,156 @@
+@using DormitoryManagement.Domain.Enums
+@model DormitoryManagement.Application.Dtos.Requests.Rooms.UpdateRoomRequest
+
 @{
     ViewData["Title"] = "Cập nhật thông tin phòng";
-    Layout = "_Layout"; // Giả định bạn dùng layout chung
+    Layout = "_Layout";
 }
 
-<div class="container mt-5">
+<div class="container-fluid py-4">
     <div class="row justify-content-center">
-        <div class="col-lg-9">
-            <div class="card border-0 shadow-lg">
-                <div class="card-header bg-primary bg-gradient text-white py-3">
-                    <h5 class="mb-0">
-                        <i class="bi bi-pencil-square me-2"></i>Cập nhật thông tin phòng: <span
-                        class="fw-bold">P.101</span>
-                    </h5>
-                </div>
-                <div class="card-body p-5">
-                    <form action="#" method="post">
-                        <div class="alert alert-warning d-flex align-items-center mb-4" role="alert">
-                            <input type="hidden" name="Id" value="00000000-0000-0000-0000-000000000001" />
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                            <div>
-                                <strong>Lưu ý:</strong> Vui lòng kiểm tra lại thông tin trước khi lưu.
+        <div class="col-xl-10">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none">Quản lý phòng</a></li>
+                    <li class="breadcrumb-item active">Chỉnh sửa phòng @Model.RoomNumber</li>
+                </ol>
+            </nav>
+
+            <form asp-action="Edit" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- DÙNG THẺ ẨN ĐỂ CHỨA THÔNG BÁO (GIỐNG BÊN USER) -->
+                <input type="hidden" id="success-message" value="@TempData["Success"]" />
+                <input type="hidden" id="error-message" value="@TempData["Error"]" />
+                
+                <input type="hidden" asp-for="Id" />
+
+                <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 15px;">
+                    <div class="card-header bg-primary py-3">
+                        <div class="d-flex align-items-center">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-2 me-3">
+                                <i class="bi bi-door-open-fill text-white fs-4"></i>
                             </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <!-- Tên/Số phòng -->
-                            <div class="col-md-6">
-                                <label class="form-label fw-semibold">Số phòng <span
-                                    class="text-danger">*</span></label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-door-closed"></i></span>
-                                        <input type="text" name="RoomNumber" class="form-control" value="P.101" required />
-                                    </div>
-                                </div>
-
-                                <!-- Tầng -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Tầng số</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text bg-light"><i class="bi bi-layers"></i></span>
-                                        <input type="number" name="Floor" class="form-control" value="1" min="1" />
-                                    </div>
-                                </div>
-
-                                <!-- Trạng thái phòng -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Trạng thái hiện tại</label>
-                                    <select name="Status" class="form-select border-primary-subtle">
-                                        <option value="Available" selected>🟢 Trống (Available)</option>
-                                        <option value="Full">🔴 Đã đầy (Full)</option>
-                                        <option value="Maintenance">🟡 Đang bảo trì (Maintenance)</option>
-                                        <option value="Reserved">🔵 Đã đặt trước (Reserved)</option>
-                                    </select>
-                                </div>
-
-                                <!-- Tòa nhà -->
-                                <div class="col-md-6">
-                                    <label class="form-label fw-semibold">Thuộc tòa nhà (Block)</label>
-                                    <select name="BlockId" class="form-select">
-                                        <option value="00000000-0000-0000-0000-000000000001" selected>Tòa nhà A - Khu nam
-                                        </option>
-                                        <option value="00000000-0000-0000-0000-000000000002">Tòa nhà B - Khu nữ</option>
-                                        <option value="00000000-0000-0000-0000-000000000003">Tòa nhà C - Khu quốc tế
-                                        </option>
-                                    </select>
-                                </div>
-
-                                <!-- Loại phòng -->
-                                <div class="col-12">
-                                    <label class="form-label fw-semibold">Loại phòng & Tiện ích</label>
-                                    <select name="RoomTypeId" class="form-select">
-                                        <option value="00000000-0000-0000-0000-000000000001" selected>Phòng 4 giường - Quạt
-                                            (Cơ bản)</option>
-                                            <option value="00000000-0000-0000-0000-000000000002">Phòng 6 giường - Điều hòa (Nâng
-                                                cao)</option>
-                                            </select>
-                                        </div>
-
-                                        <!-- Ghi chú thêm -->
-                                        <div class="col-12">
-                                            <label class="form-label fw-semibold">Ghi chú vận hành</label>
-                                            <textarea class="form-control" rows="3"
-                                                      placeholder="Ghi nhận tình trạng hư hỏng hoặc lưu ý đặc biệt...">Phòng đang trong tình trạng tốt, cần kiểm tra vòi nước định kỳ.</textarea>
-                                        </div>
-                                    </div>
-
-                                    <hr class="my-4">
-
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <a href="#" class="btn btn-outline-secondary px-4">
-                                            <i class="bi bi-x-circle me-1"></i> Hủy bỏ
-                                        </a>
-                                        <button type="submit" class="btn btn-primary px-5 shadow-sm">
-                                            <i class="bi bi-check-lg me-1"></i> Lưu thay đổi
-                                        </button>
-                                    </div>
-                                </form>
+                            <div>
+                                <h5 class="text-white mb-0">Chỉnh sửa thông tin phòng</h5>
+                                <small class="text-white-50">Mã định danh: @Model.Id</small>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            @section Scripts {
-                @{
-                    await Html.RenderPartialAsync("_ValidationScriptsPartial");
-                }
+                    <div class="card-body p-4 p-lg-5">
+                        @* Hiển thị tóm tắt lỗi *@
+                        <div asp-validation-summary="All" class="text-danger mb-3 small fw-bold"></div>
+
+                        <div class="row g-5">
+                            <!-- CỘT BÊN TRÁI -->
+                            <div class="col-lg-6 border-end-lg">
+                                <div class="d-flex align-items-center mb-4">
+                                    <span class="badge bg-primary-subtle text-primary rounded-pill me-2">1</span>
+                                    <h6 class="mb-0 fw-bold text-uppercase small">Thông tin cơ bản</h6>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RoomNumber" class="form-label fw-bold small">Số phòng <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-hash text-muted"></i></span>
+                                        <input asp-for="RoomNumber" class="form-control border-start-0 ps-0 form-control-lg fs-6" />
+                                    </div>
+                                    <span asp-validation-for="RoomNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-6 mb-3">
+                                        <label asp-for="Floor" class="form-label fw-bold small">Tầng số</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-transparent border-end-0"><i class="bi bi-layers text-muted"></i></span>
+                                            <input asp-for="Floor" class="form-control border-start-0 ps-0" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 mb-3">
+                                        <label asp-for="Status" class="form-label fw-bold small">Trạng thái</label>
+                                        <select asp-for="Status" class="form-select" asp-items="ViewBag.Statuses"></select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- CỘT BÊN PHẢI -->
+                            <div class="col-lg-6">
+                                <div class="d-flex align-items-center mb-4">
+                                    <span class="badge bg-success-subtle text-success rounded-pill me-2">2</span>
+                                    <h6 class="mb-0 fw-bold text-uppercase small">Phân loại & Vị trí</h6>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="BlockId" class="form-label fw-bold small">Tòa nhà</label>
+                                    <select asp-for="BlockId" class="form-select" asp-items="ViewBag.Blocks"></select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="RoomTypeId" class="form-label fw-bold small">Loại phòng</label>
+                                    <select asp-for="RoomTypeId" class="form-select" asp-items="ViewBag.RoomTypes"></select>
+                                </div>
+                            </div>
+
+                            <!-- HÀNG CUỐI: GHI CHÚ -->
+                            <div class="col-12 mt-2">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="badge bg-warning-subtle text-warning rounded-pill me-2">3</span>
+                                    <h6 class="mb-0 fw-bold text-uppercase small">Ghi chú & Mô tả</h6>
+                                </div>
+                                <textarea name="Description" class="form-control" rows="3" 
+                                          style="border-radius: 10px; background-color: #f8f9fa;"
+                                          placeholder="Nhập ghi chú...">@ViewBag.Description</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-light p-4 border-0 text-end">
+                        <a asp-action="Index" class="btn btn-link text-muted text-decoration-none fw-bold me-3">Hủy bỏ</a>
+                        <button type="submit" class="btn btn-primary px-5 py-2 fw-bold shadow-sm" style="border-radius: 10px;">
+                            <i class="bi bi-save2 me-2"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-end-lg { border-right: 1px solid #dee2e6; }
+    @@media (max-width: 991.98px) { .border-end-lg { border-right: none; border-bottom: 1px solid #dee2e6; margin-bottom: 2rem; padding-bottom: 2rem; } }
+    .form-control:focus, .form-select:focus { box-shadow: none; border-color: #0d6efd; }
+</style>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // LẤY GIÁ TRỊ TỪ THẺ ẨN (TRÌNH DUYỆT TỰ GIẢI MÃ TIẾNG VIỆT CHO .VALUE)
+            var successMsg = document.getElementById('success-message').value;
+            var errorMsg = document.getElementById('error-message').value;
+
+            if (successMsg) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: successMsg,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
             }
+
+            if (errorMsg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: errorMsg
+                });
+            }
+        });
+    </script>
+}

@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests;
 using DormitoryManagement.Application.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
+    [Route("User")]
+    [Authorize]
     public class UserController : Controller
     {
         private readonly IUserService _userService;
@@ -16,6 +19,10 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
+<<<<<<< HEAD
+=======
+        [Route("")]
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -27,6 +34,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Banned")]
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -37,6 +45,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("RecycleBin")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -47,6 +56,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Details/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
             var user = await _userService.GetUserByIdAsync(id);
@@ -56,6 +66,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Create")]
         public IActionResult Create()
         {
             // Truyền DTO rỗng để View render form chính xác
@@ -95,6 +106,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var userResponse = await _userService.GetUserByIdAsync(id);
@@ -122,6 +134,10 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
+<<<<<<< HEAD
+=======
+        [Route("Deactivate/{id}")]
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> Deactivate([FromRoute] Guid id)
 
         {
@@ -143,6 +159,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpPost]
+        [Route("Restore/{id}")]
         public async Task<IActionResult> Restore(Guid id)
         {
             try
@@ -157,6 +174,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpPost]
+        [Route("ToggleStatus/{id}")]
         public async Task<IActionResult> ToggleStatus(Guid id)
         {
             try
@@ -172,6 +190,7 @@ namespace DormitoryManagement.Controllers
 
         // Trong UserController.cs
         [HttpPost]
+        [Route("DeletePermanently/{id}")]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
             try
@@ -188,6 +207,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet]
+        [Route("Profile")]
         public async Task<IActionResult> Profile()
         {
             // Lấy ID của người dùng đang đăng nhập từ Claims trong JWT Token
@@ -204,6 +224,7 @@ namespace DormitoryManagement.Controllers
 
             return View(user);
         }
+<<<<<<< HEAD
         /*
                 [HttpPost]
                 [ValidateAntiForgeryToken]
@@ -233,6 +254,12 @@ namespace DormitoryManagement.Controllers
                 */
         [HttpPost]
         [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
+=======
+
+        [HttpPost]
+        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
+        [Route("ToggleLock/{id}")]
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         public async Task<IActionResult> ToggleLock(Guid id)
         {
             // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService

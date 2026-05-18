@@ -2,54 +2,91 @@
 @using DormitoryManagement.Application.Dtos.Responses
 @model PagedResult<DormitoryManagement.Application.Dtos.Responses.UserResponseDto>
 
+<<<<<<< HEAD
 @* Quan trọng: Phải có dòng này để AJAX lấy được Token *@
 @Html.AntiForgeryToken()
+=======
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        .nut-them { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #4f46e5; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .nut-them:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        .nut-thung-rac { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-thung-rac:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
+        .khung-tim-kiem input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
+        .trang-thai-user { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .dang-hoat-dong { background: #ecfdf5; color: #10b981; }
+        .da-khoa { background: #fef2f2; color: #ef4444; }
+        .user-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .table thead th { background: #f8fafc; color: #64748b; font-size: 12px; text-transform: uppercase; padding: 15px; }
+        .nut-hanh-dong { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: none; text-decoration: none !important; transition: all 0.2s; }
+        .nut-sua { background: #eff6ff; color: #3b82f6; }
+        .nut-xoa { background: #fef2f2; color: #ef4444; }
+        .nut-khoa { background: #fff7ed; color: #f97316; }
+        .nut-chi-tiet { background: #f8fafc; color: #64748b; }
+        .nut-hanh-dong:hover { transform: scale(1.1); }
+    </style>
+}
+
+@* 1. Token và Thẻ ẩn cho thông báo *@
+@Html.AntiForgeryToken()
+<input type="hidden" id="success-message" value="@TempData["Success"]" />
+<input type="hidden" id="error-message" value="@TempData["Error"]" />
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0"><i class="fas fa-users me-2 text-primary"></i> Quản lý Người dùng</h4>
-        <div>
-            <a asp-action="RecycleBin" class="btn btn-outline-secondary btn-sm">
-                <i class="fas fa-trash-restore me-1"></i> Thùng rác
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">Quản lý Người dùng</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="RecycleBin" class="nut-thung-rac">
+                <i class="fas fa-trash-restore"></i> Thùng rác
             </a>
-            <a asp-action="Create" class="btn btn-primary btn-sm ms-2">
-                <i class="fas fa-plus me-1"></i> Thêm sinh viên
+            <a asp-action="Create" class="nut-them">
+                <i class="fas fa-user-plus"></i> Thêm sinh viên
             </a>
         </div>
-    </div>
+    </header>
 
     @* Thanh tìm kiếm *@
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <form method="get" asp-action="Index" class="row g-2">
-                <div class="col-md-10">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0"><i class="fas fa-search text-muted"></i></span>
-                        <input type="text" name="search" value="@ViewBag.Search" class="form-control bg-light border-start-0" placeholder="Tìm theo tên, email, SĐT...">
-                    </div>
+    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-10">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm theo tên đăng nhập, email, họ tên...">
                 </div>
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-dark">Tìm kiếm</button>
-                </div>
-            </form>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; height: 42px;">
+                    Tìm kiếm
+                </button>
+            </div>
         </div>
-    </div>
+    </form>
 
     @* Bảng *@
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-3">Tên đăng nhập</th>
+                        <th class="ps-4">Tên đăng nhập</th>
                         <th>Họ và tên</th>
                         <th>Email</th>
                         <th>Trạng thái</th>
-                        <th class="text-end pe-3">Thao tác</th>
+                        <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model.Items != null && Model.Items.Any())
+<<<<<<< HEAD
                     {
                         foreach (var item in Model.Items)
                         {
@@ -97,22 +134,80 @@
                         <tr>
                             <td colspan="5" class="text-center py-4 text-muted">Không tìm thấy dữ liệu</td>
                         </tr>
+=======
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4"><span class="user-badge">@item.UserName</span></td>
+                                <td><div class="fw-bold">@item.FullName</div></td>
+                                <td><span class="text-muted small">@item.Email</span></td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="trang-thai-user dang-hoat-dong">Hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="trang-thai-user da-khoa">Đã khóa</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-chi-tiet" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                        <button type="button" onclick="toggleLock('@item.Id', @(item.IsActive ? "true" : "false"))" 
+                                                class="nut-hanh-dong nut-khoa" title="@(item.IsActive ? "Khóa" : "Mở khóa")">
+                                            <i class="fas @(item.IsActive ? "fa-user-lock" : "fa-user-check")"></i>
+                                        </button>
+                                        <button type="button" onclick="deactivateUser('@item.Id')" 
+                                                class="nut-hanh-dong nut-xoa" title="Xóa vào thùng rác">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
                     }
                 </tbody>
             </table>
         </div>
     </div>
 
-    @await Html.PartialAsync("_Pagination", Model)
+    @* Phân trang *@
+    <div class="mt-4">
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
 </div>
 
 @section Scripts {
+<<<<<<< HEAD
     @* Đảm bảo có jQuery và SweetAlert2 *@
+=======
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+<<<<<<< HEAD
         // Hàm Xóa vào thùng rác
+=======
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hiển thị thông báo TempData từ thẻ ẩn
+            var successMsg = document.getElementById('success-message').value;
+            var errorMsg = document.getElementById('error-message').value;
+
+            if (successMsg) {
+                Swal.fire({ icon: 'success', title: 'Thành công', text: successMsg, timer: 2500, showConfirmButton: false });
+            }
+            if (errorMsg) {
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: errorMsg });
+            }
+        });
+
+        // Logic Xóa (Soft Delete)
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
         function deactivateUser(id) {
             console.log("Đang gọi deactivate cho ID:", id); // Kiểm tra xem hàm có chạy không
             
@@ -121,12 +216,17 @@
                 text: "Người dùng này sẽ bị chuyển vào thùng rác!",
                 icon: 'warning',
                 showCancelButton: true,
+<<<<<<< HEAD
                 confirmButtonColor: '#d33',
+=======
+                confirmButtonColor: '#ef4444',
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Đồng ý',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
+<<<<<<< HEAD
                     // Lấy token chống giả mạo
                     var token = $('input[name="__RequestVerificationToken"]').val();
 
@@ -141,19 +241,33 @@
                                 Swal.fire('Thành công!', data.message, 'success').then(() => {
                                     location.reload();
                                 });
+=======
+                    $.ajax({
+                        url: '/User/Deactivate/' + id,
+                        type: 'POST',
+                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false }).then(() => location.reload());
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
                             } else {
                                 Swal.fire('Lỗi!', data.message, 'error');
                             }
                         },
+<<<<<<< HEAD
                         error: function (xhr) {
                             console.error(xhr);
                             Swal.fire('Lỗi!', 'Không thể thực hiện thao tác', 'error');
                         }
+=======
+                        error: function () { Swal.fire('Lỗi!', 'Không thể thực hiện thao tác', 'error'); }
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
                     });
                 }
             });
         }
 
+<<<<<<< HEAD
         // Hàm Khóa/Mở khóa
         function toggleLock(id, isActive) {
             console.log("Đang gọi toggleLock cho ID:", id, "Trạng thái hiện tại:", isActive);
@@ -190,6 +304,30 @@
                         },
                         error: function (xhr) {
                             Swal.fire('Lỗi!', 'Không thể kết nối đến máy chủ', 'error');
+=======
+        // Logic Khóa/Mở khóa
+        function toggleLock(id, isActive) {
+            const title = isActive ? "Khóa tài khoản?" : "Mở khóa tài khoản?";
+            Swal.fire({
+                title: title,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: isActive ? '#f97316' : '#10b981',
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/User/ToggleLock/' + id,
+                        type: 'POST',
+                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false }).then(() => location.reload());
+                            } else {
+                                Swal.fire('Lỗi!', data.message, 'error');
+                            }
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
                         }
                     });
                 }

@@ -47,7 +47,11 @@ internal class Program
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<IBlockService, BlockService>();
         builder.Services.AddScoped<IBedService, BedService>();
+<<<<<<< HEAD
         builder.Services.AddScoped<IViolationService, ViolationService>();
+=======
+        builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+>>>>>>> 5cec099004cb5aaad701cbbafc6733fbc20d4002
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

@@ -1,4 +1,7 @@
-﻿using DormitoryManagement.Application.Services.Interfaces;
+﻿using AutoMapper;
+using DormitoryManagement.Application.Dtos.Requests.Blocks;
+using DormitoryManagement.Application.Dtos.Responses.Blocks;
+using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
@@ -10,116 +13,117 @@ namespace DormitoryManagement.Application.Services.Implements
     {
         private readonly IBlockRepository _blockRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public BlockService(IBlockRepository blockRepository, IUnitOfWork unitOfWork)
+        public BlockService(IBlockRepository blockRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _blockRepository = blockRepository;
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Block>> GetAllBlocksAsync(bool includeDeleted = false)
+        public async Task<PagedResult<BlockResponseDto>> GetActiveBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm)
         {
-            return await _blockRepository.GetAllAsync(includeDeleted);
+            var pagedResult = await _blockRepository.SearchBlocksAsync(searchTerm ?? "", pageIndex, pageSize);
+
+            // Map từ Entity sang Response DTO
+            return new PagedResult<BlockResponseDto>(
+                _mapper.Map<List<BlockResponseDto>>(pagedResult.Items),
+                pagedResult.TotalCount,
+                pageIndex,
+                pageSize
+            );
         }
 
-        public async Task<PagedResult<Block>> GetPagedBlocksAsync(int pageIndex, int pageSize, string? searchTerm = null)
+        public async Task<PagedResult<BlockResponseDto>> GetDeletedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
-            {
-                // Sử dụng hàm GetPagedAsync có sẵn ở BaseRepository
-                return await _blockRepository.GetPagedAsync(
-                    pageIndex,
-                    pageSize,
-                    predicate: x => !x.IsDeleted,
-                    orderBy: x => x.OrderBy(b => b.BlockName));
-            }
+            var pagedResult = await _blockRepository.GetByStatusPagedAsync(
+                pageIndex, pageSize, isActive: null, isDeleted: true,
+                predicate: b => string.IsNullOrEmpty(searchTerm) || b.BlockName.Contains(searchTerm));
 
-            // Sử dụng hàm Search đã viết ở BlockRepository
-            return await _blockRepository.SearchBlocksAsync(searchTerm, pageIndex, pageSize);
+            return new PagedResult<BlockResponseDto>(
+                _mapper.Map<List<BlockResponseDto>>(pagedResult.Items),
+                pagedResult.TotalCount,
+                pageIndex,
+                pageSize
+            );
         }
 
-        public async Task<Block?> GetBlockByIdAsync(Guid id)
-        {
-            return await _blockRepository.GetByIdAsync(id);
-        }
-
-        public async Task<Block?> GetBlockWithRoomsAsync(Guid id)
-        {
-            return await _blockRepository.GetBlockWithRoomsAsync(id);
-        }
-
-        public async Task<bool> CreateBlockAsync(Block block)
-        {
-            // 1. Logic nghiệp vụ: Kiểm tra trùng tên
-            if (await _blockRepository.IsBlockNameExistsAsync(block.BlockName))
-            {
-                throw new InvalidOperationException($"Tòa nhà có tên '{block.BlockName}' đã tồn tại.");
-            }
-
-            // 2. Thiết lập mặc định
-            block.Id = Guid.NewGuid();
-            block.CreatedDate = DateTime.UtcNow;
-            block.IsActive = true;
-            block.IsDeleted = false;
-
-            await _blockRepository.AddAsync(block);
-
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
-        }
-
-        public async Task<bool> UpdateBlockAsync(Block block)
-        {
-            var existingBlock = await _blockRepository.GetByIdAsync(block.Id);
-            if (existingBlock == null || existingBlock.IsDeleted)
-                throw new KeyNotFoundException("Không tìm thấy tòa nhà hoặc đã bị xóa.");
-
-            // Kiểm tra trùng tên với các block khác
-            if (await _blockRepository.IsBlockNameExistsAsync(block.BlockName, block.Id))
-            {
-                throw new InvalidOperationException($"Tên tòa nhà '{block.BlockName}' đã được sử dụng bởi khu vực khác.");
-            }
-
-            // Cập nhật thông tin
-            existingBlock.BlockName = block.BlockName;
-            existingBlock.TotalFloors = block.TotalFloors;
-            existingBlock.Description = block.Description;
-            existingBlock.IsActive = block.IsActive;
-
-            await _blockRepository.UpdateAsync(existingBlock);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
-        }
-
-        public async Task<bool> DeleteBlockAsync(Guid id, bool isSoftDelete = true)
+        public async Task<BlockResponseDto?> GetBlockByIdAsync(Guid id)
         {
             var block = await _blockRepository.GetBlockWithRoomsAsync(id);
-            if (block == null) throw new KeyNotFoundException("Không tìm thấy tòa nhà.");
+            return _mapper.Map<BlockResponseDto>(block);
+        }
 
-            // Nghiệp vụ: Không được xóa nếu tòa nhà đang có phòng (tùy yêu cầu)
-            if (block.Rooms.Any(r => !r.IsDeleted))
-            {
-                throw new InvalidOperationException("Không thể xóa tòa nhà vì vẫn còn phòng đang tồn tại.");
-            }
+        public async Task<IEnumerable<BlockResponseDto>> GetAllBlocksAsync()
+        {
+            var blocks = await _blockRepository.GetAllAsync(includeDeleted: false);
+            return _mapper.Map<IEnumerable<BlockResponseDto>>(blocks);
+        }
 
-            await _blockRepository.DeleteAsync(block, isSoftDelete);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+        public async Task<bool> CreateBlockAsync(BlockRequestDto request)
+        {
+            // Logic nghiệp vụ: Kiểm tra trùng tên tòa nhà
+            if (await _blockRepository.IsBlockNameExistsAsync(request.BlockName))
+                throw new Exception("Tên tòa nhà đã tồn tại trong hệ thống.");
+
+            var block = _mapper.Map<Block>(request);
+            await _blockRepository.AddAsync(block);
+
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> UpdateBlockAsync(Guid id, BlockRequestDto request)
+        {
+            var block = await _blockRepository.GetByIdAsync(id);
+            if (block == null) return false;
+
+            // Kiểm tra trùng tên (trừ chính nó)
+            if (await _blockRepository.IsBlockNameExistsAsync(request.BlockName, id))
+                throw new Exception("Tên tòa nhà đã bị trùng với tòa nhà khác.");
+
+            _mapper.Map(request, block);
+            await _blockRepository.UpdateAsync(block);
+
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> SoftDeleteBlockAsync(Guid id)
+        {
+            var block = await _blockRepository.GetBlockWithRoomsAsync(id);
+            if (block == null) return false;
+
+            // Logic nghiệp vụ: Không cho xóa tòa nhà nếu vẫn còn phòng đang hoạt động
+            if (block.Rooms != null && block.Rooms.Any(r => !r.IsDeleted))
+                throw new Exception("Không thể xóa tòa nhà vì vẫn còn phòng bên trong. Hãy xóa các phòng trước.");
+
+            await _blockRepository.DeleteAsync(block, isSoftDelete: true);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> RestoreBlockAsync(Guid id)
         {
-            var block = await _blockRepository.GetByIdAsync(id);
-            if (block == null) throw new KeyNotFoundException("Không tìm thấy tòa nhà.");
+            // Vì GetByIdAsync của BaseRepo mặc định không lấy IsDeleted=true (tùy cấu hình)
+            // Ta có thể dùng GetByStatusAsync để tìm trong thùng rác
+            var blocks = await _blockRepository.GetByStatusAsync(isDeleted: true);
+            var block = blocks.FirstOrDefault(x => x.Id == id);
+
+            if (block == null) return false;
 
             await _blockRepository.RestoreAsync(block);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
-        public async Task<bool> IsNameDuplicateAsync(string name, Guid? excludeId = null)
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
-            return await _blockRepository.IsBlockNameExistsAsync(name, excludeId);
+            // Tìm cả trong thùng rác
+            var blocks = await _blockRepository.GetByStatusAsync(isDeleted: true);
+            var block = blocks.FirstOrDefault(x => x.Id == id);
+
+            if (block == null) return false;
+
+            await _blockRepository.DeleteAsync(block, isSoftDelete: false);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }
