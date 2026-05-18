@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,7 +70,7 @@ namespace DormitoryManagement.Controllers
             return View(new UserRequestDto());
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserRequestDto userDto)
         {
@@ -102,36 +102,40 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("Edit/{id}")]
+        [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var userResponse = await _userService.GetUserByIdAsync(id);
             if (userResponse == null) return NotFound();
 
-            // Mapping phải đảm bảo: userRequest.Role = userResponse.Role;
-            var userRequest = _mapper.Map<UserRequestDto>(userResponse);
+            // Map từ Response sang UpdateDto để đổ dữ liệu vào Form
+            var updateDto = _mapper.Map<UserUpdateDto>(userResponse);
 
-            return View(userRequest);
+            return View(updateDto);
         }
 
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UserRequestDto userRequest)
+        public async Task<IActionResult> Edit(Guid id, UserUpdateDto updateDto)
         {
-            // Kiểm tra xem dữ liệu có vào đến đây không bằng cách đặt Breakpoint
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _userService.UpdateUserProfileAsync(id, userRequest);
+                return View(updateDto);
+            }
+
+            var result = await _userService.UpdateUserProfileAsync(id, updateDto);
+            if (result)
+            {
+                TempData["Success"] = "Cập nhật thành công";
                 return RedirectToAction(nameof(Index));
             }
-            // Nếu không vào được if, trang sẽ load lại và hiện lỗi nhờ asp-validation-summary="All"
-            return View(userRequest);
+
+            ModelState.AddModelError("", "Cập nhật thất bại.");
+            return View(updateDto);
         }
 
-        [HttpPost]
+        [HttpPost("Deactivate/{id}")]
         [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
-        [Route("Deactivate/{id}")]
         public async Task<IActionResult> Deactivate([FromRoute] Guid id)
 
         {
@@ -152,8 +156,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("Restore/{id}")]
+        [HttpPost("Restore/{id}")]
         public async Task<IActionResult> Restore(Guid id)
         {
             try
@@ -167,8 +170,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("ToggleStatus/{id}")]
+        [HttpPost("ToggleStatus/{id}")]
         public async Task<IActionResult> ToggleStatus(Guid id)
         {
             try
@@ -183,8 +185,7 @@ namespace DormitoryManagement.Controllers
         }
 
         // Trong UserController.cs
-        [HttpPost]
-        [Route("DeletePermanently/{id}")]
+        [HttpPost("DeletePermanently/{id}")]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
             try
@@ -200,8 +201,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("Profile")]
+        [HttpGet("Profile")]
         public async Task<IActionResult> Profile()
         {
             // Lấy ID của người dùng đang đăng nhập từ Claims trong JWT Token
@@ -219,9 +219,8 @@ namespace DormitoryManagement.Controllers
             return View(user);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
-        [Route("ToggleLock/{id}")]
+        [HttpPost("ToggleLock/{id}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleLock(Guid id)
         {
             // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService

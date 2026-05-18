@@ -1,7 +1,11 @@
 ﻿namespace Common
 {
-    public class CommonConstants
+    public static class CommonConstants
     {
-        public int MyProperty { get; set; }
+        public static readonly string AdminRole = "Admin";
+        public static readonly string ManagerRole = "ManagementStaff";
+        public static readonly string StudentRole = "Student";
+        public static readonly string TechnicalRole = "TechnicalStaff";
+
     }
 }
