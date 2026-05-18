@@ -3,6 +3,7 @@ using DormitoryManagement.Application.Dtos.Requests;
 using DormitoryManagement.Application.Dtos.Requests.Blocks;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Dtos.Requests.RoomTypes;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Dtos.Responses;
 using DormitoryManagement.Application.Dtos.Responses.Assets;
 using DormitoryManagement.Application.Dtos.Responses.Beds;
@@ -21,6 +22,9 @@ namespace DormitoryManagement.Application.Mappings
             CreateMap<User, UserResponseDto>();
             CreateMap<UserRequestDto, User>();
             CreateMap<UserResponseDto, UserRequestDto>();
+            CreateMap<User, UserUpdateDto>();
+            CreateMap<UserResponseDto, UserUpdateDto>();
+            CreateMap<UserUpdateDto, User>();
 
             // === ROOM MAPPINGS ===
 

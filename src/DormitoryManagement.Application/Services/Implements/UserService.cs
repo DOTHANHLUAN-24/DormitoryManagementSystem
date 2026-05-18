@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Dtos.Responses;
 using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -114,12 +115,11 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
-        public async Task<bool> UpdateUserProfileAsync(Guid id, UserRequestDto userDto)
+        public async Task<bool> UpdateUserProfileAsync(Guid id, UserUpdateDto userDto)
         {
-            var existingUser = await _userRepository.GetByIdAsync(id);
+            var existingUser = await _userManager.FindByIdAsync(id.ToString());
             if (existingUser == null) return false;
 
-            // Chỉ map những trường được phép sửa
             existingUser.FullName = userDto.FullName;
             existingUser.Email = userDto.Email;
             existingUser.PhoneNumber = userDto.PhoneNumber;
@@ -128,10 +128,17 @@ namespace DormitoryManagement.Application.Services.Implements
             existingUser.Role = userDto.Role;
             existingUser.LastModified = DateTime.Now;
 
-            // Cập nhật qua Repository
-            await _userRepository.UpdateAsync(existingUser);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            if (!string.IsNullOrEmpty(userDto.NewPassword))
+            {
+                var removeResult = await _userManager.RemovePasswordAsync(existingUser);
+                if (removeResult.Succeeded)
+                {
+                    await _userManager.AddPasswordAsync(existingUser, userDto.NewPassword);
+                }
+            }
+
+            var result = await _userManager.UpdateAsync(existingUser);
+            return result.Succeeded;
         }
 
         public async Task<bool> ToggleUserStatusAsync(Guid id)

@@ -1,4 +1,5 @@
 ﻿using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Dtos.Responses;
 using DormitoryManagement.Domain.Common;
 
@@ -26,7 +27,7 @@ namespace DormitoryManagement.Application.Services.Interfaces
         Task<bool> CreateUserAsync(UserRequestDto userDto);
         Task<bool> CreateUsersAsync(IEnumerable<UserRequestDto> userDtos);
 
-        Task<bool> UpdateUserProfileAsync(Guid id, UserRequestDto userDto);
+        Task<bool> UpdateUserProfileAsync(Guid id, UserUpdateDto userDto);
 
         // Thay đổi trạng thái Hoạt động/Bị chặn (IsActive true/false)
         Task<bool> ToggleUserStatusAsync(Guid id); // Đảo ngược trạng thái hoặc dùng hàm Ban/Unban bên dưới

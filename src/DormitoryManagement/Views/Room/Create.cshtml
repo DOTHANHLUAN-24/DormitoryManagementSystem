@@ -88,4 +88,52 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Kiểm tra thông báo thành công từ TempData
+            var successMsg = '@TempData["SuccessMessage"]';
+            if (successMsg) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: successMsg,
+                    confirmButtonText: 'Đồng ý',
+                    confirmButtonColor: '#0d6efd',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            }
+
+            // Kiểm tra thông báo lỗi từ TempData
+            var errorMsg = '@TempData["ErrorMessage"]';
+            if (errorMsg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Đã xảy ra lỗi!',
+                    text: errorMsg,
+                    confirmButtonText: 'Thử lại',
+                    confirmButtonColor: '#dc3545'
+                });
+            }
+
+            // (Tùy chọn) Xác nhận trước khi gửi form
+            $('form').submit(function (e) {
+                if ($(this).valid()) { // Kiểm tra nếu validation client-side đã qua
+                    // Có thể thêm hiệu ứng loading nếu muốn
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        text: 'Vui lòng chờ trong giây lát',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }

@@ -1,15 +1,21 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using DormitoryManagement.Domain.Enums;
 
-namespace DormitoryManagement.Application.Dtos.Requests
+namespace DormitoryManagement.Application.Dtos.Requests.Users
 {
     public class UserRequestDto
     {
         [Required(ErrorMessage = "Tên đăng nhập là bắt buộc")]
         public string UserName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
+        [Required(ErrorMessage = "Vui lòng nhập mật khẩu")]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Vui lòng xác nhận mật khẩu")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "Mật khẩu xác nhận không khớp.")] // Quan trọng
+        public string ConfirmPassword { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Họ tên là bắt buộc")]
         public string FullName { get; set; } = string.Empty;
