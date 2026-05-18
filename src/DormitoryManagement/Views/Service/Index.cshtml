@@ -1,3 +1,4 @@
+@model IEnumerable<DormitoryManagement.Domain.Entities.Utility>
 @{
     ViewData["Title"] = "Danh sách Dịch vụ";
     Layout = "_Layout";
@@ -20,6 +21,9 @@
             <a asp-controller="Service" asp-action="Create" class="btn btn-primary shadow-sm">
                 <i class="fas fa-plus-circle me-2"></i>Thêm dịch vụ mới
             </a>
+            <a asp-controller="Service" asp-action="Trash" class="btn btn-outline-secondary shadow-sm ms-2">
+                <i class="fas fa-trash-alt me-2"></i>Thùng rác
+            </a>
         </div>
     </div>
 
@@ -28,13 +32,13 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold">Danh sách chi tiết</h5>
-                <div class="input-group style="width: 250px;">
+                <div class="input-group style=" width: 250px;">
                     <input type="text" class="form-control" placeholder="Tìm tên dịch vụ...">
                     <button class="btn btn-outline-secondary"><i class="fas fa-search"></i></button>
                 </div>
             </div>
         </div>
-        
+
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -62,10 +66,12 @@
                             <td class="text-center">
                                 <div class="btn-group">
                                     <!-- Nút Trỏ sang trang SỬA DỊCH VỤ (Giả sử Id = 1) -->
-                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="1" class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="1"
+                                       class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-outline-danger" title="Xóa dịch vụ" onclick="confirmDelete('Điện sinh hoạt')">
+                                    <button class="btn btn-sm btn-outline-danger" title="Xóa dịch vụ"
+                                            onclick="confirmDelete('Điện sinh hoạt')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -84,7 +90,8 @@
                             <td><span class="badge rounded-pill bg-success">Đang cung cấp</span></td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="2" class="btn btn-sm btn-outline-warning">
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="2"
+                                       class="btn btn-sm btn-outline-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button class="btn btn-sm btn-outline-danger">
@@ -106,7 +113,8 @@
                             <td><span class="badge rounded-pill bg-danger">Tạm ngưng</span></td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="3" class="btn btn-sm btn-outline-warning">
+                                    <a asp-controller="Service" asp-action="Edit" asp-route-id="3"
+                                       class="btn btn-sm btn-outline-warning">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <button class="btn btn-sm btn-outline-danger">
@@ -115,6 +123,41 @@
                                 </div>
                             </td>
                         </tr>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-bold text-primary">#DV-@item.Id</td>
+                                    <td>
+                                        <div>@item.UtilityName</div>
+                                    </td>
+                                    <td>@item.UnitPrice.ToString("N0") đ</td>
+                                    <td>@item.Unit</td>
+                                    <td><span class="badge rounded-pill bg-success">Đang cung cấp</span></td>
+                                    <td class="text-center">
+                                        <div class="btn-group">
+                                            <a asp-controller="Service" asp-action="Edit" asp-route-id="@item.Id"
+                                               class="btn btn-sm btn-outline-warning" title="Chỉnh sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" 
+                                                  onsubmit="return confirm('Bạn muốn đưa dịch vụ này vào thùng rác?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1" title="Xóa">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">Không có dịch vụ nào đang hoạt động</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>

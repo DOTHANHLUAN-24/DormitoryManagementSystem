@@ -50,7 +50,8 @@
                 <i class="fas fa-building me-2"></i> Tòa nhà
             </a>
         }
-        
+
+        <!-- Sinh viên / Khách vãng lai có thể xem danh sách & loại phòng -->
         <a asp-controller="RoomType" asp-action="Index">
             <i class="fas fa-tags me-2"></i> Bảng giá Loại phòng
         </a>
@@ -84,6 +85,9 @@
             <a asp-controller="UtilityUsage" asp-action="Index">
                 <i class="fas fa-tachometer-alt me-2"></i> 
                 @(User.IsInRole(CommonConstants.StudentRole) ? "Chỉ số điện nước phòng" : "Ghi chỉ số")
+            </a>
+            <a asp-controller="Service" asp-action="Trash">
+                <i class="fas fa-trash-alt me-2"></i> Thùng rác
             </a>
         }
     </div>
