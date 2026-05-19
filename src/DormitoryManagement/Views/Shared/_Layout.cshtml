@@ -40,7 +40,7 @@
                     <div class="avatar">
                         @if (User.Identity!.IsAuthenticated)
                         {
-                            @if (User.IsInRole("Admin"))
+                            @if (User.IsInRole("A"))
                             {
                                 <i class="fas fa-user-shield text-danger" title="Quản trị viên"></i>
                             }
