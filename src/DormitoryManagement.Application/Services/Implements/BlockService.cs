@@ -1,5 +1,4 @@
-﻿using System.Linq.Expressions;
-using AutoMapper;
+using System.Linq.Expressions;
 using DormitoryManagement.Application.Dtos.Requests.Blocks;
 using DormitoryManagement.Application.Dtos.Responses.Blocks;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -11,17 +10,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ quản lý tòa nhà (BlockService).
+    /// </summary>
     public class BlockService : IBlockService
     {
         private readonly IBlockRepository _blockRepository;
         private readonly IUnitOfWork _unitOfWork;
 
+        /// <summary>
+        /// Khởi tạo BlockService.
+        /// </summary>
+        /// <param name="blockRepository">Repository tòa nhà</param>
+        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
         public BlockService(IBlockRepository blockRepository, IUnitOfWork unitOfWork)
         {
             _blockRepository = blockRepository;
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Lấy danh sách tòa nhà đang hoạt động có phân trang và tìm kiếm.
+        /// </summary>
         public async Task<PagedResult<BlockResponseDto>> GetActiveBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm)
         {
             Expression<Func<Block, bool>>? predicate = null;
@@ -54,6 +64,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return new PagedResult<BlockResponseDto>(dtoList, pagedData.TotalCount, pageIndex, pageSize);
         }
 
+        /// <summary>
+        /// Lấy danh sách tòa nhà đã bị xóa mềm có phân trang và tìm kiếm.
+        /// </summary>
         public async Task<PagedResult<BlockResponseDto>> GetDeletedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm)
         {
             Expression<Func<Block, bool>>? predicate = null;
@@ -82,6 +95,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return new PagedResult<BlockResponseDto>(dtoList, pagedData.TotalCount, pageIndex, pageSize);
         }
 
+        /// <summary>
+        /// Lấy thông tin chi tiết một tòa nhà theo Id.
+        /// </summary>
         public async Task<BlockResponseDto?> GetBlockByIdAsync(Guid id)
         {
             var block = await _blockRepository.GetBlockWithRoomsAsync(id);
@@ -99,6 +115,9 @@ namespace DormitoryManagement.Application.Services.Implements
             };
         }
 
+        /// <summary>
+        /// Lấy danh sách tất cả các tòa nhà đang hoạt động.
+        /// </summary>
         public async Task<IEnumerable<BlockResponseDto>> GetAllBlocksAsync()
         {
             var blocks = await _blockRepository.GetByStatusAsync(isActive: true, isDeleted: false);
@@ -109,6 +128,9 @@ namespace DormitoryManagement.Application.Services.Implements
             });
         }
 
+        /// <summary>
+        /// Tạo mới một tòa nhà.
+        /// </summary>
         public async Task<bool> CreateBlockAsync(BlockRequestDto request)
         {
             if (await _blockRepository.IsBlockNameExistsAsync(request.BlockName))
@@ -127,6 +149,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Cập nhật thông tin tòa nhà.
+        /// </summary>
         public async Task<bool> UpdateBlockAsync(Guid id, BlockRequestDto request)
         {
             var block = await _blockRepository.GetByIdAsync(id);
@@ -146,19 +171,22 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Xóa mềm một tòa nhà (chuyển vào thùng rác).
+        /// </summary>
         public async Task<bool> SoftDeleteBlockAsync(Guid id)
         {
             var block = await _blockRepository.GetByIdAsync(id);
             if (block == null || block.IsDeleted) return false;
-
-            // Chỗ này nếu kỹ có thể kiểm tra: Nếu tòa nhà đang có phòng thì không cho xóa
-            // if (block.Rooms.Any(r => !r.IsDeleted)) throw new Exception("Không thể xóa tòa nhà đang có phòng");
 
             await _blockRepository.DeleteAsync(block, isSoftDelete: true);
 
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Khôi phục một tòa nhà từ trạng thái đã bị xóa mềm.
+        /// </summary>
         public async Task<bool> RestoreBlockAsync(Guid id)
         {
             var block = await _blockRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
@@ -169,6 +197,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Xóa vĩnh viễn tòa nhà khỏi cơ sở dữ liệu.
+        /// </summary>
         public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
             var block = await _blockRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
@@ -179,6 +210,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Lấy danh sách tòa nhà đang tạm ngưng hoạt động.
+        /// </summary>
         public async Task<PagedResult<BlockResponseDto>> GetSuspendedBlocksPagedAsync(int pageIndex, int pageSize, string? searchTerm)
         {
             Expression<Func<Block, bool>>? predicate = null;
@@ -210,6 +244,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return new PagedResult<BlockResponseDto>(dtoList, pagedData.TotalCount, pageIndex, pageSize);
         }
 
+        /// <summary>
+        /// Bật/Tắt trạng thái hoạt động của tòa nhà.
+        /// </summary>
         public async Task<bool> ToggleBlockStatusAsync(Guid id)
         {
             var block = await _blockRepository.GetByIdAsync(id);

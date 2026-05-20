@@ -6,6 +6,9 @@ using DormitoryManagement.Application.Services.Interfaces;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ quản lý vi phạm kỷ luật (ViolationService - Sử dụng dữ liệu giả MockData).
+    /// </summary>
     public class ViolationService : IViolationService
     {
         // Sử dụng Dictionary để lưu Mock Data theo Id của DTO cho dễ tìm kiếm
@@ -38,6 +41,9 @@ namespace DormitoryManagement.Application.Services.Implements
             };
         }
 
+        /// <summary>
+        /// Lấy danh sách vi phạm kỷ luật kèm theo phân trang và tìm kiếm (MockData).
+        /// </summary>
         public async Task<IEnumerable<object>> GetActiveViolationsPagedAsync(int page, int pageSize, string search)
         {
             // Chuyển danh sách kèm theo Id ra để hiển thị ngoài bảng Index
@@ -57,6 +63,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await Task.FromResult(list);
         }
 
+        /// <summary>
+        /// Lấy thông tin vi phạm kỷ luật của sinh viên theo Id (MockData).
+        /// </summary>
         public async Task<object> GetViolationByIdAsync(Guid id)
         {
             // Nếu tìm thấy Id trong danh sách Mock, trả về đúng đối tượng Dto đó
@@ -74,11 +83,17 @@ namespace DormitoryManagement.Application.Services.Implements
             return await Task.FromResult<object>(null!);
         }
 
+        /// <summary>
+        /// Tạo mới một bản ghi vi phạm kỷ luật (MockData).
+        /// </summary>
         public async Task<bool> CreateViolationAsync(ViolationRequestDto violationDto)
         {
             return await Task.FromResult(true);
         }
 
+        /// <summary>
+        /// Cập nhật thông tin bản ghi vi phạm kỷ luật (MockData).
+        /// </summary>
         public async Task<bool> UpdateViolationAsync(Guid id, ViolationRequestDto violationDto)
         {
             if (MockData.ContainsKey(id))

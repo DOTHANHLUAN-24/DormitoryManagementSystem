@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+using AutoMapper;
+using DormitoryManagement.Application.Dtos.Requests.Assets;
 using DormitoryManagement.Application.Dtos.Requests.Blocks;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Dtos.Requests.RoomTypes;
@@ -63,7 +64,27 @@ namespace DormitoryManagement.Application.Mappings
 
             // === BED & ASSET MAPPINGS ===
             CreateMap<Bed, BedResponse>();
-            CreateMap<Asset, AssetResponse>();
+            
+            CreateMap<Asset, AssetResponse>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.RoomNumber, opt => opt.MapFrom(src => src.Room != null ? src.Room.RoomNumber : string.Empty))
+                .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Room != null && src.Room.Block != null ? src.Room.Block.BlockName : string.Empty));
+
+            CreateMap<CreateAssetRequest, Asset>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => true))
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(src => false))
+                .ForMember(dest => dest.Room, opt => opt.Ignore());
+
+            CreateMap<UpdateAssetRequest, Asset>()
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.Room, opt => opt.Ignore());
+
+            CreateMap<AssetResponse, UpdateAssetRequest>();
 
             // === BLOCK MAPPINGS ===
             CreateMap<Block, BlockResponseDto>()

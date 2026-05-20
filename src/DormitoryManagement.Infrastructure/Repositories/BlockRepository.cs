@@ -1,16 +1,28 @@
-﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Lớp triển khai Repository quản lý thông tin tòa nhà (Block).
+    /// </summary>
     public class BlockRepository : BaseRepository<Block>, IBlockRepository
     {
+        /// <summary>
+        /// Khởi tạo BlockRepository.
+        /// </summary>
+        /// <param name="db">ApplicationDbContext kết nối database</param>
         public BlockRepository(ApplicationDbContext db) : base(db)
         {
         }
 
+        /// <summary>
+        /// Lấy thông tin tòa nhà kèm theo danh sách phòng chưa bị xóa.
+        /// </summary>
+        /// <param name="id">Id của tòa nhà</param>
+        /// <returns>Tòa nhà kèm danh sách phòng, ngược lại là null</returns>
         public async Task<Block?> GetBlockWithRoomsAsync(Guid id)
         {
             return await _dbSet
@@ -18,9 +30,18 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .FirstOrDefaultAsync(b => b.Id == id && !b.IsDeleted);
         }
 
+        /// <summary>
+        /// Kiểm tra tên tòa nhà đã tồn tại chưa (để tránh trùng lặp khi thêm/sửa).
+        /// Chỉ kiểm tra các tòa nhà chưa bị xóa mềm.
+        /// </summary>
+        /// <param name="blockName">Tên tòa nhà cần kiểm tra</param>
+        /// <param name="excludeId">Id tòa nhà loại trừ khi kiểm tra (dùng cho cập nhật, tùy chọn)</param>
+        /// <returns>True nếu tên tòa nhà đã tồn tại, ngược lại là False</returns>
         public async Task<bool> IsBlockNameExistsAsync(string blockName, Guid? excludeId = null)
         {
-            var query = _dbSet.Where(x => !x.IsDeleted && x.BlockName.ToLower() == blockName.ToLower());
+            var query = _dbSet
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BlockName.ToLower() == blockName.ToLower());
 
             if (excludeId.HasValue)
             {

@@ -1,109 +1,248 @@
+@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Application.Dtos.Responses.Assets
+@model PagedResult<AssetResponse>
+
 @{
-    ViewData["Title"] = "Quản lý Vật tư";
-    Layout = "_Layout";
+    ViewData["Title"] = "Quản lý Tài sản";
 }
 
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; }
+        .btn-add { background: #0ea5e9; color: white !important; box-shadow: 0 4px 12px rgba(14,165,233,0.25); }
+        .btn-add:hover { background: #0284c7; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(14,165,233,0.35); }
+        .btn-trash { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-trash:hover { background: #f8fafc; color: #1e293b !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-catalog { background: white; color: #8b5cf6 !important; border: 1px solid #e2e8f0; }
+        .btn-catalog:hover { background: #faf5ff; color: #7c3aed !important; border-color: #ddd6fe; transform: translateY(-2px); }
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; background-color: #f8fafc; transition: all 0.2s; }
+        .input-custom:focus { border-color: #0ea5e9 !important; box-shadow: 0 0 0 4px rgba(14,165,233,0.1) !important; background-color: #fff; }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input { padding-left: 40px; }
+        .btn-search { height: 46px; border-radius: 12px; background: #0ea5e9; color: white; border: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .btn-search:hover { background: #0284c7; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(14,165,233,0.25); color: white; }
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: none; overflow: hidden; }
+        .badge-code { background: #f0f9ff; color: #0369a1; padding: 5px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; border: 1px solid #bae6fd; }
+        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .status-good    { background: #ecfdf5; color: #059669; }
+        .status-broken  { background: #fef2f2; color: #dc2626; }
+        .status-repair  { background: #fffbeb; color: #d97706; }
+        .status-lost    { background: #f8fafc; color: #64748b; }
+        .price-tag { font-weight: 700; color: #0ea5e9; font-size: 13px; }
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; cursor: pointer; }
+        .nut-chi-tiet { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+        .nut-sua { background: #eff6ff; color: #3b82f6; }
+        .nut-toggle { background: #fff7ed; color: #f97316; }
+        .nut-xoa { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.12); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+<input type="hidden" id="success-message" value="@TempData["Success"]" />
+<input type="hidden" id="error-message" value="@TempData["Error"]" />
+
 <div class="container-fluid">
-    <div class="row align-items-center mb-4">
-        <div class="col-md-6">
-            <h3 class="fw-bold text-dark"><i class="fas fa-tools me-2 text-primary"></i>Quản lý Vật tư</h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Vật tư</li>
-                </ol>
-            </nav>
-            <p class="text-muted mb-0">Theo dõi trang thiết bị và tài sản tại các phòng </p>
-        </div>
-        <div class="col-md-6 text-md-end">
-            <a asp-action="Create" class="btn btn-primary shadow-sm">
-                <i class="fas fa-plus-circle me-2"></i>Thêm vật tư mới
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-boxes me-2"></i>Quản lý Tài sản</h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Catalog" class="btn-custom-header btn-catalog text-decoration-none" title="Xem danh mục công khai">
+                <i class="fas fa-eye"></i> Danh mục công khai
             </a>
+            <a asp-action="RecycleBin" class="btn-custom-header btn-trash text-decoration-none">
+                <i class="fas fa-trash-restore"></i> Thùng rác
+            </a>
+            <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+                <i class="fas fa-plus"></i> Thêm tài sản
+            </a>
+        </div>
+    </header>
+
+    <!-- Thanh tìm kiếm + lọc -->
+    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom form-control"
+                           placeholder="Tìm theo tên tài sản, mã tài sản...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="statusFilter" class="input-custom form-select">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Good" selected="@(ViewBag.StatusFilter == "Good")">✅ Tốt / Hoạt động</option>
+                    <option value="Broken" selected="@(ViewBag.StatusFilter == "Broken")">❌ Hỏng</option>
+                    <option value="UnderRepair" selected="@(ViewBag.StatusFilter == "UnderRepair")">🔧 Đang sửa chữa</option>
+                    <option value="Lost" selected="@(ViewBag.StatusFilter == "Lost")">📦 Mất / Thất lạc</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Bảng danh sách -->
+    <div class="card card-custom mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="asset-table">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">Mã tài sản</th>
+                        <th class="py-3">Tên tài sản</th>
+                        <th class="py-3">Phòng / Tòa</th>
+                        <th class="py-3">Trạng thái</th>
+                        <th class="py-3">Giá đền bù</th>
+                        <th class="text-end pe-4 py-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            var statusClass = item.Status switch
+                            {
+                                "Good" => "status-good",
+                                "Broken" => "status-broken",
+                                "UnderRepair" => "status-repair",
+                                "Lost" => "status-lost",
+                                _ => "status-lost"
+                            };
+                            var statusLabel = item.Status switch
+                            {
+                                "Good" => "<i class='fas fa-check-circle me-1'></i>Tốt",
+                                "Broken" => "<i class='fas fa-times-circle me-1'></i>Hỏng",
+                                "UnderRepair" => "<i class='fas fa-tools me-1'></i>Đang sửa",
+                                "Lost" => "<i class='fas fa-question-circle me-1'></i>Mất",
+                                _ => item.Status
+                            };
+                            <tr id="row-@item.Id">
+                                <td class="ps-4 py-3">
+                                    <span class="badge-code">@item.AssetCode</span>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-dark">@item.AssetName</div>
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        <small class="text-muted">@item.Description</small>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="fw-medium">@item.RoomNumber</div>
+                                    <small class="text-muted"><i class="fas fa-building me-1"></i>@item.BlockName</small>
+                                </td>
+                                <td>
+                                    <span class="status-badge @statusClass">@Html.Raw(statusLabel)</span>
+                                </td>
+                                <td>
+                                    <span class="price-tag">
+                                        @if (item.ReplacementCost > 0)
+                                        {
+                                            @item.ReplacementCost.ToString("N0") <text> ₫</text>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fw-normal">—</span>
+                                        }
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a asp-action="Details" asp-route-id="@item.Id"
+                                           class="nut-hanh-dong nut-chi-tiet text-decoration-none" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id"
+                                           class="nut-hanh-dong nut-sua text-decoration-none" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" title="Xóa vào thùng rác"
+                                                onclick="softDeleteAsset('@item.Id', '@item.AssetName')"
+                                                class="nut-hanh-dong nut-xoa">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-box-open fa-3x mb-3 d-block opacity-25"></i>
+                                    <p class="mb-0 fw-medium">Không tìm thấy tài sản nào.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="bg-light text-secondary">
-                        <tr>
-                            <th class="ps-4">Mã vật tư</th>
-                            <th>Tên vật tư</th>
-                            <th>Vị trí (Phòng)</th>
-                            <th>Trạng thái</th>
-                            <th class="text-center">Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Mock Data Item 1 -->
-                        <tr>
-                            <td class="ps-4 fw-bold text-primary">VT-001</td>
-                            <td>Máy lạnh Daikin 1.5 HP</td>
-                            <td><i class="fas fa-door-open me-1 text-muted"></i>P.105</td>
-                            <td>
-                                <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm">
-                                    <i class="fas fa-check-circle me-1"></i>Tốt
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group">
-                                    <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
-                                        class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
-                                            class="fas fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
+    <!-- Phân trang -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center">
+            @await Html.PartialAsync("_Pagination", Model)
+        </div>
+    }
+</div>
 
-                                <!-- Mock Data Item 2 -->
-                                <tr>
-                                    <td class="ps-4 fw-bold text-primary">VT-042</td>
-                                    <td>Quạt trần Senko</td>
-                                    <td><i class="fas fa-door-open me-1 text-muted"></i>P.202</td>
-                                    <td>
-                                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm border">
-                                            <i class="fas fa-tools me-1"></i>Đang sửa
-                                        </span>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
-                                            <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
-                                                class="fas fa-edit"></i></button>
-                                                <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
-                                                    class="fas fa-trash"></i></button>
-                                                </div>
-                                            </td>
-                                        </tr>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var successMsg = document.getElementById('success-message').value;
+            var errorMsg = document.getElementById('error-message').value;
+            if (successMsg) Swal.fire({ icon: 'success', title: 'Thành công', text: successMsg, timer: 2500, showConfirmButton: false });
+            if (errorMsg) Swal.fire({ icon: 'error', title: 'Lỗi', text: errorMsg, confirmButtonColor: '#ef4444' });
+        });
 
-                                        <!-- Mock Data Item 3 -->
-                                        <tr>
-                                            <td class="ps-4 fw-bold text-primary">VT-015</td>
-                                            <td>Giường sắt tầng 1.2m</td>
-                                            <td><i class="fas fa-door-open me-1 text-muted"></i>P.101</td>
-                                            <td>
-                                                <span class="badge bg-danger px-3 py-2 rounded-pill shadow-sm">
-                                                    <i class="fas fa-exclamation-triangle me-1"></i>Hỏng
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <div class="btn-group">
-                                                    <button class="btn btn-sm btn-outline-warning shadow-sm" title="Sửa"><i
-                                                        class="fas fa-edit"></i></button>
-                                                        <button class="btn btn-sm btn-outline-danger ms-1 shadow-sm" title="Xóa"><i
-                                                            class="fas fa-trash"></i></button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card-footer bg-white border-0 py-3">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <p class="text-muted small mb-0">Tổng số: 3 vật tư </p>
-                                        <p class="text-muted small mb-0 fw-bold text-uppercase">Hệ thống quản lý KTX</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+        function getAntiforgeryToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
+        }
+
+        function softDeleteAsset(id, assetName) {
+            Swal.fire({
+                title: 'Đưa vào thùng rác?',
+                html: 'Tài sản <b>' + assetName + '</b> sẽ bị vô hiệu hóa tạm thời.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Đồng ý',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    $.ajax({
+                        url: '/Asset/SoftDelete/' + id,
+                        type: 'POST',
+                        headers: { 'RequestVerificationToken': getAntiforgeryToken() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false })
+                                    .then(() => location.reload());
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message });
+                            }
+                        },
+                        error: function () { Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể thực hiện thao tác.' }); }
+                    });
+                }
+            });
+        }
+    </script>
+}

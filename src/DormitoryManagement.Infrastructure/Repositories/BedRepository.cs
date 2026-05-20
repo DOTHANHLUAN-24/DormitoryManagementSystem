@@ -5,12 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Lớp triển khai Repository quản lý thông tin giường (Bed).
+    /// </summary>
     public class BedRepository : BaseRepository<Bed>, IBedRepository
     {
+        /// <summary>
+        /// Khởi tạo BedRepository.
+        /// </summary>
+        /// <param name="db">ApplicationDbContext kết nối database</param>
         public BedRepository(ApplicationDbContext db) : base(db)
         {
         }
 
+        /// <summary>
+        /// Lấy thông tin giường theo Id kèm thông tin Phòng (Room).
+        /// </summary>
+        /// <param name="id">Id của giường</param>
+        /// <returns>Giường nếu tìm thấy, ngược lại là null</returns>
         public override async Task<Bed?> GetByIdAsync(Guid id)
         {
             return await _dbSet
@@ -18,6 +30,11 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         }
 
+        /// <summary>
+        /// Lấy tất cả giường kèm thông tin Phòng.
+        /// </summary>
+        /// <param name="includeDeleted">Có bao gồm giường đã bị xóa mềm không</param>
+        /// <returns>Danh sách giường</returns>
         public override async Task<IEnumerable<Bed>> GetAllAsync(bool includeDeleted = false)
         {
             var query = _dbSet
@@ -34,6 +51,11 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Lấy giường theo số giường (BedNumber).
+        /// </summary>
+        /// <param name="bedNumber">Số giường cần tìm</param>
+        /// <returns>Giường nếu tìm thấy, ngược lại là null</returns>
         public async Task<Bed?> GetByBedNumberAsync(string bedNumber)
         {
             if (string.IsNullOrEmpty(bedNumber))
@@ -42,20 +64,34 @@ namespace DormitoryManagement.Infrastructure.Repositories
             }
 
             return await _dbSet
+                .AsNoTracking()
                 .Include(b => b.Room)
                 .FirstOrDefaultAsync(b => !b.IsDeleted && b.BedNumber == bedNumber);
         }
 
+        /// <summary>
+        /// Lấy danh sách giường trống thuộc về một phòng.
+        /// </summary>
+        /// <param name="roomId">Id của phòng cần kiểm tra</param>
+        /// <returns>Danh sách giường trống</returns>
         public async Task<IEnumerable<Bed>> GetAvailableBedsByRoomIdAsync(Guid roomId)
         {
-            return await _dbSet.Where(b => b.RoomId == roomId && !b.IsDeleted && b.IsActive)
+            return await _dbSet
+                .AsNoTracking()
+                .Where(b => b.RoomId == roomId && !b.IsDeleted && b.IsActive)
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Kiểm tra xem giường có còn trống (đang hoạt động và chưa bị xóa) hay không.
+        /// </summary>
+        /// <param name="bedId">Id của giường cần kiểm tra</param>
+        /// <returns>True nếu giường còn trống, ngược lại là False</returns>
         public async Task<bool> IsBedAvailableAsync(Guid bedId)
         {
-            var bed = await _dbSet.FindAsync(bedId);
-            return bed != null && !bed.IsDeleted && bed.IsActive;
+            return await _dbSet
+                .AsNoTracking()
+                .AnyAsync(b => b.Id == bedId && !b.IsDeleted && b.IsActive);
         }
     }
 }
