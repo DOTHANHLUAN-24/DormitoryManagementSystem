@@ -5,12 +5,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Lớp triển khai Repository quản lý thông tin hóa đơn (Invoice).
+    /// </summary>
     public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
     {
+        /// <summary>
+        /// Khởi tạo InvoiceRepository.
+        /// </summary>
+        /// <param name="db">ApplicationDbContext kết nối database</param>
         public InvoiceRepository(ApplicationDbContext db) : base(db)
         {
-
         }
+
+        /// <summary>
+        /// Tìm hóa đơn theo mã hóa đơn (InvoiceCode).
+        /// </summary>
+        /// <param name="invoiceCode">Mã hóa đơn cần tìm</param>
+        /// <returns>Hóa đơn kèm thông tin Hợp đồng, Sinh viên, Giường và Lịch sử thanh toán</returns>
         public async Task<Invoice?> GetByInvoiceCodeAsync(string invoiceCode)
         {
             if (string.IsNullOrWhiteSpace(invoiceCode))
@@ -19,23 +31,29 @@ namespace DormitoryManagement.Infrastructure.Repositories
             }
 
             return await _dbSet
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.User)
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.Bed)
-            .Include(i => i.Payments)
-            .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode);
-
+                .AsNoTracking()
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.User)
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.Bed)
+                .Include(i => i.Payments)
+                .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode);
         }
+
+        /// <summary>
+        /// Lấy đối tượng truy vấn phân trang và tìm kiếm hóa đơn theo từ khóa.
+        /// </summary>
+        /// <param name="searchString">Từ khóa tìm kiếm (mã hóa đơn hoặc tiêu đề)</param>
+        /// <returns>Đối tượng IQueryable chứa danh sách hóa đơn</returns>
         public IQueryable<Invoice> GetPagingQuery(string searchString)
         {
             var query = _dbSet
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.User)
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.Bed)
-            .Include(i => i.Payments)
-            .AsQueryable();
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.User)
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.Bed)
+                .Include(i => i.Payments)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
@@ -49,17 +67,24 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             return query.OrderByDescending(i => i.CreatedDate);
         }
+
+        /// <summary>
+        /// Lấy danh sách hóa đơn theo Id hợp đồng (ContractId).
+        /// </summary>
+        /// <param name="contractId">Id của hợp đồng</param>
+        /// <returns>Danh sách hóa đơn</returns>
         public async Task<IEnumerable<Invoice>> GetByContractIdAsync(Guid contractId)
         {
             return await _dbSet
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.User)
-            .Include(i => i.Contract)
-                .ThenInclude(c => c.Bed)
-            .Include(i => i.Payments)
-            .Where(i => i.ContractId == contractId)
-            .OrderByDescending(i => i.CreatedDate)
-            .ToListAsync();
+                .AsNoTracking()
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.User)
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.Bed)
+                .Include(i => i.Payments)
+                .Where(i => i.ContractId == contractId)
+                .OrderByDescending(i => i.CreatedDate)
+                .ToListAsync();
         }
     }
 }

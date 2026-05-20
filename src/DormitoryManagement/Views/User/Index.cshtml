@@ -8,75 +8,82 @@
 
 @section Styles {
     <style>
-        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
-        .nut-them { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #4f46e5; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
-        .nut-them:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
-        .nut-thung-rac { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
-        .nut-thung-rac:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
-        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; }
+        .btn-add { background: #4f46e5; color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-add:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        .btn-trash { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-trash:hover { background: #f8fafc; color: #1e293b !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-banned { background: white; color: #ef4444 !important; border: 1px solid #e2e8f0; }
+        .btn-banned:hover { background: #fef2f2; color: #dc2626 !important; border-color: #fecaca; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1); }
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; background-color: #f8fafc; width: 100%; transition: all 0.2s; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; background-color: #fff; }
         .khung-tim-kiem { position: relative; }
-        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .khung-tim-kiem input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
-        .trang-thai-user { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input { padding-left: 40px; }
+        .btn-search { height: 46px; border-radius: 12px; background: #4f46e5; color: white; border: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .btn-search:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); color: white; }
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
+        .badge-username { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .trang-thai-user { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
         .dang-hoat-dong { background: #ecfdf5; color: #10b981; }
         .da-khoa { background: #fef2f2; color: #ef4444; }
-        .user-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
-        .table thead th { background: #f8fafc; color: #64748b; font-size: 12px; text-transform: uppercase; padding: 15px; }
-        .nut-hanh-dong { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: none; text-decoration: none !important; transition: all 0.2s; }
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
+        .nut-chi-tiet { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
         .nut-sua { background: #eff6ff; color: #3b82f6; }
-        .nut-xoa { background: #fef2f2; color: #ef4444; }
         .nut-khoa { background: #fff7ed; color: #f97316; }
-        .nut-chi-tiet { background: #f8fafc; color: #64748b; }
-        .nut-hanh-dong:hover { transform: scale(1.1); }
+        .nut-xoa { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
     </style>
 }
 
-@* 1. Token và Thẻ ẩn cho thông báo *@
 @Html.AntiForgeryToken()
 <input type="hidden" id="success-message" value="@TempData["Success"]" />
 <input type="hidden" id="error-message" value="@TempData["Error"]" />
 
 <div class="container-fluid">
     <header class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="tieu-de-trang">Quản lý Người dùng</h1>
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-users-cog me-2"></i>Quản lý người dùng</h1>
         <div class="d-flex gap-2">
-            <a asp-action="RecycleBin" class="nut-thung-rac">
+            <a asp-action="BannedList" class="btn-custom-header btn-banned text-decoration-none" title="Xem tài khoản bị khóa">
+                <i class="fas fa-user-lock"></i> DS Bị khóa
+            </a>
+            <a asp-action="RecycleBin" class="btn-custom-header btn-trash text-decoration-none">
                 <i class="fas fa-trash-restore"></i> Thùng rác
             </a>
-            <a asp-action="Create" class="nut-them">
-                <i class="fas fa-user-plus"></i> Thêm sinh viên
+            <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+                <i class="fas fa-plus"></i> Thêm người dùng
             </a>
         </div>
     </header>
 
-    @* Thanh tìm kiếm *@
-    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
-        <div class="row g-3">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+        <div class="row g-2 align-items-center">
             <div class="col-md-10">
                 <div class="khung-tim-kiem">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm theo tên đăng nhập, email, họ tên...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm theo tên đăng nhập, email, họ tên...">
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100 fw-bold" style="border-radius: 10px; height: 42px;">
-                    Tìm kiếm
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-filter"></i> Tìm kiếm
                 </button>
             </div>
         </div>
     </form>
 
-    @* Bảng *@
-    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+    <div class="card card-custom mb-4">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Tên đăng nhập</th>
-                        <th>Họ và tên</th>
-                        <th>Email</th>
-                        <th>Trạng thái</th>
-                        <th class="text-end pe-4">Thao tác</th>
+                        <th class="ps-4 py-3">Tên đăng nhập</th>
+                        <th class="py-3">Họ và tên</th>
+                        <th class="py-3">Email</th>
+                        <th class="py-3">Trạng thái</th>
+                        <th class="text-end pe-4 py-3">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,28 +92,28 @@
                         foreach (var item in Model.Items)
                         {
                             <tr>
-                                <td class="ps-4"><span class="user-badge">@item.UserName</span></td>
-                                <td><div class="fw-bold">@item.FullName</div></td>
+                                <td class="ps-4 py-3"><span class="badge-username">@item.UserName</span></td>
+                                <td><div class="fw-bold text-dark">@item.FullName</div></td>
                                 <td><span class="text-muted small">@item.Email</span></td>
                                 <td>
                                     @if (item.IsActive)
                                     {
-                                        <span class="trang-thai-user dang-hoat-dong">Hoạt động</span>
+                                        <span class="trang-thai-user dang-hoat-dong"><i class="fas fa-check-circle me-1"></i> Hoạt động</span>
                                     }
                                     else
                                     {
-                                        <span class="trang-thai-user da-khoa">Đã khóa</span>
+                                        <span class="trang-thai-user da-khoa"><i class="fas fa-lock me-1"></i> Đã khóa</span>
                                     }
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-chi-tiet" title="Chi tiết"><i class="fas fa-eye"></i></a>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
-                                        <button type="button" onclick="toggleLock('@item.Id', @(item.IsActive ? "true" : "false"))" 
-                                                class="nut-hanh-dong nut-khoa" title="@(item.IsActive ? "Khóa" : "Mở khóa")">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-chi-tiet text-decoration-none" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua text-decoration-none" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                        <button type="button" onclick="toggleLock('@item.Id', @(item.IsActive ? "true" : "false"), '@item.UserName')" 
+                                                class="nut-hanh-dong nut-khoa" title="@(item.IsActive ? "Khóa tài khoản" : "Mở khóa tài khoản")">
                                             <i class="fas @(item.IsActive ? "fa-user-lock" : "fa-user-check")"></i>
                                         </button>
-                                        <button type="button" onclick="deactivateUser('@item.Id')" 
+                                        <button type="button" onclick="deactivateUser('@item.Id', '@item.UserName')" 
                                                 class="nut-hanh-dong nut-xoa" title="Xóa vào thùng rác">
                                             <i class="fas fa-trash"></i>
                                         </button>
@@ -115,15 +122,29 @@
                             </tr>
                         }
                     }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-users-slash fa-3x mb-3 d-block opacity-25"></i>
+                                    <p class="mb-0 fw-medium">Không tìm thấy người dùng nào.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
     </div>
 
-    @* Phân trang *@
-    <div class="mt-4">
-        @await Html.PartialAsync("_Pagination", Model)
-    </div>
+    <!-- PHÂN TRANG -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center">
+            @await Html.PartialAsync("_Pagination", Model)
+        </div>
+    }
 </div>
 
 @section Scripts {
@@ -140,63 +161,79 @@
                 Swal.fire({ icon: 'success', title: 'Thành công', text: successMsg, timer: 2500, showConfirmButton: false });
             }
             if (errorMsg) {
-                Swal.fire({ icon: 'error', title: 'Lỗi', text: errorMsg });
+                Swal.fire({ icon: 'error', title: 'Lỗi', text: errorMsg, confirmButtonColor: '#ef4444' });
             }
         });
 
+        function getAntiforgeryToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
+        }
+
         // Logic Xóa (Soft Delete)
-        function deactivateUser(id) {
-            console.log("Đang gọi deactivate cho ID:", id); // Kiểm tra xem hàm có chạy không
-            
+        function deactivateUser(id, userName) {
             Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: "Người dùng này sẽ bị chuyển vào thùng rác!",
+                title: 'Đưa vào thùng rác?',
+                html: "Tài khoản <b>" + userName + "</b> sẽ bị vô hiệu hóa tạm thời.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Đồng ý',
-                cancelButtonText: 'Hủy'
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
                     $.ajax({
                         url: '/User/Deactivate/' + id,
                         type: 'POST',
-                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        headers: { "RequestVerificationToken": getAntiforgeryToken() },
                         success: function (data) {
                             if (data.success) {
                                 Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false }).then(() => location.reload());
                             } else {
-                                Swal.fire('Lỗi!', data.message, 'error');
+                                Swal.fire({ icon: 'error', title: 'Không thể xóa', text: data.message, confirmButtonColor: '#4f46e5' });
                             }
                         },
-                        error: function () { Swal.fire('Lỗi!', 'Không thể thực hiện thao tác', 'error'); }
+                        error: function () { Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể thực hiện thao tác' }); }
                     });
                 }
             });
         }
 
         // Logic Khóa/Mở khóa
-        function toggleLock(id, isActive) {
+        function toggleLock(id, isActive, userName) {
             const title = isActive ? "Khóa tài khoản?" : "Mở khóa tài khoản?";
+            const textHTML = isActive 
+                ? "Tài khoản <b>" + userName + "</b> sẽ không thể đăng nhập vào hệ thống."
+                : "Tài khoản <b>" + userName + "</b> sẽ được cấp quyền truy cập trở lại.";
+            const btnColor = isActive ? '#f97316' : '#10b981';
+            const btnIcon = isActive ? '<i class="fas fa-lock me-1"></i> Khóa ngay' : '<i class="fas fa-unlock me-1"></i> Mở khóa';
+
             Swal.fire({
                 title: title,
+                html: textHTML,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: isActive ? '#f97316' : '#10b981',
-                confirmButtonText: 'Xác nhận',
-                cancelButtonText: 'Hủy'
+                confirmButtonColor: btnColor,
+                cancelButtonColor: '#64748b',
+                confirmButtonText: btnIcon,
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
                     $.ajax({
                         url: '/User/ToggleLock/' + id,
                         type: 'POST',
-                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        headers: { "RequestVerificationToken": getAntiforgeryToken() },
                         success: function (data) {
                             if (data.success) {
                                 Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false }).then(() => location.reload());
                             } else {
-                                Swal.fire('Lỗi!', data.message, 'error');
+                                Swal.fire({ icon: 'error', title: 'Lỗi!', text: data.message, confirmButtonColor: '#4f46e5' });
                             }
                         }
                     });

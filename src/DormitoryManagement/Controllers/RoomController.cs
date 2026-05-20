@@ -70,7 +70,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateRoomRequest request) // 1. Phải là CreateRoomRequest
+        public async Task<IActionResult> Create(CreateRoomRequest request)
         {
             if (ModelState.IsValid)
             {
@@ -82,17 +82,19 @@ namespace DormitoryManagement.Controllers
                         TempData["Success"] = "Thêm phòng mới thành công!";
                         return RedirectToAction(nameof(Index));
                     }
-                    ModelState.AddModelError("", "Không thể tạo phòng.");
+
+                    ModelState.AddModelError("", "Không thể tạo phòng. Vui lòng kiểm tra lại.");
                 }
                 catch (Exception ex)
                 {
                     TempData["Error"] = ex.Message;
+                    ModelState.AddModelError("", ex.Message);
                 }
             }
 
-            await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
-            ViewBag.Blocks = new SelectList(await _blockService.GetAllBlocksAsync(), "Id", "BlockName");
-            ViewBag.RoomTypes = new SelectList(await _roomTypeService.GetAllRoomTypesAsync(), "Id", "TypeName");
+            ViewBag.Blocks = new SelectList(await _blockService.GetAllBlocksAsync(), "Id", "BlockName", request.BlockId);
+            ViewBag.RoomTypes = new SelectList(await _roomTypeService.GetAllRoomTypesAsync(), "Id", "TypeName", request.RoomTypeId);
+
             return View(request);
         }
 

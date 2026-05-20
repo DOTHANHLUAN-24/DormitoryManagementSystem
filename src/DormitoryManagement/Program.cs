@@ -42,9 +42,6 @@ internal class Program
         builder.Services.AddScoped<IAssetRepository, AssetRepository>();
         builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
         builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
-        builder.Services.AddScoped<IAssetRepository, AssetRepository>();
-        builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
-
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
@@ -55,7 +52,7 @@ internal class Program
         builder.Services.AddScoped<IBedService, BedService>();
         builder.Services.AddScoped<IViolationService, ViolationService>();
         builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
-
+        builder.Services.AddScoped<IAssetService, AssetService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

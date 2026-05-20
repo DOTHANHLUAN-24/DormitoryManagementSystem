@@ -1,0 +1,221 @@
+@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Application.Dtos.Responses.Assets
+@model PagedResult<AssetResponse>
+
+@{
+    ViewData["Title"] = "Danh mục Tài sản - Bảng giá đền bù";
+}
+
+@section Styles {
+    <style>
+        .catalog-hero { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0c4a6e 100%); border-radius: 24px; padding: 48px 40px; margin-bottom: 32px; position: relative; overflow: hidden; }
+        .catalog-hero::before { content: ''; position: absolute; top: -50%; right: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(14,165,233,0.15) 0%, transparent 70%); border-radius: 50%; }
+        .catalog-hero h1 { font-size: 2.2rem; font-weight: 800; color: white; margin-bottom: 12px; }
+        .catalog-hero p { color: #94a3b8; font-size: 1rem; margin: 0; }
+        .stat-chip { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); color: white; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; margin-top: 20px; }
+        .filter-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: none; }
+        .input-filter { height: 46px; border-radius: 12px; border: 1px solid #e2e8f0; font-size: 14px; background: #f8fafc; transition: all 0.2s; }
+        .input-filter:focus { border-color: #0ea5e9; box-shadow: 0 0 0 4px rgba(14,165,233,0.1); background: white; }
+        .btn-search-catalog { height: 46px; border-radius: 12px; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; font-weight: 600; padding: 0 24px; transition: all 0.2s; }
+        .btn-search-catalog:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(14,165,233,0.3); color: white; }
+        .asset-card { background: white; border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 2px 12px rgba(0,0,0,0.04); transition: all 0.3s; overflow: hidden; }
+        .asset-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: #bae6fd; }
+        .asset-card-header { padding: 18px 20px 12px; border-bottom: 1px solid #f8fafc; }
+        .asset-code { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: #0369a1; background: #f0f9ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bae6fd; }
+        .asset-name { font-size: 15px; font-weight: 700; color: #1e293b; margin-top: 10px; line-height: 1.4; }
+        .asset-desc { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+        .asset-card-body { padding: 14px 20px; }
+        .info-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b; margin-bottom: 8px; }
+        .info-row i { width: 16px; color: #94a3b8; }
+        .status-pill { padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+        .status-good { background: #ecfdf5; color: #059669; }
+        .status-broken { background: #fef2f2; color: #dc2626; }
+        .status-repair { background: #fffbeb; color: #d97706; }
+        .status-lost { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+        .price-section { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 14px; padding: 14px 16px; margin-top: 12px; }
+        .price-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .price-value { font-size: 20px; font-weight: 800; color: #0ea5e9; margin-top: 2px; }
+        .price-value.no-price { font-size: 14px; color: #94a3b8; font-weight: 500; }
+        .price-note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+        .filter-tab { padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; background: white; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block; }
+        .filter-tab:hover, .filter-tab.active { background: #0ea5e9; color: white; border-color: #0ea5e9; box-shadow: 0 4px 12px rgba(14,165,233,0.2); }
+    </style>
+}
+
+<div class="container-fluid">
+    <!-- Hero Banner -->
+    <div class="catalog-hero mb-4">
+        <div style="position: relative; z-index: 1;">
+            <h1><i class="fas fa-clipboard-list me-3" style="color: #38bdf8;"></i>Danh mục Tài sản KTX</h1>
+            <p>Thông tin trang thiết bị và <strong style="color:#38bdf8;">bảng giá đền bù</strong> khi hỏng hoặc mất tài sản.</p>
+            <div class="d-flex gap-2 flex-wrap">
+                <span class="stat-chip"><i class="fas fa-boxes"></i> @Model.TotalCount tài sản trong hệ thống</span>
+                <span class="stat-chip" style="background: rgba(234,179,8,0.15); border-color: rgba(234,179,8,0.25);">
+                    <i class="fas fa-exclamation-triangle" style="color: #fbbf24;"></i>
+                    <span style="color: #fde68a;">Sinh viên chịu trách nhiệm đền bù theo bảng giá</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bộ lọc tìm kiếm -->
+    <div class="filter-card">
+        <form method="get" asp-action="Catalog">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border: 1px solid #e2e8f0;">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input type="text" name="search" value="@ViewBag.Search" class="input-filter form-control border-start-0"
+                               placeholder="Tìm theo tên tài sản, mã tài sản..."
+                               style="border-radius: 0 12px 12px 0;">
+                    </div>
+                </div>
+                <div class="col-md-4 d-flex gap-2 flex-wrap">
+                    <a href="?search=@ViewBag.Search&statusFilter=" class="filter-tab @(string.IsNullOrEmpty(ViewBag.StatusFilter as string) ? "active" : "")">Tất cả</a>
+                    <a href="?search=@ViewBag.Search&statusFilter=Good" class="filter-tab @(ViewBag.StatusFilter == "Good" ? "active" : "")">✅ Tốt</a>
+                    <a href="?search=@ViewBag.Search&statusFilter=Broken" class="filter-tab @(ViewBag.StatusFilter == "Broken" ? "active" : "")">❌ Hỏng</a>
+                    <a href="?search=@ViewBag.Search&statusFilter=UnderRepair" class="filter-tab @(ViewBag.StatusFilter == "UnderRepair" ? "active" : "")">🔧 Đang sửa</a>
+                    <a href="?search=@ViewBag.Search&statusFilter=Lost" class="filter-tab @(ViewBag.StatusFilter == "Lost" ? "active" : "")">📦 Mất</a>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn-search-catalog w-100">
+                        <i class="fas fa-filter me-2"></i>Lọc
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Grid thẻ tài sản -->
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        <div class="row g-4 mb-4">
+            @foreach (var item in Model.Items)
+            {
+                var statusClass = item.Status switch {
+                    "Good" => "status-good",
+                    "Broken" => "status-broken",
+                    "UnderRepair" => "status-repair",
+                    "Lost" => "status-lost",
+                    _ => "status-lost"
+                };
+                var statusIcon = item.Status switch {
+                    "Good" => "fas fa-check-circle",
+                    "Broken" => "fas fa-times-circle",
+                    "UnderRepair" => "fas fa-tools",
+                    "Lost" => "fas fa-question-circle",
+                    _ => "fas fa-circle"
+                };
+                var statusLabel = item.Status switch {
+                    "Good" => "Tốt / Hoạt động",
+                    "Broken" => "Hỏng",
+                    "UnderRepair" => "Đang sửa chữa",
+                    "Lost" => "Mất / Thất lạc",
+                    _ => item.Status
+                };
+
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="asset-card h-100">
+                        <div class="asset-card-header">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <span class="asset-code">@item.AssetCode</span>
+                                <span class="status-pill @statusClass">
+                                    <i class="@statusIcon"></i> @statusLabel
+                                </span>
+                            </div>
+                            <div class="asset-name">@item.AssetName</div>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <div class="asset-desc">@item.Description</div>
+                            }
+                        </div>
+                        <div class="asset-card-body">
+                            <div class="info-row">
+                                <i class="fas fa-door-open"></i>
+                                <span>Phòng <strong>@item.RoomNumber</strong></span>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-building"></i>
+                                <span>Tòa <strong>@item.BlockName</strong></span>
+                            </div>
+
+                            <!-- Bảng giá đền bù -->
+                            <div class="price-section">
+                                <div class="price-label">
+                                    <i class="fas fa-receipt me-1"></i>Giá trị đền bù
+                                </div>
+                                @if (item.ReplacementCost > 0)
+                                {
+                                    <div class="price-value">@item.ReplacementCost.ToString("N0") ₫</div>
+                                    <div class="price-note">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        @if (item.Status == "Broken" || item.Status == "Lost")
+                                        {
+                                            <span style="color: #dc2626; font-weight: 600;">⚠ Mức phí áp dụng ngay</span>
+                                        }
+                                        else
+                                        {
+                                            <text>Mức phí nếu làm hỏng hoặc mất</text>
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="price-value no-price">Chưa cập nhật giá</div>
+                                    <div class="price-note">Liên hệ ban quản lý để biết chi tiết</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Phân trang -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="d-flex justify-content-center mb-4">
+                @await Html.PartialAsync("_Pagination", Model)
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-box-open fa-4x text-muted mb-4 d-block opacity-25"></i>
+            <h5 class="text-muted">Không tìm thấy tài sản nào phù hợp.</h5>
+            <a href="@Url.Action("Catalog")" class="btn btn-outline-primary mt-3 rounded-pill">
+                <i class="fas fa-sync me-2"></i>Xem tất cả
+            </a>
+        </div>
+    }
+
+    <!-- Ghi chú chính sách -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; background: #fffbeb;">
+        <div class="card-body p-4">
+            <h6 class="fw-bold text-warning-emphasis mb-3"><i class="fas fa-exclamation-triangle me-2 text-warning"></i>Chính sách đền bù tài sản</h6>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-gavel text-warning mt-1"></i>
+                        <p class="mb-0 small">Sinh viên chịu trách nhiệm bồi thường theo mức giá niêm yết nếu làm hỏng hoặc mất tài sản.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-clock text-warning mt-1"></i>
+                        <p class="mb-0 small">Thời hạn bồi thường: trong vòng 7 ngày kể từ ngày phát hiện sự cố.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="d-flex gap-2">
+                        <i class="fas fa-phone text-warning mt-1"></i>
+                        <p class="mb-0 small">Mọi thắc mắc liên hệ ban quản lý ký túc xá để được hỗ trợ.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

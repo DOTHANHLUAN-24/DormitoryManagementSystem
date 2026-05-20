@@ -231,5 +231,71 @@ namespace DormitoryManagement.Controllers
             }
             return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
         }
+
+        [HttpGet("EditProfile")]
+        public async Task<IActionResult> EditProfile()
+        {
+            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Lấy thông tin user hiện tại
+            var userResponse = await _userService.GetUserByIdAsync(userId);
+            if (userResponse == null) return NotFound();
+
+            // Map từ Response sang UpdateDto để đổ dữ liệu vào Form
+            var updateDto = _mapper.Map<UserUpdateDto>(userResponse);
+
+            return View(updateDto);
+        }
+
+        [HttpPost("EditProfile")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(UserUpdateDto updateDto)
+        {
+            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Gán lại ID cho DTO đề phòng DTO yêu cầu trường Id phải có dữ liệu
+            updateDto.Id = userId;
+
+            // ---- THÊM ĐOẠN DEBUG NÀY ----
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine(">>> LỖI VALIDATION TẠI EDIT PROFILE: " + string.Join(", ", errors));
+
+                return View(updateDto);
+            }
+            // -----------------------------
+
+            try
+            {
+                var result = await _userService.UpdateUserProfileAsync(userId, updateDto);
+
+                if (result)
+                {
+                    TempData["Success"] = "Cập nhật thông tin cá nhân thành công!";
+                    return RedirectToAction(nameof(Profile));
+                }
+
+                ModelState.AddModelError("", "Cập nhật thất bại. Vui lòng thử lại.");
+                return View(updateDto);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
+                return View(updateDto);
+            }
+        }
     }
 }

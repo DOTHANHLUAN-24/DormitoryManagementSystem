@@ -1,0 +1,118 @@
+@model DormitoryManagement.Application.Dtos.Requests.Blocks.BlockRequestDto
+
+@{
+    ViewData["Title"] = "Thêm Tòa Nhà Mới";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; }
+        
+        .form-control, .form-select { border-radius: 10px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        
+        .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px; }
+        
+        .nut-luu { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; background: #4f46e5; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .nut-luu:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        
+        .nut-huy { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-huy:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        /* Đồng bộ nút quay lại trên Header */
+        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        /* Custom Switch toggle cho IsActive */
+        .form-switch .form-check-input { width: 3em; height: 1.5em; cursor: pointer; }
+        .form-switch .form-check-input:checked { background-color: #10b981; border-color: #10b981; }
+        .form-switch .form-check-label { cursor: pointer; padding-left: 10px; padding-top: 4px; font-weight: 600; color: #1e293b; }
+    </style>
+}
+
+<div class="container-fluid max-w-7xl mx-auto">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Thêm Tòa Nhà Mới
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    @* Khu vực hiển thị lỗi chung (nếu có lỗi logic như trùng tên) *@
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-8 mb-4">
+                            <label asp-for="BlockName" class="form-label">Tên tòa nhà <span class="text-danger">*</span></label>
+                            <input asp-for="BlockName" class="form-control" placeholder="Ví dụ: Tòa nhà A1, Khu B..." autocomplete="off" />
+                            <span asp-validation-for="BlockName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-4">
+                            <label asp-for="TotalFloors" class="form-label">Số tầng <span class="text-danger">*</span></label>
+                            <input asp-for="TotalFloors" type="number" class="form-control" min="1" max="100" placeholder="1-100" />
+                            <span asp-validation-for="TotalFloors" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">Mô tả thêm</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Nhập ghi chú hoặc mô tả về tòa nhà này (không bắt buộc)..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <div class="mb-4 bg-light p-3 rounded-3 border">
+                        <div class="form-check form-switch d-flex align-items-center">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch">
+                            <label class="form-check-label" for="isActiveSwitch">Cho phép tòa nhà hoạt động ngay</label>
+                        </div>
+                        <small class="text-muted ms-5 mt-2 d-block">
+                            <i class="fas fa-exclamation-circle text-warning"></i> 
+                            Nếu tắt, tòa nhà sẽ hiển thị trạng thái "Tạm ngưng" và sinh viên không thể thấy các phòng thuộc tòa này.
+                        </small>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="nut-luu">
+                            <i class="fas fa-save"></i> Lưu thông tin
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        @* Cột hướng dẫn bên phải - UX tốt hơn cho người dùng *@
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Hướng dẫn nhập liệu</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li><strong>Tên tòa nhà:</strong> Phải là duy nhất, không được trùng với các tòa nhà đã có trong hệ thống (kể cả trong thùng rác).</li>
+                    <li><strong>Số tầng:</strong> Nhập số nguyên từ 1 đến 100. Số tầng này sẽ được dùng để hỗ trợ phân loại phòng sau này.</li>
+                    <li><strong>Trạng thái:</strong> Mặc định là bật (Hoạt động).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @* Thêm Script Validation của ASP.NET Core để bắt lỗi trực tiếp trên Client (HTML) trước khi gửi về Server *@
+    <partial name="_ValidationScriptsPartial" />
+}
