@@ -55,6 +55,7 @@ internal class Program
         builder.Services.AddScoped<IAssetService, AssetService>();
         builder.Services.AddScoped<IUtilityService, UtilityService>();
         builder.Services.AddScoped<IStatisticService, StatisticService>();
+        builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

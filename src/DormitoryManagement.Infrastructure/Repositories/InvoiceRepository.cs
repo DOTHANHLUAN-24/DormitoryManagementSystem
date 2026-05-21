@@ -44,8 +44,9 @@ namespace DormitoryManagement.Infrastructure.Repositories
         /// Lấy đối tượng truy vấn phân trang và tìm kiếm hóa đơn theo từ khóa.
         /// </summary>
         /// <param name="searchString">Từ khóa tìm kiếm (mã hóa đơn hoặc tiêu đề)</param>
+        /// <param name="status">Trạng thái hóa đơn cần lọc</param>
         /// <returns>Đối tượng IQueryable chứa danh sách hóa đơn</returns>
-        public IQueryable<Invoice> GetPagingQuery(string searchString)
+        public IQueryable<Invoice> GetPagingQuery(string searchString, DormitoryManagement.Domain.Enums.InvoiceStatus? status = null)
         {
             var query = _dbSet
                 .Include(i => i.Contract)
@@ -58,11 +59,13 @@ namespace DormitoryManagement.Infrastructure.Repositories
             if (!string.IsNullOrWhiteSpace(searchString))
             {
                 query = query.Where(i => i.InvoiceCode.Contains(searchString)
-                || i.Title.Contains(searchString));
+                    || i.Title.Contains(searchString)
+                    || (i.Contract != null && i.Contract.User != null && (i.Contract.User.FullName.Contains(searchString) || i.Contract.User.Code.Contains(searchString))));
             }
-            else
+
+            if (status.HasValue)
             {
-                query = query.Where(i => false);
+                query = query.Where(i => i.Status == status.Value);
             }
 
             return query.OrderByDescending(i => i.CreatedDate);

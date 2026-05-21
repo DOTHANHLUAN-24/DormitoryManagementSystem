@@ -1,18 +1,8 @@
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Domain.Entities.Invoice>
+@using DormitoryManagement.Domain.Enums
 @{
     ViewData["Title"] = "Quản Lý Hóa Đơn";
     Layout = "_Layout";
-
-    // MOCK DATA: Dựa trên đối tượng Invoice trong InformationEntityAndTask.md
-    var mockInvoices = new[] {
-        new { Code = "INV-2405-001", Title = "Tiền phòng tháng 05/2024", Month = 5, Year = 2024, Amount = 1500000, DueDate =
-"2024-05-15", Status = "Paid", Student = "Nguyễn Văn A" },
-        new { Code = "INV-2405-002", Title = "Điện nước tháng 05/2024", Month = 5, Year = 2024, Amount = 455000, DueDate =
-"2024-05-20", Status = "Unpaid", Student = "Trần Thị B" },
-        new { Code = "INV-2405-003", Title = "Tiền phòng tháng 05/2024", Month = 5, Year = 2024, Amount = 1500000, DueDate =
-"2024-05-15", Status = "Overdue", Student = "Lê Văn C" },
-        new { Code = "INV-2405-004", Title = "Dịch vụ giặt là tháng 05", Month = 5, Year = 2024, Amount = 120000, DueDate =
-"2024-05-25", Status = "Unpaid", Student = "Phạm Minh D" }
-    };
 }
 
 @section Styles {
@@ -120,6 +110,38 @@
             background: #eef2ff;
             color: #4f46e5;
         }
+
+        .pagination .page-item .page-link {
+            color: #64748b;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 14px;
+            font-weight: 600;
+            font-size: 13px;
+            margin: 0 2px;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+
+        .pagination .page-item:first-child .page-link {
+            border-radius: 6px;
+        }
+
+        .pagination .page-item:last-child .page-link {
+            border-radius: 6px;
+        }
+
+        .pagination .page-item.active .page-link {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            border-color: #4f46e5;
+            color: #fff;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+        }
+
+        .pagination .page-item .page-link:hover:not(.active) {
+            background-color: #e2e8f0;
+            color: #1e293b;
+        }
     </style>
 }
 
@@ -131,12 +153,12 @@
         </h1>
         <div class="d-flex gap-2">
             <a asp-controller="Home" asp-action="Index"
-               class="btn btn-outline-secondary shadow-sm d-flex align-items-center gap-2"
-               style="border-radius: 12px;">
+                class="btn btn-outline-secondary shadow-sm d-flex align-items-center gap-2"
+                style="border-radius: 12px;">
                 <i class="fa-solid fa-house"></i> <span>Trang chủ</span>
             </a>
             <a asp-action="Create" class="btn btn-primary shadow-sm d-flex align-items-center gap-2"
-               style="border-radius: 12px;">
+                style="border-radius: 12px;">
                 <i class="fa-solid fa-plus"></i> <span>Tạo hóa đơn</span>
             </a>
         </div>
@@ -149,7 +171,7 @@
                 <i class="fa-solid fa-file-lines"></i>
             </div>
             <div>
-                <h3 class="mb-0 fw-bold">@mockInvoices.Length</h3>
+                <h3 class="mb-0 fw-bold">@ViewBag.TotalCount</h3>
                 <p class="text-muted small mb-0">Tổng hóa đơn</p>
             </div>
         </div>
@@ -158,7 +180,7 @@
                 <i class="fa-solid fa-clock"></i>
             </div>
             <div>
-                <h3 class="mb-0 fw-bold">@mockInvoices.Count(x => x.Status != "Paid")</h3>
+                <h3 class="mb-0 fw-bold">@ViewBag.UnpaidCount</h3>
                 <p class="text-muted small mb-0">Chờ thanh toán</p>
             </div>
         </div>
@@ -167,14 +189,14 @@
                 <i class="fa-solid fa-check-double"></i>
             </div>
             <div>
-                <h3 class="mb-0 fw-bold">@mockInvoices.Count(x => x.Status == "Paid")</h3>
+                <h3 class="mb-0 fw-bold">@ViewBag.PaidCount</h3>
                 <p class="text-muted small mb-0">Đã hoàn tất</p>
             </div>
         </div>
     </div>
 
     <!-- Thanh tìm kiếm & Lọc -->
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+    <form method="get" asp-action="Index" class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
         <div class="card-body p-3">
             <div class="row g-3">
                 <div class="col-lg-6">
@@ -182,27 +204,29 @@
                         <span class="input-group-text bg-transparent border-end-0 text-muted">
                             <i class="fa-solid fa-magnifying-glass"></i>
                         </span>
-                        <input type="text" class="form-control border-start-0"
-                               placeholder="Tìm theo mã hóa đơn, tiêu đề hoặc sinh viên..."
-                               style="border-radius: 0 12px 12px 0; height: 46px;">
+                        <input type="text" name="search" class="form-control border-start-0"
+                            placeholder="Tìm theo mã hóa đơn, tiêu đề hoặc sinh viên..."
+                            value="@ViewBag.Search"
+                            style="border-radius: 0 12px 12px 0; height: 46px;">
                     </div>
                 </div>
                 <div class="col-lg-3">
-                    <select class="form-select" style="border-radius: 12px; height: 46px;">
+                    <select name="status" class="form-select" style="border-radius: 12px; height: 46px;">
                         <option value="">Tất cả trạng thái</option>
-                        <option>Đã thanh toán</option>
-                        <option>Chưa thanh toán</option>
-                        <option>Quá hạn</option>
+                        <option value="Paid" selected="@(ViewBag.Status == "Paid" ? "selected" : null)">Đã thanh toán</option>
+                        <option value="Unpaid" selected="@(ViewBag.Status == "Unpaid" ? "selected" : null)">Chưa thanh toán</option>
+                        <option value="Overdue" selected="@(ViewBag.Status == "Overdue" ? "selected" : null)">Quá hạn</option>
+                        <option value="PartiallyPaid" selected="@(ViewBag.Status == "PartiallyPaid" ? "selected" : null)">Đã trả một phần</option>
                     </select>
                 </div>
                 <div class="col-lg-3">
-                    <button class="btn btn-primary w-100 fw-bold" style="height: 46px; border-radius: 12px;">
+                    <button type="submit" class="btn btn-primary w-100 fw-bold" style="height: 46px; border-radius: 12px;">
                         <i class="fa-solid fa-filter me-2"></i> Lọc dữ liệu
                     </button>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- Bảng dữ liệu -->
     <div class="bang-container">
@@ -221,39 +245,69 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in mockInvoices)
+                    @if (Model != null && Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4"><span class="fw-bold text-dark">@item.InvoiceCode</span></td>
+                                <td>@item.Title</td>
+                                <td>
+                                    @if (item.Contract != null && item.Contract.User != null)
+                                    {
+                                        <div>@item.Contract.User.FullName</div>
+                                        <small class="text-muted">@item.Contract.User.Code</small>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </td>
+                                <td>@item.BillingMonth/@item.BillingYear</td>
+                                <td><span class="fw-bold text-primary">@item.TotalAmount.ToString("N0") đ</span></td>
+                                <td>@item.DueDate.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    @if (item.Status == InvoiceStatus.Paid)
+                                    {
+                                        <span class="badge-status status-paid">Đã trả</span>
+                                    }
+                                    else if (item.Status == InvoiceStatus.Overdue)
+                                    {
+                                        <span class="badge-status status-overdue">Quá hạn</span>
+                                    }
+                                    else if (item.Status == InvoiceStatus.PartiallyPaid)
+                                    {
+                                        <span class="badge-status status-unpaid">Trả một phần</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status status-unpaid">Chưa trả</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2 align-items-center">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn-action btn-edit"
+                                            title="Chỉnh sửa">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </a>
+                                        <button class="btn-action btn-view" title="Chi tiết" onclick="onUnderDevelopment('Xem chi tiết hóa đơn')">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirmDelete(event, '@item.InvoiceCode')">
+                                            <button type="submit" class="btn-action btn-danger" style="background: #fef2f2; color: #ef4444; border: none; outline: none;" title="Xóa">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td class="ps-4"><span class="fw-bold text-dark">@item.Code</span></td>
-                            <td>@item.Title</td>
-                            <td>@item.Student</td>
-                            <td>@item.Month/@item.Year</td>
-                            <td><span class="fw-bold text-primary">@item.Amount.ToString("N0") đ</span></td>
-                            <td>@item.DueDate</td>
-                            <td>
-                                @if (item.Status == "Paid")
-                                {
-                                    <span class="badge-status status-paid">Đã trả</span>
-                                }
-                                else if (item.Status == "Overdue")
-                                {
-                                    <span class="badge-status status-overdue">Quá hạn</span>
-                                }
-                                else
-                                {
-                                    <span class="badge-status status-unpaid">Chưa trả</span>
-                                }
-                            </td>
-                            <td class="text-end pe-4">
-                                <div class="d-flex justify-content-end gap-2">
-                                    <a asp-action="Edit" asp-route-id="@item.Code" class="btn-action btn-edit"
-                                       title="Chỉnh sửa">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </a>
-                                    <a href="#" class="btn-action btn-view" title="Chi tiết">
-                                        <i class="fa-solid fa-eye"></i>
-                                    </a>
-                                </div>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                Không tìm thấy hóa đơn nào phù hợp.
                             </td>
                         </tr>
                     }
@@ -261,4 +315,37 @@
             </table>
         </div>
     </div>
+
+    <!-- Phân trang -->
+    @if (Model != null && Model.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center mt-4">
+            @await Html.PartialAsync("_Pagination", Model)
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(event, code) {
+            event.preventDefault();
+            const form = event.currentTarget;
+            Swal.fire({
+                title: 'Xóa hóa đơn?',
+                html: `Bạn có chắc muốn xóa hóa đơn <b>${code}</b> không?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+    </script>
+}
