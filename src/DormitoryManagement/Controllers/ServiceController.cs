@@ -1,96 +1,133 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DormitoryManagement.Infrastructure.Data;
-using DormitoryManagement.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace DormitoryManagement.Controllers
+namespace DormitoryManagementSystem.Controllers
 {
-    [Route("Service")]
     public class ServiceController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public ServiceController(ApplicationDbContext context)
+        // MOCK DATA (sau này thay bằng Database)
+        private static List<ServiceViewModel> services = new List<ServiceViewModel>
         {
-            _context = context;
-        }
+            new ServiceViewModel { Id="DV001", Name="Internet Tốc Độ Cao", Price=120000, Unit="Tháng / Phòng", Description="Băng thông 100Mbps", UpdatedAt=DateTime.Now.AddDays(-7), Status="Hoạt động" },
+            new ServiceViewModel { Id="DV002", Name="Giặt Sấy Tự Động", Price=15000, Unit="Lượt / 7Kg", Description="Máy giặt tầng G", UpdatedAt=DateTime.Now.AddDays(-6), Status="Hoạt động" },
+            new ServiceViewModel { Id="DV003", Name="Trông Giữ Xe Máy", Price=90000, Unit="Tháng / Xe", Description="Bãi xe tầng hầm", UpdatedAt=DateTime.Now.AddDays(-5), Status="Hoạt động" }
+        };
 
-        // Hiển thị danh sách dịch vụ đang hoạt động
-        public async Task<IActionResult> Index()
+        private static List<ServiceViewModel> trash = new List<ServiceViewModel>();
+
+        // =========================
+        // INDEX
+        // =========================
+        [HttpGet]
+        public IActionResult Index()
         {
-            var services = await _context.Utilities
-                .Where(u => u.IsActive)
-                .ToListAsync();
             return View(services);
         }
 
-        // Hiển thị danh sách dịch vụ trong Thùng rác
-        [HttpGet("Trash")]
-        public async Task<IActionResult> Trash()
-        {
-            var deletedServices = await _context.Utilities
-                .Where(u => !u.IsActive)
-                .ToListAsync();
-            return View(deletedServices);
-        }
-
-        [Route("Create")]
+        // =========================
+        // CREATE
+        // =========================
+        [HttpGet]
         public IActionResult Create()
         {
-            return View(new Utility());
+            return View();
         }
 
-        [HttpGet("Edit/{id}")]
-        public async Task<IActionResult> Edit(Guid id)
+        [HttpPost]
+        public IActionResult Create(ServiceViewModel model)
         {
-            var service = await _context.Utilities.FindAsync(id);
+            if (!ModelState.IsValid) return View(model);
+
+            model.Id = "DV" + (services.Count + trash.Count + 1).ToString("000");
+            model.UpdatedAt = DateTime.Now;
+            model.Status = "Hoạt động";
+
+            services.Add(model);
+
+            return RedirectToAction("Index");
+        }
+
+        // =========================
+        // EDIT
+        // =========================
+        [HttpGet]
+        public IActionResult Edit(string id)
+        {
+            var service = services.FirstOrDefault(x => x.Id == id);
             if (service == null) return NotFound();
+
             return View(service);
         }
 
-        // Xóa mềm: Chuyển trạng thái IsActive thành false
-        [HttpPost("Delete/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpPost]
+        public IActionResult Edit(ServiceViewModel model)
         {
-            var service = await _context.Utilities.FindAsync(id);
-            if (service != null)
-            {
-                service.IsActive = false;
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã đưa dịch vụ vào thùng rác.";
-            }
-            return RedirectToAction(nameof(Index));
+            var service = services.FirstOrDefault(x => x.Id == model.Id);
+            if (service == null) return NotFound();
+
+            service.Name = model.Name;
+            service.Price = model.Price;
+            service.Unit = model.Unit;
+            service.Description = model.Description;
+            service.Status = model.Status;
+            service.UpdatedAt = DateTime.Now;
+
+            return RedirectToAction("Index");
         }
 
-        // Khôi phục: Chuyển trạng thái IsActive thành true
-        [HttpPost("Restore/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Restore(Guid id)
+        // =========================
+        // TRASH (danh sách thùng rác)
+        // =========================
+        [HttpGet]
+        public IActionResult Trash()
         {
-            var service = await _context.Utilities.FindAsync(id);
-            if (service != null)
-            {
-                service.IsActive = true;
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Khôi phục dịch vụ thành công.";
-            }
-            return RedirectToAction(nameof(Trash));
+            return View(trash);
         }
 
-        // Xóa vĩnh viễn: Gỡ bỏ hoàn toàn khỏi Database
-        [HttpPost("HardDelete/{id}")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> HardDelete(Guid id)
+        // =========================
+        // DELETE (chuyển vào thùng rác)
+        // Route: /Service/Trash/{id}
+        // =========================
+        [HttpGet]
+        public IActionResult Trash(string id)
         {
-            var service = await _context.Utilities.FindAsync(id);
-            if (service != null)
-            {
-                _context.Utilities.Remove(service);
-                await _context.SaveChangesAsync();
-                TempData["Success"] = "Đã xóa vĩnh viễn dịch vụ.";
-            }
-            return RedirectToAction(nameof(Trash));
+            var service = services.FirstOrDefault(x => x.Id == id);
+            if (service == null) return NotFound();
+
+            services.Remove(service);
+            trash.Add(service);
+
+            return RedirectToAction("Index");
         }
+
+        // =========================
+        // RESTORE từ trash
+        // =========================
+        public IActionResult Restore(string id)
+        {
+            var service = trash.FirstOrDefault(x => x.Id == id);
+            if (service == null) return NotFound();
+
+            trash.Remove(service);
+            services.Add(service);
+
+            return RedirectToAction("Trash");
+        }
+    }
+
+    // =========================
+    // VIEW MODEL
+    // =========================
+    public class ServiceViewModel
+    {
+        public required string Id { get; set; }
+        public required string Name { get; set; }
+        public decimal Price { get; set; }
+        public required string Unit { get; set; }
+        public required string Description { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public required string Status { get; set; }
     }
 }

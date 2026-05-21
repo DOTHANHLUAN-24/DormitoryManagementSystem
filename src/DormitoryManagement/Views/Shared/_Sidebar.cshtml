@@ -79,21 +79,13 @@
         <!-- Khách vãng lai cũng xem được giá dịch vụ -->
         <a asp-controller="Service" asp-action="Index">
             <i class="fas fa-list-ul me-2"></i> Quản lý dịch vụ 
-<<<<<<< HEAD
-=======
-        </a>
-    </div>
-    <div class="collapse submenu" id="utilityMenu">
-        <a asp-controller="Utility" asp-action="Index">
-            <i class="fas fa-list-ul me-2"></i> Bảng giá dịch vụ
->>>>>>> 3ab7fa71f23e2a949062c1e0c671e8ecbef9be95
         </a>
 
         @if (User.Identity?.IsAuthenticated == true)
         {
             <a asp-controller="UtilityUsage" asp-action="Index">
                 <i class="fas fa-tachometer-alt me-2"></i> 
-                @(User.IsInRole(CommonConstants.StudentRole) ? "Chỉ số điện nước phòng" : "Ghi chỉ số")
+                @if (User.IsInRole(CommonConstants.StudentRole)) { <span>Chỉ số điện nước phòng</span> } else { <span>Ghi chỉ số</span> }
             </a>
             <a asp-controller="Service" asp-action="Trash">
                 <i class="fas fa-trash-alt me-2"></i> Thùng rác
@@ -111,7 +103,7 @@
         <div class="collapse submenu" id="contractMenu">
             <a asp-controller="Contract" asp-action="Index">
                 <i class="fas fa-list me-2"></i> 
-                @(User.IsInRole(CommonConstants.StudentRole) ? "Hợp đồng của tôi" : "Danh sách")
+                @if (User.IsInRole(CommonConstants.StudentRole)) { <span>Hợp đồng của tôi</span> } else { <span>Danh sách</span> }
             </a>
             @if (User.IsInRole(CommonConstants.AdminRole) || User.IsInRole(CommonConstants.ManagerRole))
             {
@@ -161,10 +153,6 @@
             <a asp-controller="Vehicle" asp-action="Index">
                 <i class="fas fa-motorcycle me-2"></i> Phương tiện
             </a>
-<<<<<<< HEAD
-=======
-            
->>>>>>> 3ab7fa71f23e2a949062c1e0c671e8ecbef9be95
             <!-- ĐƯA RA NGOÀI ĐỂ TẤT CẢ USER ĐÃ ĐĂNG NHẬP ĐỀU THẤY -->
             <a asp-controller="Violation" asp-action="Index">
                 <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
