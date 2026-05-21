@@ -1,64 +1,121 @@
 @{
-    ViewData["Title"] = "Ghi nhận khách đến thăm KTX";
+    ViewData["Title"] = "Ghi nhận khách đến thăm KTX - KTX System";
+    Layout = "_Layout";
 }
 
-<div class="container-fluid py-4">
+@section Styles {
+    <style>
+        /* Hệ thống tiêu đề */
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Cấu trúc Card cao cấp */
+        .khung-chua-form { background: #fff; border-radius: 20px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05); border: none; overflow: hidden; }
+        .card-header-custom { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 20px 24px; }
+        .card-body-custom { padding: 24px; }
+
+        /* Nút quay lại tinh tế */
+        .nut-quay-lai { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+        .nut-quay-lai:hover { background: #e2e8f0; color: #1e293b; transform: translateX(-2px); }
+
+        /* Ô nhập liệu hiện đại tích hợp icon */
+        .input-group-custom { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; transition: all 0.3s ease; background: #f8fafc; display: flex; align-items: center; }
+        .input-group-custom:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
+        .input-group-custom .input-icon { color: #94a3b8; padding-left: 14px; padding-right: 2px; font-size: 14px; }
+        .input-group-custom .form-control { border: none; background: transparent; padding: 10px 12px; font-size: 14px; color: #1e293b; width: 100%; }
+        .input-group-custom .form-control:focus { box-shadow: none; background: transparent; outline: none; }
+
+        /* Hệ thống nút bấm chân trang */
+        .nut-huy { padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+        .nut-huy:hover { background: #e2e8f0; color: #1e293b; }
+
+        .nut-ghi-nhan { padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); display: inline-flex; align-items: center; gap: 8px; }
+        .nut-ghi-nhan:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); color: #fff; }
+    </style>
+}
+
+<div class="container-fluid py-2">
+    <!-- KHU VỰC TIÊU ĐỀ & ĐIỀU HƯỚNG -->
     <div class="mb-4">
-        <a href="/Visitor" class="btn btn-sm btn-outline-secondary mb-2">
-            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
-        </a>
-        <h1 class="h3 mb-0 text-gray-800 fw-bold">Ghi Nhận Lượt Khách Mới</h1>
-        <p class="text-muted small">Nhập thông tin chi tiết của khách và sinh viên được thăm khi vào khu vực ký túc xá.</p>
+        <div class="d-flex mb-2">
+            <a href="/Visitor" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+        <h1 class="tieu-de-trang mb-1">Ghi Nhận Lượt Khách Mới</h1>
+        <p class="text-muted small mb-0">Nhập thông tin chi tiết của khách và sinh viên được thăm khi đăng ký vào khu vực nội trú.</p>
     </div>
 
+    <!-- KHUNG CHỨA FORM CHÍNH -->
     <div class="row">
         <div class="col-xl-8 col-lg-10">
-            <div class="card shadow border-0 mb-4">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <h6 class="m-0 fw-bold text-primary"><i class="fas fa-user-plus me-2"></i>Đăng ký thông tin ra vào</h6>
+            <div class="card khung-chua-form">
+                <div class="card-header-custom">
+                    <h6 class="m-0 fw-bold text-dark"><i class="fas fa-user-plus text-primary me-2"></i>Đăng ký thông tin ra vào</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body-custom">
                     <form id="createVisitorForm" onsubmit="createNewVisitor(event)">
                         
+                        <!-- HÀNG 1: THÔNG TIN KHÁCH -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Tên khách đến thăm</label>
-                                <input type="text" id="visitorName" class="form-control" required placeholder="Nhập họ tên khách...">
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                                    <input type="text" id="visitorName" class="form-control" required placeholder="Nhập họ tên khách...">
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Số CCCD/CMND</label>
-                                <input type="text" id="identityCard" class="form-control font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" id="identityCard" class="form-control font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
+                                </div>
                             </div>
                         </div>
 
+                        <!-- HÀNG 2: THÔNG TIN LƯU TRÚ NỘI KHU -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Sinh viên được thăm</label>
-                                <input type="text" id="studentName" class="form-control" required placeholder="Nhập tên sinh viên trong ký túc xá...">
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-graduation-cap"></i></span>
+                                    <input type="text" id="studentName" class="form-control" required placeholder="Nhập tên sinh viên trong ký túc xá...">
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Thuộc phòng</label>
-                                <input type="text" id="room" class="form-control" required placeholder="Ví dụ: P.302-A1">
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-door-open"></i></span>
+                                    <input type="text" id="room" class="form-control" required placeholder="Ví dụ: P.302-A1">
+                                </div>
                             </div>
                         </div>
 
+                        <!-- HÀNG 3: MỐC THỜI GIAN -->
                         <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Giờ vào</label>
-                                <input type="datetime-local" id="checkIn" class="form-control" required>
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-sign-in-alt"></i></span>
+                                    <input type="datetime-local" id="checkIn" class="form-control" required>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label small fw-bold text-secondary">Giờ ra (Dự kiến)</label>
-                                <input type="datetime-local" id="checkOut" class="form-control" required>
+                                <div class="input-group-custom">
+                                    <span class="input-icon"><i class="fas fa-sign-out-alt"></i></span>
+                                    <input type="datetime-local" id="checkOut" class="form-control" required>
+                                </div>
                             </div>
                         </div>
 
-                        <hr class="text-muted my-4">
+                        <hr class="text-muted my-4" style="opacity: 0.1;">
 
+                        <!-- CỤM NÚT ĐIỀU HƯỚNG CUỐI FORM -->
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="/Visitor" class="btn btn-light px-4">Hủy bỏ</a>
-                            <button type="submit" class="btn btn-primary px-4 fw-medium">
-                                <i class="fas fa-check me-1"></i> Ghi nhận vào sổ
+                            <a href="/Visitor" class="nut-huy">Hủy bỏ</a>
+                            <button type="submit" class="nut-ghi-nhan">
+                                <i class="fas fa-check"></i> Ghi nhận vào sổ
                             </button>
                         </div>
                     </form>
@@ -69,12 +126,14 @@
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Tự động điền ngày giờ hiện tại khi mở form ghi nhận
+            // Tự động điền ngày giờ hiện tại khi mở form ghi nhận (Thời gian neo thực tế năm 2026)
             const now = new Date();
             
-            // Định dạng chuỗi YYYY-MM-DDTHH:mm cho input datetime-local
             const year = now.getFullYear();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const day = String(now.getDate()).padStart(2, '0');
@@ -84,7 +143,7 @@
             const currentDateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
             document.getElementById("checkIn").value = currentDateTimeStr;
 
-            // Tính toán giờ ra dự kiến mặc định (ví dụ: cho thăm 3 tiếng)
+            // Tính toán giờ ra dự kiến mặc định (Thăm nuôi tiêu chuẩn trong 3 tiếng)
             const defaultCheckOut = new Date(now.getTime() + 3 * 60 * 60 * 1000);
             const outYear = defaultCheckOut.getFullYear();
             const outMonth = String(defaultCheckOut.getMonth() + 1).padStart(2, '0');
@@ -95,28 +154,39 @@
             document.getElementById("checkOut").value = `${outYear}-${outMonth}-${outDay}T${outHours}:${outMinutes}`;
         });
 
-        // Xử lý khi nhấn nút lưu thông tin khách mới
+        // Xử lý logic nghiệp vụ và đẩy thông báo thành công cao cấp
         function createNewVisitor(event) {
-            event.preventDefault(); // Ngăn hành động tải lại trang
+            event.preventDefault();
 
             const name = document.getElementById("visitorName").value;
-            const cccd = document.getElementById("identityCard").value;
             const checkInTime = document.getElementById("checkIn").value;
             const checkOutTime = document.getElementById("checkOut").value;
 
-            // Kiểm tra logic thời gian cơ bản
+            // Kiểm tra ràng buộc logic dòng thời gian 
             if (new Date(checkInTime) >= new Date(checkOutTime)) {
-                alert("Lỗi: Thời gian ra dự kiến phải lớn hơn thời gian khách vào!");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lịch trình không hợp lệ!',
+                    text: 'Thời gian ra dự kiến bắt buộc phải sau mốc thời gian khách tiến vào ký túc xá.',
+                    confirmButtonColor: '#ef4444'
+                });
                 return;
             }
 
-            // Tạo mã ngẫu nhiên để giả lập ID mới thành công
+            // Sinh mã định danh ngẫu nhiên phục vụ lưu trữ Mock Data
             const randomId = "VIS" + Math.floor(100 + Math.random() * 900);
 
-            alert(`Thành công: Đã ghi nhận khách ${name} (Mã số cấp: ${randomId}) vào sổ theo dõi!`);
-            
-            // Điều hướng quay trở về trang danh sách chính
-            window.location.href = "/Visitor";
+            Swal.fire({
+                icon: 'success',
+                title: 'Đăng ký thành công!',
+                text: `Đã ghi nhận khách ${name} (Mã định danh hệ thống: ${randomId}) vào sổ theo dõi lịch sử ra vào.`,
+                confirmButtonColor: '#4f46e5',
+                timer: 3000,
+                timerProgressBar: true
+            }).then(() => {
+                // Điều hướng quay trở về trang danh sách chính
+                window.location.href = "/Visitor";
+            });
         }
     </script>
 }
