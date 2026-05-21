@@ -90,7 +90,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="onUnderDevelopment('Đổi mật khẩu')">
                                 <i class="fas fa-key me-2"></i> Đổi mật khẩu
                             </a>
                         </li>
@@ -137,6 +137,16 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        function onUnderDevelopment(featureName) {
+            Swal.fire({
+                title: 'Tính năng đang được phát triển',
+                text: 'Chức năng "' + featureName + '" hiện đang trong quá trình xây dựng và hoàn thiện. Vui lòng quay lại sau.',
+                icon: 'info',
+                confirmButtonColor: '#6366f1',
+                confirmButtonText: 'Đóng'
+            });
+        }
+
         function toggleSidebar() {
             const sidebar = document.querySelector(".sidebar");
             const main = document.getElementById("main");

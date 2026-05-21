@@ -24,6 +24,21 @@
         <span class="text">Bảng điều khiển</span>
     </a>
 
+    <!-- DANH SÁCH PHÒNG (CÔNG KHAI) -->
+    <a asp-controller="Home" asp-action="Rooms" class="@(currentController == "Home" && (currentAction == "Rooms" || currentAction == "RoomDetails") ? "active" : "")">
+        <i class="fas fa-door-closed"></i>
+        <span class="text">Xem phòng KTX</span>
+    </a>
+
+    <!-- DỊCH VỤ CÁ NHÂN (STUDENT) -->
+    @if (isAuthenticated && User.IsInRole("Student"))
+    {
+        <a asp-controller="Home" asp-action="Services" class="@(currentController == "Home" && currentAction == "Services" ? "active" : "")">
+            <i class="fas fa-concierge-bell"></i>
+            <span class="text">Dịch vụ cá nhân</span>
+        </a>
+    }
+
     <!-- ================= QUẢN LÝ NGƯỜI DÙNG ================= -->
     @if (isAdminOrManager)
     {

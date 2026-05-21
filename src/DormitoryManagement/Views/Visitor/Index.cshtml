@@ -182,20 +182,53 @@
         function checkOutVisitor(id) {
             const visitor = mockVisitors.find(v => v.id === id);
             if (visitor) {
-                if (confirm(`Xác nhận khách ${visitor.name} đã rời khỏi khu ký túc xá?`)) {
-                    visitor.isCheckedOut = true;
-                    visitor.status = "Đã rời đi";
-                    visitor.checkOut = new Date().toISOString();
-                    displayTableData(mockVisitors);
-                }
+                Swal.fire({
+                    title: 'Xác nhận ra về',
+                    text: `Xác nhận khách ${visitor.name} đã rời khỏi khu ký túc xá?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#006b73',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        visitor.isCheckedOut = true;
+                        visitor.status = "Đã rời đi";
+                        visitor.checkOut = new Date().toISOString();
+                        displayTableData(mockVisitors);
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: `Khách ${visitor.name} đã được xác nhận ra về.`,
+                            icon: 'success',
+                            confirmButtonColor: '#006b73'
+                        });
+                    }
+                });
             }
         }
 
         // Chức năng bấm nút Xóa lịch sử giả lập
         function deleteVisitor(id) {
-            if (confirm("Bạn có chắc chắn muốn xóa lịch sử lượt đến thăm này không?")) {
-                alert(`Đã xóa thành công bản ghi khách mang mã: ${id}`);
-            }
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc chắn muốn xóa lịch sử lượt đến thăm này không?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Xóa ngay',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đã xóa!',
+                        text: `Đã xóa thành công bản ghi khách mang mã: ${id}`,
+                        icon: 'success',
+                        confirmButtonColor: '#ef4444'
+                    });
+                }
+            });
         }
 
         // Định dạng hiển thị Ngày/Tháng/Năm - Giờ:Phút

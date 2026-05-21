@@ -212,6 +212,18 @@
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function onUnderDevelopment(featureName) {
+            Swal.fire({
+                title: 'Tính năng đang được phát triển',
+                text: 'Chức năng "' + featureName + '" hiện đang trong quá trình xây dựng và hoàn thiện. Vui lòng quay lại sau.',
+                icon: 'info',
+                confirmButtonColor: '#006b73',
+                confirmButtonText: 'Đóng'
+            });
+        }
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 

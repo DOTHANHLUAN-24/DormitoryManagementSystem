@@ -39,7 +39,8 @@ namespace DormitoryManagement.Application.Mappings
                 .ForMember(dest => dest.BlockId, opt => opt.MapFrom(src => src.BlockId))
                 .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Block != null ? src.Block.BlockName : string.Empty))
                 .ForMember(dest => dest.RoomTypeId, opt => opt.MapFrom(src => src.RoomTypeId))
-                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.TypeName : string.Empty));
+                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.TypeName : string.Empty))
+                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.Description : string.Empty));
 
             // Map từ Response DTO sang Update Request (để load dữ liệu vào Form Edit)
             CreateMap<RoomResponse, UpdateRoomRequest>();
