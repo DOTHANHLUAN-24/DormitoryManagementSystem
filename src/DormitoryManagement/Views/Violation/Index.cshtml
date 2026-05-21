@@ -1,0 +1,244 @@
+@{
+    ViewData["Title"] = "Quản lý Vi phạm - KTX System";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="text-dark fw-bold mb-1">Danh Sách Vi Phạm Kỷ Luật</h3>
+            <p class="text-muted small mb-0">Quản lý và xử lý các hành vi vi phạm nội quy kí túc xá.</p>
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+        {
+            <a href="/Violation/Create" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
+                <i class="fas fa-plus-circle"></i> Thêm Vi Phạm
+            </a>
+        }
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-12 col-md-6 col-lg-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0 text-muted">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control bg-light border-start-0" 
+                               placeholder="Tìm theo Tên, Mã SV hoặc Số phòng..." onkeyup="filterData()">
+                    </div>
+                </div>
+                <div class="col-6 col-md-3 col-lg-3">
+                    <select id="statusFilter" class="form-select bg-light" onchange="filterData()">
+                        <option value="all">-- Tất cả trạng thái --</option>
+                        <option value="Chưa xử lý">Chưa xử lý</option>
+                        <option value="Đã xử lý">Đã xử lý</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-3 col-lg-4">
+                    <select id="severityFilter" class="form-select bg-light" onchange="filterData()">
+                        <option value="all">-- Tất cả mức độ --</option>
+                        <option value="Nhẹ">Nhẹ</option>
+                        <option value="Cảnh cáo">Cảnh cáo</option>
+                        <option value="Nghiêm trọng">Nghiêm trọng</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4" style="width: 100px;">Mã VP</th>
+                            <th style="width: 120px;">Mã SV</th>
+                            <th style="width: 180px;">Họ và Tên</th>
+                            <th style="width: 110px;">Phòng</th>
+                            <th>Nội dung vi phạm</th>
+                            <th style="width: 130px;">Ngày lập</th>
+                            <th style="width: 130px;">Mức độ</th>
+                            <th style="width: 130px;">Trạng thái</th>
+                            <th class="text-end pe-4" style="width: 180px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="violationTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+            <div id="paginationInfo" class="text-muted small">
+            </div>
+            <nav aria-label="Page navigation">
+                <ul id="paginationButtons" class="pagination pagination-sm mb-0">
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Đồng bộ danh sách Mock Data tĩnh trùng ID Mock của Service C# để khi bấm "Sửa" không bị lỗi ID
+        const mockViolations = [
+            { id: "VP001", displayId: "VP001", studentId: "SV202601", studentName: "Nguyễn Văn Anh", room: "P.302-A1", content: "Sử dụng thiết bị công suất lớn (Bếp từ) trong phòng.", date: "2026-05-15", severity: "Cảnh cáo", status: "Chưa xử lý" },
+            { id: "VP002", displayId: "VP002", studentId: "SV202605", studentName: "Trần Thị Bình", room: "P.105-B2", content: "Về muộn sau 23h00 không có lý do chính đáng.", date: "2026-05-12", severity: "Nhẹ", status: "Đã xử lý" },
+            { id: "VP003", displayId: "VP003", studentId: "SV202212", studentName: "Lê Hoàng Cường", room: "P.401-A2", content: "Tụ tập tổ chức đánh bài ăn tiền trong giờ giới nghiêm", date: "2026-05-13", severity: "Nghiêm trọng", status: "Chưa xử lý" },
+            { id: "VP004", displayId: "VP004", studentId: "SV202408", studentName: "Phạm Minh Đức", room: "P.202-B1", content: "Không tham gia buổi lao động vệ sinh hành lang định kỳ của tầng", date: "2026-05-14", severity: "Nhẹ", status: "Đã xử lý" },
+            { id: "VP005", displayId: "VP005", studentId: "SV202388", studentName: "Hoàng Lan Hương", room: "P.305-A1", content: "Cho người lạ (không phải sinh viên nội trú) vào ở qua đêm", date: "2026-05-15", severity: "Cảnh cáo", status: "Chưa xử lý" },
+            { id: "VP006", displayId: "VP006", studentId: "SV202290", studentName: "Đỗ Đăng Khoa", room: "P.501-B3", content: "Hút smoke trong phòng ngủ tập thể và khu vực cấm", date: "2026-05-15", severity: "Cảnh cáo", status: "Đã xử lý" },
+            { id: "VP007", displayId: "VP007", studentId: "SV202351", studentName: "Vũ Thị Mai", room: "P.102-A2", content: "Xả rác bừa bãi ra khu vực giếng trời gây ô nhiễm môi trường", date: "2026-05-16", severity: "Nhẹ", status: "Chưa xử lý" },
+            { id: "VP008", displayId: "VP008", studentId: "SV202419", studentName: "Bùi Công Nam", room: "P.206-B2", content: "Tự ý thay đổi kết cấu phòng ở và đóng đinh đục tường diện rộng", date: "2026-05-16", severity: "Nghiêm trọng", status: "Chưa xử lý" },
+            { id: "VP009", displayId: "VP009", studentId: "SV202233", studentName: "Ngô Thanh Tâm", room: "P.303-A1", content: "Mở loa công suất lớn sau 22h gây ảnh hưởng nghiêm trọng phòng bên", date: "2026-05-17", severity: "Nhẹ", status: "Đã xử lý" },
+            { id: "VP010", displayId: "VP010", studentId: "SV202315", studentName: "Lý Khánh Vân", room: "P.404-B1", content: "Về muộn sau 23:00 và có thái độ bất hợp tác với đội tự quản", date: "2026-05-17", severity: "Cảnh cáo", status: "Chưa xử lý" }
+        ];
+
+        let filteredData = [...mockViolations];
+        let currentPage = 1;
+        const rowsPerPage = 4; 
+
+        // Nhúng giá trị check quyền của Razor vào biến Javascript để xử lý ẩn hiện nút
+        const isAuthorizedToEdit = @(User.IsInRole("Admin") || User.IsInRole("Manager") ? "true" : "false");
+
+        function displayTableData(page) {
+            const tableBody = document.getElementById("violationTableBody");
+            tableBody.innerHTML = "";
+            
+            let start = (page - 1) * rowsPerPage;
+            let end = start + rowsPerPage;
+            let paginatedItems = filteredData.slice(start, end);
+
+            if (paginatedItems.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">Không tìm thấy dữ liệu vi phạm phù hợp.</td></tr>`;
+                updatePaginationControls(0, start, end);
+                return;
+            }
+
+            paginatedItems.forEach(violation => {
+                let statusBadge = violation.status === "Đã xử lý" 
+                    ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Đã xử lý</span>` 
+                    : `<span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">Chưa xử lý</span>`;
+                
+                let severityBadge = "";
+                if(violation.severity === "Nghiêm trọng") {
+                    severityBadge = `<span class="badge bg-danger text-white px-2 py-1">${violation.severity}</span>`;
+                } else if(violation.severity === "Cảnh cáo") {
+                    severityBadge = `<span class="badge bg-warning text-dark px-2 py-1">${violation.severity}</span>`;
+                } else {
+                    severityBadge = `<span class="badge bg-secondary text-white px-2 py-1">${violation.severity}</span>`;
+                }
+
+                // Khởi tạo các nút thao tác cơ bản (Xem chi tiết)
+                let actionButtons = `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="alert('Xem chi tiết bản ghi: ${violation.displayId}')" title="Xem chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                `;
+
+                // Nếu tài khoản hợp lệ, chèn thêm nút Sửa dạng thẻ <a> chuyển hướng và nút Duyệt
+                if (isAuthorizedToEdit) {
+                    actionButtons += `
+                        <a href="/Violation/Edit/${violation.id}" class="btn btn-sm btn-warning text-dark me-1" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <button class="btn btn-sm btn-outline-success" onclick="alert('Duyệt trạng thái bản ghi: ${violation.displayId}')" title="Duyệt xử lý">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    `;
+                }
+                
+                let row = `<tr>
+                    <td class="ps-4 fw-bold text-secondary">${violation.id}</td>
+                    <td><span class="badge bg-light text-dark border">${violation.studentId}</span></td>
+                    <td class="fw-semibold">${violation.studentName}</td>
+                    <td><span class="text-primary fw-medium">${violation.room}</span></td>
+                    <td class="text-truncate" style="max-width: 250px;" title="${violation.content}">${violation.content}</td>
+                    <td>${formatDate(violation.date)}</td>
+                    <td>${severityBadge}</td>
+                    <td>${statusBadge}</td>
+                    <td class="text-end pe-4">
+                        <a href="/Violation/Edit/${violation.id}" class="btn btn-sm btn-warning text-dark me-1" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="alert('Xem chi tiết bản ghi: ${violation.id}')" title="Xem chi tiết">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="alert('Duyệt trạng thái bản ghi: ${violation.id}')" title="Duyệt xử lý">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    </td>
+                </tr>`;
+                tableBody.insertAdjacentHTML('beforeend', row);
+            });
+
+            updatePaginationControls(filteredData.length, start, end);
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
+
+        function updatePaginationControls(totalItems, start, end) {
+            const infoBox = document.getElementById("paginationInfo");
+            const btnBox = document.getElementById("paginationButtons");
+            
+            let actualEnd = end > totalItems ? totalItems : end;
+            let displayStart = totalItems === 0 ? 0 : start + 1;
+            
+            infoBox.innerHTML = `Hiển thị từ <b class="text-dark">${displayStart}</b> đến <b class="text-dark">${actualEnd}</b> trong tổng số <b class="text-dark">${totalItems}</b> bản ghi`;
+
+            btnBox.innerHTML = "";
+            let totalPages = Math.ceil(totalItems / rowsPerPage);
+
+            let prevDisabled = currentPage === 1 ? "disabled" : "";
+            btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${prevDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a></li>`);
+
+            for (let i = 1; i <= totalPages; i++) {
+                let activeClass = i === currentPage ? "active" : "";
+                btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`);
+            }
+
+            let nextDisabled = currentPage === totalPages || totalPages === 0 ? "disabled" : "";
+            btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${nextDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a></li>`);
+        }
+
+        function changePage(page) {
+            let totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            displayTableData(currentPage);
+        }
+
+        function filterData() {
+            const searchText = document.getElementById("searchInput").value.toLowerCase();
+            const statusFilter = document.getElementById("statusFilter").value;
+            const severityFilter = document.getElementById("severityFilter").value;
+
+            filteredData = mockViolations.filter(violation => {
+                const matchesSearch = violation.studentName.toLowerCase().includes(searchText) || 
+                                      violation.studentId.toLowerCase().includes(searchText) || 
+                                      violation.room.toLowerCase().includes(searchText);
+                
+                const matchesStatus = statusFilter === "all" || violation.status === statusFilter;
+                const matchesSeverity = severityFilter === "all" || violation.severity === severityFilter;
+
+                return matchesSearch && matchesStatus && matchesSeverity;
+            });
+
+            currentPage = 1; 
+            displayTableData(currentPage);
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            displayTableData(currentPage);
+        });
+    </script>
+}

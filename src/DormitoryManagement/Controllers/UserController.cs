@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,6 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
-        [Route("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = 5;
@@ -70,7 +69,7 @@ namespace DormitoryManagement.Controllers
             return View(new UserRequestDto());
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UserRequestDto userDto)
         {
@@ -102,36 +101,40 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("Edit/{id}")]
+        [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var userResponse = await _userService.GetUserByIdAsync(id);
             if (userResponse == null) return NotFound();
 
-            // Mapping phải đảm bảo: userRequest.Role = userResponse.Role;
-            var userRequest = _mapper.Map<UserRequestDto>(userResponse);
+            // Map từ Response sang UpdateDto để đổ dữ liệu vào Form
+            var updateDto = _mapper.Map<UserUpdateDto>(userResponse);
 
-            return View(userRequest);
+            return View(updateDto);
         }
 
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, UserRequestDto userRequest)
+        public async Task<IActionResult> Edit(Guid id, UserUpdateDto updateDto)
         {
-            // Kiểm tra xem dữ liệu có vào đến đây không bằng cách đặt Breakpoint
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                await _userService.UpdateUserProfileAsync(id, userRequest);
+                return View(updateDto);
+            }
+
+            var result = await _userService.UpdateUserProfileAsync(id, updateDto);
+            if (result)
+            {
+                TempData["Success"] = "Cập nhật thành công";
                 return RedirectToAction(nameof(Index));
             }
-            // Nếu không vào được if, trang sẽ load lại và hiện lỗi nhờ asp-validation-summary="All"
-            return View(userRequest);
+
+            ModelState.AddModelError("", "Cập nhật thất bại.");
+            return View(updateDto);
         }
 
-        [HttpPost]
+        [HttpPost("Deactivate/{id}")]
         [ValidateAntiForgeryToken] // Kiểm tra token được gửi từ AJAX
-        [Route("Deactivate/{id}")]
         public async Task<IActionResult> Deactivate([FromRoute] Guid id)
 
         {
@@ -152,8 +155,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("Restore/{id}")]
+        [HttpPost("Restore/{id}")]
         public async Task<IActionResult> Restore(Guid id)
         {
             try
@@ -167,8 +169,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("ToggleStatus/{id}")]
+        [HttpPost("ToggleStatus/{id}")]
         public async Task<IActionResult> ToggleStatus(Guid id)
         {
             try
@@ -183,8 +184,7 @@ namespace DormitoryManagement.Controllers
         }
 
         // Trong UserController.cs
-        [HttpPost]
-        [Route("DeletePermanently/{id}")]
+        [HttpPost("DeletePermanently/{id}")]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
             try
@@ -200,8 +200,7 @@ namespace DormitoryManagement.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("Profile")]
+        [HttpGet("Profile")]
         public async Task<IActionResult> Profile()
         {
             // Lấy ID của người dùng đang đăng nhập từ Claims trong JWT Token
@@ -219,9 +218,8 @@ namespace DormitoryManagement.Controllers
             return View(user);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken] // Kiểm tra token bảo mật
-        [Route("ToggleLock/{id}")]
+        [HttpPost("ToggleLock/{id}")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleLock(Guid id)
         {
             // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService
@@ -232,6 +230,72 @@ namespace DormitoryManagement.Controllers
                 return Json(new { success = true, message = "Đã thay đổi trạng thái tài khoản thành công." });
             }
             return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
+        }
+
+        [HttpGet("EditProfile")]
+        public async Task<IActionResult> EditProfile()
+        {
+            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Lấy thông tin user hiện tại
+            var userResponse = await _userService.GetUserByIdAsync(userId);
+            if (userResponse == null) return NotFound();
+
+            // Map từ Response sang UpdateDto để đổ dữ liệu vào Form
+            var updateDto = _mapper.Map<UserUpdateDto>(userResponse);
+
+            return View(updateDto);
+        }
+
+        [HttpPost("EditProfile")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProfile(UserUpdateDto updateDto)
+        {
+            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Gán lại ID cho DTO đề phòng DTO yêu cầu trường Id phải có dữ liệu
+            updateDto.Id = userId;
+
+            // ---- THÊM ĐOẠN DEBUG NÀY ----
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine(">>> LỖI VALIDATION TẠI EDIT PROFILE: " + string.Join(", ", errors));
+
+                return View(updateDto);
+            }
+            // -----------------------------
+
+            try
+            {
+                var result = await _userService.UpdateUserProfileAsync(userId, updateDto);
+
+                if (result)
+                {
+                    TempData["Success"] = "Cập nhật thông tin cá nhân thành công!";
+                    return RedirectToAction(nameof(Profile));
+                }
+
+                ModelState.AddModelError("", "Cập nhật thất bại. Vui lòng thử lại.");
+                return View(updateDto);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Lỗi hệ thống: " + ex.Message);
+                return View(updateDto);
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
-using DormitoryManagement.Application.Dtos.Responses.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Enums;
@@ -34,24 +33,19 @@ namespace DormitoryManagement.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index(RoomFilterRequest filter)
         {
-            // 1. Thiết lập phân trang mặc định
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
             filter.PageSize = 5;
 
-            // 2. Lấy danh sách phòng đã phân trang từ Service
             var pagedRooms = await _roomService.GetPagedRoomsAsync(filter);
 
-            // 3. Lấy thông số thống kê thực tế từ database
             var stats = await _roomService.GetRoomStatisticsAsync();
             ViewBag.TotalRooms = stats.TotalRooms;
             ViewBag.AvailableRooms = stats.AvailableRooms;
             ViewBag.OccupiedRooms = stats.OccupiedRooms;
             ViewBag.MaintenanceRooms = stats.MaintenanceRooms;
 
-            // 4. Load các Dropdown (Tòa nhà, Loại phòng, Trạng thái)
             await PopulateDropdownsAsync(filter.BlockId, filter.RoomTypeId);
 
-            // 5. Gán filter vào ViewBag để View giữ trạng thái các ô Search/Filter
             ViewBag.Filter = filter;
 
             return View(pagedRooms);
@@ -67,7 +61,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Create")]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> CreateAsync()
         {
             await PopulateDropdownsAsync();
             var model = new CreateRoomRequest { Status = RoomStatus.Available, Floor = 1 };
@@ -88,15 +82,19 @@ namespace DormitoryManagement.Controllers
                         TempData["Success"] = "Thêm phòng mới thành công!";
                         return RedirectToAction(nameof(Index));
                     }
-                    ModelState.AddModelError("", "Không thể tạo phòng.");
+
+                    ModelState.AddModelError("", "Không thể tạo phòng. Vui lòng kiểm tra lại.");
                 }
                 catch (Exception ex)
                 {
                     TempData["Error"] = ex.Message;
+                    ModelState.AddModelError("", ex.Message);
                 }
             }
 
-            await PopulateDropdownsAsync(request.BlockId, request.RoomTypeId);
+            ViewBag.Blocks = new SelectList(await _blockService.GetAllBlocksAsync(), "Id", "BlockName", request.BlockId);
+            ViewBag.RoomTypes = new SelectList(await _roomTypeService.GetAllRoomTypesAsync(), "Id", "TypeName", request.RoomTypeId);
+
             return View(request);
         }
 
@@ -143,16 +141,25 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _roomService.DeleteRoomAsync(id);
-            if (result) return Json(new { success = true, message = "Đã chuyển phòng vào thùng rác." });
-            return Json(new { success = false, message = "Xóa thất bại." });
+            try
+            {
+                var result = await _roomService.DeleteRoomAsync(id);
+
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đã chuyển phòng vào thùng rác." });
+                }
+
+                return Json(new { success = false, message = "Xóa thất bại. Vui lòng thử lại." });
+            }
+            catch (Exception ex)
+            {
+                // Trả về thông báo lỗi cụ thể từ Service (ví dụ: "Không thể xóa phòng đang có sinh viên cư trú")
+                return Json(new { success = false, message = ex.Message });
+            }
         }
-
-        // --- CÁC PHƯƠNG THỨC BỔ TRỢ ---
-
         private async Task PopulateDropdownsAsync(Guid? selectedBlock = null, Guid? selectedType = null)
         {
-            // Lấy dữ liệu từ các service tương ứng
             var blocks = await _blockService.GetAllBlocksAsync();
             var roomTypes = await _roomTypeService.GetAllRoomTypesAsync();
 
@@ -177,6 +184,61 @@ namespace DormitoryManagement.Controllers
                 }).ToList();
 
             ViewBag.Statuses = new SelectList(statusItems, "Value", "Text");
+        }
+
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(RoomFilterRequest filter)
+        {
+            // 1. Đảm bảo các giá trị mặc định cho phân trang
+            filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
+            filter.PageSize = 5; // Cùng kích thước với trang Index
+
+            // 2. Gọi service với object filter (Service sẽ tự lọc theo filter.SearchTerm)
+            var deletedRooms = await _roomService.GetDeletedRoomsPagedAsync(filter);
+
+            // 3. Gán lại filter vào ViewBag để giữ giá trị trong ô tìm kiếm trên View
+            ViewBag.Filter = filter;
+
+            return View(deletedRooms);
+        }
+
+        // Thêm hành động Khôi phục phòng
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            try
+            {
+                var result = await _roomService.RestoreRoomAsync(id);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Khôi phục phòng thành công!" });
+                }
+                return Json(new { success = false, message = "Không thể khôi phục phòng này." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            try
+            {
+                var result = await _roomService.DeletePermanentlyAsync(id);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Phòng đã bị xóa vĩnh viễn khỏi hệ thống." });
+                }
+                return Json(new { success = false, message = "Xóa vĩnh viễn thất bại." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using DormitoryManagement.Application.Dtos.Requests;
+using AutoMapper;
+using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Dtos.Responses;
 using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ quản lý người dùng (UserService).
+    /// </summary>
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
@@ -18,7 +21,13 @@ namespace DormitoryManagement.Application.Services.Implements
         private readonly IMapper _mapper;
         private readonly UserManager<User> _userManager;
 
-
+        /// <summary>
+        /// Khởi tạo UserService.
+        /// </summary>
+        /// <param name="userRepository">Repository người dùng</param>
+        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
+        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
+        /// <param name="userManager">Bộ quản lý người dùng từ ASP.NET Core Identity</param>
         public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
         {
             _userRepository = userRepository;
@@ -29,6 +38,9 @@ namespace DormitoryManagement.Application.Services.Implements
 
         // ================= QUERY (Đọc dữ liệu) =================
 
+        /// <summary>
+        /// Lấy danh sách người dùng đang hoạt động phân trang và tìm kiếm.
+        /// </summary>
         public async Task<PagedResult<UserResponseDto>> GetActiveUsersPagedAsync(int page, int pageSize, string? search)
         {
             var result = await _userRepository.GetByStatusPagedAsync(
@@ -45,6 +57,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
+        /// <summary>
+        /// Lấy danh sách người dùng bị khóa (Ban) phân trang và tìm kiếm.
+        /// </summary>
         public async Task<PagedResult<UserResponseDto>> GetBannedUsersPagedAsync(int page, int pageSize, string? search)
         {
             var result = await _userRepository.GetByStatusPagedAsync(
@@ -57,6 +72,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
+        /// <summary>
+        /// Lấy danh sách người dùng đã bị xóa mềm phân trang và tìm kiếm.
+        /// </summary>
         public async Task<PagedResult<UserResponseDto>> GetDeletedUsersPagedAsync(int page, int pageSize, string? search)
         {
             var result = await _userRepository.GetByStatusPagedAsync(
@@ -69,12 +87,18 @@ namespace DormitoryManagement.Application.Services.Implements
             return result.MapToPagedResult<User, UserResponseDto>(_mapper);
         }
 
+        /// <summary>
+        /// Lấy chi tiết thông tin người dùng theo Id.
+        /// </summary>
         public async Task<UserResponseDto?> GetUserByIdAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
             return _mapper.Map<UserResponseDto>(user);
         }
 
+        /// <summary>
+        /// Lấy thông tin người dùng theo tên tài khoản (Username).
+        /// </summary>
         public async Task<UserResponseDto?> GetByUsernameAsync(string username)
         {
             var user = await _userManager.FindByNameAsync(username);
@@ -83,6 +107,9 @@ namespace DormitoryManagement.Application.Services.Implements
 
         // ================= COMMAND (Thay đổi dữ liệu) =================
 
+        /// <summary>
+        /// Tạo mới một người dùng (sử dụng UserManager để mã hóa mật khẩu và tạo user).
+        /// </summary>
         public async Task<bool> CreateUserAsync(UserRequestDto userDto)
         {
             var user = _mapper.Map<User>(userDto);
@@ -106,6 +133,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return true;
         }
 
+        /// <summary>
+        /// Tạo hàng loạt nhiều người dùng.
+        /// </summary>
         public async Task<bool> CreateUsersAsync(IEnumerable<UserRequestDto> userDtos)
         {
             var users = _mapper.Map<IEnumerable<User>>(userDtos);
@@ -114,12 +144,14 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
-        public async Task<bool> UpdateUserProfileAsync(Guid id, UserRequestDto userDto)
+        /// <summary>
+        /// Cập nhật thông tin hồ sơ của người dùng bao gồm cả đặt lại mật khẩu nếu có.
+        /// </summary>
+        public async Task<bool> UpdateUserProfileAsync(Guid id, UserUpdateDto userDto)
         {
-            var existingUser = await _userRepository.GetByIdAsync(id);
+            var existingUser = await _userManager.FindByIdAsync(id.ToString());
             if (existingUser == null) return false;
 
-            // Chỉ map những trường được phép sửa
             existingUser.FullName = userDto.FullName;
             existingUser.Email = userDto.Email;
             existingUser.PhoneNumber = userDto.PhoneNumber;
@@ -128,12 +160,22 @@ namespace DormitoryManagement.Application.Services.Implements
             existingUser.Role = userDto.Role;
             existingUser.LastModified = DateTime.Now;
 
-            // Cập nhật qua Repository
-            await _userRepository.UpdateAsync(existingUser);
-            var result = await _unitOfWork.SaveChangesAsync();
-            return result > 0;
+            if (!string.IsNullOrEmpty(userDto.NewPassword))
+            {
+                var removeResult = await _userManager.RemovePasswordAsync(existingUser);
+                if (removeResult.Succeeded)
+                {
+                    await _userManager.AddPasswordAsync(existingUser, userDto.NewPassword);
+                }
+            }
+
+            var result = await _userManager.UpdateAsync(existingUser);
+            return result.Succeeded;
         }
 
+        /// <summary>
+        /// Bật/Tắt trạng thái hoạt động của người dùng (kết hợp thiết lập khóa tài khoản lockout).
+        /// </summary>
         public async Task<bool> ToggleUserStatusAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -156,6 +198,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result.Succeeded;
         }
 
+        /// <summary>
+        /// Khóa (Ban) người dùng.
+        /// </summary>
         public async Task<bool> BanUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -167,6 +212,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
+        /// <summary>
+        /// Mở khóa (Unban) người dùng.
+        /// </summary>
         public async Task<bool> UnbanUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -180,6 +228,9 @@ namespace DormitoryManagement.Application.Services.Implements
 
         // ================= DELETE & RESTORE =================
 
+        /// <summary>
+        /// Xóa mềm một người dùng (IsDeleted = true).
+        /// </summary>
         public async Task<bool> DeactivateUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -190,6 +241,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
+        /// <summary>
+        /// Xóa mềm nhiều người dùng cùng lúc.
+        /// </summary>
         public async Task<bool> DeactivateUsersAsync(IEnumerable<Guid> ids)
         {
             var users = await _userRepository.FindAsync(u => ids.Contains(u.Id));
@@ -200,6 +254,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
+        /// <summary>
+        /// Khôi phục một người dùng đã bị xóa mềm.
+        /// </summary>
         public async Task<bool> RestoreUserAsync(Guid id)
         {
             var user = await _userRepository.GetByIdAsync(id);
@@ -210,6 +267,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
+        /// <summary>
+        /// Khôi phục nhiều người dùng cùng lúc.
+        /// </summary>
         public async Task<bool> RestoreUsersAsync(IEnumerable<Guid> ids)
         {
             var users = await _userRepository.FindAsync(u => ids.Contains(u.Id));
@@ -221,6 +281,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return result > 0;
         }
 
+        /// <summary>
+        /// Xóa vĩnh viễn người dùng khỏi hệ thống thông qua UserManager.
+        /// </summary>
         public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -240,11 +303,17 @@ namespace DormitoryManagement.Application.Services.Implements
 
         // ================= VALIDATION =================
 
+        /// <summary>
+        /// Kiểm tra tên tài khoản đã tồn tại hay chưa.
+        /// </summary>
         public async Task<bool> IsUsernameExistAsync(string username)
         {
             return await _userRepository.AnyAsync(u => u.UserName == username);
         }
 
+        /// <summary>
+        /// Kiểm tra địa chỉ email đã tồn tại hay chưa.
+        /// </summary>
         public async Task<bool> IsEmailExistAsync(string email)
         {
             return !await _userRepository.IsEmailUniqueAsync(email);

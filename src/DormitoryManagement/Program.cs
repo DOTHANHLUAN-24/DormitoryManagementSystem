@@ -27,9 +27,7 @@ internal class Program
         builder.Services.AddControllersWithViews();
 
         // Mail settings
-        builder.Services.Configure<MailSettings>(
-            builder.Configuration.GetSection("MailSettings"));
-
+        builder.Services.Configure<dynamic>(builder.Configuration.GetSection("MailSettings"));
         builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
         // Repositories
@@ -39,8 +37,11 @@ internal class Program
         builder.Services.AddScoped<IContractRepository, ContractRepository>();
         builder.Services.AddScoped<IBlockRepository, BlockRepository>();
         builder.Services.AddScoped<IRoomTypeRepository, RoomTypeRepository>();
-
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+        builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        builder.Services.AddScoped<IAssetRepository, AssetRepository>();
+        builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
+        builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
@@ -49,7 +50,9 @@ internal class Program
         builder.Services.AddScoped<IContractService, ContractService>();
         builder.Services.AddScoped<IBlockService, BlockService>();
         builder.Services.AddScoped<IBedService, BedService>();
+        builder.Services.AddScoped<IViolationService, ViolationService>();
         builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
+        builder.Services.AddScoped<IAssetService, AssetService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

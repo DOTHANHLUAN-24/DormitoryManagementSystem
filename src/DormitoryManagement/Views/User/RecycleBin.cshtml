@@ -2,30 +2,50 @@
 @using DormitoryManagement.Application.Dtos.Responses
 @model PagedResult<DormitoryManagement.Application.Dtos.Responses.UserResponseDto>
 
+@{
+    ViewData["Title"] = "Thùng rác người dùng";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-header-back { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-header-back:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); color: #1e293b !important; background: #f8fafc; }
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
+        .badge-username { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
+        .nut-khoi-phuc { background: #ecfdf5; color: #10b981; }
+        .nut-xoa-vinh-vien { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    </style>
+}
+
 @Html.AntiForgeryToken()
 
 <div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="text-danger mb-0"><i class="fas fa-trash-alt me-2"></i> Thùng rác người dùng</h4>
-            <p class="text-muted small mb-0">Danh sách tài khoản đã bị xóa tạm thời.</p>
+            <h1 class="tieu-de-trang mb-1"><i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác người dùng</h1>
+            <p class="text-muted small mb-0 ms-1 fw-medium">Danh sách tài khoản đã bị xóa tạm thời.</p>
         </div>
-        <a asp-action="Index" class="btn btn-outline-primary btn-sm">
-            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
-        </a>
-    </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-custom-header btn-header-back text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Danh sách người dùng
+            </a>
+        </div>
+    </header>
 
-    @* Bảng *@
-    <div class="card border-0 shadow-sm">
+    <div class="card card-custom mb-4">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-3">Tên đăng nhập</th>
-                        <th>Họ và tên</th>
-                        <th>Email</th>
-                        <th>Ngày xóa</th>
-                        <th class="text-end pe-3">Hành động</th>
+                        <th class="ps-4 py-3">Tên đăng nhập</th>
+                        <th class="py-3">Họ và tên</th>
+                        <th class="py-3">Email</th>
+                        <th class="py-3">Ngày xóa</th>
+                        <th class="text-end pe-4 py-3">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -34,17 +54,21 @@
                         foreach (var item in Model.Items)
                         {
                             <tr>
-                                <td class="ps-3"><strong>@item.UserName</strong></td>
-                                <td>@item.FullName</td>
-                                <td>@item.Email</td>
-                                <td><span class="text-muted">@item.LastModified?.ToString("dd/MM/yyyy HH:mm")</span></td>
-                                <td class="text-end pe-3">
-                                    <div class="btn-group">
-                                        <button onclick="restoreUser('@item.Id')" class="btn btn-sm btn-light text-success" title="Khôi phục">
-                                            <i class="fas fa-undo"></i> Khôi phục
+                                <td class="ps-4 py-3"><span class="badge-username">@item.UserName</span></td>
+                                <td><div class="fw-bold text-dark">@item.FullName</div></td>
+                                <td><span class="text-muted small">@item.Email</span></td>
+                                <td>
+                                    <span class="text-muted small">
+                                        <i class="far fa-clock me-1"></i> @(item.LastModified?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button onclick="restoreUser('@item.Id', '@item.UserName')" class="nut-hanh-dong nut-khoi-phuc" title="Khôi phục">
+                                            <i class="fas fa-undo"></i>
                                         </button>
-                                        <button onclick="deletePermanently('@item.Id')" class="btn btn-sm btn-light text-danger" title="Xóa vĩnh viễn">
-                                            <i class="fas fa-eraser"></i>
+                                        <button onclick="deletePermanently('@item.Id', '@item.UserName')" class="nut-hanh-dong nut-xoa-vinh-vien" title="Xóa vĩnh viễn">
+                                            <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -54,9 +78,11 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="fas fa-folder-open fa-3x mb-3 d-block opacity-25"></i>
-                                Thùng rác trống
+                            <td colspan="5" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-folder-open fa-3x mb-3 d-block opacity-25"></i>
+                                    <p class="mb-0 fw-medium">Thùng rác đang trống</p>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -65,7 +91,13 @@
         </div>
     </div>
 
-    @await Html.PartialAsync("_Pagination", Model)
+    <!-- PHÂN TRANG -->
+    @if (Model.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-center">
+            @await Html.PartialAsync("_Pagination", Model)
+        </div>
+    }
 </div>
 
 @section Scripts {
@@ -73,61 +105,77 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Lấy token dùng chung cho các request
+        // Lấy token dùng chung cho các request (Đồng bộ với Room Index)
         function getAntiforgeryToken() {
             return $('input[name="__RequestVerificationToken"]').val();
         }
 
-        // Hàm Khôi phục
-        function restoreUser(id) {
+        // Khôi phục tài khoản đã bị xóa mềm
+        function restoreUser(id, userName) {
             Swal.fire({
-                title: 'Khôi phục người dùng?',
-                text: "Tài khoản này sẽ quay lại danh sách hoạt động.",
+                title: 'Khôi phục tài khoản?',
+                html: "Tài khoản <b>" + userName + "</b> sẽ quay lại danh sách hoạt động.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745',
-                confirmButtonText: 'Đồng ý',
-                cancelButtonText: 'Hủy'
+                confirmButtonColor: '#10b981', // Màu xanh lục đồng bộ UI
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-undo me-1"></i> Đồng ý',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
                     $.ajax({
                         url: '/User/Restore/' + id,
                         type: 'POST',
-                        headers: { "RequestVerificationToken": getAntiforgeryToken() },
+                        data: { __RequestVerificationToken: getAntiforgeryToken() },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire('Thành công', res.message, 'success').then(() => location.reload());
+                                Swal.fire({ icon: 'success', title: 'Thành công!', text: res.message, timer: 1500, showConfirmButton: false })
+                                    .then(() => location.reload());
                             } else {
-                                Swal.fire('Lỗi', res.message, 'error');
+                                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message, confirmButtonColor: '#4f46e5' });
                             }
+                        },
+                        error: function () {
+                            Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối đến máy chủ.' });
                         }
                     });
                 }
             });
         }
 
-        // Hàm Xóa vĩnh viễn
-        function deletePermanently(id) {
+        // Xóa vĩnh viễn tài khoản đã bị xóa mềm
+        function deletePermanently(id, userName) {
             Swal.fire({
-                title: 'XÁC NHẬN XÓA VĨNH VIỄN?',
-                text: "Dữ liệu này sẽ mất hoàn toàn và không thể khôi phục lại!",
+                title: 'Xóa vĩnh viễn?',
+                html: "Tài khoản <b>" + userName + "</b> sẽ bị xóa hoàn toàn. <br/> <span class='text-danger'>Hành động này không thể hoàn tác!</span>",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                confirmButtonText: 'Xóa vĩnh viễn',
-                cancelButtonText: 'Hủy'
+                confirmButtonColor: '#ef4444', // Màu đỏ đồng bộ UI
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Xóa vĩnh viễn',
+                cancelButtonText: 'Hủy',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
                     $.ajax({
                         url: '/User/DeletePermanently/' + id,
                         type: 'POST',
-                        headers: { "RequestVerificationToken": getAntiforgeryToken() },
+                        data: { __RequestVerificationToken: getAntiforgeryToken() },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire('Đã xóa!', res.message, 'success').then(() => location.reload());
+                                Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
+                                    .then(() => location.reload());
                             } else {
-                                Swal.fire('Lỗi', res.message, 'error');
+                                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message, confirmButtonColor: '#4f46e5' });
                             }
+                        },
+                        error: function () {
+                            Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối đến máy chủ.' });
                         }
                     });
                 }

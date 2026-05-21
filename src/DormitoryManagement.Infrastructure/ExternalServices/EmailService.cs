@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Application.Common.Configurations;
+using DormitoryManagement.Application.Common.Configurations;
 using DormitoryManagement.Application.Services.Interfaces;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -7,11 +7,17 @@ using MimeKit;
 
 namespace DormitoryManagement.Infrastructure.ExternalServices
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ gửi Email thông qua giao thức SMTP (EmailService).
+    /// </summary>
     public class EmailService : IEmailService
     {
         private readonly MailSettings _mailSettings;
 
-        // Đọc cấu hình trực tiếp từ IConfiguration (Cách này đảm bảo 100% đọc được JSON mà không cần cấu hình Program.cs)
+        /// <summary>
+        /// Khởi tạo EmailService và đọc cấu hình từ appsettings.json.
+        /// </summary>
+        /// <param name="config">Cấu hình hệ thống IConfiguration</param>
         public EmailService(IConfiguration config)
         {
             _mailSettings = new MailSettings
@@ -24,6 +30,12 @@ namespace DormitoryManagement.Infrastructure.ExternalServices
             };
         }
 
+        /// <summary>
+        /// Gửi email không đồng bộ đến địa chỉ người nhận.
+        /// </summary>
+        /// <param name="toEmail">Địa chỉ email người nhận</param>
+        /// <param name="subject">Tiêu đề email</param>
+        /// <param name="htmlMessage">Nội dung email dạng HTML</param>
         public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
         {
             // Kiểm tra nếu Mail hoặc Host vẫn trống thì báo lỗi đích danh

@@ -1,4 +1,3 @@
-﻿using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
@@ -6,38 +5,50 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
+    /// <summary>
+    /// Lớp triển khai Repository quản lý thông tin tòa nhà (Block).
+    /// </summary>
     public class BlockRepository : BaseRepository<Block>, IBlockRepository
     {
-        public BlockRepository(ApplicationDbContext db) : base(db) { }
+        /// <summary>
+        /// Khởi tạo BlockRepository.
+        /// </summary>
+        /// <param name="db">ApplicationDbContext kết nối database</param>
+        public BlockRepository(ApplicationDbContext db) : base(db)
+        {
+        }
 
+        /// <summary>
+        /// Lấy thông tin tòa nhà kèm theo danh sách phòng chưa bị xóa.
+        /// </summary>
+        /// <param name="id">Id của tòa nhà</param>
+        /// <returns>Tòa nhà kèm danh sách phòng, ngược lại là null</returns>
         public async Task<Block?> GetBlockWithRoomsAsync(Guid id)
         {
             return await _dbSet
-                .AsNoTracking()
-                .Include(b => b.Rooms.Where(r => !r.IsDeleted)) // Chỉ lấy các phòng chưa bị xóa
+                .Include(b => b.Rooms.Where(r => !r.IsDeleted)) // Chỉ lấy các phòng chưa xóa
                 .FirstOrDefaultAsync(b => b.Id == id && !b.IsDeleted);
         }
 
+        /// <summary>
+        /// Kiểm tra tên tòa nhà đã tồn tại chưa (để tránh trùng lặp khi thêm/sửa).
+        /// Chỉ kiểm tra các tòa nhà chưa bị xóa mềm.
+        /// </summary>
+        /// <param name="blockName">Tên tòa nhà cần kiểm tra</param>
+        /// <param name="excludeId">Id tòa nhà loại trừ khi kiểm tra (dùng cho cập nhật, tùy chọn)</param>
+        /// <returns>True nếu tên tòa nhà đã tồn tại, ngược lại là False</returns>
         public async Task<bool> IsBlockNameExistsAsync(string blockName, Guid? excludeId = null)
         {
-            return await _dbSet.AnyAsync(b =>
-                b.BlockName.ToLower() == blockName.ToLower() &&
-                b.Id != excludeId &&
-                !b.IsDeleted);
-        }
+            var query = _dbSet
+                .AsNoTracking()
+                .Where(x => !x.IsDeleted && x.BlockName.ToLower() == blockName.ToLower());
 
-        public async Task<PagedResult<Block>> SearchBlocksAsync(string searchTerm, int pageIndex, int pageSize)
-        {
-            // Tận dụng hàm GetByStatusPagedAsync đã có ở BaseRepository của bạn
-            return await GetByStatusPagedAsync(
-                pageIndex,
-                pageSize,
-                isActive: null, // Lấy cả active và inactive
-                isDeleted: false,
-                predicate: b => string.IsNullOrEmpty(searchTerm) ||
-                                b.BlockName.Contains(searchTerm) ||
-                                b.Description.Contains(searchTerm)
-            );
+            if (excludeId.HasValue)
+            {
+                query = query.Where(x => x.Id != excludeId.Value);
+            }
+
+            return await query.AnyAsync();
         }
     }
 }
