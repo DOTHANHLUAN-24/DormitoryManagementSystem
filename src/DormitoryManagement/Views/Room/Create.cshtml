@@ -2,131 +2,162 @@
 @using DormitoryManagement.Domain.Enums
 
 @{
-    ViewData["Title"] = "Thêm phòng mới";
-    Layout = "_Layout";
+    ViewData["Title"] = "Thêm Phòng Mới";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-9">
-            <div class="card border-0 shadow-lg" style="border-radius: 20px;">
-                <div class="card-header bg-primary bg-gradient text-white py-3" style="border-radius: 20px 20px 0 0;">
-                    <h5 class="mb-0">
-                        <i class="fas fa-plus-circle me-2"></i>Thêm phòng mới
-                    </h5>
-                </div>
-                <div class="card-body p-5">
-                    <form asp-action="Create" method="post">
-                        @* Hiển thị lỗi tổng quát nếu có *@
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; }
+        
+        .form-control, .form-select { border-radius: 10px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        
+        .input-group-text { border-radius: 10px 0 0 10px; border: 1px solid #e2e8f0; border-right: none; background-color: #f8fafc; color: #64748b; }
+        .input-group .form-control { border-radius: 0 10px 10px 0; }
+        
+        .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px; }
+        
+        .nut-luu { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; background: #4f46e5; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .nut-luu:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        
+        .nut-huy { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-huy:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
 
-                        <div class="row g-4">
-                            <!-- Số phòng -->
-                            <div class="col-md-6">
-                                <label asp-for="RoomNumber" class="form-label fw-bold">Số phòng</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="fas fa-door-open"></i></span>
-                                    <input asp-for="RoomNumber" class="form-control" placeholder="Ví dụ: 101, 202..." />
-                                </div>
-                                <span asp-validation-for="RoomNumber" class="text-danger small"></span>
-                            </div>
+        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+    </style>
+}
 
-                            <!-- Tầng -->
-                            <div class="col-md-6">
-                                <label asp-for="Floor" class="form-label fw-bold">Tầng</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-light"><i class="fas fa-layer-group"></i></span>
-                                    <input asp-for="Floor" class="form-control" type="number" />
-                                </div>
-                                <span asp-validation-for="Floor" class="text-danger small"></span>
-                            </div>
+<div class="container-fluid max-w-7xl mx-auto">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Thêm Phòng Mới
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
 
-                            <!-- Tòa nhà (Block) -->
-                            <div class="col-md-6">
-                                <label asp-for="BlockId" class="form-label fw-bold">Tòa nhà</label>
-                                <select asp-for="BlockId" asp-items="ViewBag.Blocks" class="form-select">
-                                    <option value="">-- Chọn tòa nhà --</option>
-                                </select>
-                                <span asp-validation-for="BlockId" class="text-danger small"></span>
-                            </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    @* Khu vực hiển thị lỗi tổng quát từ ModelState *@
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-                            <!-- Loại phòng (RoomType) -->
-                            <div class="col-md-6">
-                                <label asp-for="RoomTypeId" class="form-label fw-bold">Loại phòng</label>
-                                <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="form-select">
-                                    <option value="">-- Chọn loại phòng --</option>
-                                </select>
-                                <span asp-validation-for="RoomTypeId" class="text-danger small"></span>
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="RoomNumber" class="form-label">Số phòng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-door-open"></i></span>
+                                <input asp-for="RoomNumber" class="form-control" placeholder="Ví dụ: 101, 202..." autocomplete="off" />
                             </div>
-
-                            <!-- Trạng thái -->
-                            <div class="col-md-12">
-                                <label asp-for="Status" class="form-label fw-bold">Trạng thái ban đầu</label>
-                                <select asp-for="Status" asp-items="Html.GetEnumSelectList<RoomStatus>()" class="form-select"></select>
-                                <span asp-validation-for="Status" class="text-danger small"></span>
-                            </div>
+                            <span asp-validation-for="RoomNumber" class="text-danger small mt-1 d-block"></span>
                         </div>
 
-                        <hr class="my-4">
-
-                        <div class="d-flex justify-content-between">
-                            @* Nút Hủy bỏ quay lại trang danh sách *@
-                            <a asp-action="Index" class="btn btn-outline-secondary px-4" style="border-radius: 10px;">
-                                <i class="fas fa-arrow-left me-1"></i> Quay lại
-                            </a>
-                            @* Nút Submit *@
-                            <button type="submit" class="btn btn-primary px-5 shadow-sm" style="border-radius: 10px;">
-                                <i class="fas fa-save me-1"></i> Lưu thông tin
-                            </button>
+                        <div class="col-md-6">
+                            <label asp-for="Floor" class="form-label">Tầng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+                                <input asp-for="Floor" class="form-control" type="number" min="1" placeholder="Nhập số tầng..." />
+                            </div>
+                            <span asp-validation-for="Floor" class="text-danger small mt-1 d-block"></span>
                         </div>
-                    </form>
-                </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="BlockId" class="form-label">Tòa nhà trực thuộc <span class="text-danger">*</span></label>
+                            <select asp-for="BlockId" asp-items="ViewBag.Blocks" class="form-select">
+                                <option value="">-- Vui lòng chọn tòa nhà --</option>
+                            </select>
+                            <span asp-validation-for="BlockId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="RoomTypeId" class="form-label">Loại phòng <span class="text-danger">*</span></label>
+                            <select asp-for="RoomTypeId" asp-items="ViewBag.RoomTypes" class="form-select">
+                                <option value="">-- Vui lòng chọn loại phòng --</option>
+                            </select>
+                            <span asp-validation-for="RoomTypeId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label asp-for="Status" class="form-label">Trạng thái phòng <span class="text-danger">*</span></label>
+                            <select asp-for="Status" asp-items="Html.GetEnumSelectList<RoomStatus>()" class="form-select"></select>
+                            <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="nut-luu">
+                            <i class="fas fa-save"></i> Lưu thông tin phòng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Lưu ý khi tạo phòng</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li><strong>Số phòng:</strong> Đặt theo định dạng gợi nhớ, ví dụ Tầng 1 thì phòng là 101, 102. Tên phòng phải là duy nhất.</li>
+                    <li><strong>Loại phòng:</strong> Quyết định giá tiền và sức chứa sinh viên tối đa của phòng.</li>
+                    <li><strong>Trạng thái:</strong> Mặc định nên chọn "Available" (Trống) để sinh viên có thể đăng ký.</li>
+                </ul>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
-    <!-- SweetAlert2 CDN -->
+    <partial name="_ValidationScriptsPartial" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function () {
-            // Kiểm tra thông báo thành công từ TempData
-            var successMsg = '@TempData["SuccessMessage"]';
+            // CÁCH NÀY FIX 100% LỖI TIẾNG VIỆT VÀ DẤU NHÁY:
+            // Lấy thẳng dữ liệu từ C# render thành biến JS chuẩn
+            var successMsg = @Html.Raw(Json.Serialize(TempData["Success"]));
+            var errorMsg = @Html.Raw(Json.Serialize(TempData["Error"]));
+
             if (successMsg) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Thành công!',
                     text: successMsg,
-                    confirmButtonText: 'Đồng ý',
-                    confirmButtonColor: '#0d6efd',
-                    timer: 3000,
+                    showConfirmButton: false,
+                    timer: 2500,
                     timerProgressBar: true
                 });
             }
 
-            // Kiểm tra thông báo lỗi từ TempData
-            var errorMsg = '@TempData["ErrorMessage"]';
             if (errorMsg) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Đã xảy ra lỗi!',
                     text: errorMsg,
-                    confirmButtonText: 'Thử lại',
+                    confirmButtonText: 'Đã hiểu',
                     confirmButtonColor: '#dc3545'
                 });
             }
 
-            // (Tùy chọn) Xác nhận trước khi gửi form
+            // Hiệu ứng Loading
             $('form').submit(function (e) {
-                if ($(this).valid()) { // Kiểm tra nếu validation client-side đã qua
-                    // Có thể thêm hiệu ứng loading nếu muốn
+                if ($(this).valid()) { 
                     Swal.fire({
-                        title: 'Đang xử lý...',
-                        text: 'Vui lòng chờ trong giây lát',
+                        title: 'Đang lưu dữ liệu...',
+                        html: 'Vui lòng chờ trong giây lát',
                         allowOutsideClick: false,
                         didOpen: () => {
                             Swal.showLoading();

@@ -1,4 +1,4 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Dtos.Responses.Rooms;
@@ -12,12 +12,21 @@ using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 
 namespace DormitoryManagement.Application.Services
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ quản lý phòng (RoomService).
+    /// </summary>
     public class RoomService : IRoomService
     {
         private readonly IRoomRepository _roomRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Khởi tạo RoomService.
+        /// </summary>
+        /// <param name="roomRepository">Repository phòng</param>
+        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
+        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
         public RoomService(
             IRoomRepository roomRepository,
             IUnitOfWork unitOfWork,
@@ -28,7 +37,9 @@ namespace DormitoryManagement.Application.Services
             _mapper = mapper;
         }
 
-        // Đồng bộ cách viết Paged bằng Predicate giống User
+        /// <summary>
+        /// Lấy danh sách phòng phân trang kèm theo bộ lọc nâng cao (tòa nhà, loại phòng, trạng thái, khoảng giá...).
+        /// </summary>
         public async Task<PagedResult<RoomResponse>> GetPagedRoomsAsync(RoomFilterRequest filter)
         {
             var result = await _roomRepository.GetByStatusPagedAsync(
@@ -50,6 +61,9 @@ namespace DormitoryManagement.Application.Services
             return result.MapToPagedResult<Room, RoomResponse>(_mapper);
         }
 
+        /// <summary>
+        /// Lấy danh sách phòng đã xóa mềm phân trang.
+        /// </summary>
         public async Task<PagedResult<RoomResponse>> GetDeletedRoomsPagedAsync(RoomFilterRequest filter)
         {
             var result = await _roomRepository.GetByStatusPagedAsync(
@@ -65,18 +79,27 @@ namespace DormitoryManagement.Application.Services
             return result.MapToPagedResult<Room, RoomResponse>(_mapper);
         }
 
+        /// <summary>
+        /// Lấy chi tiết phòng (kèm theo danh sách giường và các trang thiết bị tài sản) theo Id.
+        /// </summary>
         public async Task<RoomDetailResponse?> GetRoomByIdAsync(Guid id)
         {
             var room = await _roomRepository.GetRoomWithFullDetailsAsync(id);
             return _mapper.Map<RoomDetailResponse>(room);
         }
 
+        /// <summary>
+        /// Lấy danh sách phòng thuộc một tòa cụ thể.
+        /// </summary>
         public async Task<IEnumerable<RoomResponse>> GetRoomsByBlockAsync(Guid blockId)
         {
             var rooms = await _roomRepository.GetRoomsByBlockAsync(blockId);
             return _mapper.Map<IEnumerable<RoomResponse>>(rooms);
         }
 
+        /// <summary>
+        /// Tạo mới một phòng và lưu vào cơ sở dữ liệu.
+        /// </summary>
         public async Task<bool> CreateRoomAsync(CreateRoomRequest request)
         {
             if (await _roomRepository.IsRoomNumberDuplicateAsync(request.RoomNumber, request.BlockId))
@@ -90,6 +113,9 @@ namespace DormitoryManagement.Application.Services
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Cập nhật thông tin phòng.
+        /// </summary>
         public async Task<bool> UpdateRoomAsync(Guid id, UpdateRoomRequest request)
         {
             var room = await _roomRepository.GetByIdAsync(id);
@@ -105,6 +131,9 @@ namespace DormitoryManagement.Application.Services
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Xóa mềm một phòng (chỉ được xóa khi phòng không có sinh viên ở).
+        /// </summary>
         public async Task<bool> DeleteRoomAsync(Guid id)
         {
             var room = await _roomRepository.GetByIdAsync(id);
@@ -118,6 +147,9 @@ namespace DormitoryManagement.Application.Services
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Khôi phục phòng đã bị xóa mềm về hoạt động lại bình thường.
+        /// </summary>
         public async Task<bool> RestoreRoomAsync(Guid id)
         {
             // Lấy trực tiếp từ repo (bao gồm cả trạng thái xóa)
@@ -128,6 +160,9 @@ namespace DormitoryManagement.Application.Services
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Xóa vĩnh viễn phòng khỏi DB.
+        /// </summary>
         public async Task<bool> DeletePermanentlyAsync(Guid id)
         {
             var room = await _roomRepository.GetByIdAsync(id);
@@ -137,6 +172,9 @@ namespace DormitoryManagement.Application.Services
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Lấy thống kê phòng (tổng số phòng, phòng đầy, phòng trống, bảo trì...).
+        /// </summary>
         public async Task<RoomStatisticsDto> GetRoomStatisticsAsync()
         {
             var allRooms = await _roomRepository.GetAllAsync(); // Hoặc dùng IQueryable để tối ưu hiệu năng
@@ -148,6 +186,5 @@ namespace DormitoryManagement.Application.Services
                 MaintenanceRooms = allRooms.Count(r => r.Status == RoomStatus.Maintenance)
             };
         }
-
     }
 }

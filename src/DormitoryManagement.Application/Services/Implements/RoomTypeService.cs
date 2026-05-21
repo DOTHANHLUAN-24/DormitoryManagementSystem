@@ -8,12 +8,21 @@ using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
+    /// <summary>
+    /// Lớp triển khai dịch vụ quản lý loại phòng (RoomTypeService).
+    /// </summary>
     public class RoomTypeService : IRoomTypeService
     {
         private readonly IRoomTypeRepository _roomTypeRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
+        /// <summary>
+        /// Khởi tạo RoomTypeService.
+        /// </summary>
+        /// <param name="roomTypeRepository">Repository loại phòng</param>
+        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
+        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
         public RoomTypeService(IRoomTypeRepository roomTypeRepository, IUnitOfWork unitOfWork, IMapper mapper)
         {
             _roomTypeRepository = roomTypeRepository;
@@ -21,18 +30,27 @@ namespace DormitoryManagement.Application.Services.Implements
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Lấy toàn bộ danh sách các loại phòng hiện có trong hệ thống.
+        /// </summary>
         public async Task<IEnumerable<RoomTypeResponseDto>> GetAllRoomTypesAsync()
         {
             var types = await _roomTypeRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<RoomTypeResponseDto>>(types);
         }
 
+        /// <summary>
+        /// Lấy chi tiết thông tin loại phòng theo Id.
+        /// </summary>
         public async Task<RoomTypeResponseDto?> GetRoomTypeByIdAsync(Guid id)
         {
             var type = await _roomTypeRepository.GetByIdAsync(id);
             return _mapper.Map<RoomTypeResponseDto>(type);
         }
 
+        /// <summary>
+        /// Tạo mới một loại phòng.
+        /// </summary>
         public async Task<bool> CreateRoomTypeAsync(RoomTypeRequestDto request)
         {
             if (await _roomTypeRepository.IsTypeNameDuplicateAsync(request.TypeName))
@@ -43,6 +61,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Cập nhật thông tin loại phòng.
+        /// </summary>
         public async Task<bool> UpdateRoomTypeAsync(Guid id, RoomTypeRequestDto request)
         {
             var type = await _roomTypeRepository.GetByIdAsync(id);
@@ -56,6 +77,9 @@ namespace DormitoryManagement.Application.Services.Implements
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
+        /// <summary>
+        /// Xóa mềm một loại phòng khỏi hệ thống (chỉ xóa được khi không có phòng nào đang sử dụng loại phòng này).
+        /// </summary>
         public async Task<bool> DeleteRoomTypeAsync(Guid id)
         {
             var type = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);

@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using System.Text;
-using DormitoryManagement.Application.Common.Configurations;
 using DormitoryManagement.Application.Interfaces;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services;
@@ -43,7 +42,6 @@ internal class Program
         builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
         builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
 
-
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
@@ -53,7 +51,7 @@ internal class Program
         builder.Services.AddScoped<IBedService, BedService>();
         builder.Services.AddScoped<IViolationService, ViolationService>();
         builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
-
+        builder.Services.AddScoped<IAssetService, AssetService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

@@ -1,0 +1,176 @@
+@model DormitoryManagement.Application.Dtos.Requests.Users.UserUpdateDto
+
+@{
+    ViewData["Title"] = "Cập nhật thông tin cá nhân";
+}
+
+@section Styles {
+    <style>
+        /* Đồng bộ CSS chung */
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
+        .card-header-custom { background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #1e293b; padding: 1rem 1.5rem; }
+        
+        /* Nút bấm đồng bộ */
+        .btn-custom { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; border: none; }
+        .btn-huy { background: white; color: #64748b; border: 1px solid #e2e8f0; text-decoration: none; }
+        .btn-huy:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); color: #1e293b; background: #f8fafc; }
+        .btn-luu { background: linear-gradient(135deg, #4f46e5, #3b82f6); color: white; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3); }
+        .btn-luu:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.4); color: white; }
+        .btn-upload { background: #e0e7ff; color: #4f46e5; border-radius: 10px; font-weight: 600; padding: 8px 16px; border: none; transition: all 0.2s; }
+        .btn-upload:hover { background: #c7d2fe; transform: translateY(-2px); }
+
+        /* Breadcrumb Custom */
+        .breadcrumb-wrapper { background: #f8fafc; padding: 12px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 1.5rem; }
+        .breadcrumb { margin-bottom: 0; }
+        .breadcrumb-item a { color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .breadcrumb-item a:hover { color: #4f46e5; }
+        .breadcrumb-item.active { color: #1e293b; font-weight: 600; }
+
+        /* Form & Ảnh */
+        .img-account-profile { height: 10rem; width: 10rem; object-fit: cover; border: 4px solid #fff; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        .form-control, .input-group-text { border-radius: 10px; border-color: #e2e8f0; }
+        .form-control:focus { border-color: #a5b4fc; box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.15); }
+        .input-group-text { background-color: #f8fafc; color: #64748b; }
+        
+        /* Fix lỗi bo góc của Bootstrap Input Group khi dùng border-radius custom */
+        .input-group > .input-group-text { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+        .input-group > .form-control { border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    </style>
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-1"><i class="fas fa-user-edit me-2 text-primary"></i> Cập nhật hồ sơ</h1>
+            <p class="text-muted small mb-0 ms-1 fw-medium">Chỉnh sửa thông tin cá nhân của bạn.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" asp-controller="Home" class="btn-custom btn-huy text-decoration-none">
+                <i class="fas fa-home"></i> Về trang chủ
+            </a>
+        </div>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-wrapper">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a asp-action="Profile" asp-controller="User">Hồ sơ cá nhân</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Cập nhật thông tin</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="row">
+        <!-- Cột trái: Ảnh đại diện -->
+        <div class="col-xl-4 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-header-custom">Ảnh đại diện</div>
+                <div class="card-body text-center p-4">
+                    <img class="img-account-profile rounded-circle mb-3" 
+                         src="https://ui-avatars.com/api/?name=@Model.FullName&background=random&size=200" 
+                         alt="Avatar">
+                    
+                    <div class="small font-italic text-muted mb-4">
+                        JPG hoặc PNG không lớn hơn 5 MB
+                    </div>
+                    
+                    <button class="btn-upload" type="button">
+                        <i class="fas fa-camera me-2"></i>Tải ảnh mới
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột phải: Form cập nhật thông tin -->
+        <div class="col-xl-8 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-header-custom">Chi tiết tài khoản</div>
+                <div class="card-body p-4">
+                    <form asp-action="EditProfile" method="post">
+                        
+                        <!-- ================= TRƯỜNG ẨN ================= -->
+                        <!-- Giữ lại Id và UserName để Validation không bị lỗi -->
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="UserName" />
+                        <!-- ============================================== -->
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <!-- Hàng 1: Họ và tên -->
+                        <div class="mb-4">
+                            <label asp-for="FullName" class="small mb-2 fw-bold text-dark">Họ và tên <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <input asp-for="FullName" class="form-control" placeholder="Nhập họ và tên đầy đủ..." />
+                            </div>
+                            <span asp-validation-for="FullName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Hàng 2: Mã số & CCCD -->
+                        <div class="row gx-3 mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label asp-for="Code" class="small mb-2 fw-bold text-dark">Mã số <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                    <input asp-for="Code" class="form-control" placeholder="Nhập mã số (VD: SV001)..." />
+                                    <!-- Nếu muốn sinh viên không được sửa mã số, thêm thuộc tính: readonly="readonly" vào thẻ input trên -->
+                                </div>
+                                <span asp-validation-for="Code" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="IdentityCardNumber" class="small mb-2 fw-bold text-dark">Số CCCD <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input asp-for="IdentityCardNumber" class="form-control" placeholder="Nhập số Căn cước công dân..." />
+                                </div>
+                                <span asp-validation-for="IdentityCardNumber" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hàng 3: Email & Số điện thoại -->
+                        <div class="row gx-3 mb-4">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label asp-for="Email" class="small mb-2 fw-bold text-dark">Địa chỉ Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="small mb-2 fw-bold text-dark">Số điện thoại</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="Nhập số điện thoại..." />
+                                </div>
+                                <span asp-validation-for="PhoneNumber" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+
+                        <hr class="my-4" style="border-color: #e2e8f0;" />
+
+                        <!-- Khu vực nút bấm -->
+                        <div class="d-flex justify-content-end align-items-center gap-3">
+                            <a asp-action="Profile" asp-controller="User" class="btn-custom btn-huy">
+                                Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn-custom btn-luu">
+                                <i class="fas fa-save"></i> Lưu thay đổi
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
