@@ -109,28 +109,25 @@
             }
         </div>
 
-        <!-- Cấp 2: Quản lý vật tư -->
-        @if (isAdminOrManager || isStaff)
-        {
-            <a data-bs-toggle="collapse" href="#assetMenu" class="submenu-toggle-l2 @(isAssetGroup ? "active" : "collapsed")">
-                <span><i class="fas fa-box me-2"></i> Quản lý vật tư</span>
-                <i class="fas fa-chevron-down arrow-icon"></i>
-            </a>
-            <div class="collapse submenu-l3 @(isAssetGroup ? "show" : "")" id="assetMenu">
+        <!-- Cấp 2: Vật tư & Thiết bị -->
+        <a data-bs-toggle="collapse" href="#assetMenu" class="submenu-toggle-l2 @(isAssetGroup ? "active" : "collapsed")">
+            <span><i class="fas fa-box me-2"></i> Vật tư & Thiết bị</span>
+            <i class="fas fa-chevron-down arrow-icon"></i>
+        </a>
+        <div class="collapse submenu-l3 @(isAssetGroup ? "show" : "")" id="assetMenu">
+            @if (isAdminOrManager)
+            {
                 <a asp-controller="Asset" asp-action="Index" class="@(isAssetGroup && currentAction == "Index" ? "active" : "")">
                     Danh sách tài sản
                 </a>
-                @if (isAdminOrManager)
-                {
-                    <a asp-controller="Asset" asp-action="RecycleBin" class="@(isAssetGroup && currentAction == "RecycleBin" ? "active" : "")">
-                        Thùng rác tài sản
-                    </a>
-                }
-                <a asp-controller="Asset" asp-action="Catalog" class="@(isAssetGroup && currentAction == "Catalog" ? "active" : "")">
-                    Danh mục công khai
+                <a asp-controller="Asset" asp-action="RecycleBin" class="@(isAssetGroup && currentAction == "RecycleBin" ? "active" : "")">
+                    Thùng rác tài sản
                 </a>
-            </div>
-        }
+            }
+            <a asp-controller="Asset" asp-action="Catalog" class="@(isAssetGroup && currentAction == "Catalog" ? "active" : "")">
+                Danh mục công khai
+            </a>
+        </div>
     </div>
 
     <!-- ================= DỊCH VỤ KTX ================= -->

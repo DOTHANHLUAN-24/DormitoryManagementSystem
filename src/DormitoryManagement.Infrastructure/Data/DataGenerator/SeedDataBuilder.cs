@@ -21,9 +21,15 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator
             BedDataGenerator.Generate(ctx);
 
             UserDataGenerator.Generate(ctx);
+            VehicleDataGenerator.Generate(ctx);
 
             ContractDataGenerator.Generate(ctx);
             UtilityDataGenerator.Generate(ctx);
+            AssetDataGenerator.Generate(ctx);
+
+            InvoiceDataGenerator.Generate(ctx);
+            MaintenanceRequestDataGenerator.Generate(ctx);
+            ViolationDataGenerator.Generate(ctx);
 
             return ctx;
         }

@@ -5,6 +5,7 @@ using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.AspNetCore.Identity;
@@ -152,6 +153,15 @@ namespace DormitoryManagement.Application.Services.Implements
             var existingUser = await _userManager.FindByIdAsync(id.ToString());
             if (existingUser == null) return false;
 
+            if (existingUser.Role == UserRole.Admin && userDto.Role != UserRole.Admin)
+            {
+                var activeAdminCount = _userManager.Users.Count(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted);
+                if (activeAdminCount <= 1 && existingUser.IsActive && !existingUser.IsDeleted)
+                {
+                    throw new Exception("Không thể thay đổi vai trò của tài khoản admin cuối cùng");
+                }
+            }
+
             existingUser.FullName = userDto.FullName;
             existingUser.Email = userDto.Email;
             existingUser.PhoneNumber = userDto.PhoneNumber;
@@ -181,6 +191,18 @@ namespace DormitoryManagement.Application.Services.Implements
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null) return false;
 
+            if (user.IsActive)
+            {
+                if (user.Role == UserRole.Admin && !user.IsDeleted)
+                {
+                    var activeAdminCount = _userManager.Users.Count(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted);
+                    if (activeAdminCount <= 1)
+                    {
+                        throw new Exception("Không thể ban/vô hiệu hóa tài khoản admin cuối cùng");
+                    }
+                }
+            }
+
             user.IsActive = !user.IsActive;
             user.LastModified = DateTime.Now;
 
@@ -205,6 +227,18 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null) return false;
+
+            if (user.IsActive)
+            {
+                if (user.Role == UserRole.Admin && !user.IsDeleted)
+                {
+                    var activeAdminCount = _userManager.Users.Count(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted);
+                    if (activeAdminCount <= 1)
+                    {
+                        throw new Exception("Không thể ban/vô hiệu hóa tài khoản admin cuối cùng");
+                    }
+                }
+            }
 
             user.IsActive = false;
             await _userRepository.UpdateAsync(user);
@@ -236,6 +270,15 @@ namespace DormitoryManagement.Application.Services.Implements
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null) return false;
 
+            if (user.Role == UserRole.Admin && user.IsActive && !user.IsDeleted)
+            {
+                var activeAdminCount = _userManager.Users.Count(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted);
+                if (activeAdminCount <= 1)
+                {
+                    throw new Exception("Không thể xóa tài khoản admin cuối cùng");
+                }
+            }
+
             await _userRepository.DeleteAsync(user, isSoftDelete: true);
             var result = await _unitOfWork.SaveChangesAsync();
             return result > 0;
@@ -248,6 +291,16 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             var users = await _userRepository.FindAsync(u => ids.Contains(u.Id));
             if (!users.Any()) return false;
+
+            var activeAdminIdsInRequest = users.Where(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted).Select(u => u.Id).ToList();
+            if (activeAdminIdsInRequest.Any())
+            {
+                var activeAdminsInDb = _userManager.Users.Where(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted).Select(u => u.Id).ToList();
+                if (activeAdminsInDb.All(id => activeAdminIdsInRequest.Contains(id)))
+                {
+                    throw new Exception("Không thể xóa tài khoản admin cuối cùng");
+                }
+            }
 
             await _userRepository.DeleteRangeAsync(users, isSoftDelete: true);
             var result = await _unitOfWork.SaveChangesAsync();
@@ -289,6 +342,15 @@ namespace DormitoryManagement.Application.Services.Implements
             var user = await _userManager.FindByIdAsync(id.ToString());
 
             if (user == null) return false;
+
+            if (user.Role == UserRole.Admin)
+            {
+                var totalAdminCount = _userManager.Users.Count(u => u.Role == UserRole.Admin);
+                if (totalAdminCount <= 1)
+                {
+                    throw new Exception("Không thể xóa tài khoản admin cuối cùng");
+                }
+            }
 
             var result = await _userManager.DeleteAsync(user);
 
