@@ -1,0 +1,158 @@
+@model DormitoryManagement.Domain.Entities.Utility
+@{
+    ViewData["Title"] = "Thêm Dịch Vụ Mới - KTX System";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        /* Hệ thống Typography & Tiêu đề dạng Gradient đồng bộ hệ thống */
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Cấu trúc thẻ Card cao cấp bo góc 20px */
+        .khung-chua-form { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); border: none; }
+        .card-huong-dan { border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); border: none; overflow: hidden; }
+
+        /* Nút quay lại danh sách chính dạng viền mềm */
+        .nut-quay-lai { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background-color: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+        .nut-quay-lai:hover { transform: translateY(-1px); background-color: #f1f5f9; color: #1e293b; }
+
+        /* Tinh chỉnh Input Form hiện đại */
+        .form-label { color: #475569; font-size: 14px; margin-bottom: 6px; }
+        .form-control, .form-select { border-radius: 10px; padding: 10px 14px; border: 1px solid #cbd5e1; color: #334155; font-size: 14px; transition: all 0.2s ease-in-out; }
+        .form-control:focus, .form-select:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); color: #0f172a; }
+        .input-group-text { border-radius: 0 10px 10px 0; background-color: #f8fafc; border: 1px solid #cbd5e1; color: #64748b; font-weight: 500; }
+        .form-control + .input-group-text { border-left: none; }
+        .form-control:focus + .input-group-text { border-color: #f59e0b; background-color: #fff7ed; color: #b45309; }
+
+        /* Tinh chỉnh Custom Radio cho Loại hình dịch vụ */
+        .cum-radio { display: flex; gap: 20px; padding: 10px 0; }
+        .khung-radio { position: relative; display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.2s; }
+        .khung-radio:hover { background-color: #f8fafc; }
+        .form-check-input:checked + .form-check-label-custom { color: #b45309; font-weight: 600; }
+        
+        /* Các nút bấm hành động cuối Form */
+        .nut-luu-lai { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .nut-luu-lai:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3); color: white; }
+        .nut-huy-bo { background-color: #f1f5f9; color: #475569; border: none; padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; text-decoration: none; display: inline-flex; align-items: center; }
+        .nut-huy-bo:hover { background-color: #e2e8f0; color: #1e293b; }
+
+        /* Danh sách lưu ý bên cột phụ */
+        .luu-y-item { border-left: 3px solid #f59e0b; padding-left: 12px; margin-bottom: 16px; font-size: 13.5px; color: #475569; }
+    </style>
+}
+
+<div class="container-fluid py-2">
+    <!-- TIÊU ĐỀ TRANG VÀ ĐIỀU HƯỚNG QUAY LẠI -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-0"><i class="fas fa-plus-circle me-2 text-warning"></i>Thêm Dịch Vụ Mới</h1>
+        </div>
+        <div>
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- CỘT CHÍNH: FORM THÊM MỚI -->
+        <div class="col-xl-8 col-lg-7">
+            <div class="card khung-chua-form">
+                <div class="card-body p-4 sm-p-5">
+                    <form asp-controller="Service" asp-action="Create" method="post" id="form-create-service">
+                        <!-- Hiển thị lỗi tổng hợp của ModelState nếu có -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger small mb-4 p-3 bg-danger-subtle rounded-3"></div>
+
+                        <!-- Hàng 1: Tên dịch vụ tiện ích -->
+                        <div class="mb-4">
+                            <label asp-for="UtilityName" class="form-label fw-bold">Tên dịch vụ / tiện ích <span class="text-danger">*</span></label>
+                            <input asp-for="UtilityName" type="text" class="form-control" placeholder="Ví dụ: Tiền điện sinh hoạt, Giặt là..." autocomplete="off">
+                            <span asp-validation-for="UtilityName" class="text-danger small d-block mt-1"></span>
+                        </div>
+
+                        <!-- Hàng 2: Đơn giá và Đơn vị tính phân bổ 2 bên -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="UnitPrice" class="form-label fw-bold">Đơn giá khởi tạo <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input asp-for="UnitPrice" type="number" class="form-control text-end" min="0" placeholder="0">
+                                    <span class="input-group-text">VND</span>
+                                </div>
+                                <span asp-validation-for="UnitPrice" class="text-danger small d-block mt-1"></span>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label asp-for="Unit" class="form-label fw-bold">Đơn vị tính <span class="text-danger">*</span></label>
+                                <select asp-for="Unit" class="form-select">
+                                    <option value="kWh">⚡ kWh (Số điện)</option>
+                                    <option value="m³">💧 m³ (Khối nước)</option>
+                                    <option value="Tháng">📅 Tháng (Cố định)</option>
+                                    <option value="Lượt">🔄 Lượt sử dụng</option>
+                                    <option value="kg">⚖️ kg (Cân nặng)</option>
+                                </select>
+                                <span asp-validation-for="Unit" class="text-danger small d-block mt-1"></span>
+                            </div>
+                        </div>
+
+                        <!-- Hàng 3: Loại hình dịch vụ (Radio Button cấu trúc đồng bộ) -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Loại hình dịch vụ</label>
+                            <div class="cum-radio">
+                                <div class="form-check khung-radio m-0">
+                                    <input class="form-check-input me-2" type="radio" name="UtilityType" id="type1" value="Essential" checked>
+                                    <label class="form-check-label form-check-label-custom" for="type1">⚙️ Thiết yếu (Điện, nước...)</label>
+                                </div>
+                                <div class="form-check khung-radio m-0">
+                                    <input class="form-check-input me-2" type="radio" name="UtilityType" id="type2" value="Utility">
+                                    <label class="form-check-label form-check-label-custom" for="type2">✨ Tiện ích gia tăng</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hàng 4: Mô tả / Ghi chú -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Mô tả chi tiết</label>
+                            <textarea class="form-control" name="Description" rows="3" placeholder="Nhập mô tả ngắn về cách thức tính phí hoặc quy định kèm theo (nếu có)..."></textarea>
+                        </div>
+
+                        <hr class="text-neutral-200 my-4">
+
+                        <!-- KHU VỰC CÁC NÚT ĐIỀU HƯỚNG TÁC VỤ -->
+                        <div class="d-flex justify-content-end align-items-center gap-2">
+                            <a asp-action="Index" class="nut-huy-bo">Hủy bỏ</a>
+                            <button type="submit" class="nut-luu-lai">
+                                <i class="fas fa-save"></i> Khởi tạo dịch vụ
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHỤ: KHU VỰC HƯỚNG DẪN / LƯU Ý -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card card-huong-dan">
+                <div class="card-header bg-light py-3 border-0 fw-bold text-dark d-flex align-items-center">
+                    <i class="fas fa-info-circle me-2 text-warning"></i> Quy chuẩn thiết lập dịch vụ
+                </div>
+                <div class="card-body p-4 bg-white">
+                    <div class="luu-y-item">
+                        <strong>Cập nhật đơn giá:</strong> Đơn giá dịch vụ nên được cấu hình chuẩn xác dựa trên văn bản định mức quy định mới nhất từ Ban quản lý Ký túc xá.
+                    </div>
+                    <div class="luu-y-item">
+                        <strong>Ràng buộc hóa đơn:</strong> Việc lựa chọn chính xác <strong>Đơn vị tính</strong> sẽ ảnh hưởng trực tiếp đến thuật toán quét chỉ số đầu/cuối khi hệ thống tự động lập hóa đơn hàng tháng cho phòng phát sinh.
+                    </div>
+                    <div class="luu-y-item mb-0">
+                        <strong>Trạng thái ban đầu:</strong> Mọi dịch vụ được khởi tạo thành công qua form này sẽ mặc định ở trạng thái <span class="text-success fw-bold">Đang hoạt động ổn định</span> và sẵn sàng áp dụng ngay lập tức.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @* Khởi chạy thư viện kiểm tra dữ liệu Client-side mặc định của ASP.NET Core *@
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
