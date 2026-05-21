@@ -16,7 +16,7 @@ namespace DormitoryManagement.Controllers
         IUtilityService utilityService,
         IBlockService blockService,
         IRoomTypeService roomTypeService
-    ) : Controller
+    ) : BaseController
     {
         [HttpGet("")]
         public IActionResult Index()

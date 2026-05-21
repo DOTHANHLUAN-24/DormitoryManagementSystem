@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Domain.Common;
+using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Interfaces.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
@@ -142,7 +142,12 @@ namespace DormitoryManagement.Infrastructure.Repositories
         public virtual Task UpdateAsync(T entity)
         {
             entity.LastModified = DateTime.UtcNow;
-            _dbSet.Update(entity);
+            var entry = _db.Entry(entity);
+            if (entry.State == EntityState.Detached)
+            {
+                _dbSet.Attach(entity);
+            }
+            entry.State = EntityState.Modified;
             return Task.CompletedTask;
         }
 

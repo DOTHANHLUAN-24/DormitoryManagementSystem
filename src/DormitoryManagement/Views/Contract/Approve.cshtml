@@ -1,0 +1,531 @@
+@using DormitoryManagement.Domain.Enums
+@model DormitoryManagement.Domain.Entities.Contract
+
+@{
+    ViewData["Title"] = "Phê duyệt & In Hợp đồng - " + Model.ContractCode;
+}
+
+@section Styles {
+    <style>
+        :root {
+            --paper-bg: #ffffff;
+            --text-main: #000000;
+            --accent: #4f46e5;
+        }
+
+        body {
+            background-color: #f1f5f9;
+        }
+
+        /* Control Panel (Screen only) */
+        .control-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 15px 30px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-control {
+            height: 40px;
+            padding: 0 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            border: none;
+        }
+        .btn-approve {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        .btn-approve:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+        .btn-save-only {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+        .btn-save-only:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+        }
+        .btn-print {
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            color: #334155 !important;
+        }
+        .btn-print:hover {
+            background: #f1f5f9;
+            border-color: #94a3b8;
+        }
+        .btn-back {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #64748b !important;
+        }
+        .btn-back:hover {
+            background: #f8fafc;
+            color: #475569 !important;
+        }
+
+        /* Premium A4 Paper Container */
+        .paper-wrapper {
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .paper {
+            background-color: var(--paper-bg);
+            width: 210mm; /* Chuẩn A4 */
+            min-height: 297mm;
+            padding: 25mm 20mm;
+            box-sizing: border-box;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            font-family: 'Times New Roman', Times, serif;
+            color: var(--text-main);
+            line-height: 1.5;
+            font-size: 14px;
+            position: relative;
+        }
+
+        /* Contract Document Styling */
+        .doc-header {
+            text-align: center;
+            line-height: 1.3;
+            margin-bottom: 25px;
+        }
+        .doc-nation {
+            font-weight: bold;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .doc-motto {
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 3px;
+        }
+        .doc-divider {
+            width: 120px;
+            height: 1px;
+            background-color: #000000;
+            margin: 8px auto 15px auto;
+        }
+        .doc-title {
+            text-align: center;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+        .doc-title h2 {
+            font-family: 'Times New Roman', Times, serif;
+            font-weight: bold;
+            font-size: 20px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .doc-title .doc-code {
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .section-title {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        .info-row {
+            margin-bottom: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .info-label {
+            min-width: 140px;
+        }
+        
+        .info-label-long {
+            min-width: 180px;
+        }
+
+        .info-value-dotted {
+            flex-grow: 1;
+            border-bottom: 1px dotted #000000;
+            padding-left: 5px;
+            min-height: 20px;
+        }
+
+        /* Clean Input Styles inside Paper */
+        .paper-input {
+            border: none;
+            border-bottom: 1px dotted #000000;
+            outline: none;
+            background: transparent;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 14px;
+            padding: 0 5px;
+            width: 100%;
+        }
+        .paper-input:focus {
+            background-color: #eff6ff;
+            border-bottom: 1px solid var(--accent);
+        }
+        .paper-input-short {
+            width: 120px;
+            text-align: center;
+        }
+        .paper-input-medium {
+            width: 200px;
+            text-align: center;
+        }
+
+        .signatures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            text-align: center;
+            margin-top: 40px;
+            page-break-inside: avoid;
+        }
+        .signature-col {
+            padding: 10px;
+        }
+        .signature-title {
+            font-weight: bold;
+        }
+        .signature-sub {
+            font-style: italic;
+            font-size: 12px;
+            color: #475569;
+            margin-bottom: 60px;
+        }
+        .signature-name {
+            font-weight: bold;
+            margin-top: 50px;
+        }
+
+        /* Screen-only status indicator in paper corner */
+        .screen-status-badge {
+            position: absolute;
+            top: 25mm;
+            right: 20mm;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        /* Print Media Query Rules */
+        @@media print {
+            body {
+                background-color: #ffffff;
+                margin: 0;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .paper-wrapper {
+                padding: 0;
+            }
+            .paper {
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                min-height: auto;
+            }
+            .paper-input {
+                border-bottom: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                appearance: none;
+                -webkit-appearance: none;
+                pointer-events: none;
+            }
+            .screen-status-badge {
+                display: none !important;
+            }
+        }
+    </style>
+}
+
+<!-- Control Bar (Screen only) -->
+<div class="control-bar no-print d-flex justify-content-between align-items-center">
+    <div>
+        <a asp-action="@(Model.Status == ContractStatus.Pending ? "Pending" : "Index")" class="btn-control btn-back">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </div>
+    <div class="d-flex gap-2">
+        <button type="button" class="btn-control btn-print" onclick="window.print()">
+            <i class="fas fa-print"></i> In hợp đồng (A4)
+        </button>
+        
+        @if (Model.Status == ContractStatus.Pending)
+        {
+            <button type="button" class="btn-control btn-approve" onclick="saveContract(true)">
+                <i class="fas fa-check-circle"></i> Duyệt & Kích hoạt
+            </button>
+        }
+        else
+        {
+            <button type="button" class="btn-control btn-save-only" onclick="saveContract(false)">
+                <i class="fas fa-save"></i> Cập nhật thông tin
+            </button>
+        }
+    </div>
+</div>
+
+<div class="paper-wrapper">
+    <div class="paper">
+        <!-- Status indicator (screen only) -->
+        <span class="screen-status-badge no-print @(Model.Status switch {
+            ContractStatus.Active => "bg-success text-white",
+            ContractStatus.Pending => "bg-warning text-dark",
+            ContractStatus.Expired => "bg-secondary text-white",
+            ContractStatus.Terminated => "bg-danger text-white",
+            _ => "bg-warning text-dark"
+        })">
+            @(Model.Status switch {
+                ContractStatus.Active => "Đang hoạt động",
+                ContractStatus.Pending => "Chờ xét duyệt",
+                ContractStatus.Expired => "Đã hết hạn",
+                ContractStatus.Terminated => "Đã chấm dứt",
+                _ => Model.Status.ToString()
+            })
+        </span>
+
+        <!-- Quốc hiệu & Tiêu ngữ -->
+        <div class="doc-header">
+            <div class="doc-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
+            <div class="doc-motto">Độc lập - Tự do - Hạnh phúc</div>
+            <div class="doc-divider"></div>
+            <div style="font-size: 13px;">Số: .................... / HĐ-KTX</div>
+        </div>
+
+        <!-- Tiêu đề Hợp đồng -->
+        <div class="doc-title">
+            <h2>HỢP ĐỒNG THUÊ PHÒNG KÝ TÚC XÁ</h2>
+            <div class="doc-code">(Mã hồ sơ: @Model.ContractCode)</div>
+        </div>
+
+        <form id="approveContractForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="contractId" value="@Model.Id" />
+
+            <p>Hôm nay, ngày @DateTime.Now.ToString("dd") tháng @DateTime.Now.ToString("MM") năm @DateTime.Now.ToString("yyyy"), tại văn phòng Ban Quản lý Ký túc xá KTX System, chúng tôi gồm có:</p>
+
+            <!-- BÊN CHO THUÊ -->
+            <div class="section-title">Bên Cho Thuê (Bên A): ban quản lý ký túc xá ktx system</div>
+            <div class="info-row">
+                <span class="info-label">- Đại diện:</span>
+                <span class="info-value-dotted">Trưởng Ban Quản lý KTX</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Địa chỉ:</span>
+                <span class="info-value-dotted">Đường số 4, Khu đô thị Đại học, Thành phố Hồ Chí Minh</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Điện thoại:</span>
+                <span class="info-value-dotted">028.1234.5678</span>
+            </div>
+
+            <!-- BÊN THUÊ -->
+            <div class="section-title">Bên Thuê (Bên B): sinh viên thuê phòng</div>
+            <div class="info-row">
+                <span class="info-label">- Họ và tên:</span>
+                <span class="info-value-dotted fw-bold" style="text-transform: uppercase;">@Model.User?.FullName</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Tài khoản / MSSV:</span>
+                <span class="info-value-dotted font-monospace">@Model.User?.UserName</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Số CMND/CCCD:</span>
+                <span class="info-value-dotted">
+                    <input type="text" class="paper-input" id="identityCard" placeholder="(Nhập số CCCD/CMND sinh viên nếu có)" value="" />
+                </span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Số điện thoại:</span>
+                <span class="info-value-dotted">@(string.IsNullOrEmpty(Model.User?.PhoneNumber) ? "................................................................" : Model.User.PhoneNumber)</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">- Email:</span>
+                <span class="info-value-dotted">@(string.IsNullOrEmpty(Model.User?.Email) ? "................................................................" : Model.User.Email)</span>
+            </div>
+
+            <p style="margin-top: 15px;">Hai bên cùng thống nhất ký kết hợp đồng thuê chỗ ở nội trú Ký túc xá với các điều khoản sau:</p>
+
+            <!-- ĐIỀU 1: NỘI DUNG -->
+            <div class="section-title">Điều 1: Vị trí chỗ ở và thời hạn thuê</div>
+            <div class="info-row">
+                <span>- Bên A đồng ý bố trí cho Bên B chỗ ở tại:</span>
+                <span class="fw-bold ms-1">Giường @(Model.Bed?.BedNumber ?? "Chưa chỉ định")</span>
+            </div>
+            <div class="info-row">
+                <span>- Thuộc phòng:</span>
+                <span class="fw-bold ms-1">@Model.Bed?.Room?.RoomNumber</span>
+                <span class="ms-3">- Tầng:</span>
+                <span class="fw-bold ms-1">@Model.Bed?.Room?.Floor</span>
+                <span class="ms-3">- Tòa nhà:</span>
+                <span class="fw-bold ms-1">@(Model.Bed?.Room?.Block?.BlockName ?? "Chưa rõ")</span>
+            </div>
+            <div class="info-row" style="margin-top: 8px;">
+                <span class="info-label-long">- Mã Số Hợp Đồng (bắt buộc):</span>
+                <div style="flex-grow: 1;">
+                    <input type="text" class="paper-input fw-bold" id="contractCode" value="@Model.ContractCode" required style="color: #4f46e5;" />
+                </div>
+            </div>
+            <div class="info-row">
+                <span>- Thời hạn hợp đồng thuê phòng:</span>
+                <span class="ms-2">Từ ngày</span>
+                <input type="date" class="paper-input paper-input-medium ms-1" id="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                <span class="ms-2">đến ngày</span>
+                <input type="date" class="paper-input paper-input-medium ms-1" id="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+            </div>
+
+            <!-- ĐIỀU 2: ĐƠN GIÁ -->
+            <div class="section-title">Điều 2: Giá cả và Phương thức thanh toán</div>
+            <div class="info-row">
+                <span>- Đơn giá cho thuê chỗ ở:</span>
+                <span class="fw-bold ms-1" style="border-bottom: 1px solid #000;">@((Model.Bed?.Room?.RoomType?.BasePrice ?? 0).ToString("N0")) VNĐ / tháng</span>
+                <span class="ms-2">(Chưa bao gồm chi phí dịch vụ điện, nước, vệ sinh, internet).</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label-long">- Tiền đặt cọc phòng:</span>
+                <div style="flex-grow: 1; display: flex; align-items: baseline;">
+                    <input type="number" class="paper-input fw-bold" id="depositAmount" value="@((int)Model.DepositAmount)" required style="text-align: left; width: 150px;" />
+                    <span class="ms-1 fw-bold">VNĐ</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <span>- Phương thức thanh toán:</span>
+                <span class="ms-1">Nộp tiền mặt tại phòng Kế toán KTX hoặc chuyển khoản trước ngày 05 hàng tháng.</span>
+            </div>
+
+            <!-- ĐIỀU 3: QUY CHẾ -->
+            <div class="section-title">Điều 3: Quyền và nghĩa vụ của Bên B (Sinh viên)</div>
+            <p style="margin-bottom: 5px; text-align: justify;">1. Chấp hành nghiêm chỉnh Quy chế quản lý học sinh, sinh viên nội trú của Bộ Giáo dục và Đào tạo và Nội quy kỷ luật, phòng chống cháy nổ của Ký túc xá.</p>
+            <p style="margin-bottom: 5px; text-align: justify;">2. Đóng tiền thuê chỗ ở và các khoản dịch vụ đúng thời hạn quy định. Tự bảo quản tài sản cá nhân và có trách nhiệm giữ gìn tài sản chung được bàn giao.</p>
+            <p style="margin-bottom: 5px; text-align: justify;">3. Không tự ý cải tạo, thay đổi cấu trúc phòng ở; không chứa chấp người lạ vào phòng ở qua đêm khi chưa được sự đồng ý của Ban Quản lý.</p>
+
+            <!-- ĐIỀU 4: ĐIỀU KHOẢN CHUNG -->
+            <div class="section-title">Điều 4: Cam kết chung</div>
+            <p style="text-align: justify; margin-bottom: 25px;">Hợp đồng này có hiệu lực kể từ ngày ký. Được lập thành 02 bản có giá trị pháp lý như nhau, Bên A giữ 01 bản để theo dõi quản lý, Bên B giữ 01 bản để thực hiện nghĩa vụ.</p>
+
+            <!-- KÝ TÊN -->
+            <div class="signatures-grid">
+                <div class="signature-col">
+                    <span class="signature-title">ĐẠI DIỆN BÊN A</span>
+                    <div class="signature-sub">(Ký, ghi rõ họ tên và đóng dấu)</div>
+                    <div class="signature-name">BAN QUẢN LÝ KÝ TÚC XÁ</div>
+                </div>
+                <div class="signature-col">
+                    <span class="signature-title">ĐẠI DIỆN BÊN B</span>
+                    <div class="signature-sub">(Ký và ghi rõ họ tên)</div>
+                    <div class="signature-name">@Model.User?.FullName</div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function saveContract(isApprove) {
+            var id = $('#contractId').val();
+            var contractCode = $('#contractCode').val();
+            var startDate = $('#startDate').val();
+            var endDate = $('#endDate').val();
+            var depositAmount = $('#depositAmount').val();
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
+            if (!contractCode || !startDate || !endDate || !depositAmount) {
+                Swal.fire({
+                    title: 'Thiếu thông tin!',
+                    text: 'Vui lòng nhập đầy đủ các trường thông tin bắt buộc trong hợp đồng.',
+                    icon: 'warning',
+                    confirmButtonColor: '#4f46e5'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: isApprove ? 'Xác nhận duyệt hợp đồng?' : 'Lưu thay đổi?',
+                text: isApprove 
+                    ? 'Bạn có chắc chắn muốn duyệt và kích hoạt hợp đồng này? Giường ' + '@(Model.Bed?.BedNumber)' + ' sẽ được chuyển sang trạng thái Đã có sinh viên.'
+                    : 'Lưu lại các thông tin chỉnh sửa trên hợp đồng này.',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: isApprove ? 'Có, duyệt ngay!' : 'Lưu lại',
+                cancelButtonText: 'Đóng',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang lưu dữ liệu...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: '/Contract/Approve/' + id,
+                        type: 'POST',
+                        data: {
+                            contractCode: contractCode,
+                            startDate: startDate,
+                            endDate: endDate,
+                            depositAmount: depositAmount,
+                            isApprove: isApprove,
+                            __RequestVerificationToken: token
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: 'Thành công!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#4f46e5'
+                                }).then(() => {
+                                    window.location.href = isApprove ? '/Contract/Index' : window.location.href;
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Thất bại!',
+                                    text: res.message,
+                                    icon: 'error',
+                                    confirmButtonColor: '#4f46e5'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: 'Lỗi hệ thống!',
+                                text: 'Đã xảy ra lỗi trong quá trình kết nối với máy chủ.',
+                                icon: 'error',
+                                confirmButtonColor: '#4f46e5'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

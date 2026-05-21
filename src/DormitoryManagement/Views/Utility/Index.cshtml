@@ -1,4 +1,4 @@
-@model IEnumerable<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>
 @{
     ViewData["Title"] = "Danh sách Dịch vụ";
     Layout = "_Layout";
@@ -84,21 +84,24 @@
     </div>
 
     <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
-    <div class="thanh-tim-kiem shadow-sm">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
         <div class="row g-2 align-items-center">
             <div class="col-md-8 col-lg-9">
                 <div class="khung-tim-kiem">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchTerm" class="form-control input-custom" placeholder="Tìm theo tên dịch vụ..." onkeyup="filterTable()">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control input-custom" placeholder="Tìm theo tên dịch vụ...">
                 </div>
             </div>
             <div class="col-md-4 col-lg-3 d-flex gap-2 justify-content-end">
-                <button type="button" class="btn-filter-action btn-refresh" title="Làm mới" onclick="clearFilter()">
-                    <i class="fas fa-redo"></i>
+                <button type="submit" class="btn-filter-action btn-apply" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i>
                 </button>
+                <a asp-action="Index" class="btn-filter-action btn-refresh" title="Làm mới">
+                    <i class="fas fa-redo"></i>
+                </a>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- Danh sách Dịch vụ -->
     <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
@@ -115,9 +118,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model != null && Model.Any())
+                    @if (Model != null && Model.Items.Any())
                     {
-                        foreach (var item in Model)
+                        foreach (var item in Model.Items)
                         {
                             <tr>
                                 <td class="ps-4">
@@ -167,35 +170,16 @@
             </table>
         </div>
     </div>
+
+    <!-- Phân trang -->
+    @if (Model != null && Model.TotalPages > 1)
+    {
+        @await Html.PartialAsync("_Pagination", Model)
+    }
 </div>
 
 @section Scripts {
     <script>
-        // Tìm kiếm nhanh phía client
-        function filterTable() {
-            var input = document.getElementById("searchTerm");
-            var filter = input.value.toUpperCase();
-            var table = document.getElementById("utilityTable");
-            var tr = table.getElementsByTagName("tr");
-
-            for (var i = 1; i < tr.length; i++) {
-                var td = tr[i].getElementsByClassName("service-name")[0];
-                if (td) {
-                    var textValue = td.textContent || td.innerText;
-                    if (textValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-
-        function clearFilter() {
-            document.getElementById("searchTerm").value = "";
-            filterTable();
-        }
-
         // Xác nhận xóa mềm bằng Ajax + SweetAlert2
         function confirmDelete(id, name) {
             Swal.fire({
@@ -247,11 +231,11 @@
                                 icon: 'error',
                                   title: 'Lỗi hệ thống',
                                 text: 'Không thể kết nối đến máy chủ hoặc bạn không có quyền.'
-                            });
-                        }
-                    });
-                }
-            });
-        }
-    </script>
-}
+                              });
+                          }
+                      });
+                  }
+              });
+          }
+      </script>
+  }
