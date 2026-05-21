@@ -181,16 +181,23 @@
                     statusBadge = `<span class="badge-status badge-danger-soft"><i class="fas fa-times-circle"></i>Đã hủy bỏ</span>`;
                 }
 
-                // Cấu trúc cụm nút hành động - CAM KẾT KHÓA NGANG HÀNG TUYỆT ĐỐI CẠNH NHAU
-                let actionButtons = `<div class="cum-hanh-dong">`;
-                if (!item.isProcessed) {
+                // Khởi tạo các nút thao tác cơ bản (Xem chi tiết)
+                let actionButtons = `
+                    <button class="btn btn-sm btn-outline-primary me-1" onclick="showViolationDetails('${violation.id}')" title="Xem chi tiết">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                `;
+
+                // Nếu tài khoản hợp lệ, chèn thêm nút Sửa dạng thẻ <a> chuyển hướng và nút Duyệt
+                if (isAuthorizedToEdit) {
                     actionButtons += `
-                        <button class="nut-hanh-dong nut-duyet" onclick="approveViolation('${item.id}')" title="Xác nhận đã xử lý hoàn tất">
-                            <i class="fas fa-gavel"></i>
-                        </button>`;
-                } else {
-                    // Khoảng trống giữ chỗ vô hình bảo vệ bố cục của các dòng bằng nhau
-                    actionButtons += `<div style="width: 32px; height: 32px; flex-shrink: 0;"></div>`;
+                        <a href="/Violation/Edit/${violation.id}" class="btn btn-sm btn-warning text-dark me-1" title="Chỉnh sửa">
+                            <i class="fas fa-edit"></i> Sửa
+                        </a>
+                        <button class="btn btn-sm btn-outline-success" onclick="resolveViolation('${violation.id}')" title="Duyệt xử lý">
+                            <i class="fas fa-check"></i>
+                        </button>
+                    `;
                 }
                 
                 actionButtons += `
@@ -211,17 +218,80 @@
                     <td class="small text-muted">${formatDateTime(item.date)}</td>
                     <td class="fw-medium text-dark"><i class="fas fa-balance-scale text-secondary me-1"></i>${item.penalty}</td>
                     <td>${statusBadge}</td>
-                    <td class="pe-4">${actionButtons}</td>
+                    <td class="text-end pe-4">
+                        ${actionButtons}
+                    </td>
                 </tr>`;
 
                 tableBody.insertAdjacentHTML('beforeend', row);
             });
         }
 
-        // Tạo cấu trúc đầu số phân trang 1 2 3 giống hệt module User
-        function renderPagination(activePage) {
-            const paginationList = document.getElementById("paginationList");
-            paginationList.innerHTML = "";
+        function showViolationDetails(id) {
+            const violation = mockViolations.find(v => v.id === id);
+            if (violation) {
+                Swal.fire({
+                    title: `<span class="text-danger fw-bold"><i class="fas fa-exclamation-triangle me-2"></i>Chi Tiết Vi Phạm ${violation.id}</span>`,
+                    html: `
+                        <div class="text-start p-2" style="font-size: 0.95rem;">
+                            <p class="mb-2"><b>Học viên:</b> ${violation.studentName} (${violation.studentId})</p>
+                            <p class="mb-2"><b>Phòng:</b> ${violation.room}</p>
+                            <p class="mb-2"><b>Ngày lập:</b> ${formatDate(violation.date)}</p>
+                            <p class="mb-2"><b>Mức độ:</b> <span class="badge bg-secondary">${violation.severity}</span></p>
+                            <p class="mb-2"><b>Trạng thái:</b> <span class="badge bg-info">${violation.status}</span></p>
+                            <hr/>
+                            <p class="mb-1"><b>Nội dung vi phạm:</b></p>
+                            <div class="bg-light p-3 rounded text-dark" style="border-left: 4px solid #ef4444;">
+                                ${violation.content}
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonColor: '#6366f1',
+                    confirmButtonText: 'Đóng'
+                });
+            }
+        }
+
+        function resolveViolation(id) {
+            const violation = mockViolations.find(v => v.id === id);
+            if (violation) {
+                if (violation.status === 'Đã xử lý') {
+                    Swal.fire({
+                        title: 'Đã xử lý',
+                        text: 'Biên bản vi phạm này đã được xử lý.',
+                        icon: 'info',
+                        confirmButtonColor: '#6366f1'
+                    });
+                    return;
+                }
+                Swal.fire({
+                    title: 'Xác nhận xử lý?',
+                    text: `Duyệt trạng thái biên bản ${violation.id} thành "Đã xử lý"?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Xác nhận duyệt',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        violation.status = "Đã xử lý";
+                        displayTableData(currentPage);
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: `Đã duyệt trạng thái biên bản ${violation.id} thành "Đã xử lý".`,
+                            icon: 'success',
+                            confirmButtonColor: '#10b981'
+                        });
+                    }
+                });
+            }
+        }
+
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+        }
 
             let pages = [1, 2, 3]; // Khung trang tĩnh mô phỏng dữ liệu danh sách vi phạm
             

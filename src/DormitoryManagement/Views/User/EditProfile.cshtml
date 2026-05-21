@@ -72,13 +72,14 @@
                 <div class="card-body text-center p-4">
                     <img class="img-account-profile rounded-circle mb-3" 
                          src="https://ui-avatars.com/api/?name=@Model.FullName&background=random&size=200" 
+                         onerror="this.onerror=null; this.src='/images/default-avatar.svg';"
                          alt="Avatar">
                     
                     <div class="small font-italic text-muted mb-4">
                         JPG hoặc PNG không lớn hơn 5 MB
                     </div>
                     
-                    <button class="btn-upload" type="button">
+                    <button class="btn-upload" type="button" onclick="onUnderDevelopment('Tải ảnh đại diện mới')">
                         <i class="fas fa-camera me-2"></i>Tải ảnh mới
                     </button>
                 </div>

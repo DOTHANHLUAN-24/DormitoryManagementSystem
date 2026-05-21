@@ -53,28 +53,25 @@
                         <th>Giá thuê</th>
                         <th>Sức chứa</th>
                         <th class="text-end pe-4">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody>
                     @if (Model.Items != null && Model.Items.Any())
                     {
                         foreach (var item in Model.Items)
                         {
-                            <tr>
+                            <tr class="opacity-75">
                                 <td class="ps-4">
-                                    <span class="badge bg-secondary px-3 py-2" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
+                                    <span class="badge bg-secondary px-3 py-2 text-decoration-line-through" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
                                         @item.RoomNumber
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-dark">@item.BlockName</div>
-                                    <div class="small text-muted">Tầng @item.Floor</div>
+                                    <div class="fw-bold text-dark text-decoration-line-through">@item.BlockName</div>
+                                    <div class="small text-muted text-decoration-line-through">Tầng @item.Floor</div>
                                 </td>
                                 <td>
-                                    <span class="text-primary fw-medium">@item.RoomTypeName</span>
+                                    <span class="text-primary fw-medium text-decoration-line-through">@item.RoomTypeName</span>
                                 </td>
                                 <td>
-                                    <span class="fw-bold text-dark">@item.BasePrice.ToString("N0")</span> 
+                                    <span class="fw-bold text-dark text-decoration-line-through">@item.BasePrice.ToString("N0")</span> 
                                     <small class="text-muted">đ</small>
                                 </td>
                                 <td>
@@ -120,9 +117,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         // Hàm lấy Token chống giả mạo (CSRF)
         function getAntiforgeryToken() {

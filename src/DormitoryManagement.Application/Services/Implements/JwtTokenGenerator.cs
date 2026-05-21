@@ -10,15 +10,9 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ sinh mã JWT Token xác thực (JwtTokenGenerator).
     /// </summary>
-    public class JwtTokenGenerator : IJwtTokenGenerator
+    public class JwtTokenGenerator(IConfiguration config) : IJwtTokenGenerator
     {
-        private readonly IConfiguration _config;
-
-        /// <summary>
-        /// Khởi tạo JwtTokenGenerator.
-        /// </summary>
-        /// <param name="config">Cấu hình hệ thống IConfiguration</param>
-        public JwtTokenGenerator(IConfiguration config) => _config = config;
+        private readonly IConfiguration _config = config;
 
         /// <summary>
         /// Sinh mã JWT Token chứa thông tin Id, Username, và Vai trò (Role) của người dùng.

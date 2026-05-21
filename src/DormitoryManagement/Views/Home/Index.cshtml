@@ -1,11 +1,110 @@
-﻿@{
+@{
     ViewData["Title"] = "Trang chủ";
 }
 
 <div class="container mt-4">
 
+    <!-- ================= GUEST (UNAUTHENTICATED) ================= -->
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        <div class="guest-hero text-center py-5 px-4 mb-5 rounded-4 shadow-sm text-white" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+            <h1 class="display-4 fw-bold mb-3">Chào Mừng Đến Với KTX DMS</h1>
+            <p class="lead mb-4 mx-auto" style="max-width: 600px;">Hệ thống quản lý ký túc xá thông minh, tiện lợi và hiện đại. Trải nghiệm không gian sống lý tưởng cùng các dịch vụ tiện ích hàng đầu.</p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="/Rooms" class="btn btn-light btn-lg px-4 py-2 fw-semibold text-primary" style="border-radius: 12px; transition: all 0.3s;">
+                    <i class="fa-solid fa-door-open me-2"></i>Xem danh sách phòng
+                </a>
+                <a href="/Account/Login" class="btn btn-outline-light btn-lg px-4 py-2 fw-semibold" style="border-radius: 12px; transition: all 0.3s;">
+                    <i class="fa-solid fa-right-to-bracket me-2"></i>Đăng nhập ngay
+                </a>
+            </div>
+        </div>
+
+        <!-- Thống kê nhanh -->
+        <div class="row text-center mb-5 g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-sm py-4 h-100 rounded-4" style="transition: transform 0.2s;">
+                    <h2 class="fw-bold text-primary mb-1">5+</h2>
+                    <p class="text-muted mb-0 fw-medium">Tòa nhà lớn</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-sm py-4 h-100 rounded-4" style="transition: transform 0.2s;">
+                    <h2 class="fw-bold text-success mb-1">500+</h2>
+                    <p class="text-muted mb-0 fw-medium">Phòng ở tiện nghi</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-sm py-4 h-100 rounded-4" style="transition: transform 0.2s;">
+                    <h2 class="fw-bold text-info mb-1">2000+</h2>
+                    <p class="text-muted mb-0 fw-medium">Sinh viên nội trú</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="card border-0 shadow-sm py-4 h-100 rounded-4" style="transition: transform 0.2s;">
+                    <h2 class="fw-bold text-warning mb-1">99%</h2>
+                    <p class="text-muted mb-0 fw-medium">Độ hài lòng</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Khối hành động nhanh -->
+        <h3 class="fw-bold mb-4 text-dark text-center">Tiện Ích Và Dịch Vụ Nổi Bật</h3>
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="location.href='/Rooms'">
+                    <div class="icon-box mx-auto mb-3 bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fa-solid fa-hotel"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Xem Phòng KTX</h5>
+                    <p class="text-muted small mb-0">Tìm kiếm phòng trống, phòng dịch vụ chất lượng cao theo nhu cầu của bạn.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="onUnderDevelopment('Nội quy KTX')">
+                    <div class="icon-box mx-auto mb-3 bg-light text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fa-solid fa-gavel"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Nội Quy KTX</h5>
+                    <p class="text-muted small mb-0">Xem các quy định nội quy, tiêu chuẩn sinh hoạt tại ký túc xá.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="promptStudentService()">
+                    <div class="icon-box mx-auto mb-3 bg-light text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fa-solid fa-hand-holding-hand"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Dịch Vụ Cá Nhân</h5>
+                    <p class="text-muted small mb-0">Đăng ký dịch vụ giặt là, ăn uống, internet và gửi phản hồi kỹ thuật.</p>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-3">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="promptContactForm()">
+                    <div class="icon-box mx-auto mb-3 bg-light text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">Gửi Phản Hồi</h5>
+                    <p class="text-muted small mb-0">Liên hệ với ban quản lý để được hỗ trợ giải đáp nhanh chóng.</p>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .quick-card {
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: 1px solid #f1f5f9 !important;
+            }
+            .quick-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+                border-color: #3b82f6 !important;
+            }
+        </style>
+    }
+
     <!-- ================= ADMIN + MANAGER ================= -->
-    @if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff"))
+    @if (User.Identity!.IsAuthenticated && (User.IsInRole("Admin") || User.IsInRole("ManagementStaff")))
     {
         <h4 class="mb-4">📊 Dashboard Quản lý</h4>
 
@@ -65,7 +164,7 @@
     }
 
     <!-- ================= TECHNICAL ================= -->
-    @if (User.IsInRole("TechnicalStaff"))
+    @if (User.Identity!.IsAuthenticated && User.IsInRole("TechnicalStaff"))
     {
         <h4 class="mb-4">🛠️ Dashboard Kỹ thuật</h4>
 
@@ -83,7 +182,7 @@
     }
 
     <!-- ================= STUDENT ================= -->
-    @if (User.IsInRole("Student"))
+    @if (User.Identity!.IsAuthenticated && User.IsInRole("Student"))
     {
         <h4 class="mb-4">💰 Chi phí của bạn</h4>
 
@@ -99,7 +198,7 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    @if (User.IsInRole("Student"))
+    @if (User.Identity!.IsAuthenticated && User.IsInRole("Student"))
     {
         <script>
             new Chart(document.getElementById('studentChart'), {
@@ -113,6 +212,73 @@
                     ]
                 }
             });
+        </script>
+    }
+
+    @if (!User.Identity!.IsAuthenticated)
+    {
+        <script>
+            function promptStudentService() {
+                Swal.fire({
+                    title: 'Yêu cầu đăng nhập',
+                    text: 'Bạn cần đăng nhập bằng tài khoản Sinh viên để truy cập các dịch vụ cá nhân.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: '<i class="fa-solid fa-right-to-bracket me-1"></i> Đăng nhập',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.href = '/Account/Login';
+                    }
+                });
+            }
+
+            function promptContactForm() {
+                Swal.fire({
+                    title: 'Gửi phản hồi / Liên hệ',
+                    html: `
+                        <div style="text-align: left;">
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Họ và tên</label>
+                                <input type="text" id="contact-name" class="form-control" placeholder="Nhập họ và tên...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Email / SĐT</label>
+                                <input type="text" id="contact-info" class="form-control" placeholder="Nhập email hoặc số điện thoại...">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Nội dung liên hệ</label>
+                                <textarea id="contact-msg" class="form-control" rows="3" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
+                            </div>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonColor: '#4f46e5',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Gửi thông tin',
+                    cancelButtonText: 'Hủy',
+                    preConfirm: () => {
+                        const name = document.getElementById('contact-name').value;
+                        const info = document.getElementById('contact-info').value;
+                        const msg = document.getElementById('contact-msg').value;
+                        if (!name || !info || !msg) {
+                            Swal.showValidationMessage('Vui lòng điền đầy đủ các thông tin!');
+                        }
+                        return { name, info, msg };
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đã gửi phản hồi!',
+                            text: 'Cảm ơn bạn đã liên hệ. Ban quản lý KTX sẽ phản hồi lại sớm nhất.',
+                            confirmButtonColor: '#4f46e5'
+                        });
+                    }
+                });
+            }
         </script>
     }
 }

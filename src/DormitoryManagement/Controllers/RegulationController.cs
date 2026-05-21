@@ -4,16 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace DormitoryManagement.Controllers
 {
     [Authorize(Roles = "Admin, Manager")]
-    [Route("Regulation")]
-    public class RegulationController : Controller
+    public class RegulationController(IWebHostEnvironment env) : BaseController
     {
-        private readonly string _filePath;
-
-        public RegulationController(IWebHostEnvironment env)
-        {
-            // Tự động trỏ vào đúng thư mục wwwroot bất kể chạy ở máy nào
-            _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
-        }
+        private readonly string _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
 
         [HttpGet("")]
         public IActionResult Index()

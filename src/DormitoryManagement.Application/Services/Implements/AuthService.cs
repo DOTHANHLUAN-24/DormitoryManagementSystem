@@ -8,21 +8,10 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ xác thực người dùng (AuthService).
     /// </summary>
-    public class AuthService : IAuthService
+    public class AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator) : IAuthService
     {
-        private readonly IUserRepository _userRepository; // Repository để truy vấn DB
-        private readonly IJwtTokenGenerator _jwtTokenGenerator; // Interface tạo token (nằm ở Domain)
-
-        /// <summary>
-        /// Khởi tạo AuthService.
-        /// </summary>
-        /// <param name="userRepository">Repository người dùng</param>
-        /// <param name="jwtTokenGenerator">Bộ tạo mã JWT Token</param>
-        public AuthService(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
-        {
-            _userRepository = userRepository;
-            _jwtTokenGenerator = jwtTokenGenerator;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IJwtTokenGenerator _jwtTokenGenerator = jwtTokenGenerator;
 
         /// <summary>
         /// Thực hiện xác thực đăng nhập tài khoản và sinh JWT Token.

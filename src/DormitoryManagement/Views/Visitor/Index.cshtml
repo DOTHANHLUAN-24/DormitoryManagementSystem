@@ -267,53 +267,51 @@
         // Áp dụng SweetAlert2 cho tính năng cho khách rời đi
         function checkOutVisitor(id) {
             const visitor = mockVisitors.find(v => v.id === id);
-            if (!visitor) return;
-
-            Swal.fire({
-                title: 'Xác nhận cho khách về?',
-                text: `Hệ thống sẽ ghi nhận khách ${visitor.name} rời khỏi khu ký túc xá vào thời điểm hiện tại.`,
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Xác nhận rời đi',
-                cancelButtonText: 'Hủy bỏ'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    visitor.isCheckedOut = true;
-                    visitor.status = "Đã rời đi";
-                    visitor.checkOut = new Date().toISOString();
-                    
-                    displayTableData(mockVisitors);
-
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Đã xác nhận!',
-                        text: 'Thời gian rời đi của khách đã được lưu trữ.',
-                        confirmButtonColor: '#4f46e5'
-                    });
-                }
-            });
+            if (visitor) {
+                Swal.fire({
+                    title: 'Xác nhận ra về',
+                    text: `Xác nhận khách ${visitor.name} đã rời khỏi khu ký túc xá?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#006b73',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: 'Xác nhận',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        visitor.isCheckedOut = true;
+                        visitor.status = "Đã rời đi";
+                        visitor.checkOut = new Date().toISOString();
+                        displayTableData(mockVisitors);
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: `Khách ${visitor.name} đã được xác nhận ra về.`,
+                            icon: 'success',
+                            confirmButtonColor: '#006b73'
+                        });
+                    }
+                });
+            }
         }
 
         // Áp dụng SweetAlert2 cho tính năng xóa bản ghi khách lưu trú
         function deleteVisitor(id) {
             Swal.fire({
-                title: 'Bạn có chắc chắn muốn xóa?',
-                text: `Bản ghi của khách mang mã số ${id} sẽ bị xóa vĩnh viễn khỏi lịch sử hệ thống.`,
+                title: 'Xác nhận xóa?',
+                text: 'Bạn có chắc chắn muốn xóa lịch sử lượt đến thăm này không?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#64748b',
-                confirmButtonText: 'Đồng ý xóa',
+                confirmButtonText: 'Xóa ngay',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
                     Swal.fire({
-                        icon: 'success',
                         title: 'Đã xóa!',
-                        text: `Đã xóa thành công lịch sử lượt đến thăm của mã khách: ${id}`,
-                        confirmButtonColor: '#4f46e5'
+                        text: `Đã xóa thành công bản ghi khách mang mã: ${id}`,
+                        icon: 'success',
+                        confirmButtonColor: '#ef4444'
                     });
                 }
             });

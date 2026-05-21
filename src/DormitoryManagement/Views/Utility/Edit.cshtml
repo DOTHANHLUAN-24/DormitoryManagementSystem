@@ -1,0 +1,231 @@
+@model DormitoryManagement.Application.Dtos.Requests.Utilities.UtilityRequestDto
+@{
+    ViewData["Title"] = "Chỉnh sửa Dịch Vụ";
+    Layout = "_Layout";
+    var id = ViewContext.RouteData.Values["id"]?.ToString() ?? string.Empty;
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #0f6b6d, #14b8a6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; }
+        
+        .form-control, .form-select { border-radius: 10px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #0f6b6d; box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); }
+        
+        .input-group-text { border-radius: 10px 0 0 10px; border: 1px solid #e2e8f0; border-right: none; background-color: #f8fafc; color: #64748b; }
+        .input-group .form-control { border-radius: 0 10px 10px 0; }
+        
+        .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px; }
+        
+        .border-end-lg { border-right: 1px solid #dee2e6; }
+        @@media (max-width: 991.98px) { .border-end-lg { border-right: none; border-bottom: 1px solid #dee2e6; margin-bottom: 2rem; padding-bottom: 2rem; } }
+
+        .nut-luu { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; background: #0f6b6d; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); }
+        .nut-luu:hover { background: #0c5658; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); }
+        
+        .nut-huy { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-huy:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        .nut-xoa-tam { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #dc3545 !important; border: 1px solid #fecaca; }
+        .nut-xoa-tam:hover { background: #fef2f2; transform: translateY(-1px); }
+    </style>
+}
+
+<div class="container-fluid max-w-7xl mx-auto py-4">
+    <!-- Breadcrumb & Header -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-decoration-none" style="color: #0f6b6d;">Quản lý dịch vụ</a></li>
+            <li class="breadcrumb-item active">Chỉnh sửa dịch vụ @Model.UtilityName</li>
+        </ol>
+    </nav>
+
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <h1 class="tieu-de-trang">
+                <i class="fas fa-edit me-2"></i> Chỉnh Sửa Dịch Vụ
+            </h1>
+            <span class="badge ms-3 py-2 px-3 fw-bold" style="background-color: rgba(15, 107, 109, 0.1); color: #0f6b6d;">ID: #DV-@(string.IsNullOrEmpty(id) ? "" : id.Substring(0, Math.Min(8, id.Length)).ToUpper())</span>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-controller="Utility" asp-action="Edit" asp-route-id="@id" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+                    
+                    <div class="row g-5">
+                        <!-- CỘT BÊN TRÁI: THÔNG TIN CƠ BẢN -->
+                        <div class="col-lg-6 border-end-lg">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge rounded-pill me-2 py-2 px-3" style="background-color: rgba(15, 107, 109, 0.1); color: #0f6b6d;">1</span>
+                                <h6 class="mb-0 fw-bold text-uppercase small text-dark">Thông tin dịch vụ</h6>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="UtilityName" class="form-label">Tên dịch vụ <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-concierge-bell text-muted"></i></span>
+                                    <input asp-for="UtilityName" class="form-control" placeholder="Tên dịch vụ..." required />
+                                </div>
+                                <span asp-validation-for="UtilityName" class="text-danger small mt-1 d-block"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="UnitPrice" class="form-label">Đơn giá <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <input asp-for="UnitPrice" class="form-control" type="number" min="0" required />
+                                        <span class="input-group-text">đ</span>
+                                    </div>
+                                    <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Unit" class="form-label">Đơn vị tính <span class="text-danger">*</span></label>
+                                    <select asp-for="Unit" class="form-select" required>
+                                        <option value="kWh">kWh</option>
+                                        <option value="m3">m³</option>
+                                        <option value="Tháng">Tháng</option>
+                                        <option value="Lượt">Lượt</option>
+                                    </select>
+                                    <span asp-validation-for="Unit" class="text-danger small mt-1 d-block"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CỘT BÊN PHẢI: TRẠNG THÁI -->
+                        <div class="col-lg-6">
+                            <div class="d-flex align-items-center mb-4">
+                                <span class="badge bg-success-subtle text-success rounded-pill me-2 py-2 px-3">2</span>
+                                <h6 class="mb-0 fw-bold text-uppercase small text-dark">Trạng thái cung cấp</h6>
+                            </div>
+
+                            <div class="mb-4">
+                                <label asp-for="IsActive" class="form-label">Tình trạng hoạt động</label>
+                                <select asp-for="IsActive" class="form-select border-info" style="border-width: 2px;">
+                                    <option value="true">✅ Đang cung cấp bình thường</option>
+                                    <option value="false">❌ Tạm dừng cung cấp</option>
+                                </select>
+                                <div class="form-text text-muted mt-2">Dịch vụ khi tạm dừng sẽ không hiển thị khi tính hóa đơn mới.</div>
+                                <span asp-validation-for="IsActive" class="text-danger small mt-1 d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <button type="button" class="nut-xoa-tam" onclick="deleteUtility()">
+                            <i class="fas fa-trash-alt"></i> Đưa vào thùng rác
+                        </button>
+                        
+                        <div class="d-flex gap-3">
+                            <a asp-action="Index" class="nut-huy">
+                                Hủy bỏ
+                            </a>
+                            <button type="submit" class="nut-luu">
+                                <i class="fas fa-check"></i> Cập nhật thông tin
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100" style="background-color: rgba(15, 107, 109, 0.05) !important;">
+                <h5 class="fw-bold mb-3" style="color: #0f6b6d;"><i class="fas fa-history me-2"></i> Lưu ý khi chỉnh sửa</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li>Thay đổi đơn giá và đơn vị tính sẽ chỉ áp dụng cho các hóa đơn điện nước phát sinh sau thời điểm này.</li>
+                    <li>Nếu dịch vụ không còn được sử dụng nữa, bạn có thể lựa chọn đưa dịch vụ vào <strong>thùng rác</strong> để ẩn đi và khôi phục khi cần.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Hiệu ứng Loading khi submit form
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    Swal.fire({
+                        title: 'Đang lưu dữ liệu...',
+                        html: 'Vui lòng chờ trong giây lát',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+            });
+        });
+
+        // Hàm xóa mềm qua Ajax từ nút xóa của Edit.cshtml
+        function deleteUtility() {
+            var name = "@Html.Raw(Model.UtilityName)";
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Bạn có chắc muốn đưa dịch vụ '" + name + "' vào thùng rác không?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: '/Utility/Delete/@id',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã xóa!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    window.location.href = '/Utility';
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: res.message,
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi hệ thống',
+                                text: 'Đã xảy ra lỗi khi kết nối hoặc bạn không đủ thẩm quyền.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

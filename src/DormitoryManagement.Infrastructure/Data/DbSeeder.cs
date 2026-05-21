@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Infrastructure.Data.DataGenerator;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +52,51 @@ namespace DormitoryManagement.Infrastructure.Data
             if (!await context.Contracts.AnyAsync() && data.Contracts.Any())
             {
                 await context.Contracts.AddRangeAsync(data.Contracts);
+                await context.SaveChangesAsync();
+            }
+
+            // 🔴 5. Seed Utilities (Dịch vụ / Tiện ích)
+            if (!await context.Utilities.AnyAsync() && data.Utilities.Any())
+            {
+                await context.Utilities.AddRangeAsync(data.Utilities);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟠 6. Seed Assets (Tài sản)
+            if (!await context.Assets.AnyAsync() && data.Assets.Any())
+            {
+                await context.Assets.AddRangeAsync(data.Assets);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟠 7. Seed Vehicles (Phương tiện)
+            if (!await context.Vehicles.AnyAsync() && data.Vehicles.Any())
+            {
+                await context.Vehicles.AddRangeAsync(data.Vehicles);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟠 8. Seed Invoices, UtilityUsages, Surcharges, Payments (Hóa đơn và phụ trợ)
+            if (!await context.Invoices.AnyAsync() && data.Invoices.Any())
+            {
+                await context.Invoices.AddRangeAsync(data.Invoices);
+                if (data.UtilityUsages.Any()) await context.UtilityUsages.AddRangeAsync(data.UtilityUsages);
+                if (data.Surcharges.Any()) await context.Surcharges.AddRangeAsync(data.Surcharges);
+                if (data.Payments.Any()) await context.Payments.AddRangeAsync(data.Payments);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟠 9. Seed MaintenanceRequests (Yêu cầu bảo trì)
+            if (!await context.MaintenanceRequests.AnyAsync() && data.MaintenanceRequests.Any())
+            {
+                await context.MaintenanceRequests.AddRangeAsync(data.MaintenanceRequests);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟠 10. Seed Violations (Vi phạm)
+            if (!await context.Violations.AnyAsync() && data.Violations.Any())
+            {
+                await context.Violations.AddRangeAsync(data.Violations);
                 await context.SaveChangesAsync();
             }
         }

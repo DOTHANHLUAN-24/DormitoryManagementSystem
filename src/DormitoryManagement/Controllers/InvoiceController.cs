@@ -1,32 +1,41 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using AutoMapper;
-// using DormitoryManagement.Application.Services.Interfaces;
-// using DormitoryManagement.Application.Dtos.Requests.Invoices;
+using DormitoryManagement.Application.Services.Interfaces;
+using DormitoryManagement.Domain.Entities;
+using System.Threading.Tasks;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("Invoice")]
-    [Authorize]
-    public class InvoiceController : Controller
+    /// <summary>
+    /// Controller xử lý các logic liên quan đến Hóa đơn (Invoice)
+    /// </summary>
+    public class InvoiceController(IInvoiceService invoiceService) : BaseController
     {
-        // private readonly IInvoiceService _invoiceService;
-        // private readonly IMapper _mapper;
-
-        // public InvoiceController(IInvoiceService invoiceService, IMapper mapper)
-        // {
-        //     _invoiceService = invoiceService;
-        //     _mapper = mapper;
-        // }
-
         /// <summary>
         /// Hiển thị danh sách hóa đơn (Trang Index)
         /// </summary>
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string search = "", string status = "", int page = 1)
         {
-            // Hiện tại View đang dùng Mock Data bên trong file .cshtml
-            return View();
+            int pageSize = PageSize;
+
+            DormitoryManagement.Domain.Enums.InvoiceStatus? invoiceStatus = null;
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<DormitoryManagement.Domain.Enums.InvoiceStatus>(status, true, out var parsedStatus))
+            {
+                invoiceStatus = parsedStatus;
+            }
+
+            var pagedResult = await invoiceService.GetPagedInvoicesAsync(page, pageSize, search, invoiceStatus);
+
+            // Thống kê nhanh
+            var allInvoices = await invoiceService.GetAllInvoicesAsync();
+            ViewBag.TotalCount = allInvoices.Count();
+            ViewBag.UnpaidCount = allInvoices.Count(x => x.Status != DormitoryManagement.Domain.Enums.InvoiceStatus.Paid);
+            ViewBag.PaidCount = allInvoices.Count(x => x.Status == DormitoryManagement.Domain.Enums.InvoiceStatus.Paid);
+
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            return View(pagedResult);
         }
 
         /// <summary>
@@ -43,11 +52,11 @@ namespace DormitoryManagement.Controllers
         /// </summary>
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(object invoiceDto) // Thay object bằng InvoiceRequestDto khi có
+        public async Task<IActionResult> Create(Invoice invoice)
         {
-            if (!ModelState.IsValid) return View(invoiceDto);
+            if (!ModelState.IsValid) return View(invoice);
 
-            // Logic gọi Service lưu DB sẽ nằm ở đây
+            await invoiceService.CreateInvoiceAsync(invoice);
             TempData["Success"] = "Tạo hóa đơn thành công!";
             return RedirectToAction(nameof(Index));
         }
@@ -56,10 +65,11 @@ namespace DormitoryManagement.Controllers
         /// GET: Hiển thị form chỉnh sửa hóa đơn
         /// </summary>
         [HttpGet("Edit/{id}")]
-        public IActionResult Edit(string id)
+        public async Task<IActionResult> Edit(Guid id)
         {
-            // Trong thực tế sẽ lấy dữ liệu từ _invoiceService.GetByCodeAsync(id)
-            return View();
+            var invoice = await invoiceService.GetByIdAsync(id);
+            if (invoice == null) return NotFound();
+            return View(invoice);
         }
 
         /// <summary>
@@ -67,11 +77,32 @@ namespace DormitoryManagement.Controllers
         /// </summary>
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, object updateDto) // Thay object bằng InvoiceUpdateDto
+        public async Task<IActionResult> Edit(Guid id, Invoice invoice)
         {
-            if (!ModelState.IsValid) return View(updateDto);
+            if (id != invoice.Id) return BadRequest();
+            if (!ModelState.IsValid) return View(invoice);
 
+            await invoiceService.UpdateInvoiceAsync(invoice);
             TempData["Success"] = "Cập nhật hóa đơn thành công!";
+            return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// POST: Xóa hóa đơn (xóa mềm)
+        /// </summary>
+        [HttpPost("Delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var result = await invoiceService.DeleteInvoiceAsync(id);
+            if (result)
+            {
+                TempData["Success"] = "Xóa hóa đơn thành công!";
+            }
+            else
+            {
+                TempData["Error"] = "Xóa hóa đơn thất bại hoặc không tìm thấy hóa đơn.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }
