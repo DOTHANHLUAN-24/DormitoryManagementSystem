@@ -41,7 +41,7 @@ internal class Program
         builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         builder.Services.AddScoped<IAssetRepository, AssetRepository>();
         builder.Services.AddScoped<IUtilityRepository, UtilityRepository>();
-        builder.Services.AddScoped<IViolationRepository, IViolationRepository>();
+        builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
 
 
         // Services
