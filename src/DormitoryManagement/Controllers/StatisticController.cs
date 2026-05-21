@@ -10,7 +10,7 @@ namespace DormitoryManagement.Controllers
     /// </summary>
     [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
     [Route("Statistic")]
-    public class StatisticController(IStatisticService statisticService) : Controller
+    public class StatisticController(IStatisticService statisticService) : BaseController
     {
         [HttpGet("")]
         public async Task<IActionResult> Index()

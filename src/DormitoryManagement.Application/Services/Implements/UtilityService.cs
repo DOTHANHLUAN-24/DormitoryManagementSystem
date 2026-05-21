@@ -5,6 +5,8 @@ using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
+using DormitoryManagement.Domain.Common;
+using DormitoryManagement.Application.Mappings;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -34,6 +36,22 @@ namespace DormitoryManagement.Application.Services.Implements
             var all = await _utilityRepository.GetAllAsync();
             var trashed = all.Where(u => !u.IsActive && !u.IsDeleted).OrderByDescending(u => u.CreatedDate);
             return _mapper.Map<IEnumerable<UtilityResponseDto>>(trashed);
+        }
+
+        /// <summary>
+        /// Lấy danh sách dịch vụ tiện ích phân trang kèm theo bộ lọc tìm kiếm.
+        /// </summary>
+        public async Task<PagedResult<UtilityResponseDto>> GetPagedUtilitiesAsync(int pageIndex, int pageSize, string? searchTerm, bool? isActive = null, bool? isDeleted = false)
+        {
+            var result = await _utilityRepository.GetByStatusPagedAsync(
+                pageIndex,
+                pageSize,
+                isActive: isActive,
+                isDeleted: isDeleted,
+                predicate: u => string.IsNullOrEmpty(searchTerm) || u.UtilityName.Contains(searchTerm)
+            );
+
+            return result.MapToPagedResult<Utility, UtilityResponseDto>(_mapper);
         }
 
         /// <summary>
