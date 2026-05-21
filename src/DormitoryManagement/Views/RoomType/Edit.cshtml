@@ -1,128 +1,134 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh sửa loại phòng</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@model DormitoryManagement.Domain.Entities.RoomType
+
+@{
+    ViewData["Title"] = "Chỉnh sửa loại phòng";
+}
+
+@section Styles {
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #f5f7fa; 
-            color: #1e293b; 
-            padding: 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            min-height: 100vh; 
-        }
-        .form-container { 
-            background: #fff; 
-            width: 100%; 
-            max-width: 600px; 
-            padding: 32px; 
-            border-radius: 20px; 
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); 
-        }
-        .tieu-de { 
-            font-size: 24px; 
-            font-weight: 700; 
-            margin-bottom: 24px; 
-            color: #1e293b; 
-            text-align: center; 
-        }
-        .nhom-nhap { 
-            margin-bottom: 20px; 
-        }
-        .nhom-nhap label { 
-            display: block; 
-            font-size: 14px; 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: #64748b; 
-            text-transform: uppercase; 
-            letter-spacing: 0.5px; 
-        }
-        .nhom-nhap input, .nhom-nhap textarea, .nhom-nhap select { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 10px; 
-            font-size: 14px; 
-            outline: none; 
-            transition: all 0.2s; 
-            color: #334155;
-        }
-        .nhom-nhap input:focus { 
-            border-color: #3b82f6; 
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .nhom-nut { 
-            display: flex; 
-            gap: 12px; 
-            margin-top: 32px;
-        }
-        .nut { 
-            padding: 12px 24px; 
-            border-radius: 10px; 
-            font-weight: 600; 
-            font-size: 14px; 
-            cursor: pointer; 
-            transition: all 0.2s; 
-            text-decoration: none; 
-            display: inline-flex; 
-            align-items: center; 
-            justify-content: center; 
-            border: none; 
-            flex: 1; 
-        }
-        .nut-luu { 
-            background: #3b82f6; 
-            color: #fff; 
-        }
-        .nut-luu:hover { 
-            background: #2563eb; 
-        }
-        .nut-huy { 
-            background: #f1f5f9; 
-            color: #475569; 
-        }
-        .nut-huy:hover { 
-            background: #e2e8f0; 
-        }
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; }
+        
+        .form-control, .form-select { border-radius: 10px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+        
+        .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px; }
+        
+        .nut-luu { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; background: #4f46e5; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .nut-luu:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        
+        .nut-huy { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-huy:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        /* Custom Switch toggle cho IsActive */
+        .form-switch .form-check-input { width: 3em; height: 1.5em; cursor: pointer; }
+        .form-switch .form-check-input:checked { background-color: #10b981; border-color: #10b981; }
+        .form-switch .form-check-label { cursor: pointer; padding-left: 10px; padding-top: 4px; font-weight: 600; color: #1e293b; }
     </style>
-</head>
-<body>
-    <div class="form-container">
-        <h2 class="tieu-de">Chỉnh sửa loại phòng</h2>
-        <form action="/RoomType/Edit" method="post">
-            <div class="nhom-nhap">
-                <label>Tên loại phòng</label>
-                <input type="text" value="Phòng Tiêu Chuẩn" placeholder="Ví dụ: Phòng Tiêu Chuẩn">
+}
+
+<div class="container-fluid max-w-7xl mx-auto">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-edit me-2 text-primary"></i> Chỉnh Sửa Loại Phòng
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+
+                    <div class="row">
+                        <!-- Tên loại phòng -->
+                        <div class="col-md-12 mb-4">
+                            <label asp-for="TypeName" class="form-label">Tên loại phòng <span class="text-danger">*</span></label>
+                            <input asp-for="TypeName" class="form-control" placeholder="Ví dụ: Phòng Tiêu Chuẩn, Phòng VIP..." autocomplete="off" />
+                            <span asp-validation-for="TypeName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Giá cơ bản -->
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="BasePrice" class="form-label">Giá cơ bản (VND/Tháng) <span class="text-danger">*</span></label>
+                            <input asp-for="BasePrice" type="number" class="form-control" placeholder="Ví dụ: 1500000" />
+                            <span asp-validation-for="BasePrice" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Sức chứa -->
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="MaxOccupants" class="form-label">Sức chứa (Người) <span class="text-danger">*</span></label>
+                            <select asp-for="MaxOccupants" class="form-select">
+                                <option value="1">1 Người</option>
+                                <option value="2">2 Người</option>
+                                <option value="4">4 Người</option>
+                                <option value="6">6 Người</option>
+                                <option value="8">8 Người</option>
+                            </select>
+                            <span asp-validation-for="MaxOccupants" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <!-- Mô tả -->
+                    <div class="mb-4">
+                        <label asp-for="Description" class="form-label">Mô tả chi tiết</label>
+                        <textarea asp-for="Description" class="form-control" rows="4" placeholder="Mô tả ngắn gọn về các tiện ích đi kèm (ví dụ: điều hòa, quạt trần, tủ lạnh...)..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger small mt-1 d-block"></span>
+                    </div>
+
+                    <!-- Trạng thái hoạt động -->
+                    <div class="mb-4 bg-light p-3 rounded-3 border">
+                        <div class="form-check form-switch d-flex align-items-center">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveSwitch">
+                            <label class="form-check-label" for="isActiveSwitch">Kích hoạt loại phòng</label>
+                        </div>
+                        <small class="text-muted ms-5 mt-2 d-block">
+                            <i class="fas fa-exclamation-circle text-warning"></i> 
+                            Nếu tắt, loại phòng này sẽ không hiển thị khi tạo phòng mới.
+                        </small>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <!-- Nút hành động -->
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="nut-luu">
+                            <i class="fas fa-save"></i> Cập nhật thay đổi
+                        </button>
+                    </div>
+                </form>
             </div>
-            <div class="nhom-nhap">
-                <label>Giá cơ bản (VND/Tháng)</label>
-                <input type="number" value="1500000" placeholder="Ví dụ: 1500000">
+        </div>
+        
+        <!-- Cột thông tin hướng dẫn -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Lưu ý khi chỉnh sửa</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li><strong>Tên loại phòng:</strong> Có thể đổi nhưng không được trùng với tên loại phòng khác.</li>
+                    <li><strong>Giá cơ bản:</strong> Giá tiền thuê mới sẽ áp dụng cho các hợp đồng mới tạo.</li>
+                    <li><strong>Kích hoạt:</strong> Trạng thái hoạt động dùng để quản lý bật/tắt tạm thời loại phòng này.</li>
+                </ul>
             </div>
-            <div class="nhom-nhap">
-                <label>Sức chứa (Người)</label>
-                <select>
-                    <option>1 Người</option>
-                    <option>2 Người</option>
-                    <option selected>4 Người</option>
-                    <option>8 Người</option>
-                </select>
-            </div>
-            <div class="nhom-nhap">
-                <label>Mô tả</label>
-                <textarea rows="4" placeholder="Nhập mô tả ngắn gọn về tiện ích...">Phòng 4 giường tầng cơ bản, quạt trần</textarea>
-            </div>
-            <div class="nhom-nut">
-                <a href="/RoomType" class="nut nut-huy">Hủy bỏ</a>
-                <button type="submit" class="nut nut-luu">Cập nhật thay đổi</button>
-            </div>
-        </form>
+        </div>
     </div>
-</body>
-</html>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

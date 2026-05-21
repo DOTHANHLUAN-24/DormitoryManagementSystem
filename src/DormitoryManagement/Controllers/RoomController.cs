@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -9,32 +9,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("Room")]
     [Authorize(Roles = "Admin,ManagerStaff")]
-    public class RoomController : Controller
+    public class RoomController
+    (
+        IRoomService roomService,
+        IBlockService blockService,
+        IRoomTypeService roomTypeService,
+        IMapper mapper
+    ) : BaseController
     {
-        private readonly IRoomService _roomService;
-        private readonly IBlockService _blockService;
-        private readonly IRoomTypeService _roomTypeService;
-        private readonly IMapper _mapper;
-
-        public RoomController(
-            IRoomService roomService,
-            IBlockService blockService,
-            IRoomTypeService roomTypeService,
-            IMapper mapper)
-        {
-            _roomService = roomService;
-            _blockService = blockService;
-            _roomTypeService = roomTypeService;
-            _mapper = mapper;
-        }
+        private readonly IRoomService _roomService = roomService;
+        private readonly IBlockService _blockService = blockService;
+        private readonly IRoomTypeService _roomTypeService = roomTypeService;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
         public async Task<IActionResult> Index(RoomFilterRequest filter)
         {
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
-            filter.PageSize = 5;
+            filter.PageSize = PageSize;
 
             var pagedRooms = await _roomService.GetPagedRoomsAsync(filter);
 
@@ -191,7 +184,7 @@ namespace DormitoryManagement.Controllers
         {
             // 1. Đảm bảo các giá trị mặc định cho phân trang
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
-            filter.PageSize = 5; // Cùng kích thước với trang Index
+            filter.PageSize = PageSize; // Cùng kích thước với trang Index
 
             // 2. Gọi service với object filter (Service sẽ tự lọc theo filter.SearchTerm)
             var deletedRooms = await _roomService.GetDeletedRoomsPagedAsync(filter);
@@ -202,7 +195,6 @@ namespace DormitoryManagement.Controllers
             return View(deletedRooms);
         }
 
-        // Thêm hành động Khôi phục phòng
         [HttpPost("Restore/{id}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(Guid id)

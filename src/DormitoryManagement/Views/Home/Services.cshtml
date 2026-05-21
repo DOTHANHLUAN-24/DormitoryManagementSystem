@@ -1,0 +1,309 @@
+@model IEnumerable<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>
+
+@{
+    ViewData["Title"] = "Dịch vụ tiện ích KTX";
+}
+
+@section Styles {
+    <style>
+        @@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        .services-container {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            min-height: 100vh;
+            padding-bottom: 4rem;
+        }
+
+        /* Hero Banner Section */
+        .hero-banner {
+            background: linear-gradient(135deg, #0f6b6d 0%, #172554 100%);
+            border-radius: 24px;
+            padding: 3.5rem 2rem;
+            color: #ffffff;
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px -10px rgba(15, 107, 109, 0.3);
+        }
+
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-weight: 800;
+            font-size: 2.25rem;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-subtitle {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            max-width: 600px;
+            font-weight: 400;
+        }
+
+        /* Service Cards */
+        .service-card {
+            background: #ffffff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 2rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.01);
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            border-color: #cbd5e1;
+        }
+
+        .icon-wrapper {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-card:hover .icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Color classes for different service icons */
+        .icon-dien {
+            background-color: #fffbeb;
+            color: #d97706;
+        }
+
+        .icon-nuoc {
+            background-color: #f0f9ff;
+            color: #0284c7;
+        }
+
+        .icon-wifi {
+            background-color: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .icon-guixe {
+            background-color: #f0fdf4;
+            color: #16a34a;
+        }
+
+        .icon-vesinh {
+            background-color: #f0fdfa;
+            color: #0d9488;
+        }
+
+        .icon-default {
+            background-color: #f8fafc;
+            color: #64748b;
+        }
+
+        .service-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.75rem;
+        }
+
+        .service-price-block {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: #0f6b6d;
+            margin-bottom: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .service-unit {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .service-description {
+            font-size: 0.88rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 1.75rem;
+            flex-grow: 1;
+        }
+
+        .btn-service-action {
+            width: 100%;
+            height: 44px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            background: #0f6b6d;
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 4px 10px rgba(15, 107, 109, 0.2);
+        }
+
+        .btn-service-action:hover {
+            background: #0d5c5e;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(15, 107, 109, 0.3);
+            color: #ffffff;
+        }
+    </style>
+}
+
+<div class="services-container container-fluid p-4">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+        <h1 class="hero-title"><i class="fas fa-concierge-bell me-2"></i>Dịch Vụ Tiện Ích Sinh Viên</h1>
+        <p class="hero-subtitle">Bảng kê các dịch vụ tiện ích nội khu KTX. Các dịch vụ thiết yếu sẽ được kích hoạt tự động theo phòng của sinh viên.</p>
+    </div>
+
+    <!-- Grid of Services -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                var normalizedName = item.UtilityName.ToLower();
+
+                // Select appropriate icon and color based on name
+                string iconClass = "fas fa-plug";
+                string colorClass = "icon-default";
+                string desc = "Dịch vụ tiện ích phục vụ đời sống sinh hoạt tại ký túc xá.";
+
+                if (normalizedName.Contains("điện"))
+                {
+                    iconClass = "fas fa-bolt";
+                    colorClass = "icon-dien";
+                    desc = "Cung cấp nguồn điện sinh hoạt ổn định cho các thiết bị phòng. Đo chỉ số công tơ điện hàng tháng.";
+                }
+                else if (normalizedName.Contains("nước"))
+                {
+                    iconClass = "fas fa-tint";
+                    colorClass = "icon-nuoc";
+                    desc = "Cung cấp nguồn nước sạch sinh hoạt hàng ngày. Đọc chỉ số nước và thanh toán theo khối tiêu thụ.";
+                }
+                else if (normalizedName.Contains("wifi") || normalizedName.Contains("internet"))
+                {
+                    iconClass = "fas fa-wifi";
+                    colorClass = "icon-wifi";
+                    desc = "Đường truyền Internet tốc độ cao phủ sóng toàn phòng, phục vụ học tập giải trí không giới hạn.";
+                }
+                else if (normalizedName.Contains("xe"))
+                {
+                    iconClass = "fas fa-motorcycle";
+                    colorClass = "icon-guixe";
+                    desc = "Vé giữ xe tháng an toàn tại nhà xe KTX, có bảo vệ trông giữ và camera giám sát 24/7.";
+                }
+                else if (normalizedName.Contains("vệ sinh") || normalizedName.Contains("rác"))
+                {
+                    iconClass = "fas fa-broom";
+                    colorClass = "icon-vesinh";
+                    desc = "Dịch vụ vệ sinh hành lang, khu vực chung và thu gom rác thải định kỳ đảm bảo môi trường sạch sẽ.";
+                }
+
+                <div class="col">
+                    <div class="service-card">
+                        <!-- Icon -->
+                        <div class="icon-wrapper @colorClass">
+                            <i class="@iconClass"></i>
+                        </div>
+
+                        <!-- Name -->
+                        <h3 class="service-name">@item.UtilityName</h3>
+
+                        <!-- Price -->
+                        <div class="service-price-block">
+                            <span>@item.UnitPrice.ToString("N0") đ</span>
+                            <span class="service-unit">/ @item.Unit</span>
+                        </div>
+
+                        <!-- Description -->
+                        <p class="service-description">@desc</p>
+
+                        <!-- Action -->
+                        <button type="button" class="btn btn-service-action" onclick="onRegisterService('@item.UtilityName')">
+                            <i class="fas fa-plus-circle"></i> Đăng ký sử dụng
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 py-5 text-center">
+                <div class="text-muted fs-4"><i class="fas fa-concierge-bell fa-2x mb-3"></i></div>
+                <h5 class="text-muted fw-bold">Hiện chưa có dịch vụ nào hoạt động</h5>
+                <p class="text-muted small">Ban quản lý KTX sẽ cập nhật các dịch vụ trong thời gian sớm nhất.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function onRegisterService(serviceName) {
+            Swal.fire({
+                title: 'Đăng ký dịch vụ',
+                text: 'Bạn có muốn đăng ký sử dụng dịch vụ "' + serviceName + '" cho phòng của mình không?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0f6b6d',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đăng ký ngay',
+                cancelButtonText: 'Đóng',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    setTimeout(() => {
+                        // Mock register success or popup explanation
+                        Swal.fire({
+                            title: 'Đăng ký thành công!',
+                            text: 'Yêu cầu đăng ký dịch vụ "' + serviceName + '" của bạn đã được gửi lên hệ thống. Ban quản lý KTX sẽ kích hoạt dịch vụ này cho phòng của bạn.',
+                            icon: 'success',
+                            confirmButtonColor: '#0f6b6d',
+                            confirmButtonText: 'Đồng ý'
+                        });
+                    }, 1000);
+                }
+            });
+        }
+    </script>
+}

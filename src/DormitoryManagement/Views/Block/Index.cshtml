@@ -30,10 +30,7 @@
     </style>
 }
 
-@* Token bảo mật cho thao tác AJAX và Thẻ ẩn cho thông báo *@
 @Html.AntiForgeryToken()
-<input type="hidden" id="success-message" value="@TempData["Success"]" />
-<input type="hidden" id="error-message" value="@TempData["Error"]" />
 
 <div class="container-fluid">
     <header class="d-flex justify-content-between align-items-center mb-4">
@@ -146,22 +143,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var successMsg = document.getElementById('success-message').value;
-            var errorMsg = document.getElementById('error-message').value;
-
-            if (successMsg) {
-                Swal.fire({ icon: 'success', title: 'Thành công', text: successMsg, timer: 2500, showConfirmButton: false });
-            }
-            if (errorMsg) {
-                Swal.fire({ icon: 'error', title: 'Lỗi', text: errorMsg });
-            }
-        });
-
         // Hàm Xóa Mềm (Chuyển vào thùng rác)
         function softDeleteBlock(id) {
             Swal.fire({

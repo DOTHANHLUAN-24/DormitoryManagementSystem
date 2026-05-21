@@ -1,0 +1,294 @@
+@model IEnumerable<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>
+@{
+    ViewData["Title"] = "Thùng rác Dịch vụ";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        /* 1. Header & Tổng thể */
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #ef4444, #f87171); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* 2. Nút bấm */
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-back { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-custom-header:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.08); }
+
+        /* 3. Thanh tìm kiếm */
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; }
+        .input-custom:focus { border-color: #ef4444 !important; box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important; }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input { padding-left: 40px; }
+
+        .btn-refresh { height: 46px; width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #e2e8f0; background: #fff; color: #1e293b; transition: all 0.2s; }
+        .btn-refresh:hover { background: #f8fafc; transform: scale(1.05); }
+
+        /* 4. Thẻ Thống kê */
+        .the-thong-ke { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .the-thong-ke-item { background: #fff; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 12px; border: 1px solid #f1f5f9; }
+        .icon-thong-ke { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        .icon-thong-ke.xanh-duong { background: #e0f2fe; color: #0284c7; }
+        .icon-thong-ke.xanh-la { background: #ecfdf5; color: #10b981; }
+        .icon-thong-ke.do { background: #fef2f2; color: #ef4444; }
+
+        /* 5. Bảng & Trạng thái */
+        .ma-dich-vu-badge { background: #f8fafc; color: #64748b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; text-decoration: none; }
+        .nut-khoi-phuc { background: #ecfdf5; color: #10b981; }
+        .nut-xoa-cung { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.1); }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-trash-alt me-2"></i>Thùng rác Dịch vụ</h1>
+        <div class="d-flex gap-2">
+            <a asp-controller="Utility" asp-action="Index" class="btn-custom-header btn-back text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <!-- Thống kê -->
+    <div class="the-thong-ke">
+        <div class="the-thong-ke-item">
+            <div class="icon-thong-ke xanh-duong"><i class="fas fa-concierge-bell"></i></div>
+            <div><h4 class="mb-0 fw-bold">@(ViewBag.TotalCount ?? 0)</h4><p class="text-muted small mb-0">Tổng dịch vụ</p></div>
+        </div>
+        <div class="the-thong-ke-item">
+            <div class="icon-thong-ke xanh-la"><i class="fas fa-check-circle"></i></div>
+            <div><h4 class="mb-0 fw-bold">@(ViewBag.ActiveCount ?? 0)</h4><p class="text-muted small mb-0">Đang hoạt động</p></div>
+        </div>
+        <div class="the-thong-ke-item">
+            <div class="icon-thong-ke do"><i class="fas fa-trash-alt"></i></div>
+            <div><h4 class="mb-0 fw-bold">@(ViewBag.DeletedCount ?? 0)</h4><p class="text-muted small mb-0">Trong thùng rác</p></div>
+        </div>
+    </div>
+
+    <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
+    <div class="thanh-tim-kiem shadow-sm">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-8 col-lg-9">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchTerm" class="form-control input-custom" placeholder="Tìm theo tên dịch vụ..." onkeyup="filterTable()">
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3 d-flex gap-2 justify-content-end">
+                <button type="button" class="btn-refresh" title="Làm mới" onclick="clearFilter()">
+                    <i class="fas fa-redo"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Danh sách Dịch vụ trong thùng rác -->
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="utilityTable">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4" style="width: 200px;">Mã dịch vụ</th>
+                        <th>Tên dịch vụ</th>
+                        <th>Đơn giá (VNĐ)</th>
+                        <th>Đơn vị tính</th>
+                        <th>Ngày xóa (Cập nhật)</th>
+                        <th class="text-end pe-4" style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr class="opacity-75">
+                                <td class="ps-4">
+                                    <span class="ma-dich-vu-badge">#DV-@item.Id.ToString().Substring(0, 8).ToUpper()</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-decoration-line-through text-dark service-name">@item.UtilityName</div>
+                                    <div class="small text-muted">Mã ID: @item.Id</div>
+                                </td>
+                                <td>@item.UnitPrice.ToString("N0")</td>
+                                <td><span class="badge bg-secondary py-2 px-3">@item.Unit</span></td>
+                                <td>@item.CreatedDate.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button type="button" class="nut-hanh-dong nut-khoi-phuc" 
+                                                onclick="confirmRestore('@item.Id', '@item.UtilityName')" title="Khôi phục hoạt động">
+                                            <i class="fas fa-undo"></i>
+                                        </button>
+                                        <button type="button" class="nut-hanh-dong nut-xoa-cung" 
+                                                onclick="confirmHardDelete('@item.Id', '@item.UtilityName')" title="Xóa vĩnh viễn">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-trash fa-3x mb-3 text-secondary"></i>
+                                <p class="mb-0">Thùng rác trống</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Tìm kiếm nhanh phía client
+        function filterTable() {
+            var input = document.getElementById("searchTerm");
+            var filter = input.value.toUpperCase();
+            var table = document.getElementById("utilityTable");
+            var tr = table.getElementsByTagName("tr");
+
+            for (var i = 1; i < tr.length; i++) {
+                var td = tr[i].getElementsByClassName("service-name")[0];
+                if (td) {
+                    var textValue = td.textContent || td.innerText;
+                    if (textValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+
+        function clearFilter() {
+            document.getElementById("searchTerm").value = "";
+            filterTable();
+        }
+
+        // Xác nhận khôi phục bằng Ajax
+        function confirmRestore(id, name) {
+            Swal.fire({
+                title: 'Khôi phục dịch vụ?',
+                text: "Bạn có chắc chắn muốn khôi phục lại dịch vụ '" + name + "'?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-undo me-1"></i> Đồng ý khôi phục',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: '/Utility/Restore/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã khôi phục!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Thất bại!',
+                                    text: res.message,
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi hệ thống',
+                                text: 'Đã xảy ra lỗi khi kết nối hoặc bạn không đủ thẩm quyền.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        // Xác nhận xóa vĩnh viễn bằng Ajax
+        function confirmHardDelete(id, name) {
+            Swal.fire({
+                title: 'XÓA VĨNH VIỄN?',
+                text: "Dịch vụ '" + name + "' sẽ bị xóa hoàn toàn khỏi cơ sở dữ liệu. Thao tác này KHÔNG THỂ KHÔI PHỤC!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-exclamation-triangle me-1"></i> Đồng ý xóa vĩnh viễn',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: '/Utility/HardDelete/' + id,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã xóa vĩnh viễn!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Thất bại!',
+                                    text: res.message,
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi hệ thống',
+                                text: 'Đã xảy ra lỗi khi kết nối hoặc bạn không đủ thẩm quyền.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

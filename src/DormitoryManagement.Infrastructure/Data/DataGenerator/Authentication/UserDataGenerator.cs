@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Enums;
 
 namespace DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication
@@ -62,47 +62,47 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication
                 }
             }
 
-            // 3. Nhân viên quản lý (Giữ nguyên)
-            var managementStaff = ctx.Faker.Make(2, () =>
+            // 3. Nhân viên quản lý (manager1, manager2)
+            for (int i = 1; i <= 2; i++)
             {
-                string staffCode = $"NVQL{ctx.Faker.Random.Number(1000, 9999)}";
-                return new User
+                string username = $"manager{i}";
+                string staffCode = $"NVQL00{i}";
+                ctx.Users.Add(new User
                 {
                     Id = Guid.NewGuid(),
                     FullName = ctx.Faker.Name.FullName(),
-                    UserName = staffCode.ToLower(),
+                    UserName = username,
                     Code = staffCode,
                     Role = UserRole.ManagementStaff,
                     IdentityCardNumber = ctx.Faker.Random.Replace("############"),
                     PhoneNumber = ctx.Faker.Phone.PhoneNumber("0#########"),
                     PhoneNumberConfirmed = true,
-                    Email = ctx.Faker.Internet.Email(),
+                    Email = $"{username}@gmail.com",
                     EmailConfirmed = true,
                     IsActive = true
-                };
-            });
-            ctx.Users.AddRange(managementStaff);
+                });
+            }
 
-            // 4. Nhân viên kỹ thuật (Giữ nguyên)
-            var technicalStaff = ctx.Faker.Make(3, () =>
+            // 4. Nhân viên kỹ thuật (tech1, tech2, tech3)
+            for (int i = 1; i <= 3; i++)
             {
-                string techCode = $"NVKT{ctx.Faker.Random.Number(1000, 9999)}";
-                return new User
+                string username = $"tech{i}";
+                string techCode = $"NVKT00{i}";
+                ctx.Users.Add(new User
                 {
                     Id = Guid.NewGuid(),
                     FullName = ctx.Faker.Name.FullName(),
-                    UserName = techCode.ToLower(),
+                    UserName = username,
                     Code = techCode,
                     Role = UserRole.TechnicalStaff,
                     IdentityCardNumber = ctx.Faker.Random.Replace("############"),
                     PhoneNumber = ctx.Faker.Phone.PhoneNumber("0#########"),
                     PhoneNumberConfirmed = true,
-                    Email = ctx.Faker.Internet.Email(),
+                    Email = $"{username}@gmail.com",
                     EmailConfirmed = true,
                     IsActive = true
-                };
-            });
-            ctx.Users.AddRange(technicalStaff);
+                });
+            }
         }
     }
 }

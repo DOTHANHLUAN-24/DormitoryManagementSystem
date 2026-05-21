@@ -13,21 +13,10 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý tòa nhà (BlockService).
     /// </summary>
-    public class BlockService : IBlockService
+    public class BlockService(IBlockRepository blockRepository, IUnitOfWork unitOfWork) : IBlockService
     {
-        private readonly IBlockRepository _blockRepository;
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Khởi tạo BlockService.
-        /// </summary>
-        /// <param name="blockRepository">Repository tòa nhà</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        public BlockService(IBlockRepository blockRepository, IUnitOfWork unitOfWork)
-        {
-            _blockRepository = blockRepository;
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IBlockRepository _blockRepository = blockRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         /// <summary>
         /// Lấy danh sách tòa nhà đang hoạt động có phân trang và tìm kiếm.

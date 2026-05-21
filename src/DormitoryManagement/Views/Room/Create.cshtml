@@ -122,36 +122,9 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         $(document).ready(function () {
-            // CÁCH NÀY FIX 100% LỖI TIẾNG VIỆT VÀ DẤU NHÁY:
-            // Lấy thẳng dữ liệu từ C# render thành biến JS chuẩn
-            var successMsg = @Html.Raw(Json.Serialize(TempData["Success"]));
-            var errorMsg = @Html.Raw(Json.Serialize(TempData["Error"]));
-
-            if (successMsg) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: successMsg,
-                    showConfirmButton: false,
-                    timer: 2500,
-                    timerProgressBar: true
-                });
-            }
-
-            if (errorMsg) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Đã xảy ra lỗi!',
-                    text: errorMsg,
-                    confirmButtonText: 'Đã hiểu',
-                    confirmButtonColor: '#dc3545'
-                });
-            }
-
             // Hiệu ứng Loading
             $('form').submit(function (e) {
                 if ($(this).valid()) { 

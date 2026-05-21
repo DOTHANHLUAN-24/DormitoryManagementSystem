@@ -1,0 +1,36 @@
+<svg width="100%" height="100%" viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:0.25" />
+      <stop offset="100%" style="stop-color:#c084fc;stop-opacity:0.05" />
+    </linearGradient>
+  </defs>
+  <!-- Background Pattern -->
+  <rect width="100%" height="100%" fill="url(#grad)" />
+  <circle cx="400" cy="225" r="280" fill="none" stroke="rgba(99, 102, 241, 0.08)" stroke-width="1.5" />
+  <circle cx="400" cy="225" r="200" fill="none" stroke="rgba(99, 102, 241, 0.12)" stroke-width="1.5" stroke-dasharray="10 5" />
+  
+  <!-- Glowing central backdrop -->
+  <circle cx="400" cy="210" r="60" fill="rgba(99, 102, 241, 0.15)" filter="blur(10px)" />
+  <circle cx="400" cy="210" r="50" fill="none" stroke="rgba(99, 102, 241, 0.3)" stroke-width="2" />
+  
+  <!-- Modern Building/Dorm Icon in Center -->
+  <g transform="translate(360, 170)" stroke="#818cf8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Outer building frame -->
+    <path d="M10 65 L10 10 Q10 0 20 0 L60 0 Q70 0 70 10 L70 65" stroke="#c084fc" />
+    <!-- Roof line / building cap -->
+    <path d="M0 65 L80 65" />
+    <!-- Bed outline / interior details -->
+    <path d="M20 45 L60 45" stroke-width="2" />
+    <path d="M25 45 L25 35" stroke-width="2" stroke="#cbd5e1" />
+    <path d="M55 45 L55 35" stroke-width="2" stroke="#cbd5e1" />
+    <rect x="32" y="30" width="16" height="8" rx="2" fill="rgba(129, 140, 248, 0.2)" />
+    <!-- Windows -->
+    <rect x="23" y="10" width="12" height="12" rx="2" stroke="#818cf8" />
+    <rect x="45" y="10" width="12" height="12" rx="2" stroke="#818cf8" />
+  </g>
+  
+  <!-- Text Labels -->
+  <text x="400" y="315" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, sans-serif" font-size="22" font-weight="800" fill="#ffffff" text-anchor="middle" letter-spacing="1.5">KÝ TÚC XÁ HIỆN ĐẠI</text>
+  <text x="400" y="345" font-family="'Plus Jakarta Sans', 'Segoe UI', -apple-system, sans-serif" font-size="14" font-weight="600" fill="#94a3b8" text-anchor="middle" letter-spacing="0.5">Hình ảnh đang được cập nhật • BQL KTX</text>
+</svg>

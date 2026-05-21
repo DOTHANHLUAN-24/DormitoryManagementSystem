@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -90,7 +90,7 @@
                         </li>
 
                         <li>
-                            <a class="dropdown-item" href="#">
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="onUnderDevelopment('Đổi mật khẩu')">
                                 <i class="fas fa-key me-2"></i> Đổi mật khẩu
                             </a>
                         </li>
@@ -127,29 +127,26 @@
 
         <!-- CONTENT -->
         <div class="p-4">
-            @* Di chuyển Alert vào đây để nó hiển thị trong vùng nội dung chính *@
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i> @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
             @RenderBody()
         </div>
 
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
+        function onUnderDevelopment(featureName) {
+            Swal.fire({
+                title: 'Tính năng đang được phát triển',
+                text: 'Chức năng "' + featureName + '" hiện đang trong quá trình xây dựng và hoàn thiện. Vui lòng quay lại sau.',
+                icon: 'info',
+                confirmButtonColor: '#6366f1',
+                confirmButtonText: 'Đóng'
+            });
+        }
+
         function toggleSidebar() {
             const sidebar = document.querySelector(".sidebar");
             const main = document.getElementById("main");
@@ -169,14 +166,49 @@
     @RenderSection("Scripts", required: false)
 
     <script>
-        // Tự động ẩn thông báo sau 5 giây
-        window.setTimeout(function () {
-            $(".alert").fadeTo(500, 0).slideUp(500, function () {
-                $(this).remove();
-            });
-        }, 5000);
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-        const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+        $(document).ready(function () {
+            var successMsg = @Html.Raw(Json.Serialize(TempData["Success"]));
+            var errorMsg = @Html.Raw(Json.Serialize(TempData["Error"]));
+
+            if (successMsg) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: successMsg,
+                    showConfirmButton: false,
+                    timer: 2500,
+                    timerProgressBar: true
+                });
+            }
+
+            if (errorMsg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi!',
+                    text: errorMsg,
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+
+            // Hiển thị lỗi validation ModelState chi tiết nếu có
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+                var errors = string.Join("<br/>", ViewData.ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => "• " + e.ErrorMessage.Replace("'", "\\'").Replace("\"", "\\\"")));
+                <text>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi nhập liệu!',
+                    html: '@Html.Raw(errors)',
+                    confirmButtonColor: '#ef4444'
+                });
+                </text>
+            }
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            const tooltipList = [...tooltipTriggerList].map(el => new bootstrap.Tooltip(el));
+        });
     </script>
 </body>
 </html>

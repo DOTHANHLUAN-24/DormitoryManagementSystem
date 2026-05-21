@@ -1,32 +1,35 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using DormitoryManagement.Application.Services.Interfaces;
+using System.Threading.Tasks;
 
 namespace DormitoryManagement.Controllers
 {
     /// <summary>
     /// Controller xử lý các logic liên quan đến Báo cáo và Thống kê
     /// </summary>
-    [Authorize(Roles = "Admin,Manager")]
+    [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
     [Route("Statistic")]
-    public class StatisticController : Controller
+    public class StatisticController(IStatisticService statisticService) : Controller
     {
         [HttpGet("")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            // Mock dữ liệu cho các thẻ tóm tắt (Summary Cards)
-            ViewBag.TotalStudents = 1250;
-            ViewBag.EmptyRooms = 45;
-            ViewBag.UnpaidInvoices = 12;
-            ViewBag.NewViolations = 8;
+            var stats = await statisticService.GetStatisticSummaryAsync();
 
-            // Mock dữ liệu cho Biểu đồ Tình trạng phòng (Doughnut Chart)
-            // Thứ tự: [Đã đầy, Còn trống, Bảo trì]
-            ViewBag.RoomStatusData = new int[] { 185, 40, 15 };
+            // Gán dữ liệu cho các thẻ tóm tắt (Summary Cards)
+            ViewBag.TotalStudents = stats.TotalStudents;
+            ViewBag.EmptyRooms = stats.EmptyRooms;
+            ViewBag.UnpaidInvoices = stats.UnpaidInvoices;
+            ViewBag.NewViolations = stats.NewViolations;
 
-            // Mock dữ liệu cho Biểu đồ Doanh thu (Bar Chart)
-            ViewBag.RevenueLabels = new string[] { "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6" };
-            ViewBag.RevenuePaid = new int[] { 150, 180, 165, 200, 210, 195 }; // Triệu VNĐ
-            ViewBag.RevenueUnpaid = new int[] { 15, 10, 25, 5, 12, 18 };    // Triệu VNĐ
+            // Gán dữ liệu cho Biểu đồ Tình trạng phòng (Doughnut Chart)
+            ViewBag.RoomStatusData = stats.RoomStatusData;
+
+            // Gán dữ liệu cho Biểu đồ Doanh thu (Bar Chart)
+            ViewBag.RevenueLabels = stats.RevenueLabels;
+            ViewBag.RevenuePaid = stats.RevenuePaid;
+            ViewBag.RevenueUnpaid = stats.RevenueUnpaid;
 
             return View();
         }
