@@ -1,5 +1,6 @@
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Dtos.Responses.Utilities;
+using DormitoryManagement.Domain.Common;
 
 namespace DormitoryManagement.Application.Services.Interfaces
 {
@@ -19,6 +20,11 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// </summary>
         /// <returns>Danh sách dịch vụ trong thùng rác</returns>
         Task<IEnumerable<UtilityResponseDto>> GetAllDeletedUtilitiesAsync();
+
+        /// <summary>
+        /// Lấy danh sách dịch vụ tiện ích phân trang kèm theo bộ lọc tìm kiếm.
+        /// </summary>
+        Task<PagedResult<UtilityResponseDto>> GetPagedUtilitiesAsync(int pageIndex, int pageSize, string? searchTerm, bool? isActive = null, bool? isDeleted = false);
 
         /// <summary>
         /// Lấy chi tiết thông tin dịch vụ theo Id.

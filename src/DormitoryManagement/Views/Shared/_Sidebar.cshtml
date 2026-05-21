@@ -1,4 +1,5 @@
-﻿@using Common
+@using Common
+@inject DormitoryManagement.Application.Services.Interfaces.IContractService ContractService
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
@@ -8,6 +9,12 @@
     var isStaff = User.IsInRole("TechnicalStaff") || User.IsInRole("TechnicalRole");
     var isAdminOrManager = isAdmin || isManager;
     var isAuthenticated = User.Identity?.IsAuthenticated == true;
+
+    int pendingContractsCount = 0;
+    if (isAuthenticated && isAdminOrManager)
+    {
+        pendingContractsCount = await ContractService.GetPendingCountAsync();
+    }
 }
 
 <div class="sidebar p-2">
@@ -63,6 +70,35 @@
                     <i class="fas fa-trash-alt me-2"></i> Thùng rác người dùng
                 </a>
             }
+        </div>
+    }
+
+    <!-- ================= QUẢN LÝ HỢP ĐỒNG ================= -->
+    @if (isAdminOrManager)
+    {
+        var isContractGroup = currentController == "Contract";
+        <a data-bs-toggle="collapse" href="#contractMenu" class="menu-toggle @(isContractGroup ? "active" : "collapsed") d-flex align-items-center">
+            <i class="fas fa-file-contract"></i>
+            <span class="text">Quản lý hợp đồng</span>
+            @if (pendingContractsCount > 0)
+            {
+                <span class="badge bg-danger ms-auto rounded-pill" style="font-size: 0.75rem; padding: 4px 8px;">@pendingContractsCount</span>
+            }
+        </a>
+        <div class="collapse submenu @(isContractGroup ? "show" : "")" id="contractMenu">
+            <a asp-controller="Contract" asp-action="Index" class="@(isContractGroup && currentAction == "Index" ? "active" : "")">
+                <i class="fas fa-list me-2"></i> Danh sách hợp đồng
+            </a>
+            <a asp-controller="Contract" asp-action="Pending" class="@(isContractGroup && currentAction == "Pending" ? "active" : "") d-flex align-items-center justify-content-between">
+                <span><i class="fas fa-clock me-2"></i> Hợp đồng chờ duyệt</span>
+                @if (pendingContractsCount > 0)
+                {
+                    <span class="badge bg-danger rounded-pill" style="font-size: 0.7rem; padding: 3px 6px;">@pendingContractsCount</span>
+                }
+            </a>
+            <a asp-controller="Contract" asp-action="Create" class="@(isContractGroup && currentAction == "Create" ? "active" : "")">
+                <i class="fas fa-plus me-2"></i> Tạo hợp đồng thủ công
+            </a>
         </div>
     }
 

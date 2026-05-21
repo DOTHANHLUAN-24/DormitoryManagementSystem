@@ -19,25 +19,37 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search = "", int page = 1)
         {
+            int pageSize = PageSize;
+            var pagedUtilities = await _utilityService.GetPagedUtilitiesAsync(page, pageSize, search, isActive: true, isDeleted: false);
+
             var utilities = await _utilityService.GetAllActiveUtilitiesAsync();
             var deleted = await _utilityService.GetAllDeletedUtilitiesAsync();
             ViewBag.ActiveCount = utilities.Count();
             ViewBag.DeletedCount = deleted.Count();
             ViewBag.TotalCount = utilities.Count() + deleted.Count();
-            return View(utilities);
+
+            ViewBag.Search = search;
+
+            return View(pagedUtilities);
         }
 
         [HttpGet("Trash")]
-        public async Task<IActionResult> Trash()
+        public async Task<IActionResult> Trash(string search = "", int page = 1)
         {
-            var trashedUtilities = await _utilityService.GetAllDeletedUtilitiesAsync();
+            int pageSize = PageSize;
+            var pagedTrashed = await _utilityService.GetPagedUtilitiesAsync(page, pageSize, search, isActive: false, isDeleted: false);
+
             var active = await _utilityService.GetAllActiveUtilitiesAsync();
+            var deleted = await _utilityService.GetAllDeletedUtilitiesAsync();
             ViewBag.ActiveCount = active.Count();
-            ViewBag.DeletedCount = trashedUtilities.Count();
-            ViewBag.TotalCount = active.Count() + trashedUtilities.Count();
-            return View(trashedUtilities);
+            ViewBag.DeletedCount = deleted.Count();
+            ViewBag.TotalCount = active.Count() + deleted.Count();
+
+            ViewBag.Search = search;
+
+            return View(pagedTrashed);
         }
 
         [HttpGet("Create")]

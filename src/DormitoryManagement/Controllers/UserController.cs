@@ -6,9 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("User")]
-    [Authorize]
-    public class UserController : Controller
+    public class UserController : BaseController
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
@@ -19,6 +17,7 @@ namespace DormitoryManagement.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = BaseController.PageSize;

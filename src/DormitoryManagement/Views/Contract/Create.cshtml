@@ -1,0 +1,254 @@
+@model DormitoryManagement.Domain.Entities.Contract
+
+@{
+    ViewData["Title"] = "Tạo Hợp Đồng Thủ Công";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #1e293b, #4f46e5); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #4f46e5; 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); 
+        }
+        .nut-luu:hover { 
+            background: #4338ca; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Tạo Hợp Đồng Thủ Công
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    @* Hiển thị lỗi tổng quát từ ModelState *@
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+
+                    <div class="row g-4 mb-4">
+                        <!-- Mã Hợp Đồng -->
+                        <div class="col-md-6">
+                            <label asp-for="ContractCode" class="form-label">Mã Hợp Đồng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-contract"></i></span>
+                                <input asp-for="ContractCode" class="form-control" placeholder="Ví dụ: HD-2026-0001..." autocomplete="off" />
+                            </div>
+                            <span asp-validation-for="ContractCode" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Sinh viên thuê -->
+                        <div class="col-md-6">
+                            <label asp-for="UserId" class="form-label">Sinh Viên Thuê <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-user-student"></i></span>
+                                <select asp-for="UserId" asp-items="ViewBag.Users" class="form-select" required>
+                                    <option value="">-- Chọn sinh viên thuê --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="UserId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Chọn giường trống -->
+                        <div class="col-md-12">
+                            <label asp-for="BedId" class="form-label">Phòng / Giường Đăng Ký <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-bed"></i></span>
+                                <select asp-for="BedId" asp-items="ViewBag.Beds" class="form-select" required>
+                                    <option value="">-- Chọn vị trí giường trống --</option>
+                                </select>
+                            </div>
+                            <span asp-validation-for="BedId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Ngày bắt đầu -->
+                        <div class="col-md-6">
+                            <label asp-for="StartDate" class="form-label">Ngày Bắt Đầu Thuê <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input asp-for="StartDate" class="form-control" type="date" required />
+                            </div>
+                            <span asp-validation-for="StartDate" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Ngày kết thúc -->
+                        <div class="col-md-6">
+                            <label asp-for="EndDate" class="form-label">Ngày Hết Hạn Hợp Đồng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
+                                <input asp-for="EndDate" class="form-control" type="date" required />
+                            </div>
+                            <span asp-validation-for="EndDate" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Tiền đặt cọc -->
+                        <div class="col-md-12">
+                            <label asp-for="DepositAmount" class="form-label">Số Tiền Đặt Cọc (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-money-bill-wave"></i></span>
+                                <input asp-for="DepositAmount" class="form-control" type="number" min="0" value="1000000" required />
+                            </div>
+                            <span asp-validation-for="DepositAmount" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="nut-luu">
+                            <i class="fas fa-save"></i> Tạo Hợp Đồng
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Lưu ý khi tạo hợp đồng</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li><strong>Loại tài khoản:</strong> Hệ thống chỉ cho phép tạo hợp đồng thuê phòng đối với người dùng là Sinh viên đang hoạt động.</li>
+                    <li><strong>Giường trống:</strong> Chỉ hiển thị danh sách các giường ở trạng thái "Trống" (Available) trong toàn bộ KTX.</li>
+                    <li><strong>Trạng thái ban đầu:</strong> Hợp đồng mới được tạo sẽ có trạng thái là "Chờ duyệt" (Pending) để tiếp tục phê duyệt & chốt thông tin hoặc in ấn.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Hiệu ứng Loading khi gửi form
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    Swal.fire({
+                        title: 'Đang tạo hợp đồng...',
+                        html: 'Hệ thống đang lưu dữ liệu hợp đồng.',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

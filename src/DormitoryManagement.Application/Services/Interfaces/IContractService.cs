@@ -27,5 +27,35 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="bedId">Id của giường</param>
         /// <returns>Hợp đồng thuê giường đó</returns>
         Task<Contract> GetByBedIdAsync(Guid bedId);
+
+        /// <summary>
+        /// Lấy hợp đồng theo Id.
+        /// </summary>
+        Task<Contract?> GetByIdAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách hợp đồng phân trang, hỗ trợ tìm kiếm và lọc theo trạng thái.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Contract>> GetPagedContractsAsync(int pageIndex, int pageSize, string? searchString = null, DormitoryManagement.Domain.Enums.ContractStatus? status = null);
+
+        /// <summary>
+        /// Tạo mới một hợp đồng.
+        /// </summary>
+        Task<bool> CreateContractAsync(Contract contract);
+
+        /// <summary>
+        /// Cập nhật thông tin hợp đồng.
+        /// </summary>
+        Task<bool> UpdateContractAsync(Contract contract);
+
+        /// <summary>
+        /// Xóa hợp đồng theo Id.
+        /// </summary>
+        Task<bool> DeleteContractAsync(Guid id);
+
+        /// <summary>
+        /// Lấy số lượng hợp đồng ở trạng thái chờ duyệt (Pending).
+        /// </summary>
+        Task<int> GetPendingCountAsync();
     }
 }
