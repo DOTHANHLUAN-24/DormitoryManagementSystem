@@ -1,4 +1,4 @@
-﻿@using DormitoryManagement.Application.Dtos.Requests
+@using DormitoryManagement.Application.Dtos.Requests
 @using DormitoryManagement.Domain.Enums
 @model DormitoryManagement.Application.Dtos.Requests.Users.UserRequestDto;
 
@@ -83,11 +83,22 @@
                                     <label class="form-label">Mật khẩu <span class="text-danger">*</span></label>
                                     <div class="input-group password-group">
                                         <input asp-for="Password" type="password" class="form-control input-custom" id="createPasswordInput" placeholder="Nhập mật khẩu" autocomplete="new-password" />
-                                        <button class="btn btn-toggle" type="button" onclick="toggleCreatePasswordVisibility()">
+                                        <button class="btn btn-toggle" type="button" onclick="toggleCreatePasswordVisibility('createPasswordInput', 'createPasswordIcon')">
                                             <i class="fas fa-eye" id="createPasswordIcon"></i>
                                         </button>
                                     </div>
                                     <span asp-validation-for="Password" class="text-danger small mt-1 d-block"></span>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Xác nhận mật khẩu <span class="text-danger">*</span></label>
+                                    <div class="input-group password-group">
+                                        <input asp-for="ConfirmPassword" type="password" class="form-control input-custom" id="createConfirmPasswordInput" placeholder="Xác nhận mật khẩu" />
+                                        <button class="btn btn-toggle" type="button" onclick="toggleCreatePasswordVisibility('createConfirmPasswordInput', 'createConfirmPasswordIcon')">
+                                            <i class="fas fa-eye" id="createConfirmPasswordIcon"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="ConfirmPassword" class="text-danger small mt-1 d-block"></span>
                                 </div>
 
                                 <div class="mb-4">
@@ -156,42 +167,13 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function () {
-            // Thông báo lỗi từ ModelState
-            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi nhập liệu',
-                    text: 'Vui lòng kiểm tra lại các trường thông tin màu đỏ.',
-                    confirmButtonColor: '#4f46e5'
-                });
-                </text>
-            }
-
-            // Thông báo lỗi từ Catch Exception
-            @if (TempData["Error"] != null)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Thất bại',
-                    text: '@TempData["Error"]',
-                    confirmButtonColor: '#ef4444'
-                });
-                </text>
-            }
-        });
 
         // Toggle Password Visibility
-        function toggleCreatePasswordVisibility() {
-            const passwordField = document.getElementById('createPasswordInput');
-            const passwordIcon = document.getElementById('createPasswordIcon');
+        function toggleCreatePasswordVisibility(inputId, iconId) {
+            const passwordField = document.getElementById(inputId);
+            const passwordIcon = document.getElementById(iconId);
             if (passwordField && passwordIcon) {
                 if (passwordField.type === "password") {
                     passwordField.type = "text";

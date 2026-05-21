@@ -17,24 +17,11 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý tài sản (AssetService).
     /// </summary>
-    public class AssetService : IAssetService
+    public class AssetService(IAssetRepository assetRepository, IUnitOfWork unitOfWork, IMapper mapper) : IAssetService
     {
-        private readonly IAssetRepository _assetRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Khởi tạo AssetService.
-        /// </summary>
-        /// <param name="assetRepository">Repository tài sản</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
-        public AssetService(IAssetRepository assetRepository, IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _assetRepository = assetRepository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IAssetRepository _assetRepository = assetRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Lấy danh sách tài sản phân trang, hỗ trợ tìm kiếm theo tên/mã tài sản, lọc theo trạng thái và phòng.

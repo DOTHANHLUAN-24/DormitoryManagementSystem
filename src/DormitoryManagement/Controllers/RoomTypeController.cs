@@ -1,31 +1,26 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Infrastructure.Data; // Để dùng SaveChangesAsync nếu chưa có UnitOfWork
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
-    [Route("RoomType")]
-    public class RoomTypeController : Controller
+    public class RoomTypeController
+    (
+        IRoomTypeRepository roomTypeRepository,
+        IUnitOfWork unitOfWork
+    ) : BaseController
     {
-        private readonly IRoomTypeRepository _roomTypeRepository;
-        private readonly ApplicationDbContext _context;
+        private readonly IRoomTypeRepository _roomTypeRepository = roomTypeRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-        public RoomTypeController(IRoomTypeRepository roomTypeRepository, ApplicationDbContext context)
-        {
-            _roomTypeRepository = roomTypeRepository;
-            _context = context; // Inject Context để thực hiện SaveChanges sau khi gọi Repo
-        }
-
-        // GET: RoomType
-        [AllowAnonymous]
+        [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
-            int pageSize = 5; // Bạn có thể tăng lên 10 tùy ý
+            int pageSize = PageSize;
 
-            // Sử dụng GetPagedAsync từ BaseRepository
             var result = await _roomTypeRepository.GetPagedAsync(
                 pageIndex: page,
                 pageSize: pageSize,
@@ -37,8 +32,7 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        // GET: RoomType/Details/5
-        [Route("Details/{id}")]
+        [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
             var roomType = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);
@@ -47,18 +41,14 @@ namespace DormitoryManagement.Controllers
             return View(roomType);
         }
 
-        [Route("Create")]
-        // GET: RoomType/Create
-        [HttpGet]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: RoomType/Create
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        [Route("Create")]
         public async Task<IActionResult> Create(RoomType roomType)
         {
             if (ModelState.IsValid)
@@ -71,7 +61,7 @@ namespace DormitoryManagement.Controllers
                 }
 
                 await _roomTypeRepository.AddAsync(roomType);
-                await _context.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
 
                 TempData["Success"] = "Thêm loại phòng mới thành công!";
                 return RedirectToAction(nameof(Index));
@@ -79,9 +69,7 @@ namespace DormitoryManagement.Controllers
             return View(roomType);
         }
 
-        [Route("Edit/{id}")]
-        // GET: RoomType/Edit/{id}
-        [HttpGet]
+        [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var roomType = await _roomTypeRepository.GetByIdAsync(id);
@@ -90,10 +78,8 @@ namespace DormitoryManagement.Controllers
             return View(roomType);
         }
 
-        // POST: RoomType/Edit/{id}
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        [Route("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id, RoomType roomType)
         {
             if (id != roomType.Id) return BadRequest();
@@ -121,7 +107,7 @@ namespace DormitoryManagement.Controllers
                     existing.IsActive = roomType.IsActive;
 
                     await _roomTypeRepository.UpdateAsync(existing);
-                    await _context.SaveChangesAsync();
+                    await _unitOfWork.SaveChangesAsync();
 
                     TempData["Success"] = "Cập nhật loại phòng thành công!";
                     return RedirectToAction(nameof(Index));
@@ -134,10 +120,8 @@ namespace DormitoryManagement.Controllers
             return View(roomType);
         }
 
-        // POST: RoomType/Delete/{id}
-        [HttpPost]
+        [HttpPost("Delete/{id}")]
         [ValidateAntiForgeryToken]
-        [Route("Delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var roomType = await _roomTypeRepository.GetByIdAsync(id);
@@ -152,7 +136,7 @@ namespace DormitoryManagement.Controllers
             }
 
             await _roomTypeRepository.DeleteAsync(roomType, isSoftDelete: true);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
 
             TempData["Success"] = "Xóa loại phòng thành công!";
             return RedirectToAction(nameof(Index));

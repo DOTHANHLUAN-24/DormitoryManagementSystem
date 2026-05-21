@@ -7,25 +7,16 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý hợp đồng thuê phòng (ContractService).
     /// </summary>
-    public class ContractService : IContractService
+    public class ContractService(IContractRepository contractRepository) : IContractService
     {
-        private readonly IContractRepository _db;
-
-        /// <summary>
-        /// Khởi tạo ContractService.
-        /// </summary>
-        /// <param name="db">Repository hợp đồng</param>
-        public ContractService(IContractRepository db)
-        {
-            _db = db;
-        }
+        private readonly IContractRepository _contractRepository = contractRepository;
 
         /// <summary>
         /// Lấy hợp đồng theo mã hợp đồng (ContractCode).
         /// </summary>
         public Task<Contract?> GetByContractCodeAsync(string contractCode)
         {
-            return _db.GetByContractCodeAsync(contractCode);
+            return _contractRepository.GetByContractCodeAsync(contractCode);
         }
 
         /// <summary>
@@ -33,7 +24,7 @@ namespace DormitoryManagement.Application.Services.Implements
         /// </summary>
         public Task<IEnumerable<Contract>> GetByUserIdAsync(Guid userId)
         {
-            return _db.GetByUserIdAsync(userId);
+            return _contractRepository.GetByUserIdAsync(userId);
         }
 
         /// <summary>
@@ -41,7 +32,7 @@ namespace DormitoryManagement.Application.Services.Implements
         /// </summary>
         public Task<Contract> GetByBedIdAsync(Guid bedId)
         {
-            return _db.GetByBedIdAsync(bedId);
+            return _contractRepository.GetByBedIdAsync(bedId);
         }
     }
 }

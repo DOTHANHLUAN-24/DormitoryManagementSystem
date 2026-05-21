@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Blocks;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -6,24 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("Block")]
     [Authorize(Roles = "Admin,ManagerStaff")]
-    public class BlockController : Controller
+    public class BlockController(IBlockService blockService) : BaseController
     {
-        private readonly IBlockService _blockService;
-        private readonly IMapper _mapper;
-
-        public BlockController(IBlockService blockService, IMapper mapper)
-        {
-            _blockService = blockService;
-            _mapper = mapper;
-        }
-
+        private readonly IBlockService _blockService = blockService;
 
         [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = PageSize;
             var result = await _blockService.GetActiveBlocksPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -33,7 +24,7 @@ namespace DormitoryManagement.Controllers
         [HttpGet("RecycleBin")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = PageSize;
             var result = await _blockService.GetDeletedBlocksPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -204,7 +195,7 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Suspended")]
         public async Task<IActionResult> SuspendedList(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = PageSize;
             var result = await _blockService.GetSuspendedBlocksPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;

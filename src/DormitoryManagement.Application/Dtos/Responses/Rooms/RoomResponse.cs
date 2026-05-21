@@ -1,4 +1,4 @@
-﻿namespace DormitoryManagement.Application.Dtos.Responses.Rooms
+namespace DormitoryManagement.Application.Dtos.Responses.Rooms
 {
     public class RoomResponse
     {
@@ -21,5 +21,7 @@
         public decimal BasePrice { get; set; }
 
         public int MaxOccupants { get; set; }
+
+        public string Description { get; set; } = string.Empty;
     }
 }

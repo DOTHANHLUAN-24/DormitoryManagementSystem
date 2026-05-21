@@ -3,163 +3,357 @@
     Layout = "_Layout";
 }
 
-<div class="container-fluid">
+@section Styles {
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .stats-container {
+            font-family: 'Outfit', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Glassmorphic card styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 18px;
+            box-shadow: 0 10px 30px 0 rgba(31, 38, 135, 0.04);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px 0 rgba(31, 38, 135, 0.08);
+        }
+
+        /* Custom premium HSL gradient designs */
+        .stat-card-gradient-1 {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        .stat-card-gradient-2 {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        }
+        .stat-card-gradient-3 {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+        }
+        .stat-card-gradient-4 {
+            background: linear-gradient(135deg, #dc2626 0%, #f43f5e 100%);
+        }
+
+        .stat-card-premium {
+            border: none;
+            border-radius: 18px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            color: #ffffff;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+        .stat-card-premium:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .stat-icon {
+            font-size: 3.5rem;
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            opacity: 0.18;
+            transition: all 0.3s ease;
+        }
+        .stat-card-premium:hover .stat-icon {
+            transform: scale(1.15) rotate(-10deg);
+            opacity: 0.28;
+        }
+
+        .card-header-premium {
+            background: transparent !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+        }
+    </style>
+}
+
+<div class="container-fluid stats-container">
     <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h3 class="fw-bold text-dark"><i class="fas fa-chart-line me-2 text-primary"></i>Báo cáo Thống kê</h3>
+    <div class="row mb-4 align-items-center">
+        <div class="col-12 col-md-8">
+            <h3 class="fw-extrabold text-dark mb-1" style="letter-spacing: -0.5px;">
+                <i class="fas fa-chart-line me-2 text-primary"></i>Báo cáo Thống kê
+            </h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Báo cáo thống kê</li>
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+                    <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Báo cáo thống kê</li>
                 </ol>
             </nav>
+        </div>
+        <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
+            <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-2" 
+                    style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); transition: all 0.3s;"
+                    onclick="onUnderDevelopment('Xuất báo cáo thống kê Excel')">
+                <i class="fas fa-download"></i>
+                <span>Xuất file Excel</span>
+            </button>
         </div>
     </div>
 
     <!-- Tổng quan nhanh (Summary Cards) -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-primary text-white">
-                <div class="card-body">
-                    <h6 class="text-uppercase small fw-bold">Tổng Sinh viên</h6>
-                    <h2 class="mb-0">@ViewBag.TotalStudents</h2>
-                    <i class="fas fa-users position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+    <div class="row g-4 mb-4">
+        <!-- Card 1 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card-premium stat-card-gradient-1 h-100">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Tổng Sinh viên</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@ViewBag.TotalStudents</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            Sinh viên nội trú hiện tại
+                        </span>
+                    </div>
+                    <i class="fas fa-users stat-icon"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-success text-white">
-                <div class="card-body">
-                    <h6 class="text-uppercase small fw-bold">Phòng đang trống</h6>
-                    <h2 class="mb-0">@ViewBag.EmptyRooms</h2>
-                    <i class="fas fa-door-open position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+
+        <!-- Card 2 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card-premium stat-card-gradient-2 h-100">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Phòng đang trống</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@ViewBag.EmptyRooms</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            Sẵn sàng đón tiếp sinh viên
+                        </span>
+                    </div>
+                    <i class="fas fa-door-open stat-icon"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-warning text-white">
-                <div class="card-body">
-                    <h6 class="text-uppercase small fw-bold">Hóa đơn chưa thu</h6>
-                    <h2 class="mb-0">@ViewBag.UnpaidInvoices</h2>
-                    <i
-                    class="fas fa-file-invoice-dollar position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+
+        <!-- Card 3 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card-premium stat-card-gradient-3 h-100">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Hóa đơn chưa thu</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@ViewBag.UnpaidInvoices</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            Cần rà soát thu chi tháng này
+                        </span>
+                    </div>
+                    <i class="fas fa-file-invoice-dollar stat-icon"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-danger text-white">
-                <div class="card-body">
-                    <h6 class="text-uppercase small fw-bold">Vi phạm mới</h6>
-                    <h2 class="mb-0">@String.Format("{0:00}", ViewBag.NewViolations)</h2>
-                    <i
-                    class="fas fa-exclamation-triangle position-absolute end-0 bottom-0 mb-3 me-3 opacity-25 fa-2x"></i>
+
+        <!-- Card 4 -->
+        <div class="col-12 col-sm-6 col-xl-3">
+            <div class="card stat-card-premium stat-card-gradient-4 h-100">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Vi phạm mới</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@String.Format("{0:00}", ViewBag.NewViolations)</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            Chưa xử lý trong tuần này
+                        </span>
+                    </div>
+                    <i class="fas fa-exclamation-triangle stat-icon"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row">
+    <!-- Charts -->
+    <div class="row g-4 mb-4">
         <!-- Đồ thị tình trạng phòng -->
-        <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3">
-                    <h6 class="m-0 fw-bold text-primary">Tình trạng Phòng</h6>
+        <div class="col-12 col-lg-4">
+            <div class="card glass-card h-100">
+                <div class="card-header card-header-premium py-3 d-flex align-items-center justify-content-between">
+                    <h5 class="m-0 fw-bold text-dark fs-6">
+                        <i class="fas fa-door-closed me-2 text-primary"></i>Tình trạng phòng ở
+                    </h5>
                 </div>
-                <div class="card-body d-flex align-items-center">
+                <div class="card-body p-4 d-flex align-items-center justify-content-center" style="position: relative; min-height: 320px;">
                     <canvas id="roomStatusChart"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Đồ thị doanh thu theo tháng -->
-        <div class="col-lg-8 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <h6 class="m-0 fw-bold text-primary">Doanh thu 6 tháng gần nhất</h6>
-                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-download me-1"></i>Xuất
-                        Excel</button>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="revenueChart" style="min-height: 300px;"></canvas>
-                    </div>
+        <div class="col-12 col-lg-8">
+            <div class="card glass-card h-100">
+                <div class="card-header card-header-premium py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 fw-bold text-dark fs-6">
+                        <i class="fas fa-coins me-2 text-primary"></i>Doanh thu 6 tháng gần nhất
+                    </h5>
+                    <span class="badge bg-light text-muted border px-2.5 py-1.5 rounded text-xs">Đơn vị: Triệu VNĐ</span>
+                </div>
+                <div class="card-body p-4" style="position: relative; min-height: 320px;">
+                    <canvas id="revenueChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    @section Scripts {
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            // 1. Đồ thị Tình trạng Phòng (Pie Chart)
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Đồ thị Tình trạng Phòng (Doughnut Chart)
             const roomCtx = document.getElementById('roomStatusChart').getContext('2d');
             new Chart(roomCtx, {
-            type: 'doughnut',
-            data: {
-            labels: ['Đã đầy', 'Còn trống', 'Bảo trì'],
-            datasets: [{
-            data: @Html.Raw(Json.Serialize(ViewBag.RoomStatusData)),
-            backgroundColor: ['#0d6efd', '#198754', '#ffc107'],
-            hoverOffset: 4
-            }]
-            },
-            options: {
-            plugins: {
-            legend: { position: 'bottom' }
-            }
-            }
+                type: 'doughnut',
+                data: {
+                    labels: ['Đã đầy', 'Còn trống', 'Bảo trì'],
+                    datasets: [{
+                        data: @Html.Raw(Json.Serialize(ViewBag.RoomStatusData)),
+                        backgroundColor: ['#6366f1', '#10b981', '#f59e0b'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff',
+                        hoverOffset: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: {
+                                    family: 'Outfit, sans-serif',
+                                    size: 13,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                            titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Outfit, sans-serif', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const value = context.raw;
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return ` ${context.label}: ${value} phòng (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
 
-            // 2. Đồ thị Doanh thu (Bar Chart)
+            // 2. Biểu đồ Doanh thu (Bar Chart)
             const revCtx = document.getElementById('revenueChart').getContext('2d');
             new Chart(revCtx, {
-            type: 'bar',
-            data: {
-            labels: @Html.Raw(Json.Serialize(ViewBag.RevenueLabels)),
-            datasets: [
-            {
-            label: 'Đã thu (Triệu VNĐ)',
-            data: @Html.Raw(Json.Serialize(ViewBag.RevenuePaid)),
-            backgroundColor: '#0d6efd',
-            borderRadius: 5
-            },
-            {
-            label: 'Còn nợ (Triệu VNĐ)',
-            data: @Html.Raw(Json.Serialize(ViewBag.RevenueUnpaid)),
-            backgroundColor: '#e74a3b',
-            borderRadius: 5
-            }
-            ]
-            },
-            options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-            y: {
-            beginAtZero: true,
-            ticks: {
-            callback: function (value) { return value + ' Tr'; }
-            }
-            }
-            },
-            plugins: {
-            legend: { position: 'top' }
-            }
-            }
+                type: 'bar',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(ViewBag.RevenueLabels)),
+                    datasets: [
+                        {
+                            label: 'Đã thu',
+                            data: @Html.Raw(Json.Serialize(ViewBag.RevenuePaid)),
+                            backgroundColor: '#4f46e5',
+                            hoverBackgroundColor: '#4338ca',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            barThickness: 24
+                        },
+                        {
+                            label: 'Chưa thu',
+                            data: @Html.Raw(Json.Serialize(ViewBag.RevenueUnpaid)),
+                            backgroundColor: '#f43f5e',
+                            hoverBackgroundColor: '#e11d48',
+                            borderRadius: 6,
+                            borderSkipped: false,
+                            barThickness: 24
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                padding: 15,
+                                font: {
+                                    family: 'Outfit, sans-serif',
+                                    size: 13,
+                                    weight: '500'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                            titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Outfit, sans-serif', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y * 1000000);
+                                    }
+                                    return ' ' + label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Outfit, sans-serif',
+                                    size: 12
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.04)',
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Outfit, sans-serif',
+                                    size: 12
+                                },
+                                callback: function(value) {
+                                    return value + ' Tr';
+                                }
+                            }
+                        }
+                    }
+                }
             });
-        </script>
-    }
-
-    <style>
-        .card {
-        transition: transform 0.2s;
-        }
-
-        .card:hover {
-        transform: translateY(-3px);
-        }
-
-        canvas {
-        max-width: 100% !important;
-        }
-    </style>
+        });
+    </script>
+}

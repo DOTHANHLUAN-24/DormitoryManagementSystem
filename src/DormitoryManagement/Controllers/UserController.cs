@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +21,7 @@ namespace DormitoryManagement.Controllers
 
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             // result trả về kiểu PagedResult<UserResponseDto>
             var result = await _userService.GetActiveUsersPagedAsync(page, pageSize, search);
 
@@ -33,7 +33,7 @@ namespace DormitoryManagement.Controllers
         [Route("Banned")]
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             var result = await _userService.GetBannedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -44,7 +44,7 @@ namespace DormitoryManagement.Controllers
         [Route("RecycleBin")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             var result = await _userService.GetDeletedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -122,14 +122,22 @@ namespace DormitoryManagement.Controllers
                 return View(updateDto);
             }
 
-            var result = await _userService.UpdateUserProfileAsync(id, updateDto);
-            if (result)
+            try
             {
-                TempData["Success"] = "Cập nhật thành công";
-                return RedirectToAction(nameof(Index));
+                var result = await _userService.UpdateUserProfileAsync(id, updateDto);
+                if (result)
+                {
+                    TempData["Success"] = "Cập nhật thành công";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ModelState.AddModelError("", "Cập nhật thất bại.");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
             }
 
-            ModelState.AddModelError("", "Cập nhật thất bại.");
             return View(updateDto);
         }
 
@@ -222,14 +230,21 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ToggleLock(Guid id)
         {
-            // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService
-            var result = await _userService.ToggleUserStatusAsync(id);
-
-            if (result)
+            try
             {
-                return Json(new { success = true, message = "Đã thay đổi trạng thái tài khoản thành công." });
+                // Gọi hàm ToggleUserStatusAsync mà bạn đã viết trong UserService
+                var result = await _userService.ToggleUserStatusAsync(id);
+
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đã thay đổi trạng thái tài khoản thành công." });
+                }
+                return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
             }
-            return Json(new { success = false, message = "Không tìm thấy người dùng hoặc lỗi hệ thống." });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         [HttpGet("EditProfile")]
@@ -267,6 +282,13 @@ namespace DormitoryManagement.Controllers
 
             // Gán lại ID cho DTO đề phòng DTO yêu cầu trường Id phải có dữ liệu
             updateDto.Id = userId;
+
+            // Lấy thông tin user hiện tại từ database để giữ nguyên vai trò (Role) tránh bị ghi đè hoặc lỗi validation
+            var currentUser = await _userService.GetUserByIdAsync(userId);
+            if (currentUser != null)
+            {
+                updateDto.Role = currentUser.Role;
+            }
 
             // ---- THÊM ĐOẠN DEBUG NÀY ----
             if (!ModelState.IsValid)

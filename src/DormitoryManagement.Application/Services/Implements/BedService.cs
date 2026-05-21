@@ -9,21 +9,10 @@ namespace DormitoryManagement.Application.Services
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý giường (BedService).
     /// </summary>
-    public class BedService : IBedService
+    public class BedService(IBedRepository bedRepository, IUnitOfWork unitOfWork) : IBedService
     {
-        private readonly IBedRepository _bedRepository;
-        private readonly IUnitOfWork _unitOfWork;
-
-        /// <summary>
-        /// Khởi tạo BedService.
-        /// </summary>
-        /// <param name="bedRepository">Repository giường</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        public BedService(IBedRepository bedRepository, IUnitOfWork unitOfWork)
-        {
-            _bedRepository = bedRepository;
-            _unitOfWork = unitOfWork;
-        }
+        private readonly IBedRepository _bedRepository = bedRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         /// <summary>
         /// Lấy thông tin giường theo Id.

@@ -2,9 +2,6 @@ using DormitoryManagement.Application.Dtos.Requests.Assets;
 using DormitoryManagement.Application.Dtos.Responses.Assets;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DormitoryManagement.Application.Services.Interfaces
 {
@@ -23,7 +20,7 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="roomId">Id phòng cần lọc (tùy chọn)</param>
         /// <returns>Kết quả phân trang danh sách tài sản DTO</returns>
         Task<PagedResult<AssetResponse>> GetPagedAssetsAsync(int pageIndex, int pageSize, string? searchTerm = null, AssetStatus? status = null, Guid? roomId = null);
-        
+
         /// <summary>
         /// Lấy danh sách tài sản đã bị xóa mềm (thùng rác) phân trang.
         /// </summary>
@@ -32,21 +29,21 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="searchTerm">Từ khóa tìm kiếm (tùy chọn)</param>
         /// <returns>Kết quả phân trang danh sách tài sản đã xóa mềm DTO</returns>
         Task<PagedResult<AssetResponse>> GetDeletedAssetsPagedAsync(int pageIndex, int pageSize, string? searchTerm = null);
-        
+
         /// <summary>
         /// Lấy thông tin chi tiết của tài sản theo Id.
         /// </summary>
         /// <param name="id">Id của tài sản</param>
         /// <returns>Tài sản DTO nếu tìm thấy, ngược lại là null</returns>
         Task<AssetResponse?> GetAssetByIdAsync(Guid id);
-        
+
         /// <summary>
         /// Lấy thông tin tài sản theo mã tài sản (AssetCode).
         /// </summary>
         /// <param name="assetCode">Mã tài sản cần tìm</param>
         /// <returns>Tài sản DTO nếu tìm thấy, ngược lại là null</returns>
         Task<AssetResponse?> GetAssetByCodeAsync(string assetCode);
-        
+
         /// <summary>
         /// Lấy danh sách tài sản đang hoạt động của một phòng cụ thể.
         /// </summary>
@@ -60,7 +57,7 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="request">Thông tin yêu cầu tạo tài sản</param>
         /// <returns>True nếu tạo thành công, ngược lại là False</returns>
         Task<bool> CreateAssetAsync(CreateAssetRequest request);
-        
+
         /// <summary>
         /// Cập nhật thông tin tài sản hiện tại.
         /// </summary>
@@ -68,35 +65,35 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="request">Thông tin cập nhật tài sản</param>
         /// <returns>True nếu cập nhật thành công, ngược lại là False</returns>
         Task<bool> UpdateAssetAsync(Guid id, UpdateAssetRequest request);
-        
+
         /// <summary>
         /// Xóa mềm tài sản (chuyển vào thùng rác).
         /// </summary>
         /// <param name="id">Id của tài sản cần xóa mềm</param>
         /// <returns>True nếu xóa mềm thành công, ngược lại là False</returns>
         Task<bool> SoftDeleteAssetAsync(Guid id);
-        
+
         /// <summary>
         /// Khôi phục tài sản bị xóa mềm từ thùng rác.
         /// </summary>
         /// <param name="id">Id tài sản cần khôi phục</param>
         /// <returns>True nếu khôi phục thành công, ngược lại là False</returns>
         Task<bool> RestoreAssetAsync(Guid id);
-        
+
         /// <summary>
         /// Xóa vĩnh viễn tài sản ra khỏi cơ sở dữ liệu.
         /// </summary>
         /// <param name="id">Id tài sản cần xóa vĩnh viễn</param>
         /// <returns>True nếu xóa thành công, ngược lại là False</returns>
         Task<bool> DeletePermanentlyAsync(Guid id);
-        
+
         /// <summary>
         /// Kích hoạt hoặc hủy kích hoạt (Toggle) trạng thái hoạt động của tài sản.
         /// </summary>
         /// <param name="id">Id của tài sản</param>
         /// <returns>True nếu chuyển đổi thành công, ngược lại là False</returns>
         Task<bool> ToggleAssetStatusAsync(Guid id);
-        
+
         /// <summary>
         /// Kiểm tra trùng mã tài sản trong hệ thống (tránh trùng khi thêm mới hoặc cập nhật).
         /// </summary>

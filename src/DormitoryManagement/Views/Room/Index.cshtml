@@ -219,40 +219,7 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 1. Hiển thị thông báo thành công từ TempData
-            @if (TempData["Success"] != null)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công!',
-                    text: '@TempData["Success"]',
-                    timer: 2500,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
-                </text>
-            }
-
-            // 2. Hiển thị thông báo lỗi từ TempData (nếu có)
-            @if (TempData["Error"] != null)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi!',
-                    text: '@TempData["Error"]',
-                    confirmButtonColor: '#ef4444'
-                });
-                </text>
-            }
-        });
-
         // 3. Hàm xử lý xóa phòng bằng Ajax + SweetAlert2
         function confirmDelete(id, roomNumber) {
             Swal.fire({

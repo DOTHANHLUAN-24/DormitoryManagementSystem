@@ -16,20 +16,18 @@ namespace DormitoryManagement.Controllers
 {
     [Route("Account")]
     [AllowAnonymous]
-    public class AccountController : Controller
+    public class AccountController
+    (
+        UserManager<User> userManager,
+        IUserService userService,
+        IConfiguration configuration,
+        IEmailService emailService
+    ) : Controller
     {
-        private readonly UserManager<User> _userManager;
-        private readonly IUserService _userService;
-        private readonly IEmailService _emailService;
-        private readonly IConfiguration _configuration;
-
-        public AccountController(UserManager<User> userManager, IUserService userService, IConfiguration configuration, IEmailService emailService)
-        {
-            _userManager = userManager;
-            _userService = userService;
-            _configuration = configuration;
-            _emailService = emailService;
-        }
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly IUserService _userService = userService;
+        private readonly IEmailService _emailService = emailService;
+        private readonly IConfiguration _configuration = configuration;
 
         [HttpGet("Register")]
         public IActionResult Register()
@@ -100,7 +98,6 @@ namespace DormitoryManagement.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
         private string CreateToken(User user)
         {
             var keyStr = _configuration["JwtSettings:Key"] ?? throw new InvalidOperationException("JWT Key is missing");
@@ -109,10 +106,10 @@ namespace DormitoryManagement.Controllers
 
             var claims = new List<Claim>
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName ?? "Unknown"),
-                new Claim(ClaimTypes.Name, user.FullName), // Để hiển thị tên thật lên giao diện
-                new Claim(ClaimTypes.Role, user.Role.ToString())
+                new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new (JwtRegisteredClaimNames.UniqueName, user.UserName ?? "Unknown"),
+                new (ClaimTypes.Name, user.FullName), // Để hiển thị tên thật lên giao diện
+                new (ClaimTypes.Role, user.Role.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor

@@ -1,4 +1,4 @@
-﻿@using DormitoryManagement.Application.Dtos.Requests.Users
+@using DormitoryManagement.Application.Dtos.Requests.Users
 @using DormitoryManagement.Domain.Enums
 @model UserUpdateDto
 
@@ -196,37 +196,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function () {
-            // Thông báo lỗi từ ModelState
-            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi nhập liệu',
-                    text: 'Vui lòng kiểm tra lại các trường thông tin màu đỏ.',
-                    confirmButtonColor: '#4f46e5'
-                });
-                </text>
-            }
-
-            // Thông báo lỗi từ Catch Exception
-            @if (TempData["Error"] != null)
-            {
-                <text>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Cập nhật thất bại',
-                    text: '@TempData["Error"]',
-                    confirmButtonColor: '#ef4444'
-                });
-                </text>
-            }
-        });
 
         // Hàm ẩn/hiện mật khẩu áp dụng cho nhiều input
         function togglePasswordVisibility(inputId, iconId) {

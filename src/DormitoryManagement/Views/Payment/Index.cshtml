@@ -115,13 +115,14 @@
             <i class="fa-solid fa-file-invoice-dollar me-2"></i>Thanh Toán Hóa Đơn
         </h1>
         <div class="d-flex gap-2">
+            <button class="btn btn-white border shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px;" onclick="onUnderDevelopment('Bộ lọc hóa đơn nâng cao')">
             <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px;">
                 <i class="fa-solid fa-house"></i> <span>Trang chủ</span>
             </a>
             <button class="btn btn-white border shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px;">
                 <i class="fa-solid fa-filter text-muted"></i> <span>Lọc</span>
             </button>
-            <button class="btn btn-success shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px;">
+            <button class="btn btn-success shadow-sm d-flex align-items-center gap-2" style="border-radius: 12px;" onclick="onUnderDevelopment('Xuất hóa đơn Excel')">
                 <i class="fa-solid fa-file-excel"></i> <span>Xuất file</span>
             </button>
         </div>
@@ -204,7 +205,7 @@
                     </select>
                 </div>
                 <div class="col-lg-2">
-                    <button class="btn btn-primary w-100 fw-bold d-flex align-items-center justify-content-center gap-2" style="height: 46px; border-radius: 12px;">
+                    <button class="btn btn-primary w-100 fw-bold d-flex align-items-center justify-content-center gap-2" style="height: 46px; border-radius: 12px;" onclick="onUnderDevelopment('Tìm kiếm hóa đơn')">
                         <i class="fa-solid fa-magnifying-glass"></i> Tìm kiếm
                     </button>
                 </div>
@@ -259,10 +260,10 @@
                             </td>
                             <td class="text-end pe-4">
                                 <div class="d-flex justify-content-end gap-2">
-                                    <button class="btn-action btn-view" title="Xem chi tiết">
+                                    <button class="btn-action btn-view" title="Xem chi tiết" onclick="showInvoiceDetails('@item.Code', '@item.Student', '@item.StudentCode', '@item.Room', '@item.Type', @item.Amount, '@item.Status', '@item.Date')">
                                         <i class="fa-solid fa-eye"></i>
                                     </button>
-                                    <button class="btn-action btn-print" title="In hóa đơn">
+                                    <button class="btn-action btn-print" title="In hóa đơn" onclick="onUnderDevelopment('In hóa đơn @item.Code')">
                                         <i class="fa-solid fa-print"></i>
                                     </button>
                                 </div>
@@ -284,5 +285,50 @@
                 $("tbody input[type='checkbox']").prop('checked', checked);
             });
         });
+
+        function showInvoiceDetails(code, student, studentCode, room, type, amount, status, date) {
+            Swal.fire({
+                title: '<strong>CHI TIẾT HÓA ĐƠN</strong>',
+                icon: 'info',
+                html: `
+                    <div style="text-align: left; font-family: sans-serif; line-height: 1.6;">
+                        <div style="border-bottom: 2px dashed #e2e8f0; padding-bottom: 12px; margin-bottom: 12px; text-align: center;">
+                            <h4 style="margin: 0; color: #4f46e5;">Mã HĐ: ${code}</h4>
+                            <span style="font-size: 13px; color: #64748b;">Hóa đơn tạo ngày: ${date}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #475569;">Khách hàng:</strong>
+                            <span>${student} (${studentCode})</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #475569;">Phòng ở:</strong>
+                            <span>${room}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #475569;">Loại dịch vụ:</strong>
+                            <span>${type}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <strong style="color: #475569;">Trạng thái:</strong>
+                            <span style="font-weight: bold; color: ${status === 'Đã thanh toán' ? '#10b981' : (status === 'Quá hạn' ? '#ef4444' : '#f97316')}">${status}</span>
+                        </div>
+                        <div style="border-top: 1px solid #f1f5f9; padding-top: 12px; margin-top: 12px; display: flex; justify-content: space-between;">
+                            <strong style="font-size: 18px; color: #1e293b;">Tổng tiền:</strong>
+                            <strong style="font-size: 18px; color: #4f46e5;">${amount.toLocaleString()} đ</strong>
+                        </div>
+                    </div>
+                `,
+                showCloseButton: true,
+                confirmButtonColor: '#4f46e5',
+                confirmButtonText: '<i class="fa-solid fa-check"></i> Xác nhận',
+                cancelButtonColor: '#64748b',
+                showCancelButton: true,
+                cancelButtonText: '<i class="fa-solid fa-print"></i> In hóa đơn'
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    onUnderDevelopment('In hóa đơn điện tử');
+                }
+            });
+        }
     </script>
 }
