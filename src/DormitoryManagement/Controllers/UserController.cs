@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Users;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +21,7 @@ namespace DormitoryManagement.Controllers
 
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             // result trả về kiểu PagedResult<UserResponseDto>
             var result = await _userService.GetActiveUsersPagedAsync(page, pageSize, search);
 
@@ -33,7 +33,7 @@ namespace DormitoryManagement.Controllers
         [Route("Banned")]
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             var result = await _userService.GetBannedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -44,7 +44,7 @@ namespace DormitoryManagement.Controllers
         [Route("RecycleBin")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
-            int pageSize = 5;
+            int pageSize = BaseController.PageSize;
             var result = await _userService.GetDeletedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;

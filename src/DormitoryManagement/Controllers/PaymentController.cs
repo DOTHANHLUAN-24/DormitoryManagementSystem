@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
-    public class PaymentController : Controller
+    public class PaymentController : BaseController
     {
         // Đường dẫn sẽ là /Payment hoặc /Payment/Index
         public IActionResult Index()
         {
-            // Tạo dữ liệu giả (Mock Data) để xem giao diện hiển thị như thế nào mà không cần Database
+            // Dữ liệu fake
+
             var mockPayments = new List<dynamic>
             {
                 new { InvoiceCode = "HD-2024-001", StudentName = "Nguyễn Văn A", RoomName = "Phòng 101", Type = "Tiền phòng", Amount = 1500000, Status = "Đã thanh toán" },
@@ -18,7 +18,6 @@ namespace DormitoryManagement.Controllers
                 new { InvoiceCode = "HD-2024-004", StudentName = "Phạm Minh D", RoomName = "Phòng 301", Type = "Tiền phòng", Amount = 1500000, Status = "Đã thanh toán" }
             };
 
-            // Truyền danh sách này sang View
             return View(mockPayments);
         }
     }

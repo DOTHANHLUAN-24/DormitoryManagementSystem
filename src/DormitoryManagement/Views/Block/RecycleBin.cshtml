@@ -80,14 +80,14 @@
                     {
                         foreach (var item in Model.Items)
                         {
-                            <tr>
-                                <td class="ps-4"><span class="data-badge">@item.BlockName</span></td>
-                                <td><div class="fw-bold text-muted">@item.TotalFloors tầng</div></td>
+                            <tr class="opacity-75">
+                                <td class="ps-4"><span class="data-badge text-decoration-line-through">@item.BlockName</span></td>
+                                <td><div class="fw-bold text-muted text-decoration-line-through">@item.TotalFloors tầng</div></td>
                                 <td>
-                                    <span class="text-muted small"><i class="far fa-calendar-alt me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                    <span class="text-muted small text-decoration-line-through"><i class="far fa-calendar-alt me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</span>
                                 </td>
                                 <td>
-                                    <span class="trang-thai-badge da-xoa"><i class="fas fa-trash-alt me-1"></i> Đã xóa</span>
+                                    <span class="trang-thai-badge da-xoa text-decoration-line-through"><i class="fas fa-trash-alt me-1"></i> Đã xóa</span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
@@ -127,9 +127,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         // 1. Hàm Khôi Phục (Restore)
         function restoreBlock(id) {

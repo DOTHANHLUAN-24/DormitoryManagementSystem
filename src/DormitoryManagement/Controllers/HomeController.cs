@@ -5,19 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
     [Route("/")]
-    public class HomeController : Controller
+    [AllowAnonymous]
+    public class HomeController() : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
-
         [HttpGet("")]
-        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
@@ -43,7 +35,6 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Guide")]
-        [AllowAnonymous]
         public IActionResult Guide()
         {
             return View();

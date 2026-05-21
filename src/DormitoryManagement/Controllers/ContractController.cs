@@ -5,16 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("Contract")]
     [Authorize(Roles = "Admin,ManagerStaff")]
-    public class ContractController : Controller
+    public class ContractController(IContractService contractService) : BaseController
     {
-        private readonly IContractService _contractService;
-
-        public ContractController(IContractService contractService)
-        {
-            _contractService = contractService;
-        }
+        private readonly IContractService _contractService = contractService;
 
         [HttpGet("ByCode/{contractCode}")]
         public async Task<IActionResult> GetByContractCode(string contractCode)

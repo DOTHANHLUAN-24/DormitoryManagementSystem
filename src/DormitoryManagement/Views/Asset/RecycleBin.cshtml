@@ -52,23 +52,23 @@
                     {
                         foreach (var item in Model.Items)
                         {
-                            <tr>
-                                <td class="ps-4 py-3"><span class="badge-code">@item.AssetCode</span></td>
+                            <tr class="opacity-75">
+                                <td class="ps-4 py-3"><span class="badge-code text-decoration-line-through">@item.AssetCode</span></td>
                                 <td>
-                                    <div class="fw-semibold text-dark">@item.AssetName</div>
+                                    <div class="fw-semibold text-dark text-decoration-line-through">@item.AssetName</div>
                                     @if (!string.IsNullOrEmpty(item.Description))
                                     {
-                                        <small class="text-muted">@item.Description</small>
+                                        <small class="text-muted text-decoration-line-through">@item.Description</small>
                                     }
                                 </td>
                                 <td>
-                                    <div>@item.RoomNumber</div>
-                                    <small class="text-muted">@item.BlockName</small>
+                                    <div class="text-decoration-line-through">@item.RoomNumber</div>
+                                    <small class="text-muted text-decoration-line-through">@item.BlockName</small>
                                 </td>
                                 <td>
                                     @if (item.ReplacementCost > 0)
                                     {
-                                        <span class="fw-bold text-primary">@item.ReplacementCost.ToString("N0") ₫</span>
+                                        <span class="fw-bold text-primary text-decoration-line-through">@item.ReplacementCost.ToString("N0") ₫</span>
                                     }
                                     else
                                     {
@@ -76,7 +76,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <span class="text-muted small">
+                                    <span class="text-muted small text-decoration-line-through">
                                         <i class="far fa-clock me-1"></i>@(item.LastModified?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
                                     </span>
                                 </td>
@@ -121,8 +121,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function getAntiforgeryToken() {
             return $('input[name="__RequestVerificationToken"]').val();

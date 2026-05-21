@@ -1,0 +1,150 @@
+@model DormitoryManagement.Application.Dtos.Requests.Utilities.UtilityRequestDto
+@{
+    ViewData["Title"] = "Thêm Dịch Vụ Mới";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #0f6b6d, #14b8a6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        
+        .form-card { background: #fff; border-radius: 20px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); padding: 30px; border: none; }
+        
+        .form-control, .form-select { border-radius: 10px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all 0.3s; }
+        .form-control:focus, .form-select:focus { border-color: #0f6b6d; box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); }
+        
+        .input-group-text { border-radius: 10px 0 0 10px; border: 1px solid #e2e8f0; border-right: none; background-color: #f8fafc; color: #64748b; }
+        .input-group .form-control { border-radius: 0 10px 10px 0; }
+        
+        .form-label { font-weight: 600; color: #1e293b; margin-bottom: 8px; font-size: 14px; }
+        
+        .nut-luu { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; background: #0f6b6d; color: #fff !important; border: none; box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); }
+        .nut-luu:hover { background: #0c5658; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); }
+        
+        .nut-huy { padding: 12px 24px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 15px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-huy:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
+    </style>
+}
+
+<div class="container-fluid max-w-7xl mx-auto">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2"></i> Thêm Dịch Vụ Mới
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="nut-quay-lai">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-controller="Utility" asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+
+                    <div class="row g-4 mb-4">
+                        <!-- Tên dịch vụ -->
+                        <div class="col-md-12">
+                            <label asp-for="UtilityName" class="form-label">Tên dịch vụ / tiện ích <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-concierge-bell"></i></span>
+                                <input asp-for="UtilityName" class="form-control" placeholder="Ví dụ: Tiền điện, Tiền nước, Internet..." autocomplete="off" required />
+                            </div>
+                            <span asp-validation-for="UtilityName" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Đơn giá -->
+                        <div class="col-md-6">
+                            <label asp-for="UnitPrice" class="form-label">Đơn giá <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input asp-for="UnitPrice" class="form-control" type="number" min="0" placeholder="Nhập đơn giá..." required />
+                                <span class="input-group-text">đ</span>
+                            </div>
+                            <span asp-validation-for="UnitPrice" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Đơn vị tính -->
+                        <div class="col-md-6">
+                            <label asp-for="Unit" class="form-label">Đơn vị tính <span class="text-danger">*</span></label>
+                            <select asp-for="Unit" class="form-select" required>
+                                <option value="kWh">kWh</option>
+                                <option value="m3">m³</option>
+                                <option value="Tháng">Tháng</option>
+                                <option value="Lượt">Lượt</option>
+                            </select>
+                            <span asp-validation-for="Unit" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Trạng thái hoạt động -->
+                        <div class="col-md-12">
+                            <div class="form-check form-switch p-0 ps-5 mt-2">
+                                <input asp-for="IsActive" class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" checked style="width: 2.5em; height: 1.25em; cursor: pointer;">
+                                <label class="form-check-label fw-semibold ms-2" for="isActiveSwitch" style="cursor: pointer;">Kích hoạt cung cấp ngay sau khi lưu</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">
+                            Hủy bỏ
+                        </a>
+                        <button type="submit" class="nut-luu">
+                            <i class="fas fa-save"></i> Lưu thông tin dịch vụ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100" style="background-color: rgba(15, 107, 109, 0.05) !important;">
+                <h5 class="fw-bold mb-3" style="color: #0f6b6d;"><i class="fas fa-info-circle me-2"></i> Hướng dẫn thêm dịch vụ</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                    <li><strong>Tên dịch vụ:</strong> Nên đặt rõ ràng và dễ hiểu để sinh viên dễ đối chiếu khi nhận hóa đơn.</li>
+                    <li><strong>Đơn giá:</strong> Nhập số tiền cụ thể trên một đơn vị tính, không chứa ký tự đặc biệt.</li>
+                    <li><strong>Đơn vị tính:</strong>
+                        <ul>
+                            <li><em>kWh:</em> Thường dùng cho Tiền điện.</li>
+                            <li><em>m³:</em> Thường dùng cho Tiền nước.</li>
+                            <li><em>Tháng:</em> Dùng cho Wifi, Gửi xe định kỳ.</li>
+                            <li><em>Lượt:</em> Dùng cho giặt là hoặc dịch vụ lẻ.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+            // Hiệu ứng Loading khi submit form
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    Swal.fire({
+                        title: 'Đang lưu dữ liệu...',
+                        html: 'Vui lòng chờ trong giây lát',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}

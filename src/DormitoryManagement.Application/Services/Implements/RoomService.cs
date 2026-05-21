@@ -54,7 +54,6 @@ namespace DormitoryManagement.Application.Services
                     (!filter.Status.HasValue || r.Status == filter.Status) &&
                     (!filter.MinPrice.HasValue || r.RoomType.BasePrice >= filter.MinPrice) &&
                     (!filter.MaxPrice.HasValue || r.RoomType.BasePrice <= filter.MaxPrice),
-                // Đảm bảo lấy đủ thông tin tòa và loại phòng
                 includeProperties: new Expression<Func<Room, object>>[] { r => r.Block, r => r.RoomType }
             );
 
@@ -72,7 +71,6 @@ namespace DormitoryManagement.Application.Services
                 isActive: null,
                 isDeleted: true,
                 predicate: r => string.IsNullOrEmpty(filter.SearchTerm) || r.RoomNumber.Contains(filter.SearchTerm),
-                // Ngay cả thùng rác cũng cần include để biết nó thuộc tòa nào khi hiển thị
                 includeProperties: new Expression<Func<Room, object>>[] { r => r.Block, r => r.RoomType }
             );
 

@@ -10,6 +10,8 @@ using DormitoryManagement.Application.Dtos.Responses.Beds;
 using DormitoryManagement.Application.Dtos.Responses.Blocks;
 using DormitoryManagement.Application.Dtos.Responses.Rooms;
 using DormitoryManagement.Application.Dtos.Responses.RoomTypes;
+using DormitoryManagement.Application.Dtos.Requests.Utilities;
+using DormitoryManagement.Application.Dtos.Responses.Utilities;
 using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Application.Mappings
@@ -37,7 +39,7 @@ namespace DormitoryManagement.Application.Mappings
                 .ForMember(dest => dest.BlockId, opt => opt.MapFrom(src => src.BlockId))
                 .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Block != null ? src.Block.BlockName : string.Empty))
                 .ForMember(dest => dest.RoomTypeId, opt => opt.MapFrom(src => src.RoomTypeId))
-                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.ToString() : string.Empty));
+                .ForMember(dest => dest.RoomTypeName, opt => opt.MapFrom(src => src.RoomType != null ? src.RoomType.TypeName : string.Empty));
 
             // Map từ Response DTO sang Update Request (để load dữ liệu vào Form Edit)
             CreateMap<RoomResponse, UpdateRoomRequest>();
@@ -64,7 +66,7 @@ namespace DormitoryManagement.Application.Mappings
 
             // === BED & ASSET MAPPINGS ===
             CreateMap<Bed, BedResponse>();
-            
+
             CreateMap<Asset, AssetResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
                 .ForMember(dest => dest.RoomNumber, opt => opt.MapFrom(src => src.Room != null ? src.Room.RoomNumber : string.Empty))
@@ -100,6 +102,11 @@ namespace DormitoryManagement.Application.Mappings
             // === ROOM TYPE MAPPINGS ===
             CreateMap<RoomType, RoomTypeResponseDto>();
             CreateMap<RoomTypeRequestDto, RoomType>();
+
+            // === UTILITY MAPPINGS ===
+            CreateMap<Utility, UtilityResponseDto>();
+            CreateMap<UtilityRequestDto, Utility>();
+            CreateMap<UtilityResponseDto, UtilityRequestDto>();
         }
     }
 }

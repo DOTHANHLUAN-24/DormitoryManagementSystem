@@ -19,10 +19,6 @@
 
             <form asp-action="Edit" asp-route-id="@ViewContext.RouteData.Values["id"]" method="post">
                 @Html.AntiForgeryToken()
-
-                <!-- DÙNG THẺ ẨN ĐỂ CHỨA THÔNG BÁO (GIỐNG BÊN USER) -->
-                <input type="hidden" id="success-message" value="@TempData["Success"]" />
-                <input type="hidden" id="error-message" value="@TempData["Error"]" />
                 
                 <input type="hidden" asp-for="Id" />
 
@@ -126,31 +122,4 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // LẤY GIÁ TRỊ TỪ THẺ ẨN (TRÌNH DUYỆT TỰ GIẢI MÃ TIẾNG VIỆT CHO .VALUE)
-            var successMsg = document.getElementById('success-message').value;
-            var errorMsg = document.getElementById('error-message').value;
-
-            if (successMsg) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Thành công',
-                    text: successMsg,
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            }
-
-            if (errorMsg) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi',
-                    text: errorMsg
-                });
-            }
-        });
-    </script>
 }

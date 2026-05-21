@@ -16,24 +16,16 @@ namespace DormitoryManagement.Controllers
     /// - TechnicalStaff: xem chi tiết.
     /// - Tất cả (kể cả chưa đăng nhập): xem danh mục công khai kèm giá đền bù.
     /// </summary>
-    [Route("Asset")]
-    [Authorize]
-    public class AssetController : Controller
+    public class AssetController
+    (
+        IAssetService assetService,
+        IRoomService roomService,
+        IMapper mapper
+    ) : BaseController
     {
-        private readonly IAssetService _assetService;
-        private readonly IRoomService _roomService;
-        private readonly IMapper _mapper;
-
-        public AssetController(IAssetService assetService, IRoomService roomService, IMapper mapper)
-        {
-            _assetService = assetService;
-            _roomService = roomService;
-            _mapper = mapper;
-        }
-
-        // =============================================
-        // QUẢN LÝ — Admin / Manager
-        // =============================================
+        private readonly IAssetService _assetService = assetService;
+        private readonly IRoomService _roomService = roomService;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Danh sách tài sản phân trang với tìm kiếm và lọc trạng thái.
@@ -42,7 +34,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Index(int page = 1, string search = "", string statusFilter = "")
         {
-            int pageSize = 10;
+            int pageSize = PageSize;
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);
             ViewBag.Search = search;
@@ -57,7 +49,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
-            int pageSize = 10;
+            int pageSize = PageSize;
             var result = await _assetService.GetDeletedAssetsPagedAsync(page, pageSize, search);
             ViewBag.Search = search;
             return View(result);
@@ -267,7 +259,7 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Catalog(int page = 1, string search = "", string statusFilter = "")
         {
-            int pageSize = 12;
+            int pageSize = PageSize;
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);
             ViewBag.Search = search;

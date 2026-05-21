@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Business;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Core;
@@ -23,6 +23,7 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator
             UserDataGenerator.Generate(ctx);
 
             ContractDataGenerator.Generate(ctx);
+            UtilityDataGenerator.Generate(ctx);
 
             return ctx;
         }

@@ -1,4 +1,4 @@
-@model dynamic
+@model DormitoryManagement.Application.Dtos.Requests.ViolationRequestDto
 
 @{
     ViewData["Title"] = "Lập Biên Bản Vi Phạm - KTX System";
@@ -18,52 +18,59 @@
     <!-- FORM NHẬP LIỆU -->
     <div class="card border-0 shadow-sm" style="max-width: 800px;">
         <div class="card-body p-4">
-            <form action="/Violation/Create" method="post">
+            <form asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
+                
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
                 <div class="row g-3">
                     <!-- Mã Sinh Viên -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label fw-semibold text-secondary small">Mã số sinh viên <span class="text-danger">*</span></label>
+                        <label asp-for="StudentId" class="form-label fw-semibold text-secondary small">Mã số sinh viên <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-id-card text-muted"></i></span>
-                            <input type="text" name="StudentId" class="form-control" placeholder="Ví dụ: SV202601" required />
+                            <input asp-for="StudentId" class="form-control" placeholder="Ví dụ: SV202601" autocomplete="off" />
                         </div>
+                        <span asp-validation-for="StudentId" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <!-- Phòng ở -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label fw-semibold text-secondary small">Phòng ở hiện tại <span class="text-danger">*</span></label>
+                        <label asp-for="Room" class="form-label fw-semibold text-secondary small">Phòng ở hiện tại <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-door-open text-muted"></i></span>
-                            <input type="text" name="Room" class="form-control" placeholder="Ví dụ: P.302-A1" required />
+                            <input asp-for="Room" class="form-control" placeholder="Ví dụ: P.302-A1" autocomplete="off" />
                         </div>
+                        <span asp-validation-for="Room" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <!-- Mức độ vi phạm -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label fw-semibold text-secondary small">Mức độ nghiêm trọng <span class="text-danger">*</span></label>
-                        <select name="Severity" class="form-select bg-light" required>
+                        <label asp-for="Severity" class="form-label fw-semibold text-secondary small">Mức độ nghiêm trọng <span class="text-danger">*</span></label>
+                        <select asp-for="Severity" class="form-select bg-light">
                             <option value="">-- Chọn mức độ --</option>
                             <option value="Nhẹ">Nhẹ (Nhắc nhở)</option>
                             <option value="Cảnh cáo">Cảnh cáo biên bản</option>
                             <option value="Nghiêm trọng">Nghiêm trọng (Kỷ luật nặng)</option>
                         </select>
+                        <span asp-validation-for="Severity" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <!-- Ngày lập biên bản -->
                     <div class="col-12 col-md-6">
-                        <label class="form-label fw-semibold text-secondary small">Ngày vi phạm / Ngày lập <span class="text-danger">*</span></label>
+                        <label asp-for="Date" class="form-label fw-semibold text-secondary small">Ngày vi phạm / Ngày lập <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-calendar-alt text-muted"></i></span>
-                            <input type="date" name="Date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                            <input asp-for="Date" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
                         </div>
+                        <span asp-validation-for="Date" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <!-- Nội dung vi phạm -->
                     <div class="col-12">
-                        <label class="form-label fw-semibold text-secondary small">Mô tả nội dung vi phạm <span class="text-danger">*</span></label>
-                        <textarea name="Content" class="form-control" rows="4" placeholder="Mô tả chi tiết hành vi vi phạm..." required></textarea>
+                        <label asp-for="Content" class="form-label fw-semibold text-secondary small">Mô tả nội dung vi phạm <span class="text-danger">*</span></label>
+                        <textarea asp-for="Content" class="form-control" rows="4" placeholder="Mô tả chi tiết hành vi vi phạm..."></textarea>
+                        <span asp-validation-for="Content" class="text-danger small mt-1 d-block"></span>
                     </div>
 
                     <!-- Trạng thái xử lý -->
@@ -71,14 +78,15 @@
                         <label class="form-label fw-semibold text-secondary small">Trạng thái xử lý ban đầu</label>
                         <div class="mt-1">
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="Status" value="Chưa xử lý" id="status1" checked>
+                                <input class="form-check-input" type="radio" asp-for="Status" value="Chưa xử lý" id="status1" checked>
                                 <label class="form-check-label text-warning fw-medium" for="status1">Chưa xử lý</label>
                             </div>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="Status" value="Đã xử lý" id="status2">
+                                <input class="form-check-input" type="radio" asp-for="Status" value="Đã xử lý" id="status2">
                                 <label class="form-check-label text-success fw-medium" for="status2">Đã xử lý xong</label>
                             </div>
                         </div>
+                        <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
                     </div>
                 </div>
 
@@ -95,3 +103,7 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

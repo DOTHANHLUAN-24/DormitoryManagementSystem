@@ -53,6 +53,7 @@ internal class Program
         builder.Services.AddScoped<IViolationService, ViolationService>();
         builder.Services.AddScoped<IRoomTypeService, RoomTypeService>();
         builder.Services.AddScoped<IAssetService, AssetService>();
+        builder.Services.AddScoped<IUtilityService, UtilityService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -136,6 +137,9 @@ internal class Program
         });
 
         var app = builder.Build();
+
+        // Load global PageSize config into BaseController
+        DormitoryManagement.Controllers.BaseController.PageSize = app.Configuration.GetValue<int>("Pagination:PageSize", 5);
 
         if (!app.Environment.IsDevelopment())
         {

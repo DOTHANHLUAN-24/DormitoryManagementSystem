@@ -1,4 +1,4 @@
-﻿@using DormitoryManagement.Domain.Common
+@using DormitoryManagement.Domain.Common
 @using DormitoryManagement.Application.Dtos.Responses
 @model PagedResult<DormitoryManagement.Application.Dtos.Responses.UserResponseDto>
 
@@ -53,12 +53,12 @@
                     {
                         foreach (var item in Model.Items)
                         {
-                            <tr>
-                                <td class="ps-4 py-3"><span class="badge-username">@item.UserName</span></td>
-                                <td><div class="fw-bold text-dark">@item.FullName</div></td>
-                                <td><span class="text-muted small">@item.Email</span></td>
+                            <tr class="opacity-75">
+                                <td class="ps-4 py-3"><span class="badge-username text-decoration-line-through">@item.UserName</span></td>
+                                <td><div class="fw-bold text-dark text-decoration-line-through">@item.FullName</div></td>
+                                <td><span class="text-muted small text-decoration-line-through">@item.Email</span></td>
                                 <td>
-                                    <span class="text-muted small">
+                                    <span class="text-muted small text-decoration-line-through">
                                         <i class="far fa-clock me-1"></i> @(item.LastModified?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")
                                     </span>
                                 </td>
@@ -101,9 +101,6 @@
 </div>
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <script>
         // Lấy token dùng chung cho các request (Đồng bộ với Room Index)
         function getAntiforgeryToken() {

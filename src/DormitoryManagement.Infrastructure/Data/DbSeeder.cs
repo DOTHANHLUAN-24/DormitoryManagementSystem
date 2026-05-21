@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Infrastructure.Data.DataGenerator;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +52,13 @@ namespace DormitoryManagement.Infrastructure.Data
             if (!await context.Contracts.AnyAsync() && data.Contracts.Any())
             {
                 await context.Contracts.AddRangeAsync(data.Contracts);
+                await context.SaveChangesAsync();
+            }
+
+            // 🔴 5. Seed Utilities (Dịch vụ / Tiện ích)
+            if (!await context.Utilities.AnyAsync() && data.Utilities.Any())
+            {
+                await context.Utilities.AddRangeAsync(data.Utilities);
                 await context.SaveChangesAsync();
             }
         }
