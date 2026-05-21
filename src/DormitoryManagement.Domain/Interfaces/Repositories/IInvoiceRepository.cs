@@ -18,8 +18,9 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
         /// Lấy đối tượng truy vấn phân trang và tìm kiếm hóa đơn theo từ khóa.
         /// </summary>
         /// <param name="searchString">Từ khóa tìm kiếm (mã hóa đơn, tiêu đề...)</param>
+        /// <param name="status">Trạng thái hóa đơn cần lọc</param>
         /// <returns>Đối tượng IQueryable chứa danh sách hóa đơn tìm được</returns>
-        IQueryable<Invoice> GetPagingQuery(string searchString);
+        IQueryable<Invoice> GetPagingQuery(string searchString, DormitoryManagement.Domain.Enums.InvoiceStatus? status = null);
 
         /// <summary>
         /// Lấy danh sách hóa đơn theo Id hợp đồng (ContractId).

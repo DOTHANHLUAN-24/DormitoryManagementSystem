@@ -191,8 +191,6 @@
         </a>
         <div class="collapse submenu @(isOperationGroup ? "show" : "")" id="operationMenu">
             <a asp-controller="Violation" asp-action="Index" class="@(isOperationGroup && currentAction == "Index" ? "active" : "")">
-            <!-- ĐƯA RA NGOÀI ĐỂ TẤT CẢ USER ĐÃ ĐĂNG NHẬP ĐỀU THẤY -->
-            <a asp-controller="Violation" asp-action="Index">
                 <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
             </a>
             
