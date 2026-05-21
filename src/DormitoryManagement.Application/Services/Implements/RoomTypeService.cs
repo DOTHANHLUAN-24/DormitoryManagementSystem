@@ -11,24 +11,11 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý loại phòng (RoomTypeService).
     /// </summary>
-    public class RoomTypeService : IRoomTypeService
+    public class RoomTypeService(IRoomTypeRepository roomTypeRepository, IUnitOfWork unitOfWork, IMapper mapper) : IRoomTypeService
     {
-        private readonly IRoomTypeRepository _roomTypeRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Khởi tạo RoomTypeService.
-        /// </summary>
-        /// <param name="roomTypeRepository">Repository loại phòng</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
-        public RoomTypeService(IRoomTypeRepository roomTypeRepository, IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _roomTypeRepository = roomTypeRepository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IRoomTypeRepository _roomTypeRepository = roomTypeRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Lấy toàn bộ danh sách các loại phòng hiện có trong hệ thống.

@@ -15,27 +15,12 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý người dùng (UserService).
     /// </summary>
-    public class UserService : IUserService
+    public class UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager) : IUserService
     {
-        private readonly IUserRepository _userRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
-
-        /// <summary>
-        /// Khởi tạo UserService.
-        /// </summary>
-        /// <param name="userRepository">Repository người dùng</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
-        /// <param name="userManager">Bộ quản lý người dùng từ ASP.NET Core Identity</param>
-        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMapper mapper, UserManager<User> userManager)
-        {
-            _userRepository = userRepository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _userManager = userManager;
-        }
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
+        private readonly UserManager<User> _userManager = userManager;
 
         // ================= QUERY (Đọc dữ liệu) =================
 

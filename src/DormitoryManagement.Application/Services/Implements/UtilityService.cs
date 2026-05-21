@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Dtos.Responses.Utilities;
@@ -15,21 +11,11 @@ namespace DormitoryManagement.Application.Services.Implements
     /// <summary>
     /// Triển khai dịch vụ quản lý dịch vụ / tiện ích (UtilityService).
     /// </summary>
-    public class UtilityService : IUtilityService
+    public class UtilityService(IUtilityRepository utilityRepository, IUnitOfWork unitOfWork, IMapper mapper) : IUtilityService
     {
-        private readonly IUtilityRepository _utilityRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Khởi tạo UtilityService.
-        /// </summary>
-        public UtilityService(IUtilityRepository utilityRepository, IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            _utilityRepository = utilityRepository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IUtilityRepository _utilityRepository = utilityRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Lấy toàn bộ danh sách dịch vụ đang hoạt động.

@@ -15,27 +15,11 @@ namespace DormitoryManagement.Application.Services
     /// <summary>
     /// Lớp triển khai dịch vụ quản lý phòng (RoomService).
     /// </summary>
-    public class RoomService : IRoomService
+    public class RoomService(IRoomRepository roomRepository, IUnitOfWork unitOfWork, IMapper mapper) : IRoomService
     {
-        private readonly IRoomRepository _roomRepository;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        /// <summary>
-        /// Khởi tạo RoomService.
-        /// </summary>
-        /// <param name="roomRepository">Repository phòng</param>
-        /// <param name="unitOfWork">Bộ quản lý UnitOfWork</param>
-        /// <param name="mapper">Bộ ánh xạ AutoMapper</param>
-        public RoomService(
-            IRoomRepository roomRepository,
-            IUnitOfWork unitOfWork,
-            IMapper mapper)
-        {
-            _roomRepository = roomRepository;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+        private readonly IRoomRepository _roomRepository = roomRepository;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private readonly IMapper _mapper = mapper;
 
         /// <summary>
         /// Lấy danh sách phòng phân trang kèm theo bộ lọc nâng cao (tòa nhà, loại phòng, trạng thái, khoảng giá...).
