@@ -1,138 +1,184 @@
 @{
-    ViewData["Title"] = "Quản lý Vi phạm - KTX System";
+    ViewData["Title"] = "Danh sách sinh viên vi phạm kỷ luật - KTX System";
     Layout = "_Layout";
 }
 
-<div class="container-fluid p-0">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+@section Styles {
+    <style>
+        /* Hệ thống Typography & Tiêu đề */
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Cấu trúc thẻ Card cao cấp */
+        .khung-chua-bo-loc { background: #fff; border-radius: 16px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; }
+        .khung-chua-bang { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border: none; overflow: hidden; }
+
+        /* Nút chức năng chính */
+        .nut-them-moi { padding: 10px 20px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background: linear-gradient(135deg, #ef4444, #f43f5e); color: #fff; border: none; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+        .nut-them-moi:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); color: #fff; }
+        
+        /* Ô tìm kiếm và Bộ lọc nâng cao */
+        .input-group-custom { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; transition: all 0.3s ease; background: #f8fafc; }
+        .input-group-custom:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
+        .input-group-custom .input-group-text { background: transparent; border: none; color: #94a3b8; padding-left: 14px; }
+        .input-group-custom .form-control, .input-group-custom .form-select { border: none; background: transparent; padding: 9px 12px; font-size: 14px; color: #1e293b; }
+        .input-group-custom .form-control:focus, .input-group-custom .form-select:focus { box-shadow: none; background: transparent; }
+
+        .nut-lam-moi { padding: 9px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .nut-lam-moi:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* Tinh chỉnh Bảng dữ liệu */
+        .table thead { background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .table th { font-size: 12px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 12px; }
+        .table td { padding: 16px 12px; font-size: 14px; color: #334155; }
+        
+        /* Huy hiệu mức độ & xử lý vi phạm */
+        .badge-status { padding: 6px 12px; border-radius: 30px; font-weight: 600; font-size: 12px; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-success-soft { background-color: #ecfdf5; color: #10b981; }
+        .badge-warning-soft { background-color: #fffbp7; color: #d97706; background-color: #fef3c7; }
+        .badge-danger-soft { background-color: #fef2f2; color: #ef4444; }
+
+        /* Khung chứa các nút thao tác - Đảm bảo xếp hàng ngang tuyệt đối không xuống dòng */
+        .cum-hanh-dong { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; flex-wrap: nowrap; }
+
+        /* Nút hành động nhỏ gọn */
+        .nut-hanh-dong { width: 32px; height: 32px; padding: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; border: none; font-size: 13px; text-decoration: none; flex-shrink: 0; }
+        .nut-duyet { background-color: #ecfdf5; color: #10b981; }
+        .nut-duyet:hover { background-color: #10b981; color: #fff; }
+        .nut-sua { background-color: #fef3c7; color: #d97706; }
+        .nut-sua:hover { background-color: #d97706; color: #fff; }
+        .nut-xoa { background-color: #fef2f2; color: #ef4444; }
+        .nut-xoa:hover { background-color: #ef4444; color: #fff; }
+
+        /* Định hình thanh phân trang số (Pagination) tương tự User mẫu */
+        .pagination .page-item .page-link { color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 14px; font-weight: 600; font-size: 13px; margin: 0 2px; transition: all 0.2s ease; border-radius: 6px; }
+        .pagination .page-item:first-child .page-link { border-radius: 6px; }
+        .pagination .page-item:last-child .page-link { border-radius: 6px; }
+        .pagination .page-item.active .page-link { background: linear-gradient(135deg, #4f46e5, #6366f1); border-color: #4f46e5; color: #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15); }
+        .pagination .page-item .page-link:hover:not(.active) { background-color: #e2e8f0; color: #1e293b; }
+    </style>
+}
+
+<div class="container-fluid py-2">
+    <!-- TIÊU ĐỀ TRANG VÀ TIỆN ÍCH THÊM MỚI -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
         <div>
-            <h3 class="text-dark fw-bold mb-1">Danh Sách Vi Phạm Kỷ Luật</h3>
-            <p class="text-muted small mb-0">Quản lý và xử lý các hành vi vi phạm nội quy kí túc xá.</p>
+            <h1 class="tieu-de-trang mb-1">Biên Bản Vi Phạm Kỷ Luật</h1>
+            <p class="text-muted small mb-0">Hệ thống quản lý, lập biên bản xử lý vi phạm nội quy của sinh viên nội trú ký túc xá.</p>
         </div>
-        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
-        {
-            <a href="/Violation/Create" class="btn btn-danger d-flex align-items-center gap-2 shadow-sm">
-                <i class="fas fa-plus-circle"></i> Thêm Vi Phạm
-            </a>
-        }
+        <a href="/Violation/Create" class="nut-them-moi shadow-sm">
+            <i class="fas fa-exclamation-circle"></i> Lập Biên Bản Vi Phạm
+        </a>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
-        <div class="card-body">
-            <div class="row g-3">
-                <div class="col-12 col-md-6 col-lg-5">
-                    <div class="input-group">
-                        <span class="input-group-text bg-light border-end-0 text-muted">
-                            <i class="fas fa-search"></i>
-                        </span>
-                        <input type="text" id="searchInput" class="form-control bg-light border-start-0" 
-                               placeholder="Tìm theo Tên, Mã SV hoặc Số phòng..." onkeyup="filterData()">
+    <!-- BỘ LỌC TÌM KIẾM ĐỒNG BỘ -->
+    <div class="card khung-chua-bo-loc mb-4">
+        <div class="card-body p-3">
+            <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-5">
+                    <div class="input-group input-group-custom">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                        <input type="text" id="searchInput" class="form-control" placeholder="Tìm tên sinh viên, mã sinh viên, lỗi vi phạm...">
                     </div>
                 </div>
-                <div class="col-6 col-md-3 col-lg-3">
-                    <select id="statusFilter" class="form-select bg-light" onchange="filterData()">
-                        <option value="all">-- Tất cả trạng thái --</option>
-                        <option value="Chưa xử lý">Chưa xử lý</option>
-                        <option value="Đã xử lý">Đã xử lý</option>
-                    </select>
+                <div class="col-12 col-md-4">
+                    <div class="input-group input-group-custom">
+                        <span class="input-group-text"><i class="fas fa-stream"></i></span>
+                        <select id="statusFilter" class="form-select">
+                            <option value="All">-- Tất cả trạng thái xử lý --</option>
+                            <option value="Chờ xử lý">Chờ xử lý kỷ luật</option>
+                            <option value="Đã nộp phạt">Đã hoàn thành nộp phạt</option>
+                            <option value="Đã hủy bỏ">Hủy bỏ biên bản</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="col-6 col-md-3 col-lg-4">
-                    <select id="severityFilter" class="form-select bg-light" onchange="filterData()">
-                        <option value="all">-- Tất cả mức độ --</option>
-                        <option value="Nhẹ">Nhẹ</option>
-                        <option value="Cảnh cáo">Cảnh cáo</option>
-                        <option value="Nghiêm trọng">Nghiêm trọng</option>
-                    </select>
+                <div class="col-12 col-md-3">
+                    <button class="nut-lam-moi w-100" onclick="resetFilters()">
+                        <i class="fas fa-sync-alt"></i> Làm mới bộ lọc
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm mb-4">
+    <!-- BẢNG DỮ LIỆU HIỂN THỊ -->
+    <div class="card khung-chua-bang">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-secondary">
+                <table class="table table-hover align-middle mb-0" id="violationTable">
+                    <thead>
                         <tr>
-                            <th class="ps-4" style="width: 100px;">Mã VP</th>
-                            <th style="width: 120px;">Mã SV</th>
-                            <th style="width: 180px;">Họ và Tên</th>
-                            <th style="width: 110px;">Phòng</th>
-                            <th>Nội dung vi phạm</th>
-                            <th style="width: 130px;">Ngày lập</th>
-                            <th style="width: 130px;">Mức độ</th>
+                            <th class="ps-4" style="width: 100px;">Mã BB</th>
+                            <th style="width: 130px;">Mã sinh viên</th>
+                            <th style="width: 180px;">Họ tên sinh viên</th>
+                            <th style="width: 100px;">Phòng</th>
+                            <th style="width: 220px;">Nội dung vi phạm</th>
+                            <th style="width: 140px;">Ngày lập</th>
+                            <th style="width: 130px;">Hình thức xử lý</th>
                             <th style="width: 130px;">Trạng thái</th>
-                            <th class="text-end pe-4" style="width: 180px;">Hành động</th>
+                            <th class="text-end pe-4" style="width: 150px;">Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody id="violationTableBody">
+                    <tbody id="tableBody">
+                        <!-- Dữ liệu được render động thông qua JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
-
-    <div class="card border-0 shadow-sm">
-        <div class="card-body d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
-            <div id="paginationInfo" class="text-muted small">
+        
+        <!-- THANH PHÂN TRANG THEO SỐ ĐỒNG BỘ MẪU USER (1 2 3...) -->
+        <div class="card-footer bg-white border-top py-3">
+            <div class="d-flex justify-content-center align-items-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination pagination-sm mb-0" id="paginationList">
+                        <!-- Đầu số trang render tự động qua JavaScript tương ứng -->
+                    </ul>
+                </nav>
             </div>
-            <nav aria-label="Page navigation">
-                <ul id="paginationButtons" class="pagination pagination-sm mb-0">
-                </ul>
-            </nav>
         </div>
     </div>
 </div>
 
 @section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        // Đồng bộ danh sách Mock Data tĩnh trùng ID Mock của Service C# để khi bấm "Sửa" không bị lỗi ID
+        // Mảng Mock Data quản lý vi phạm thực tế năm 2026
         const mockViolations = [
-            { id: "VP001", displayId: "VP001", studentId: "SV202601", studentName: "Nguyễn Văn Anh", room: "P.302-A1", content: "Sử dụng thiết bị công suất lớn (Bếp từ) trong phòng.", date: "2026-05-15", severity: "Cảnh cáo", status: "Chưa xử lý" },
-            { id: "VP002", displayId: "VP002", studentId: "SV202605", studentName: "Trần Thị Bình", room: "P.105-B2", content: "Về muộn sau 23h00 không có lý do chính đáng.", date: "2026-05-12", severity: "Nhẹ", status: "Đã xử lý" },
-            { id: "VP003", displayId: "VP003", studentId: "SV202212", studentName: "Lê Hoàng Cường", room: "P.401-A2", content: "Tụ tập tổ chức đánh bài ăn tiền trong giờ giới nghiêm", date: "2026-05-13", severity: "Nghiêm trọng", status: "Chưa xử lý" },
-            { id: "VP004", displayId: "VP004", studentId: "SV202408", studentName: "Phạm Minh Đức", room: "P.202-B1", content: "Không tham gia buổi lao động vệ sinh hành lang định kỳ của tầng", date: "2026-05-14", severity: "Nhẹ", status: "Đã xử lý" },
-            { id: "VP005", displayId: "VP005", studentId: "SV202388", studentName: "Hoàng Lan Hương", room: "P.305-A1", content: "Cho người lạ (không phải sinh viên nội trú) vào ở qua đêm", date: "2026-05-15", severity: "Cảnh cáo", status: "Chưa xử lý" },
-            { id: "VP006", displayId: "VP006", studentId: "SV202290", studentName: "Đỗ Đăng Khoa", room: "P.501-B3", content: "Hút smoke trong phòng ngủ tập thể và khu vực cấm", date: "2026-05-15", severity: "Cảnh cáo", status: "Đã xử lý" },
-            { id: "VP007", displayId: "VP007", studentId: "SV202351", studentName: "Vũ Thị Mai", room: "P.102-A2", content: "Xả rác bừa bãi ra khu vực giếng trời gây ô nhiễm môi trường", date: "2026-05-16", severity: "Nhẹ", status: "Chưa xử lý" },
-            { id: "VP008", displayId: "VP008", studentId: "SV202419", studentName: "Bùi Công Nam", room: "P.206-B2", content: "Tự ý thay đổi kết cấu phòng ở và đóng đinh đục tường diện rộng", date: "2026-05-16", severity: "Nghiêm trọng", status: "Chưa xử lý" },
-            { id: "VP009", displayId: "VP009", studentId: "SV202233", studentName: "Ngô Thanh Tâm", room: "P.303-A1", content: "Mở loa công suất lớn sau 22h gây ảnh hưởng nghiêm trọng phòng bên", date: "2026-05-17", severity: "Nhẹ", status: "Đã xử lý" },
-            { id: "VP010", displayId: "VP010", studentId: "SV202315", studentName: "Lý Khánh Vân", room: "P.404-B1", content: "Về muộn sau 23:00 và có thái độ bất hợp tác với đội tự quản", date: "2026-05-17", severity: "Cảnh cáo", status: "Chưa xử lý" }
+            { id: "BB041", studentId: "SV260112", studentName: "Hoàng Văn Tuấn", room: "P.402-A1", reason: "Sử dụng thiết bị công suất lớn nấu ăn trong phòng gây chập điện", date: "2026-05-15T22:30:00", penalty: "Cảnh cáo & Phạt tiền", isProcessed: false, status: "Chờ xử lý" },
+            { id: "BB042", studentId: "SV260345", studentName: "Nguyễn Thị Thắm", room: "P.104-B2", reason: "Về muộn sau 23:00 không có lý do chính đáng lần đầu", date: "2026-05-16T23:25:00", penalty: "Nhắc nhở phê bình", isProcessed: true, status: "Đã nộp phạt" },
+            { id: "BB043", studentId: "SV260889", studentName: "Bùi Đình Trọng", room: "P.205-A2", reason: "Tụ tập người ngoài uống rượu bia, gây mất trật tự nửa đêm", date: "2026-05-17T01:10:00", penalty: "Phạt tiền 500.000đ", isProcessed: false, status: "Chờ xử lý" },
+            { id: "BB044", studentId: "SV260221", studentName: "Đỗ Đăng Khoa", room: "P.301-B1", reason: "Tự ý hoán đổi chỗ ở, chuyển đồ đạc sang phòng khác khi chưa duyệt", date: "2026-05-17T10:00:00", penalty: "Phê bình hạ thi đua", isProcessed: true, status: "Đã nộp phạt" },
+            { id: "BB045", studentId: "SV260404", studentName: "Lê Minh Hương", room: "P.503-A1", reason: "Không tham gia dọn vệ sinh hành lang chung theo lịch phân công", date: "2026-05-18T08:00:00", penalty: "Trực nhật bù 1 tuần", isProcessed: true, status: "Đã nộp phạt" }
         ];
 
-        let filteredData = [...mockViolations];
-        let currentPage = 1;
-        const rowsPerPage = 4; 
+        document.addEventListener("DOMContentLoaded", function () {
+            displayTableData(mockViolations);
+            renderPagination(1); // Mặc định kích hoạt trang 1 ban đầu
 
-        // Nhúng giá trị check quyền của Razor vào biến Javascript để xử lý ẩn hiện nút
-        const isAuthorizedToEdit = @(User.IsInRole("Admin") || User.IsInRole("Manager") ? "true" : "false");
+            // Lắng nghe sự kiện tìm kiếm thời gian thực
+            document.getElementById("searchInput").addEventListener("input", filterData);
+            document.getElementById("statusFilter").addEventListener("change", filterData);
+        });
 
-        function displayTableData(page) {
-            const tableBody = document.getElementById("violationTableBody");
+        function displayTableData(data) {
+            const tableBody = document.getElementById("tableBody");
             tableBody.innerHTML = "";
-            
-            let start = (page - 1) * rowsPerPage;
-            let end = start + rowsPerPage;
-            let paginatedItems = filteredData.slice(start, end);
 
-            if (paginatedItems.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">Không tìm thấy dữ liệu vi phạm phù hợp.</td></tr>`;
-                updatePaginationControls(0, start, end);
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted fw-medium"><i class="fas fa-folder-open me-2"></i>Không tìm thấy dữ liệu biên bản vi phạm nào.</td></tr>`;
                 return;
             }
 
-            paginatedItems.forEach(violation => {
-                let statusBadge = violation.status === "Đã xử lý" 
-                    ? `<span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">Đã xử lý</span>` 
-                    : `<span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">Chưa xử lý</span>`;
-                
-                let severityBadge = "";
-                if(violation.severity === "Nghiêm trọng") {
-                    severityBadge = `<span class="badge bg-danger text-white px-2 py-1">${violation.severity}</span>`;
-                } else if(violation.severity === "Cảnh cáo") {
-                    severityBadge = `<span class="badge bg-warning text-dark px-2 py-1">${violation.severity}</span>`;
+            data.forEach(item => {
+                // Xác định phong cách thiết kế huy hiệu trạng thái xử lý
+                let statusBadge = '';
+                if (item.status === 'Đã nộp phạt') {
+                    statusBadge = `<span class="badge-status badge-success-soft"><i class="fas fa-check-circle"></i>Đã xử lý</span>`;
+                } else if (item.status === 'Chờ xử lý') {
+                    statusBadge = `<span class="badge-status badge-warning-soft"><i class="fas fa-exclamation-circle"></i>Chờ xử lý</span>`;
                 } else {
-                    severityBadge = `<span class="badge bg-secondary text-white px-2 py-1">${violation.severity}</span>`;
+                    statusBadge = `<span class="badge-status badge-danger-soft"><i class="fas fa-times-circle"></i>Đã hủy bỏ</span>`;
                 }
 
                 // Khởi tạo các nút thao tác cơ bản (Xem chi tiết)
@@ -154,23 +200,31 @@
                     `;
                 }
                 
+                actionButtons += `
+                    <a href="/Violation/Edit/${item.id}" class="nut-hanh-dong nut-sua" title="Sửa biên bản vi phạm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="nut-hanh-dong nut-xoa" onclick="deleteViolation('${item.id}')" title="Xóa bỏ vĩnh viễn biên bản">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>`;
+
                 let row = `<tr>
-                    <td class="ps-4 fw-bold text-secondary">${violation.id}</td>
-                    <td><span class="badge bg-light text-dark border">${violation.studentId}</span></td>
-                    <td class="fw-semibold">${violation.studentName}</td>
-                    <td><span class="text-primary fw-medium">${violation.room}</span></td>
-                    <td class="text-truncate" style="max-width: 250px;" title="${violation.content}">${violation.content}</td>
-                    <td>${formatDate(violation.date)}</td>
-                    <td>${severityBadge}</td>
+                    <td class="ps-4 fw-bold text-secondary">${item.id}</td>
+                    <td><span class="badge bg-light text-dark border font-monospace px-2 py-1">${item.studentId}</span></td>
+                    <td class="fw-semibold text-dark">${item.studentName}</td>
+                    <td><span class="text-primary fw-semibold">${item.room}</span></td>
+                    <td class="text-wrap small text-muted" style="max-width: 240px;">${item.reason}</td>
+                    <td class="small text-muted">${formatDateTime(item.date)}</td>
+                    <td class="fw-medium text-dark"><i class="fas fa-balance-scale text-secondary me-1"></i>${item.penalty}</td>
                     <td>${statusBadge}</td>
                     <td class="text-end pe-4">
                         ${actionButtons}
                     </td>
                 </tr>`;
+
                 tableBody.insertAdjacentHTML('beforeend', row);
             });
-
-            updatePaginationControls(filteredData.length, start, end);
         }
 
         function showViolationDetails(id) {
@@ -239,59 +293,111 @@
             return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
         }
 
-        function updatePaginationControls(totalItems, start, end) {
-            const infoBox = document.getElementById("paginationInfo");
-            const btnBox = document.getElementById("paginationButtons");
+            let pages = [1, 2, 3]; // Khung trang tĩnh mô phỏng dữ liệu danh sách vi phạm
             
-            let actualEnd = end > totalItems ? totalItems : end;
-            let displayStart = totalItems === 0 ? 0 : start + 1;
+            let htmlContent = `<li class="page-item ${activePage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" onclick="changePage(${activePage - 1})">Trước</a></li>`;
             
-            infoBox.innerHTML = `Hiển thị từ <b class="text-dark">${displayStart}</b> đến <b class="text-dark">${actualEnd}</b> trong tổng số <b class="text-dark">${totalItems}</b> bản ghi`;
-
-            btnBox.innerHTML = "";
-            let totalPages = Math.ceil(totalItems / rowsPerPage);
-
-            let prevDisabled = currentPage === 1 ? "disabled" : "";
-            btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${prevDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage - 1})"><i class="fas fa-chevron-left"></i></a></li>`);
-
-            for (let i = 1; i <= totalPages; i++) {
-                let activeClass = i === currentPage ? "active" : "";
-                btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${activeClass}"><a class="page-link" href="#" onclick="changePage(${i})">${i}</a></li>`);
-            }
-
-            let nextDisabled = currentPage === totalPages || totalPages === 0 ? "disabled" : "";
-            btnBox.insertAdjacentHTML('beforeend', `<li class="page-item ${nextDisabled}"><a class="page-link" href="#" onclick="changePage(${currentPage + 1})"><i class="fas fa-chevron-right"></i></a></li>`);
-        }
-
-        function changePage(page) {
-            let totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            if (page < 1 || page > totalPages) return;
-            currentPage = page;
-            displayTableData(currentPage);
-        }
-
-        function filterData() {
-            const searchText = document.getElementById("searchInput").value.toLowerCase();
-            const statusFilter = document.getElementById("statusFilter").value;
-            const severityFilter = document.getElementById("severityFilter").value;
-
-            filteredData = mockViolations.filter(violation => {
-                const matchesSearch = violation.studentName.toLowerCase().includes(searchText) || 
-                                      violation.studentId.toLowerCase().includes(searchText) || 
-                                      violation.room.toLowerCase().includes(searchText);
-                
-                const matchesStatus = statusFilter === "all" || violation.status === statusFilter;
-                const matchesSeverity = severityFilter === "all" || violation.severity === severityFilter;
-
-                return matchesSearch && matchesStatus && matchesSeverity;
+            pages.forEach(p => {
+                htmlContent += `<li class="page-item ${activePage === p ? 'active' : ''}"><a class="page-link" href="#" onclick="changePage(${p})">${p}</a></li>`;
             });
 
-            currentPage = 1; 
-            displayTableData(currentPage);
+            htmlContent += `<li class="page-item ${activePage === 3 ? 'disabled' : ''}"><a class="page-link" href="#" onclick="changePage(${activePage + 1})">Sau</a></li>`;
+            
+            paginationList.innerHTML = htmlContent;
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            displayTableData(currentPage);
-        });
+        function changePage(pageNumber) {
+            if (pageNumber < 1 || pageNumber > 3) return;
+            renderPagination(pageNumber);
+        }
+
+        // Thực thi lọc dữ liệu động đa điều kiện
+        function filterData() {
+            const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
+            const statusVal = document.getElementById("statusFilter").value;
+
+            const filtered = mockViolations.filter(item => {
+                const matchesSearch = item.studentName.toLowerCase().includes(searchVal) || 
+                                      item.studentId.toLowerCase().includes(searchVal) ||
+                                      item.reason.toLowerCase().includes(searchVal);
+                const matchesStatus = statusVal === "All" || item.status === statusVal;
+                return matchesSearch && matchesStatus;
+            });
+
+            displayTableData(filtered);
+        }
+
+        // Xóa bộ lọc đưa bảng về trạng thái mặc định ban đầu
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("statusFilter").value = "All";
+            displayTableData(mockViolations);
+        }
+
+        // Tích hợp SweetAlert2 phê duyệt chuyển trạng thái vi phạm
+        function approveViolation(id) {
+            const violation = mockViolations.find(v => v.id === id);
+            if (!violation) return;
+
+            Swal.fire({
+                title: 'Xác nhận hoàn thành xử lý?',
+                text: `Đóng biên bản xử lý kỷ luật đối với sinh viên ${violation.studentName}. Sinh viên đã thực thi đúng hình phạt?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đã hoàn thành',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    violation.isProcessed = true;
+                    violation.status = "Đã nộp phạt";
+                    
+                    displayTableData(mockViolations);
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công!',
+                        text: 'Biên bản vi phạm đã được cập nhật trạng thái: Đã xử lý.',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                }
+            });
+        }
+
+        // Tích hợp SweetAlert2 xóa bỏ biên bản kỷ luật
+        function deleteViolation(id) {
+            Swal.fire({
+                title: 'Hủy bỏ biên bản vi phạm này?',
+                text: `Hồ sơ biên bản số hiệu ${id} sẽ bị xóa vĩnh viễn khỏi danh sách kỷ luật của hệ thống quản lý KTX.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đồng ý xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Đã xóa bỏ!',
+                        text: `Hệ thống đã loại bỏ biên bản vi phạm số hiệu: ${id}`,
+                        confirmButtonColor: '#4f46e5'
+                    });
+                }
+            });
+        }
+
+        // Hàm tiện ích định dạng hiển thị Ngày/Tháng/Năm - Giờ:Phút
+        function formatDateTime(dateTimeStr) {
+            if (!dateTimeStr) return "";
+            const date = new Date(dateTimeStr);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}`;
+        }
     </script>
 }

@@ -5,14 +5,48 @@
     Layout = "_Layout";
 }
 
-<div class="container-fluid p-0">
-    <!-- TIÊU ĐỀ TRANG -->
+@section Styles {
+    <style>
+        /* Đồng bộ CSS core từ hệ thống Index */
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Nút quay lại tinh tế */
+        .nut-quay-lai { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; transition: all 0.2s; color: #64748b; border: 1px solid #e2e8f0; background: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b; transform: translateX(-2px); }
+
+        /* Form control cao cấp */
+        .khung-nhap-lieu { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border: none; max-width: 850px; }
+        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+        
+        .input-group-custom { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; transition: all 0.3s ease; background: #f8fafc; }
+        .input-group-custom:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
+        .input-group-custom .input-group-text { background: transparent; border: none; color: #94a3b8; padding-left: 16px; }
+        .input-group-custom .form-control, .input-group-custom .form-select { border: none; background: transparent; padding: 11px 16px 11px 10px; font-size: 14px; color: #1e293b; }
+        .input-group-custom .form-control:focus, .input-group-custom .form-select:focus { box-shadow: none; background: transparent; }
+
+        /* Custom trường tùy chọn Radio */
+        .khung-radio-group { background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .form-check-input:checked[value="Chưa xử lý"] { background-color: #f97316; border-color: #f97316; }
+        .form-check-input:checked[value="Đã xử lý"] { background-color: #10b981; border-color: #10b981; }
+
+        /* Hệ thống nút hành động */
+        .nut-luu { padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background: #ef4444; color: #fff; border: none; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); display: inline-flex; align-items: center; gap: 8px; }
+        .nut-luu:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); }
+        .nut-huy { padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; text-decoration: none; }
+        .nut-huy:hover { background: #e2e8f0; color: #1e293b; }
+    </style>
+}
+
+<div class="container-fluid py-2">
+    <!-- TIÊU ĐỀ TRANG & ĐIỀU HƯỚNG -->
     <div class="mb-4">
-        <a href="/Violation/Index" class="btn btn-sm btn-outline-secondary mb-2">
-            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
-        </a>
-        <h3 class="text-dark fw-bold mb-1">Lập Biên Bản Vi Phạm Mới</h3>
-        <p class="text-muted small mb-0">Ghi nhận hành vi vi phạm nội quy kí túc xá của sinh viên.</p>
+        <div class="d-flex mb-2">
+            <a href="/Violation/Index" class="nut-quay-lai shadow-sm">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+        <h1 class="tieu-de-trang mb-1">Lập Biên Bản Vi Phạm Mới</h1>
+        <p class="text-muted small mb-0">Ghi nhận chính xác hành vi vi phạm nội quy nội trú của sinh viên.</p>
     </div>
 
     <!-- FORM NHẬP LIỆU -->
@@ -23,7 +57,7 @@
                 
                 <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
-                <div class="row g-3">
+                <div class="row g-4">
                     <!-- Mã Sinh Viên -->
                     <div class="col-12 col-md-6">
                         <label asp-for="StudentId" class="form-label fw-semibold text-secondary small">Mã số sinh viên <span class="text-danger">*</span></label>
@@ -90,13 +124,13 @@
                     </div>
                 </div>
 
-                <hr class="my-4 text-muted" />
+                <div class="my-4" style="border-top: 1px dashed #e2e8f0;"></div>
 
-                <!-- NÚT HÀNH ĐỘNG -->
-                <div class="d-flex justify-content-end gap-2">
-                    <a href="/Violation/Index" class="btn btn-light border px-4">Hủy bỏ</a>
-                    <button type="submit" class="btn btn-danger px-4 shadow-sm">
-                        <i class="fas fa-save me-1"></i> Lưu biên bản
+                <!-- NÚT HÀNH ĐỘNG ĐỒNG BỘ BÊN PHẢI -->
+                <div class="d-flex justify-content-end gap-3">
+                    <a href="/Violation/Index" class="nut-huy">Hủy bỏ</a>
+                    <button type="submit" class="nut-luu shadow-sm">
+                        <i class="fas fa-save"></i> Lưu biên bản
                     </button>
                 </div>
             </form>
