@@ -5,117 +5,116 @@
 
 @section Styles {
     <style>
-        /* Hệ thống tiêu đề */
-        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        /* 1. Header & Tổng thể */
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* 2. Nút trên Header */
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
+        .btn-header-back { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-header-back:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); color: #1e293b !important; background: #f8fafc; }
+
+        /* 3. Card Form */
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
         
-        /* Cấu trúc Card cao cấp */
-        .khung-chua-form { background: #fff; border-radius: 20px; box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05); border: none; overflow: hidden; }
-        .card-header-custom { background: #fff; border-bottom: 1px solid #f1f5f9; padding: 20px 24px; }
-        .card-body-custom { padding: 24px; }
+        /* 4. Tiêu đề từng khu vực */
+        .section-title { font-size: 16px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px dashed #f1f5f9; }
+        .section-icon { width: 38px; height: 38px; border-radius: 10px; background: #eef2ff; color: #4f46e5; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+        .section-icon.green { background: #ecfdf5; color: #10b981; }
 
-        /* Nút quay lại tinh tế */
-        .nut-quay-lai { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
-        .nut-quay-lai:hover { background: #e2e8f0; color: #1e293b; transform: translateX(-2px); }
+        /* 5. Input & Form */
+        .form-label { font-weight: 600; color: #475569; font-size: 13px; margin-bottom: 6px; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0; font-size: 14px; color: #1e293b; background-color: #f8fafc; transition: all 0.2s; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; background-color: #fff; }
 
-        /* Ô nhập liệu hiện đại tích hợp icon */
-        .input-group-custom { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; transition: all 0.3s ease; background: #f8fafc; display: flex; align-items: center; }
-        .input-group-custom:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
-        .input-group-custom .input-icon { color: #94a3b8; padding-left: 14px; padding-right: 2px; font-size: 14px; }
-        .input-group-custom .form-control { border: none; background: transparent; padding: 10px 12px; font-size: 14px; color: #1e293b; width: 100%; }
-        .input-group-custom .form-control:focus { box-shadow: none; background: transparent; outline: none; }
-
-        /* Hệ thống nút bấm chân trang */
-        .nut-huy { padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
-        .nut-huy:hover { background: #e2e8f0; color: #1e293b; }
-
-        .nut-ghi-nhan { padding: 10px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); display: inline-flex; align-items: center; gap: 8px; }
-        .nut-ghi-nhan:hover { transform: translateY(-1px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); color: #fff; }
+        /* 6. Nút Submit (Dưới form) */
+        .btn-action { height: 46px; border-radius: 12px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 0 24px; transition: all 0.2s; border: none; }
+        .btn-save { background: #4f46e5; color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); background: #4338ca; }
+        .btn-cancel { background: #fff; color: #ef4444 !important; border: 1px solid #fee2e2; background: #fef2f2; text-decoration: none; }
+        .btn-cancel:hover { background: #fee2e2; transform: translateY(-2px); }
     </style>
 }
 
-<div class="container-fluid py-2">
-    <!-- KHU VỰC TIÊU ĐỀ & ĐIỀU HƯỚNG -->
-    <div class="mb-4">
-        <div class="d-flex mb-2">
-            <a href="/Visitor" class="nut-quay-lai">
+<div class="container-fluid">
+    <!-- HEADER CÓ NÚT QUAY LẠI -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-0"><i class="fas fa-address-book me-2"></i>Ghi nhận khách mới</h1>
+            <p class="text-muted small mb-0">Nhập thông tin chi tiết của khách và sinh viên được thăm.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="/Visitor" class="btn-custom-header btn-header-back text-decoration-none">
                 <i class="fas fa-arrow-left"></i> Quay lại danh sách
             </a>
         </div>
-        <h1 class="tieu-de-trang mb-1">Ghi Nhận Lượt Khách Mới</h1>
-        <p class="text-muted small mb-0">Nhập thông tin chi tiết của khách và sinh viên được thăm khi đăng ký vào khu vực nội trú.</p>
-    </div>
+    </header>
 
-    <!-- KHUNG CHỨA FORM CHÍNH -->
-    <div class="row">
-        <div class="col-xl-8 col-lg-10">
-            <div class="card khung-chua-form">
-                <div class="card-header-custom">
-                    <h6 class="m-0 fw-bold text-dark"><i class="fas fa-user-plus text-primary me-2"></i>Đăng ký thông tin ra vào</h6>
-                </div>
-                <div class="card-body-custom">
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="card card-custom">
+                <div class="card-body p-4 p-md-5">
                     <form id="createVisitorForm" onsubmit="createNewVisitor(event)">
-                        
-                        <!-- HÀNG 1: THÔNG TIN KHÁCH -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Tên khách đến thăm</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-user"></i></span>
-                                    <input type="text" id="visitorName" class="form-control" required placeholder="Nhập họ tên khách...">
+                        <div class="row g-5">
+                            <!-- CỘT TRÁI: THÔNG TIN KHÁCH -->
+                            <div class="col-md-6 border-end-md pe-md-4">
+                                <div class="section-title">
+                                    <div class="section-icon"><i class="fas fa-user-tag"></i></div>
+                                    Thông tin khách đến
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label">Tên khách đến thăm <span class="text-danger">*</span></label>
+                                    <input type="text" id="visitorName" class="form-control input-custom" required placeholder="Nhập họ tên khách...">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Số CCCD/CMND <span class="text-danger">*</span></label>
+                                    <input type="text" id="identityCard" class="form-control input-custom font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Mục đích thăm</label>
+                                    <textarea id="purpose" class="form-control input-custom" rows="2" style="height: auto;" placeholder="Ví dụ: Thăm người thân, đưa đồ..."></textarea>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Số CCCD/CMND</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-id-card"></i></span>
-                                    <input type="text" id="identityCard" class="form-control font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
+
+                            <!-- CỘT PHẢI: THÔNG TIN SINH VIÊN & LƯU TRÚ -->
+                            <div class="col-md-6 ps-md-4">
+                                <div class="section-title">
+                                    <div class="section-icon green"><i class="fas fa-home"></i></div>
+                                    Sinh viên & Lưu trú
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Sinh viên được thăm <span class="text-danger">*</span></label>
+                                    <input type="text" id="studentName" class="form-control input-custom" required placeholder="Nhập tên sinh viên cần gặp...">
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Thuộc phòng <span class="text-danger">*</span></label>
+                                    <input type="text" id="room" class="form-control input-custom" required placeholder="Ví dụ: P.302-A1">
+                                </div>
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giờ vào</label>
+                                        <input type="datetime-local" id="checkIn" class="form-control input-custom" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Giờ ra (Dự kiến)</label>
+                                        <input type="datetime-local" id="checkOut" class="form-control input-custom" required>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- HÀNG 2: THÔNG TIN LƯU TRÚ NỘI KHU -->
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Sinh viên được thăm</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-graduation-cap"></i></span>
-                                    <input type="text" id="studentName" class="form-control" required placeholder="Nhập tên sinh viên trong ký túc xá...">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Thuộc phòng</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-door-open"></i></span>
-                                    <input type="text" id="room" class="form-control" required placeholder="Ví dụ: P.302-A1">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- HÀNG 3: MỐC THỜI GIAN -->
-                        <div class="row g-3 mb-4">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Giờ vào</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-sign-in-alt"></i></span>
-                                    <input type="datetime-local" id="checkIn" class="form-control" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold text-secondary">Giờ ra (Dự kiến)</label>
-                                <div class="input-group-custom">
-                                    <span class="input-icon"><i class="fas fa-sign-out-alt"></i></span>
-                                    <input type="datetime-local" id="checkOut" class="form-control" required>
-                                </div>
-                            </div>
-                        </div>
-
-                        <hr class="text-muted my-4" style="opacity: 0.1;">
-
-                        <!-- CỤM NÚT ĐIỀU HƯỚNG CUỐI FORM -->
-                        <div class="d-flex justify-content-end gap-2">
-                            <a href="/Visitor" class="nut-huy">Hủy bỏ</a>
-                            <button type="submit" class="nut-ghi-nhan">
-                                <i class="fas fa-check"></i> Ghi nhận vào sổ
+                        <!-- NÚT ĐIỀU KHIỂN DƯỚI FORM -->
+                        <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                            <a href="/Visitor" class="btn-action btn-cancel">
+                                <i class="fas fa-times"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn-action btn-save">
+                                <i class="fas fa-check"></i> Ghi nhận khách
                             </button>
                         </div>
                     </form>
