@@ -219,25 +219,37 @@
 
     <!-- ================= VẬN HÀNH & AN NINH ================= -->
     @if (isAuthenticated)
-    {
-        var isOperationGroup = currentController == "Violation";
-        <a data-bs-toggle="collapse" href="#operationMenu" class="menu-toggle @(isOperationGroup ? "active" : "collapsed")">
-            <i class="fas fa-shield-alt"></i>
-            <span class="text">Vận hành & An ninh</span>
+{
+    // Kiểm tra xem có đang ở trong các trang thuộc nhóm Violation (Vận hành & An ninh) hay không
+    var isOperationGroup = currentController.Equals("Violation", StringComparison.OrdinalIgnoreCase);
+    
+    <a data-bs-toggle="collapse" 
+       href="#operationMenu" 
+       role="button"
+       aria-expanded="@(isOperationGroup ? "true" : "false")"
+       aria-controls="operationMenu"
+       class="menu-toggle @(isOperationGroup ? "active" : "collapsed")">
+        <i class="fas fa-shield-alt"></i>
+        <span class="text">Vận hành & An ninh</span>
+    </a>
+    
+    <div class="collapse submenu @(isOperationGroup ? "show" : "")" id="operationMenu">
+        <a asp-controller="Violation" 
+           asp-action="Index" 
+           class="@(isOperationGroup && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+            <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
         </a>
-        <div class="collapse submenu @(isOperationGroup ? "show" : "")" id="operationMenu">
-            <a asp-controller="Violation" asp-action="Index" class="@(isOperationGroup && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
+        
+        @if (isAdminOrManager)
+        {
+            <a asp-controller="Violation" 
+               asp-action="Create" 
+               class="@(isOperationGroup && currentAction.Equals("Create", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                <i class="fas fa-plus me-2"></i> Lập biên bản mới
             </a>
-            
-            @if (isAdminOrManager)
-            {
-                <a asp-controller="Violation" asp-action="Create" class="@(isOperationGroup && currentAction == "Create" ? "active" : "")">
-                    <i class="fas fa-plus me-2"></i> Lập biên bản mới
-                </a>
-            }
-        </div>
-    }
+        }
+    </div>
+}
 
     <!-- ================= KHÁCH ĐẾN THĂM ================= -->
     @if (isAuthenticated)
