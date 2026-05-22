@@ -239,13 +239,13 @@
         </div>
     }
 
-    <!-- ================= KHÁCH VÃNG LAI ================= -->
+    <!-- ================= KHÁCH ĐẾN THĂM ================= -->
     @if (isAuthenticated)
     {
         var isVisitorGroup = currentController == "Visitor";
         <a data-bs-toggle="collapse" href="#visitorMenu" class="menu-toggle @(isVisitorGroup ? "active" : "collapsed")">
             <i class="fas fa-address-book"></i>
-            <span class="text">Khách vãng lai</span>
+            <span class="text">Khách đến thăm</span>
         </a>
         <div class="collapse submenu @(isVisitorGroup ? "show" : "")" id="visitorMenu">
             <a asp-controller="Visitor" asp-action="Index" class="@(isVisitorGroup && currentAction == "Index" ? "active" : "")">
