@@ -12,6 +12,8 @@ using DormitoryManagement.Application.Dtos.Responses.Rooms;
 using DormitoryManagement.Application.Dtos.Responses.RoomTypes;
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Dtos.Responses.Utilities;
+using DormitoryManagement.Application.Dtos.Requests.Vehicles;
+using DormitoryManagement.Application.Dtos.Responses.Vehicles;
 using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Application.Mappings
@@ -103,6 +105,26 @@ namespace DormitoryManagement.Application.Mappings
             // === ROOM TYPE MAPPINGS ===
             CreateMap<RoomType, RoomTypeResponseDto>();
             CreateMap<RoomTypeRequestDto, RoomType>();
+
+            // === VEHICLE MAPPINGS ===
+            CreateMap<Vehicle, VehicleResponseDto>()
+                .ForMember(dest => dest.OwnerFullName, opt => opt.MapFrom(src => src.Owner != null ? src.Owner.FullName : string.Empty))
+                .ForMember(dest => dest.OwnerCode, opt => opt.MapFrom(src => src.Owner != null ? src.Owner.Code : string.Empty));
+
+            CreateMap<VehicleRequestDto, Vehicle>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
+                .ForMember(dest => dest.Owner, opt => opt.Ignore());
+
+            CreateMap<VehicleUpdateDto, Vehicle>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsDeleted, opt => opt.Ignore())
+                .ForMember(dest => dest.Owner, opt => opt.Ignore());
 
             // === UTILITY MAPPINGS ===
             CreateMap<Utility, UtilityResponseDto>();
