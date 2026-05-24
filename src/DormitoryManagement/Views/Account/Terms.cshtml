@@ -1,6 +1,5 @@
 @{
     Layout = null;
-    bool isEmbed = Context.Request.Query["embed"] == "true";
 }
 <!DOCTYPE html>
 <html lang="vi">
@@ -102,6 +101,24 @@
             color: var(--primary-hover);
         }
 
+        .btn-back {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-back:hover {
+            background-color: #f1f5f9;
+            color: var(--text-color);
+            border-color: var(--text-muted);
+        }
+
         /* Responsive */
         @@media (max-width: 576px) {
             body {
@@ -139,37 +156,9 @@
             .terms-title {
                 font-size: 2.2rem;
             }
-            .terms-footer, .btn-print {
+            .terms-footer, .btn-print, .btn-back {
                 display: none !important;
             }
-        }
-
-        @if (isEmbed)
-        {
-            <text>
-            body {
-                background-color: transparent !important;
-                padding: 0 !important;
-            }
-            .terms-card {
-                box-shadow: none !important;
-                border: none !important;
-                background: transparent !important;
-                border-radius: 0 !important;
-            }
-            .terms-header {
-                display: none !important;
-            }
-            .terms-footer {
-                display: none !important;
-            }
-            .terms-body {
-                padding: 15px 25px !important;
-            }
-            h3:first-of-type {
-                margin-top: 10px !important;
-            }
-            </text>
         }
     </style>
 </head>
@@ -220,9 +209,14 @@
 
         <div class="terms-footer">
             <span class="text-muted small">Cập nhật lần cuối: 24/05/2026</span>
-            <button onclick="window.print()" class="btn-print">
-                <i class="fas fa-print me-1"></i> In bản điều khoản
-            </button>
+            <div>
+                <a href="javascript:void(0);" onclick="window.history.length > 1 ? window.history.back() : window.close();" class="btn-back me-2">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                </a>
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fas fa-print me-1"></i> In bản điều khoản
+                </button>
+            </div>
         </div>
     </div>
 
