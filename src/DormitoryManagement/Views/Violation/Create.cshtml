@@ -1,143 +1,79 @@
-@model DormitoryManagement.Application.Dtos.Requests.ViolationRequestDto
-
 @{
-    ViewData["Title"] = "Lập Biên Bản Vi Phạm - KTX System";
-    Layout = "_Layout";
+    ViewData["Title"] = "Lập biên bản mới";
 }
 
-@section Styles {
-    <style>
-        /* Đồng bộ CSS core từ hệ thống Index */
-        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Nút quay lại tinh tế */
-        .nut-quay-lai { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; transition: all 0.2s; color: #64748b; border: 1px solid #e2e8f0; background: #fff; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
-        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b; transform: translateX(-2px); }
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 col-md-9 col-lg-6 mx-auto">
+            
+            <div class="mb-3">
+                <a asp-action="Index" class="text-decoration-none small text-muted"><i class="fas fa-arrow-left me-1"></i> Quay lại danh sách</a>
+            </div>
 
-        /* Form control cao cấp */
-        .khung-nhap-lieu { background: #fff; border-radius: 20px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); border: none; max-width: 850px; }
-        .form-label-custom { font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
-        
-        .input-group-custom { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; transition: all 0.3s ease; background: #f8fafc; }
-        .input-group-custom:focus-within { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); background: #fff; }
-        .input-group-custom .input-group-text { background: transparent; border: none; color: #94a3b8; padding-left: 16px; }
-        .input-group-custom .form-control, .input-group-custom .form-select { border: none; background: transparent; padding: 11px 16px 11px 10px; font-size: 14px; color: #1e293b; }
-        .input-group-custom .form-control:focus, .input-group-custom .form-select:focus { box-shadow: none; background: transparent; }
-
-        /* Custom trường tùy chọn Radio */
-        .khung-radio-group { background: #f8fafc; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; }
-        .form-check-input:checked[value="Chưa xử lý"] { background-color: #f97316; border-color: #f97316; }
-        .form-check-input:checked[value="Đã xử lý"] { background-color: #10b981; border-color: #10b981; }
-
-        /* Hệ thống nút hành động */
-        .nut-luu { padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.3s; background: #ef4444; color: #fff; border: none; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); display: inline-flex; align-items: center; gap: 8px; }
-        .nut-luu:hover { background: #dc2626; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(239, 68, 68, 0.3); }
-        .nut-huy { padding: 11px 24px; border-radius: 10px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; text-decoration: none; }
-        .nut-huy:hover { background: #e2e8f0; color: #1e293b; }
-    </style>
-}
-
-<div class="container-fluid py-2">
-    <!-- TIÊU ĐỀ TRANG & ĐIỀU HƯỚNG -->
-    <div class="mb-4">
-        <div class="d-flex mb-2">
-            <a href="/Violation/Index" class="nut-quay-lai shadow-sm">
-                <i class="fas fa-arrow-left"></i> Quay lại danh sách
-            </a>
-        </div>
-        <h1 class="tieu-de-trang mb-1">Lập Biên Bản Vi Phạm Mới</h1>
-        <p class="text-muted small mb-0">Ghi nhận chính xác hành vi vi phạm nội quy nội trú của sinh viên.</p>
-    </div>
-
-    <!-- FORM NHẬP LIỆU -->
-    <div class="card border-0 shadow-sm" style="max-width: 800px;">
-        <div class="card-body p-4">
-            <form asp-action="Create" method="post">
-                @Html.AntiForgeryToken()
+            <div class="card card-form-custom border-0 shadow-sm">
+                <div class="card-header-custom py-4 px-4 text-center text-md-start">
+                    <h3 class="fw-bold text-dark-navy mb-1"><i class="fas fa-plus-circle me-2" style="color: #5c51d6;"></i>Lập Biên Bản Mới</h3>
+                    <p class="text-muted small mb-0">Vui lòng điền chính xác thông tin vi phạm của sinh viên nội trú.</p>
+                </div>
                 
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
-
-                <div class="row g-4">
-                    <!-- Mã Sinh Viên -->
-                    <div class="col-12 col-md-6">
-                        <label asp-for="StudentId" class="form-label fw-semibold text-secondary small">Mã số sinh viên <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-id-card text-muted"></i></span>
-                            <input asp-for="StudentId" class="form-control" placeholder="Ví dụ: SV202601" autocomplete="off" />
-                        </div>
-                        <span asp-validation-for="StudentId" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <!-- Phòng ở -->
-                    <div class="col-12 col-md-6">
-                        <label asp-for="Room" class="form-label fw-semibold text-secondary small">Phòng ở hiện tại <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-door-open text-muted"></i></span>
-                            <input asp-for="Room" class="form-control" placeholder="Ví dụ: P.302-A1" autocomplete="off" />
-                        </div>
-                        <span asp-validation-for="Room" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <!-- Mức độ vi phạm -->
-                    <div class="col-12 col-md-6">
-                        <label asp-for="Severity" class="form-label fw-semibold text-secondary small">Mức độ nghiêm trọng <span class="text-danger">*</span></label>
-                        <select asp-for="Severity" class="form-select bg-light">
-                            <option value="">-- Chọn mức độ --</option>
-                            <option value="Nhẹ">Nhẹ (Nhắc nhở)</option>
-                            <option value="Cảnh cáo">Cảnh cáo biên bản</option>
-                            <option value="Nghiêm trọng">Nghiêm trọng (Kỷ luật nặng)</option>
-                        </select>
-                        <span asp-validation-for="Severity" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <!-- Ngày lập biên bản -->
-                    <div class="col-12 col-md-6">
-                        <label asp-for="Date" class="form-label fw-semibold text-secondary small">Ngày vi phạm / Ngày lập <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="fas fa-calendar-alt text-muted"></i></span>
-                            <input asp-for="Date" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
-                        </div>
-                        <span asp-validation-for="Date" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <!-- Nội dung vi phạm -->
-                    <div class="col-12">
-                        <label asp-for="Content" class="form-label fw-semibold text-secondary small">Mô tả nội dung vi phạm <span class="text-danger">*</span></label>
-                        <textarea asp-for="Content" class="form-control" rows="4" placeholder="Mô tả chi tiết hành vi vi phạm..."></textarea>
-                        <span asp-validation-for="Content" class="text-danger small mt-1 d-block"></span>
-                    </div>
-
-                    <!-- Trạng thái xử lý -->
-                    <div class="col-12">
-                        <label class="form-label fw-semibold text-secondary small">Trạng thái xử lý ban đầu</label>
-                        <div class="mt-1">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" asp-for="Status" value="Chưa xử lý" id="status1" checked>
-                                <label class="form-check-label text-warning fw-medium" for="status1">Chưa xử lý</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" asp-for="Status" value="Đã xử lý" id="status2">
-                                <label class="form-check-label text-success fw-medium" for="status2">Đã xử lý xong</label>
+                <div class="card-body p-4 border-top border-light-subtle">
+                    <form asp-action="Create" method="post">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark-navy">Tìm kiếm sinh viên <span class="text-danger">*</span></label>
+                            <div class="input-group input-group-custom">
+                                <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-user" style="font-size:0.85rem;"></i></span>
+                                <input type="text" class="form-control border-start-0" placeholder="Nhập tên hoặc Mã số sinh viên..." required />
                             </div>
                         </div>
-                        <span asp-validation-for="Status" class="text-danger small mt-1 d-block"></span>
-                    </div>
-                </div>
 
-                <div class="my-4" style="border-top: 1px dashed #e2e8f0;"></div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Phòng ở <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control input-custom" placeholder="Ví dụ: P.302-A1" required />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Mức độ vi phạm</label>
+                                <select class="form-select input-custom">
+                                    <option>Nhẹ</option>
+                                    <option selected>Trung bình</option>
+                                    <option>Nghiêm trọng</option>
+                                </select>
+                            </div>
+                        </div>
 
-                <!-- NÚT HÀNH ĐỘNG ĐỒNG BỘ BÊN PHẢI -->
-                <div class="d-flex justify-content-end gap-3">
-                    <a href="/Violation/Index" class="nut-huy">Hủy bỏ</a>
-                    <button type="submit" class="nut-luu shadow-sm">
-                        <i class="fas fa-save"></i> Lưu biên bản
-                    </button>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark-navy">Nội dung lỗi vi phạm <span class="text-danger">*</span></label>
+                            <textarea class="form-control input-custom" rows="3" placeholder="Mô tả cụ thể hành vi vi phạm..." required></textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-dark-navy">Hình thức xử lý dự kiến</label>
+                            <input type="text" class="form-control input-custom" placeholder="Ví dụ: Cảnh cáo toàn tầng / Phạt hành chính" />
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="Index" class="btn btn-refresh-light px-4">Hủy bỏ</a>
+                            <button type="submit" class="btn btn-purple-gradient px-4">Lưu biên bản</button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+<style>
+    body { background-color: #f4f7f6; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .text-dark-navy { color: #3b3f5c; }
+    .card-form-custom { border-radius: 16px; background: white; box-shadow: 0 4px 25px rgba(0,0,0,0.04)!important; }
+    .input-custom, .input-group-custom .form-control { border: 1px solid #e0e6ed; padding: 10px 14px; font-size: 14px; background-color: #f9fbfd; border-radius: 10px; }
+    .input-group-custom .form-control { border-top-left-radius: 0!important; border-bottom-left-radius: 0!important; }
+    .input-group-custom .input-group-text { border: 1px solid #e0e6ed; background-color: #f9fbfd; border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
+    .form-select.input-custom { padding-right: 36px; background-color: #f9fbfd; }
+    .input-custom:focus, .input-group-custom .form-control:focus { border-color: #5c51d6; box-shadow: none; background-color: #fff; }
+    .btn-purple-gradient { background: linear-gradient(135deg, #5c51d6, #4a3ec7); color: white; border: none; font-weight: 500; padding: 10px 24px; border-radius: 10px; font-size: 0.9rem; }
+    .btn-refresh-light { background-color: #ebedf2; color: #3b3f5c; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 500; font-size: 0.9rem; }
+    .btn-refresh-light:hover { background-color: #e0e4ec; }
+</style>
