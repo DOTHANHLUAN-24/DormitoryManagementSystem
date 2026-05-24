@@ -229,35 +229,50 @@
             text-transform: uppercase;
         }
 
-        /* Print Media Query Rules */
+        /* Ẩn cái icon cuốn lịch đi */
+        input[type="date"]::-webkit-inner-spin-button,
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none;
+        }
+
+        /* =======================================================
+           CSS ĐỘC QUYỀN CHỈ CHẠY LÚC IN
+           ======================================================= */
         @@media print {
             body {
-                background-color: #ffffff;
-                margin: 0;
-                padding: 0;
+                margin: 0 !important;
+                padding: 0 !important;
+                background-color: #ffffff !important;
             }
-            .no-print {
+
+            /* Ép tờ giấy phủ kín 100% độ rộng khổ A4 */
+            .paper {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 15mm 20mm !important; /* Lề chuẩn văn bản */
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            /* Ẩn cục trạng thái khi in ra giấy */
+            .screen-status-badge {
                 display: none !important;
             }
-            .paper-wrapper {
-                padding: 0;
-            }
-            .paper {
-                box-shadow: none;
-                padding: 0;
-                width: 100%;
-                min-height: auto;
-            }
+
+            /* Xóa đường viền của các ô nhập liệu, biến thành chữ in chết */
             .paper-input {
                 border-bottom: none !important;
                 background: transparent !important;
-                padding: 0 !important;
-                appearance: none;
-                -webkit-appearance: none;
-                pointer-events: none;
+                font-weight: bold !important;
+                color: #000000 !important;
             }
-            .screen-status-badge {
-                display: none !important;
+
+            /* Set chuẩn giấy A4 và xóa dòng link localhost ở mép giấy */
+            @@page {
+                size: A4 portrait;
+                margin: 0;
             }
         }
     </style>
@@ -271,7 +286,8 @@
         </a>
     </div>
     <div class="d-flex gap-2">
-        <button type="button" class="btn-control btn-print" onclick="window.print()">
+        <!-- ĐÃ ĐỔI HÀM ONCLICK TẠI ĐÂY -->
+        <button type="button" class="btn-control btn-print" onclick="printContractA4()">
             <i class="fas fa-print"></i> In hợp đồng (A4)
         </button>
         
@@ -290,8 +306,9 @@
     </div>
 </div>
 
+<!-- ĐÂY LÀ PHẦN BẠN MUỐN LẤY -->
 <div class="paper-wrapper">
-    <div class="paper">
+    <div class="paper" id="paper-content">
         <!-- Status indicator (screen only) -->
         <span class="screen-status-badge no-print @(Model.Status switch {
             ContractStatus.Active => "bg-success text-white",
@@ -354,19 +371,50 @@
                 <span class="info-label">- Tài khoản / MSSV:</span>
                 <span class="info-value-dotted font-monospace">@Model.User?.UserName</span>
             </div>
+            
+            <!-- XỬ LÝ TRƯỜNG CCCD/CMND -->
             <div class="info-row">
                 <span class="info-label">- Số CMND/CCCD:</span>
                 <span class="info-value-dotted">
-                    <input type="text" class="paper-input" id="identityCard" placeholder="(Nhập số CCCD/CMND sinh viên nếu có)" value="" />
+                    @if (!string.IsNullOrWhiteSpace(Model.User?.IdentityCardNumber))
+                    {
+                        <span class="fw-bold">@Model.User.IdentityCardNumber</span>
+                    }
+                    else
+                    {
+                        <input type="text" class="paper-input" id="identityCard" placeholder="(Nhập số CCCD/CMND sinh viên nếu có)" />
+                    }
                 </span>
             </div>
+            
+            <!-- XỬ LÝ TRƯỜNG SỐ ĐIỆN THOẠI -->
             <div class="info-row">
                 <span class="info-label">- Số điện thoại:</span>
-                <span class="info-value-dotted">@(string.IsNullOrEmpty(Model.User?.PhoneNumber) ? "................................................................" : Model.User.PhoneNumber)</span>
+                <span class="info-value-dotted">
+                    @if (!string.IsNullOrWhiteSpace(Model.User?.PhoneNumber))
+                    {
+                        <span class="fw-bold">@Model.User.PhoneNumber</span>
+                    }
+                    else
+                    {
+                        <input type="text" class="paper-input" id="phoneNumber" placeholder="(Nhập số điện thoại sinh viên)" />
+                    }
+                </span>
             </div>
+            
+            <!-- XỬ LÝ TRƯỜNG EMAIL -->
             <div class="info-row">
                 <span class="info-label">- Email:</span>
-                <span class="info-value-dotted">@(string.IsNullOrEmpty(Model.User?.Email) ? "................................................................" : Model.User.Email)</span>
+                <span class="info-value-dotted">
+                    @if (!string.IsNullOrWhiteSpace(Model.User?.Email))
+                    {
+                        <span class="fw-bold">@Model.User.Email</span>
+                    }
+                    else
+                    {
+                        <input type="text" class="paper-input" id="email" placeholder="(Nhập email sinh viên)" />
+                    }
+                </span>
             </div>
 
             <p style="margin-top: 15px;">Hai bên cùng thống nhất ký kết hợp đồng thuê chỗ ở nội trú Ký túc xá với các điều khoản sau:</p>
@@ -385,10 +433,13 @@
                 <span class="ms-3">- Tòa nhà:</span>
                 <span class="fw-bold ms-1">@(Model.Bed?.Room?.Block?.BlockName ?? "Chưa rõ")</span>
             </div>
-            <div class="info-row" style="margin-top: 8px;">
+            <div class="info-row align-items-center" style="margin-top: 8px;">
                 <span class="info-label-long">- Mã Số Hợp Đồng (bắt buộc):</span>
-                <div style="flex-grow: 1;">
+                <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">
                     <input type="text" class="paper-input fw-bold" id="contractCode" value="@Model.ContractCode" required style="color: #4f46e5;" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary no-print" onclick="regenerateApproveContractCode()" title="Tự động sinh mã mới" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px 8px; background-color: #f8fafc;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
             </div>
             <div class="info-row">
@@ -447,6 +498,37 @@
 
 @section Scripts {
     <script>
+        function regenerateApproveContractCode() {
+            const currentYear = new Date().getFullYear();
+            const randCode = 'HD-' + currentYear + '-' + Math.floor(1000 + Math.random() * 9000);
+            $('#contractCode').val(randCode);
+        }
+
+        // HÀM XỬ LÝ CHUYÊN DỤNG CHO VIỆC IN CHÍNH XÁC KHU VỰC GIẤY
+        function printContractA4() {
+            // Bước 1: Lưu lại giá trị text mà người dùng đang gõ dở trên form để khi in không bị mất
+            document.querySelectorAll('.paper-input').forEach(input => {
+                input.setAttribute('value', input.value);
+            });
+
+            // Bước 2: Bốc đúng nội dung thẻ .paper ra
+            var paperContent = document.getElementById('paper-content').outerHTML;
+            var originalBody = document.body.innerHTML;
+
+            // Bước 3: Thay thế TOÀN BỘ trang web bằng tờ giấy này (Xóa sổ header xanh ngọc)
+            document.body.innerHTML = paperContent;
+
+            // Bước 4: Gọi lệnh in của trình duyệt
+            window.print();
+
+            // Bước 5: Trả lại giao diện trang web như cũ để sử dụng tiếp
+            document.body.innerHTML = originalBody;
+            
+            // Reload lại nhẹ nhàng để các nút bấm (như nút Lưu) hoạt động lại bình thường
+            window.location.reload();
+        }
+
+        // Hàm lưu trữ data
         function saveContract(isApprove) {
             var id = $('#contractId').val();
             var contractCode = $('#contractCode').val();

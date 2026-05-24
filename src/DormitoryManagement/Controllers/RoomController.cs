@@ -2,25 +2,40 @@ using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Rooms;
 using DormitoryManagement.Application.Interfaces.Services;
 using DormitoryManagement.Application.Services.Interfaces;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Interfaces.Repositories;
+using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize(Roles = "Admin,ManagerStaff")]
+    [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
     public class RoomController
     (
         IRoomService roomService,
         IBlockService blockService,
         IRoomTypeService roomTypeService,
+        IContractRepository contractRepository,
+        IContractService contractService,
+        IBedRepository bedRepository,
+        UserManager<User> userManager,
+        IUnitOfWork unitOfWork,
         IMapper mapper
     ) : BaseController
     {
         private readonly IRoomService _roomService = roomService;
         private readonly IBlockService _blockService = blockService;
         private readonly IRoomTypeService _roomTypeService = roomTypeService;
+        private readonly IContractRepository _contractRepository = contractRepository;
+        private readonly IContractService _contractService = contractService;
+        private readonly IBedRepository _bedRepository = bedRepository;
+        private readonly UserManager<User> _userManager = userManager;
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
@@ -50,7 +65,62 @@ namespace DormitoryManagement.Controllers
             var room = await _roomService.GetRoomByIdAsync(id);
             if (room == null) return NotFound();
 
+            // Load active contracts for the beds in this room
+            var bedIds = room.Beds.Select(b => b.Id).ToList();
+            var activeContracts = await _contractRepository.GetQuery()
+                .Include(c => c.User)
+                .Where(c => bedIds.Contains(c.BedId) && c.Status == ContractStatus.Active)
+                .ToListAsync();
+
+            ViewBag.ActiveContracts = activeContracts;
+
+            // Load students without room for the assignment dropdown
+            var studentsWithoutRoom = await _userManager.Users
+                .Where(u => u.Role == UserRole.Student && u.IsActive && !u.IsDeleted)
+                .Where(u => !_contractRepository.GetQuery().Any(c => c.UserId == u.Id && c.Status == ContractStatus.Active))
+                .ToListAsync();
+
+            ViewBag.StudentsWithoutRoom = studentsWithoutRoom;
+
             return View(room);
+        }
+
+        [HttpPost("AssignStudent")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignStudent(Guid bedId, Guid userId, string contractCode, DateTime startDate, DateTime endDate, decimal depositAmount)
+        {
+            var bed = await _bedRepository.GetByIdAsync(bedId);
+            if (bed == null || bed.Status != BedStatus.Available)
+            {
+                return Json(new { success = false, message = "Giường không khả dụng hoặc đã có người." });
+            }
+
+            var contract = new Contract
+            {
+                ContractCode = contractCode,
+                UserId = userId,
+                BedId = bedId,
+                StartDate = startDate,
+                EndDate = endDate,
+                DepositAmount = depositAmount,
+                Status = ContractStatus.Active, // Phê duyệt trực tiếp nên là Active
+                CreatedDate = DateTime.Now,
+                IsActive = true,
+                IsDeleted = false
+            };
+
+            var success = await _contractService.CreateContractAsync(contract);
+            if (success)
+            {
+                // Cập nhật trạng thái giường thành Occupied
+                bed.Status = BedStatus.Occupied;
+                await _bedRepository.UpdateAsync(bed);
+                await _unitOfWork.SaveChangesAsync();
+
+                return Json(new { success = true, message = "Gán sinh viên vào phòng thành công!" });
+            }
+
+            return Json(new { success = false, message = "Có lỗi xảy ra khi tạo hợp đồng." });
         }
 
         [HttpGet("Create")]

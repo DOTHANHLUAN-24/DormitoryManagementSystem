@@ -3,18 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize(Roles = "Admin, Manager")]
+    [Route("Regulation")]
     public class RegulationController(IWebHostEnvironment env) : BaseController
     {
         private readonly string _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
 
         [HttpGet("")]
-        public IActionResult Index()
+        [AllowAnonymous]
+        public async Task<IActionResult> Index()
         {
             string content = "";
             if (System.IO.File.Exists(_filePath))
             {
-                content = System.IO.File.ReadAllText(_filePath);
+                content = await System.IO.File.ReadAllTextAsync(_filePath);
             }
 
             ViewBag.Content = content;
@@ -22,39 +23,43 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Edit")]
-        public IActionResult Edit()
+        [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
+        public async Task<IActionResult> Edit()
         {
             string content = "Nhập nội quy ở đây...";
             if (System.IO.File.Exists(_filePath))
             {
-                content = System.IO.File.ReadAllText(_filePath);
+                content = await System.IO.File.ReadAllTextAsync(_filePath);
             }
 
             ViewBag.CurrentContent = content;
             return View();
         }
 
-        [HttpPost("Edit/{Content}")]
-        public IActionResult Edit(string Content)
+        [HttpPost("Edit")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
+        public async Task<IActionResult> Edit(string content)
         {
             try
             {
                 var directory = Path.GetDirectoryName(_filePath);
-                if (!Directory.Exists(directory))
+                if (directory != null && !Directory.Exists(directory))
                 {
-                    Directory.CreateDirectory(directory!);
+                    Directory.CreateDirectory(directory);
                 }
 
-                // Ghi đè file. Nếu Content truyền lên rỗng thì cũng lưu rỗng
-                System.IO.File.WriteAllText(_filePath, Content ?? "");
+                // Ghi đè file. Nếu content truyền lên rỗng thì cũng lưu rỗng
+                await System.IO.File.WriteAllTextAsync(_filePath, content ?? "");
 
                 TempData["Success"] = "Cập nhật Nội quy KTX thành công!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Lỗi khi lưu file: " + ex.Message;
-                return RedirectToAction(nameof(Edit));
+                ModelState.AddModelError(string.Empty, "Lỗi khi lưu file: " + ex.Message);
+                ViewBag.CurrentContent = content; // Giữ lại nội dung người dùng vừa nhập để không bị mất
+                return View();
             }
         }
     }

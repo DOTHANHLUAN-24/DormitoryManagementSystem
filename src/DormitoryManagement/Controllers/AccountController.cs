@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DormitoryManagement.Application.Dtos.Requests; // Đảm bảo folder Dtos hay DTOs viết đúng chính tả nhé
@@ -71,6 +71,11 @@ namespace DormitoryManagement.Controllers
             if (!ModelState.IsValid) return View(request);
 
             var user = await _userManager.FindByNameAsync(request.Username);
+            if (user == null && request.Username.Contains("@"))
+            {
+                user = await _userManager.FindByEmailAsync(request.Username);
+            }
+
             if (user == null)
             {
                 ModelState.AddModelError(string.Empty, "Tài khoản không tồn tại!");
@@ -106,10 +111,12 @@ namespace DormitoryManagement.Controllers
 
             var claims = new List<Claim>
             {
+                new (ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new (JwtRegisteredClaimNames.UniqueName, user.UserName ?? "Unknown"),
                 new (ClaimTypes.Name, user.FullName), // Để hiển thị tên thật lên giao diện
-                new (ClaimTypes.Role, user.Role.ToString())
+                new (ClaimTypes.Role, user.Role.ToString()),
+                new ("UserId", user.Id.ToString())
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
@@ -225,5 +232,11 @@ namespace DormitoryManagement.Controllers
 
         [HttpGet("ResetPasswordConfirmation")]
         public IActionResult ResetPasswordConfirmation() => View();
+
+        [HttpGet("Terms")]
+        public IActionResult Terms()
+        {
+            return View();
+        }
     }
 }
