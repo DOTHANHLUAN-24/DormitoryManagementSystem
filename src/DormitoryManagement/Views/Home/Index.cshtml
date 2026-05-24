@@ -7,14 +7,18 @@
     <!-- ================= GUEST (UNAUTHENTICATED) ================= -->
     @if (!User.Identity!.IsAuthenticated)
     {
-        <div class="guest-hero text-center py-5 px-4 mb-5 rounded-4 shadow-sm text-white" style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
+        <div class="guest-hero text-center py-5 px-4 mb-5 rounded-4 shadow-sm text-white"
+            style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);">
             <h1 class="display-4 fw-bold mb-3">Chào Mừng Đến Với KTX DMS</h1>
-            <p class="lead mb-4 mx-auto" style="max-width: 600px;">Hệ thống quản lý ký túc xá thông minh, tiện lợi và hiện đại. Trải nghiệm không gian sống lý tưởng cùng các dịch vụ tiện ích hàng đầu.</p>
+            <p class="lead mb-4 mx-auto" style="max-width: 600px;">Hệ thống quản lý ký túc xá thông minh, tiện lợi và hiện
+                đại. Trải nghiệm không gian sống lý tưởng cùng các dịch vụ tiện ích hàng đầu.</p>
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="/Rooms" class="btn btn-light btn-lg px-4 py-2 fw-semibold text-primary" style="border-radius: 12px; transition: all 0.3s;">
+                <a href="/Rooms" class="btn btn-light btn-lg px-4 py-2 fw-semibold text-primary"
+                    style="border-radius: 12px; transition: all 0.3s;">
                     <i class="fa-solid fa-door-open me-2"></i>Xem danh sách phòng
                 </a>
-                <a href="/Account/Login" class="btn btn-outline-light btn-lg px-4 py-2 fw-semibold" style="border-radius: 12px; transition: all 0.3s;">
+                <a href="/Account/Login" class="btn btn-outline-light btn-lg px-4 py-2 fw-semibold"
+                    style="border-radius: 12px; transition: all 0.3s;">
                     <i class="fa-solid fa-right-to-bracket me-2"></i>Đăng nhập ngay
                 </a>
             </div>
@@ -52,17 +56,22 @@
         <h3 class="fw-bold mb-4 text-dark text-center">Tiện Ích Và Dịch Vụ Nổi Bật</h3>
         <div class="row g-4">
             <div class="col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="location.href='/Rooms'">
-                    <div class="icon-box mx-auto mb-3 bg-light text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card"
+                    onclick="location.href='/Rooms'">
+                    <div class="icon-box mx-auto mb-3 bg-light text-primary rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px; font-size: 24px;">
                         <i class="fa-solid fa-hotel"></i>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">Xem Phòng KTX</h5>
-                    <p class="text-muted small mb-0">Tìm kiếm phòng trống, phòng dịch vụ chất lượng cao theo nhu cầu của bạn.</p>
+                    <p class="text-muted small mb-0">Tìm kiếm phòng trống, phòng dịch vụ chất lượng cao theo nhu cầu của
+                        bạn.</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="onUnderDevelopment('Nội quy KTX')">
-                    <div class="icon-box mx-auto mb-3 bg-light text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card"
+                    onclick="location.href='/Regulation'">
+                    <div class="icon-box mx-auto mb-3 bg-light text-success rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px; font-size: 24px;">
                         <i class="fa-solid fa-gavel"></i>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">Nội Quy KTX</h5>
@@ -70,17 +79,22 @@
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="promptStudentService()">
-                    <div class="icon-box mx-auto mb-3 bg-light text-info rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card"
+                    onclick="promptStudentService()">
+                    <div class="icon-box mx-auto mb-3 bg-light text-info rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px; font-size: 24px;">
                         <i class="fa-solid fa-hand-holding-hand"></i>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">Dịch Vụ Cá Nhân</h5>
-                    <p class="text-muted small mb-0">Đăng ký dịch vụ giặt là, ăn uống, internet và gửi phản hồi kỹ thuật.</p>
+                    <p class="text-muted small mb-0">Đăng ký dịch vụ giặt là, ăn uống, internet và gửi phản hồi kỹ thuật.
+                    </p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card" onclick="promptContactForm()">
-                    <div class="icon-box mx-auto mb-3 bg-light text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 24px;">
+                <div class="card border-0 shadow-sm h-100 rounded-4 p-4 text-center cursor-pointer quick-card"
+                    onclick="promptContactForm()">
+                    <div class="icon-box mx-auto mb-3 bg-light text-warning rounded-circle d-flex align-items-center justify-content-center"
+                        style="width: 60px; height: 60px; font-size: 24px;">
                         <i class="fa-solid fa-headset"></i>
                     </div>
                     <h5 class="fw-bold text-dark mb-2">Gửi Phản Hồi</h5>
@@ -95,6 +109,7 @@
                 transition: all 0.3s ease;
                 border: 1px solid #f1f5f9 !important;
             }
+
             .quick-card:hover {
                 transform: translateY(-5px);
                 box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
@@ -170,13 +185,19 @@
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="card"><div class="card-body text-success">Hoàn thành: 32</div></div>
+                <div class="card">
+                    <div class="card-body text-success">Hoàn thành: 32</div>
+                </div>
             </div>
             <div class="col-md-4">
-                <div class="card"><div class="card-body text-warning">Đang xử lý: 12</div></div>
+                <div class="card">
+                    <div class="card-body text-warning">Đang xử lý: 12</div>
+                </div>
             </div>
             <div class="col-md-4">
-                <div class="card"><div class="card-body text-danger">Không xử lý: 5</div></div>
+                <div class="card">
+                    <div class="card-body text-danger">Không xử lý: 5</div>
+                </div>
             </div>
         </div>
     }
@@ -239,21 +260,21 @@
                 Swal.fire({
                     title: 'Gửi phản hồi / Liên hệ',
                     html: `
-                        <div style="text-align: left;">
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Họ và tên</label>
-                                <input type="text" id="contact-name" class="form-control" placeholder="Nhập họ và tên...">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Email / SĐT</label>
-                                <input type="text" id="contact-info" class="form-control" placeholder="Nhập email hoặc số điện thoại...">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-bold">Nội dung liên hệ</label>
-                                <textarea id="contact-msg" class="form-control" rows="3" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
-                            </div>
-                        </div>
-                    `,
+                                <div style="text-align: left;">
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Họ và tên</label>
+                                        <input type="text" id="contact-name" class="form-control" placeholder="Nhập họ và tên...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Email / SĐT</label>
+                                        <input type="text" id="contact-info" class="form-control" placeholder="Nhập email hoặc số điện thoại...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label small fw-bold">Nội dung liên hệ</label>
+                                        <textarea id="contact-msg" class="form-control" rows="3" placeholder="Nhập nội dung cần hỗ trợ..."></textarea>
+                                    </div>
+                                </div>
+                            `,
                     showCancelButton: true,
                     confirmButtonColor: '#4f46e5',
                     cancelButtonColor: '#64748b',
