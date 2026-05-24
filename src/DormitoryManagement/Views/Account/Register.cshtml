@@ -186,7 +186,7 @@
                 <div class="row mt-4 align-items-center">
                     <div class="col-md-6">
                         <p class="mb-0 small text-muted">
-                            Bằng cách đăng ký, bạn đồng ý với <a href="javascript:void(0)" onclick="onUnderDevelopment('Điều khoản sử dụng')" class="text-decoration-none">Điều khoản sử dụng</a> của DMS.
+                            Bằng cách đăng ký, bạn đồng ý với <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#termsModal" class="text-decoration-none fw-bold" style="color: #006b73;">Điều khoản sử dụng</a> của DMS.
                         </p>
                     </div>
                     <div class="col-md-6 text-md-end">
@@ -200,7 +200,34 @@
                     <span class="text-muted small">Bạn đã có tài khoản?</span>
                     <a asp-action="Login" class="fw-bold text-decoration-none ms-1" style="color: #006b73;">Đăng nhập ngay</a>
                 </div>
+
+                <div class="text-center mt-3">
+                    <a asp-controller="Home" asp-action="Index" class="text-muted small text-decoration-none hover-teal fw-semibold">
+                        <i class="fas fa-home me-1"></i>Quay lại trang chủ
+                    </a>
+                </div>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Điều khoản sử dụng -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden;">
+            <div class="modal-header" style="background: #006b73; color: white; border-bottom: none;">
+                <h5 class="modal-title fw-bold" id="termsModalLabel"><i class="fas fa-file-signature me-2"></i>ĐIỀU KHOẢN SỬ DỤNG</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4" style="background-color: #f3f4f6; max-height: 65vh; overflow-y: auto;">
+                <div class="text-center py-4" id="termsLoading">
+                    <div class="spinner-border text-primary" role="status" style="color: #006b73 !important;">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="mt-2 text-muted small">Đang tải điều khoản sử dụng...</p>
+                </div>
+                <div id="termsContent" style="display: none;"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -222,5 +249,54 @@
                 icon.classList.add("fa-eye");
             }
         }
+
+        // Tải động nội dung điều khoản bằng Fetch API tránh bị chặn iframe
+        document.addEventListener('DOMContentLoaded', function () {
+            var termsModal = document.getElementById('termsModal');
+            if (termsModal) {
+                termsModal.addEventListener('show.bs.modal', function () {
+                    var termsContent = document.getElementById('termsContent');
+                    var termsLoading = document.getElementById('termsLoading');
+                    
+                    if (termsContent.innerHTML.trim() === "") {
+                        termsLoading.style.display = 'block';
+                        termsContent.style.display = 'none';
+                        
+                        fetch('/Account/Terms?embed=true')
+                            .then(function (response) {
+                                return response.text();
+                            })
+                            .then(function (data) {
+                                var tempDiv = document.createElement('div');
+                                tempDiv.innerHTML = data;
+                                var bodyContent = tempDiv.querySelector('.terms-body');
+                                if (bodyContent) {
+                                    termsContent.innerHTML = bodyContent.innerHTML;
+                                } else {
+                                    termsContent.innerHTML = data;
+                                }
+                                termsLoading.style.display = 'none';
+                                termsContent.style.display = 'block';
+                                termsContent.style.opacity = '0';
+                                
+                                // Tạo hiệu ứng fade-in mượt mà
+                                var opacity = 0;
+                                var timer = setInterval(function () {
+                                    if (opacity >= 1) {
+                                        clearInterval(timer);
+                                    }
+                                    termsContent.style.opacity = opacity;
+                                    opacity += 0.1;
+                                }, 15);
+                            })
+                            .catch(function (error) {
+                                termsContent.innerHTML = '<p class="text-danger text-center"><i class="fas fa-exclamation-circle me-1"></i>Không thể tải điều khoản sử dụng. Vui lòng thử lại sau.</p>';
+                                termsLoading.style.display = 'none';
+                                termsContent.style.display = 'block';
+                            });
+                    }
+                });
+            }
+        });
     </script>
 }

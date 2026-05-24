@@ -147,6 +147,26 @@ namespace DormitoryManagement.Application.Services.Implements
                 }
             }
 
+            if (existingUser.Role != userDto.Role)
+            {
+                var currentRoles = await _userManager.GetRolesAsync(existingUser);
+                if (currentRoles.Any())
+                {
+                    var removeResult = await _userManager.RemoveFromRolesAsync(existingUser, currentRoles);
+                    if (!removeResult.Succeeded)
+                    {
+                        var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Không thể xóa vai trò cũ: {errors}");
+                    }
+                }
+                var addRoleResult = await _userManager.AddToRoleAsync(existingUser, userDto.Role.ToString());
+                if (!addRoleResult.Succeeded)
+                {
+                    var errors = string.Join(", ", addRoleResult.Errors.Select(e => e.Description));
+                    throw new Exception($"Không thể gán vai trò mới: {errors}");
+                }
+            }
+
             existingUser.FullName = userDto.FullName;
             existingUser.Email = userDto.Email;
             existingUser.PhoneNumber = userDto.PhoneNumber;
@@ -155,17 +175,34 @@ namespace DormitoryManagement.Application.Services.Implements
             existingUser.Role = userDto.Role;
             existingUser.LastModified = DateTime.Now;
 
+            // Handle password update if a new password is provided
             if (!string.IsNullOrEmpty(userDto.NewPassword))
             {
-                var removeResult = await _userManager.RemovePasswordAsync(existingUser);
-                if (removeResult.Succeeded)
+                // Validate password policy
+                foreach (var validator in _userManager.PasswordValidators)
                 {
-                    await _userManager.AddPasswordAsync(existingUser, userDto.NewPassword);
+                    var validationResult = await validator.ValidateAsync(_userManager, existingUser, userDto.NewPassword);
+                    if (!validationResult.Succeeded)
+                    {
+                        var errors = string.Join(", ", validationResult.Errors.Select(e => e.Description));
+                        throw new Exception($"Mật khẩu mới không hợp lệ: {errors}");
+                    }
                 }
+
+                // Hash password and set it directly on the tracked entity
+                existingUser.PasswordHash = _userManager.PasswordHasher.HashPassword(existingUser, userDto.NewPassword);
+
+                // Invalidate current sessions by changing the security stamp in memory
+                existingUser.SecurityStamp = Guid.NewGuid().ToString();
             }
 
             var result = await _userManager.UpdateAsync(existingUser);
-            return result.Succeeded;
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Cập nhật thất bại: {errors}");
+            }
+            return true;
         }
 
         /// <summary>

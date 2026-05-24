@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize(Roles = "Admin, Manager")]
+    [Route("Regulations")]
     public class RegulationController(IWebHostEnvironment env) : BaseController
     {
         private readonly string _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
 
         [HttpGet("")]
+        [AllowAnonymous]
         public IActionResult Index()
         {
             string content = "";
@@ -22,6 +23,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Edit")]
+        [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
         public IActionResult Edit()
         {
             string content = "Nhập nội quy ở đây...";
@@ -34,7 +36,9 @@ namespace DormitoryManagement.Controllers
             return View();
         }
 
-        [HttpPost("Edit/{Content}")]
+        [HttpPost("Edit")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
         public IActionResult Edit(string Content)
         {
             try
