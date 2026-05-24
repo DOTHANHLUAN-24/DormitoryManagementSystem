@@ -13,15 +13,15 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="page">Chỉ số trang hiện tại</param>
         /// <param name="pageSize">Số lượng phần tử trên trang</param>
         /// <param name="search">Từ khóa tìm kiếm</param>
-        /// <returns>Danh sách các đối tượng nặc danh hoặc DTO chứa thông tin vi phạm</returns>
-        Task<IEnumerable<object>> GetActiveViolationsPagedAsync(int page, int pageSize, string search);
+        /// <returns>Kết quả phân trang chứa thông tin vi phạm</returns>
+        Task<DormitoryManagement.Domain.Common.PagedResult<ViolationResponseDto>> GetActiveViolationsPagedAsync(int page, int pageSize, string search);
 
         /// <summary>
         /// Lấy thông tin chi tiết một bản ghi vi phạm kỷ luật theo Id.
         /// </summary>
         /// <param name="id">Id bản ghi vi phạm</param>
-        /// <returns>Thông tin vi phạm dạng đối tượng DTO hoặc object</returns>
-        Task<object> GetViolationByIdAsync(Guid id);
+        /// <returns>Thông tin vi phạm dạng đối tượng DTO</returns>
+        Task<ViolationResponseDto?> GetViolationByIdAsync(Guid id);
 
         /// <summary>
         /// Tạo mới một bản ghi vi phạm kỷ luật của sinh viên.
@@ -37,5 +37,12 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="violationDto">Thông tin cập nhật mới</param>
         /// <returns>True nếu cập nhật thành công, ngược lại là False</returns>
         Task<bool> UpdateViolationAsync(Guid id, ViolationRequestDto violationDto);
+
+        /// <summary>
+        /// Xóa mềm một bản ghi vi phạm kỷ luật.
+        /// </summary>
+        /// <param name="id">Id bản ghi vi phạm cần xóa</param>
+        /// <returns>True nếu xóa thành công, ngược lại là False</returns>
+        Task<bool> DeleteViolationAsync(Guid id);
     }
 }

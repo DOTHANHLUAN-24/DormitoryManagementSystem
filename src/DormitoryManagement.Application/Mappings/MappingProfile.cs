@@ -10,6 +10,7 @@ using DormitoryManagement.Application.Dtos.Responses.Beds;
 using DormitoryManagement.Application.Dtos.Responses.Blocks;
 using DormitoryManagement.Application.Dtos.Responses.Rooms;
 using DormitoryManagement.Application.Dtos.Responses.RoomTypes;
+using DormitoryManagement.Application.Dtos.Requests;
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Dtos.Responses.Utilities;
 using DormitoryManagement.Application.Dtos.Requests.Vehicles;
@@ -131,6 +132,20 @@ namespace DormitoryManagement.Application.Mappings
             CreateMap<Utility, UtilityResponseDto>();
             CreateMap<UtilityRequestDto, Utility>();
             CreateMap<UtilityResponseDto, UtilityRequestDto>();
+
+            // === VIOLATION MAPPINGS ===
+            CreateMap<Violation, ViolationResponseDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.StudentId, opt => opt.MapFrom(src => src.Contract.User != null ? src.Contract.User.Code : string.Empty))
+                .ForMember(dest => dest.Room, opt => opt.MapFrom(src => src.Contract.Bed != null && src.Contract.Bed.Room != null ? src.Contract.Bed.Room.RoomNumber + " - " + (src.Contract.Bed.Room.Block != null ? src.Contract.Bed.Room.Block.BlockName : string.Empty) : string.Empty))
+                .ForMember(dest => dest.Severity, opt => opt.MapFrom(src => 
+                    src.FineAmount <= 50000m ? "Nhẹ" :
+                    src.FineAmount <= 150000m ? "Trung bình" :
+                    src.FineAmount <= 250000m ? "Nghiêm trọng" : "Cảnh cáo"))
+                .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.ViolationDate))
+                .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Description))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status == DormitoryManagement.Domain.Enums.ViolationStatus.Resolved ? "Đã xử lý" : "Chưa xử lý"))
+                .ForMember(dest => dest.FineAmount, opt => opt.MapFrom(src => src.FineAmount));
         }
     }
 }

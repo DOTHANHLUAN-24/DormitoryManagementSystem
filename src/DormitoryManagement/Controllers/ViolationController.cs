@@ -52,6 +52,15 @@ namespace DormitoryManagement.Controllers
             }
         }
 
+        [HttpGet("Details/{id}")]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var violationResponse = await _violationService.GetViolationByIdAsync(id);
+            if (violationResponse == null) return NotFound();
+
+            return View(violationResponse);
+        }
+
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -72,7 +81,44 @@ namespace DormitoryManagement.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(violationRequest);
+            // Ánh xạ sang ViolationResponseDto để trả về View tương thích kiểu dữ liệu
+            var violationResponse = new ViolationResponseDto
+            {
+                Id = id,
+                StudentId = violationRequest.StudentId,
+                Room = violationRequest.Room,
+                Severity = violationRequest.Severity,
+                Date = violationRequest.Date,
+                Content = violationRequest.Content,
+                Status = violationRequest.Status,
+                FineAmount = violationRequest.Severity switch
+                {
+                    "Nhẹ" => 50000m,
+                    "Trung bình" => 100000m,
+                    "Nghiêm trọng" => 200000m,
+                    "Cảnh cáo" => 300000m,
+                    _ => 0m
+                }
+            };
+            return View(violationResponse);
+        }
+
+        [HttpPost("Delete/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            try
+            {
+                var success = await _violationService.DeleteViolationAsync(id);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Xóa biên bản vi phạm thành công!" });
+                }
+                return Json(new { success = false, message = "Không tìm thấy biên bản vi phạm hoặc không thể xóa." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
         }
     }
 }
