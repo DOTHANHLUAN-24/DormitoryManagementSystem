@@ -85,6 +85,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return await _dbSet.AsNoTracking()
                 .Include(r => r.Block)
                 .Include(r => r.RoomType)
+                .Include(r => r.Beds)
+                .Include(r => r.Assets)
                 .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
         }
 

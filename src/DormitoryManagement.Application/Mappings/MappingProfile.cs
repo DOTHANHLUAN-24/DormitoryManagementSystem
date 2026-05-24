@@ -68,7 +68,8 @@ namespace DormitoryManagement.Application.Mappings
             CreateMap<RoomDetailResponse, UpdateRoomRequest>();
 
             // === BED & ASSET MAPPINGS ===
-            CreateMap<Bed, BedResponse>();
+            CreateMap<Bed, BedResponse>()
+                .ForMember(dest => dest.IsOccupied, opt => opt.MapFrom(src => src.Status == DormitoryManagement.Domain.Enums.BedStatus.Occupied));
 
             CreateMap<Asset, AssetResponse>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))

@@ -58,6 +58,8 @@ internal class Program
         builder.Services.AddScoped<IVehicleService, VehicleService>();
         builder.Services.AddScoped<IStatisticService, StatisticService>();
         builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 

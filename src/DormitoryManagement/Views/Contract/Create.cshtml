@@ -144,7 +144,8 @@
                             <label asp-for="ContractCode" class="form-label">Mã Hợp Đồng <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-file-contract"></i></span>
-                                <input asp-for="ContractCode" class="form-control" placeholder="Ví dụ: HD-2026-0001..." autocomplete="off" />
+                                <input asp-for="ContractCode" class="form-control" id="contractCodeInput" placeholder="Ví dụ: HD-2026-0001..." autocomplete="off" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="generateRandomContractCode()" title="Tự động sinh mã"><i class="fas fa-sync-alt"></i></button>
                             </div>
                             <span asp-validation-for="ContractCode" class="text-danger small mt-1 d-block"></span>
                         </div>
@@ -235,6 +236,12 @@
     <partial name="_ValidationScriptsPartial" />
 
     <script>
+        function generateRandomContractCode() {
+            const currentYear = new Date().getFullYear();
+            const randCode = 'HD-' + currentYear + '-' + Math.floor(1000 + Math.random() * 9000);
+            $('#contractCodeInput').val(randCode);
+        }
+
         $(document).ready(function () {
             // Hiệu ứng Loading khi gửi form
             $('form').submit(function (e) {

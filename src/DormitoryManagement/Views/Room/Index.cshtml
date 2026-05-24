@@ -178,12 +178,13 @@
                                         case RoomStatus.Reserved: <span class="trang-thai da-dat">Đã đặt trước</span> break;
                                     }
                                 </td>
-                                <td class="text-end pe-4">
-                                    <div class="d-flex justify-content-end gap-1">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></a>
-                                        <button type="button" class="nut-hanh-dong nut-xoa" onclick="confirmDelete('@item.Id', '@item.RoomNumber')" title="Xóa"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </td>
+                                 <td class="text-end pe-4">
+                                     <div class="d-flex justify-content-end gap-1">
+                                         <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" style="background: #eef2ff; color: #4f46e5;" title="Chi tiết"><i class="fas fa-eye"></i></a>
+                                         <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" title="Sửa"><i class="fas fa-edit"></i></a>
+                                         <button type="button" class="nut-hanh-dong nut-xoa" onclick="confirmDelete('@item.Id', '@item.RoomNumber')" title="Xóa"><i class="fas fa-trash"></i></button>
+                                     </div>
+                                 </td>
                             </tr>
                         }
                     }
