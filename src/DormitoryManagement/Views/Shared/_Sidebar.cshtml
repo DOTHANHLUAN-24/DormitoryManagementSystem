@@ -46,6 +46,19 @@
         </a>
     }
 
+    <!-- LOẠI PHÒNG & GIÁ CẢ / THIẾT BỊ (CÔNG KHAI CHO SINH VIÊN) -->
+    @if (!isAdminOrManager)
+    {
+        <a asp-controller="RoomType" asp-action="List" class="@(currentController == "RoomType" && currentAction == "List" ? "active" : "")">
+            <i class="fas fa-tags"></i>
+            <span class="text">Loại phòng & Giá cả</span>
+        </a>
+        <a asp-controller="Asset" asp-action="Catalog" class="@(currentController == "Asset" && currentAction == "Catalog" ? "active" : "")">
+            <i class="fas fa-couch"></i>
+            <span class="text">Danh mục thiết bị</span>
+        </a>
+    }
+
     <!-- ================= QUẢN LÝ NGƯỜI DÙNG ================= -->
     @if (isAdminOrManager)
     {
@@ -103,17 +116,18 @@
     }
 
     <!-- ================= CƠ SỞ VẬT CHẤT ================= -->
-    @{
+    @if (isAdminOrManager)
+    {
         var isInfraGroup = currentController == "Block" || currentController == "RoomType" || currentController == "Room" || currentController == "Asset";
         var isBlockGroup = currentController == "Block";
         var isRoomGroup = currentController == "Room" || currentController == "RoomType";
         var isAssetGroup = currentController == "Asset";
-    }
-    <a data-bs-toggle="collapse" href="#infraMenu" class="menu-toggle @(isInfraGroup ? "active" : "collapsed")">
-        <i class="fas fa-city"></i>
-        <span class="text">Cơ sở vật chất</span>
-    </a>
-    <div class="collapse submenu @(isInfraGroup ? "show" : "")" id="infraMenu">
+
+        <a data-bs-toggle="collapse" href="#infraMenu" class="menu-toggle @(isInfraGroup ? "active" : "collapsed")">
+            <i class="fas fa-city"></i>
+            <span class="text">Cơ sở vật chất</span>
+        </a>
+        <div class="collapse submenu @(isInfraGroup ? "show" : "")" id="infraMenu">
         
         <!-- Cấp 2: Quản lý tòa nhà -->
         @if (isAdminOrManager)
@@ -180,27 +194,25 @@
             </a>
         </div>
     </div>
+    }
 
     <!-- ================= DỊCH VỤ KTX ================= -->
-    @{
+    @if (isAdminOrManager)
+    {
         var isServiceGroup = currentController == "Utility";
-    }
-    <a data-bs-toggle="collapse" href="#serviceMenu" class="menu-toggle @(isServiceGroup ? "active" : "collapsed")">
-        <i class="fas fa-plug"></i>
-        <span class="text">Dịch vụ KTX</span>
-    </a>
-    <div class="collapse submenu @(isServiceGroup ? "show" : "")" id="serviceMenu">
-        <a asp-controller="Utility" asp-action="Index" class="@(isServiceGroup && currentAction == "Index" ? "active" : "")">
-            <i class="fas fa-list-ul me-2"></i> Danh sách dịch vụ
+        <a data-bs-toggle="collapse" href="#serviceMenu" class="menu-toggle @(isServiceGroup ? "active" : "collapsed")">
+            <i class="fas fa-plug"></i>
+            <span class="text">Dịch vụ KTX</span>
         </a>
-
-        @if (isAuthenticated && isAdminOrManager)
-        {
+        <div class="collapse submenu @(isServiceGroup ? "show" : "")" id="serviceMenu">
+            <a asp-controller="Utility" asp-action="Index" class="@(isServiceGroup && currentAction == "Index" ? "active" : "")">
+                <i class="fas fa-list-ul me-2"></i> Danh sách dịch vụ
+            </a>
             <a asp-controller="Utility" asp-action="Trash" class="@(isServiceGroup && currentAction == "Trash" ? "active" : "")">
                 <i class="fas fa-trash-alt me-2"></i> Thùng rác dịch vụ
             </a>
-        }
-    </div>
+        </div>
+    }
 
     <!-- ================= TÀI CHÍNH ================= -->
     @if (isAuthenticated)

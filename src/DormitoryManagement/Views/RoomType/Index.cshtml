@@ -128,7 +128,6 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Gọi action Delete bằng POST
                     $.ajax({
                         url: '/RoomType/Delete/' + id,
                         type: 'POST',

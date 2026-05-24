@@ -9,6 +9,7 @@ namespace DormitoryManagement.Controllers
     /// <summary>
     /// Controller quản lý dịch vụ / tiện ích sử dụng IUtilityService.
     /// </summary>
+    [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
     public class UtilityController
     (
         IUtilityService utilityService,

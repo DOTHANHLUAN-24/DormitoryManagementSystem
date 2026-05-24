@@ -259,7 +259,7 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Catalog(int page = 1, string search = "", string statusFilter = "")
         {
-            int pageSize = PageSize;
+            int pageSize = 8;
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);
             ViewBag.Search = search;
