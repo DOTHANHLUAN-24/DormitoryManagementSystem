@@ -284,7 +284,7 @@
     <!-- ================= NỘI QUY KTX ================= -->
     @if (isAdminOrManager)
     {
-        var isRegulationGroup = currentController == "Regulation";
+        var isRegulationGroup = currentController == "Regulation" || currentController == "Regulations";
         <a data-bs-toggle="collapse" href="#regulationMenu" class="menu-toggle @(isRegulationGroup ? "active" : "collapsed")">
             <i class="fas fa-book-open"></i>
             <span class="text">Nội quy KTX</span>
@@ -297,6 +297,14 @@
                 <i class="fas fa-edit me-2"></i> Chỉnh sửa nội quy
             </a>
         </div>
+    }
+    else
+    {
+        var isRegulationGroup = currentController == "Regulation" || currentController == "Regulations";
+        <a asp-controller="Regulation" asp-action="Index" class="@(isRegulationGroup && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-book-open"></i>
+            <span class="text">Nội quy KTX</span>
+        </a>
     }
     
     <!-- ================= BÁO CÁO THỐNG KÊ ================= -->

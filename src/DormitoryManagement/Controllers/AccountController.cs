@@ -232,5 +232,11 @@ namespace DormitoryManagement.Controllers
 
         [HttpGet("ResetPasswordConfirmation")]
         public IActionResult ResetPasswordConfirmation() => View();
+
+        [HttpGet("Terms")]
+        public IActionResult Terms()
+        {
+            return View();
+        }
     }
 }

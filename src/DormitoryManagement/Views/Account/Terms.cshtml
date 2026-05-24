@@ -1,0 +1,230 @@
+@{
+    Layout = null;
+    bool isEmbed = Context.Request.Query["embed"] == "true";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Điều khoản sử dụng - DMS</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --primary-color: #006b73;
+            --primary-hover: #004d54;
+            --text-color: #2d3748;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 30px 15px;
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .terms-card {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .terms-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #00565c 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .terms-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .terms-body {
+            padding: 40px 30px;
+        }
+
+        h3 {
+            color: var(--primary-color);
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        p, li {
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        .terms-footer {
+            background-color: #f8fafc;
+            padding: 20px 30px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-print {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-print:hover {
+            background-color: rgba(0, 107, 115, 0.05);
+            color: var(--primary-hover);
+        }
+
+        /* Responsive */
+        @@media (max-width: 576px) {
+            body {
+                padding: 15px 5px;
+            }
+            .terms-header {
+                padding: 30px 15px;
+            }
+            .terms-body {
+                padding: 25px 15px;
+            }
+            .terms-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Print Styles */
+        @@media print {
+            body {
+                background-color: white;
+                color: black;
+                padding: 0;
+            }
+            .terms-card {
+                box-shadow: none;
+                border: none;
+                max-width: 100%;
+            }
+            .terms-header {
+                background: none;
+                color: black;
+                border-bottom: 2px solid black;
+                padding: 20px 0;
+            }
+            .terms-title {
+                font-size: 2.2rem;
+            }
+            .terms-footer, .btn-print {
+                display: none !important;
+            }
+        }
+
+        @if (isEmbed)
+        {
+            <text>
+            body {
+                background-color: transparent !important;
+                padding: 0 !important;
+            }
+            .terms-card {
+                box-shadow: none !important;
+                border: none !important;
+                background: transparent !important;
+                border-radius: 0 !important;
+            }
+            .terms-header {
+                display: none !important;
+            }
+            .terms-footer {
+                display: none !important;
+            }
+            .terms-body {
+                padding: 15px 25px !important;
+            }
+            h3:first-of-type {
+                margin-top: 10px !important;
+            }
+            </text>
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terms-card">
+        <div class="terms-header">
+            <h1 class="terms-title"><i class="fas fa-file-contract me-2"></i>ĐIỀU KHOẢN SỬ DỤNG</h1>
+            <p class="mb-0 opacity-75 small">Hệ thống Quản lý Ký túc xá thông minh - DMS</p>
+        </div>
+
+        <div class="terms-body">
+            <p class="lead">Chào mừng bạn đến với Hệ thống Quản lý Ký túc xá (DMS). Bằng việc đăng ký tài khoản và sử dụng dịch vụ trên hệ thống của chúng tôi, bạn đồng ý tuân thủ và chấp nhận các điều khoản sử dụng dưới đây.</p>
+
+            <h3>1. Đăng ký tài khoản và Bảo mật</h3>
+            <p>Để sử dụng đầy đủ các tính năng của hệ thống, người dùng phải đăng ký tài khoản với các thông tin định danh chính xác (Họ tên, Mã số sinh viên/nhân viên, Số CCCD, Email...).</p>
+            <ul>
+                <li>Bạn có trách nhiệm tự bảo mật thông tin tài khoản và mật khẩu của mình.</li>
+                <li>Không chia sẻ tài khoản cho người khác sử dụng chung. Mọi hoạt động được thực hiện qua tài khoản của bạn sẽ thuộc trách nhiệm cá nhân của bạn.</li>
+                <li>Báo ngay cho Ban quản lý Ký túc xá nếu phát hiện tài khoản có dấu hiệu bị xâm nhập trái phép.</li>
+            </ul>
+
+            <h3>2. Trách nhiệm của người sử dụng</h3>
+            <p>Khi tham gia hệ thống DMS, bạn cam kết thực hiện đúng các nghĩa vụ sau:</p>
+            <ul>
+                <li>Cung cấp thông tin trung thực khi làm thủ tục đăng ký phòng ở, gia hạn hợp đồng hoặc báo cáo sự cố tài sản.</li>
+                <li>Thanh toán đầy đủ và đúng hạn các hóa đơn dịch vụ (điện, nước, tiền phòng) phát sinh hàng tháng thông qua hệ thống tài chính tích hợp.</li>
+                <li>Tuân thủ tuyệt đối Quy định và Nội quy Ký túc xá đã ban hành.</li>
+            </ul>
+
+            <h3>3. Quyền hạn của Ban Quản lý</h3>
+            <p>Ban quản lý có toàn quyền trong việc quản trị hệ thống và đưa ra các quyết định điều hành:</p>
+            <ul>
+                <li>Tạm khóa hoặc đình chỉ tài khoản đối với những người dùng vi phạm nghiêm trọng nội quy Ký túc xá hoặc điều khoản sử dụng này.</li>
+                <li>Thay đổi, cập nhật giao diện, tính năng hoặc điều khoản để cải thiện chất lượng phục vụ mà không cần báo trước.</li>
+            </ul>
+
+            <h3>4. Chính sách bảo mật thông tin</h3>
+            <p>Chúng tôi cam kết bảo mật tuyệt đối dữ liệu cá nhân của sinh viên và cán bộ quản lý:</p>
+            <ul>
+                <li>Dữ liệu cá nhân chỉ được sử dụng cho mục đích vận hành, quản lý lưu trú và liên lạc hành chính trong ký túc xá.</li>
+                <li>Không cung cấp thông tin cá nhân của người dùng cho bên thứ ba khi chưa có sự đồng ý, trừ trường hợp có yêu cầu bằng văn bản từ cơ quan pháp luật có thẩm quyền.</li>
+            </ul>
+
+            <h3>5. Thay đổi Điều khoản</h3>
+            <p>Các điều khoản này có thể được sửa đổi vào bất kỳ lúc nào để phù hợp với quy định mới của Nhà trường và Pháp luật. Việc bạn tiếp tục sử dụng hệ thống sau khi điều khoản được cập nhật đồng nghĩa với việc bạn đồng ý với các thay đổi đó.</p>
+        </div>
+
+        <div class="terms-footer">
+            <span class="text-muted small">Cập nhật lần cuối: 24/05/2026</span>
+            <button onclick="window.print()" class="btn-print">
+                <i class="fas fa-print me-1"></i> In bản điều khoản
+            </button>
+        </div>
+    </div>
+
+</body>
+</html>
