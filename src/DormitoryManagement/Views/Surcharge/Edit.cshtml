@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Cập nhật phụ phí";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12 col-md-9 col-lg-6 mx-auto">
+            
+            <div class="mb-3">
+                <a asp-action="Index" class="text-decoration-none small text-muted">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách phụ phí
+                </a>
+            </div>
+
+            <div class="card card-form-custom border-0 shadow-sm">
+                <div class="card-header-custom py-4 px-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h3 class="fw-bold text-dark-navy mb-1">
+                                <i class="fas fa-pencil-alt me-2" style="color: #e2a03f;"></i>Cập Nhật Phụ Phí
+                            </h3>
+                            <p class="text-muted small mb-0">Chỉnh sửa biểu giá thu, phạm vi điều chỉnh hoặc thay đổi trạng thái áp dụng chi phí.</p>
+                        </div>
+                        <span class="badge bg-light text-dark border px-2.5 py-1.5 fw-bold" style="font-size:0.75rem; border-radius:6px;">MÃ: SUR001</span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 border-top border-light-subtle">
+                    <form asp-action="Edit" method="post">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-dark-navy">Tên khoản phụ thu / chi phí</label>
+                            <input type="text" class="form-control input-custom" value="Phí phạt quá hạn đóng tiền phòng" required />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Phân loại chi phí</label>
+                                <select class="form-select input-custom">
+                                    <option selected>Phạt vi phạm</option>
+                                    <option>Dịch vụ phát sinh</option>
+                                    <option>Tiêu thụ điện thêm</option>
+                                    <option>Đền bù tài sản</option>
+                                </select>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Mức giá thu (đ)</label>
+                                <input type="text" class="form-control input-custom fw-bold text-primary-custom" value="150,000" required />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Phạm vi áp dụng</label>
+                                <input type="text" class="form-control input-custom" value="Tất cả các tòa" required />
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label class="form-label fw-semibold small text-dark-navy">Trạng thái hoạt động</label>
+                                <select class="form-select input-custom select-status-highlight">
+                                    <option value="Đang áp dụng" selected>✅ Đang áp dụng</option>
+                                    <option value="Tạm ngưng">🚫 Tạm ngưng</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold small text-dark-navy">Mô tả / Ghi chú quy định thu</label>
+                            <textarea class="form-control input-custom" rows="3">Áp dụng đối với các trường hợp sinh viên đóng tiền phòng muộn sau ngày mùng 5 hàng tháng mà không có lý do chính đáng được Ban quản lý phê duyệt.</textarea>
+                        </div>
+
+                        <div class="d-flex gap-2 justify-content-end">
+                            <a asp-action="Index" class="btn btn-refresh-light px-4">Quay lại</a>
+                            <button type="submit" class="btn btn-warning-custom px-4 text-white">Cập nhật thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    body { background-color: #f4f7f6; font-family: 'Segoe UI', system-ui, sans-serif; }
+    .text-dark-navy { color: #3b3f5c; }
+    .text-primary-custom { color: #4361ee; }
+    .card-form-custom { border-radius: 16px; background: white; box-shadow: 0 4px 25px rgba(0,0,0,0.04)!important; }
+    .input-custom { border: 1px solid #e0e6ed; padding: 10px 14px; font-size: 14px; background-color: #f9fbfd; border-radius: 10px; }
+    .input-custom:focus { border-color: #e2a03f; box-shadow: none; background-color: #fff; }
+    .select-status-highlight { font-weight: 600; color: #4361ee; }
+    .btn-warning-custom { background-color: #e2a03f; color: white; border: none; font-weight: 500; padding: 10px 24px; border-radius: 10px; font-size: 0.9rem; }
+    .btn-warning-custom:hover { background-color: #cc8b32; color: white; }
+    .btn-refresh-light { background-color: #ebedf2; color: #3b3f5c; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 500; font-size: 0.9rem; }
+    .btn-refresh-light:hover { background-color: #e0e4ec; }
+</style>

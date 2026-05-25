@@ -66,6 +66,11 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Bed)
+                    .ThenInclude(b => b.Room)
+                        .ThenInclude(r => r.Block)
+                .Include(c => c.Bed)
+                    .ThenInclude(b => b.Room)
+                        .ThenInclude(r => r.RoomType)
                 .Where(c => c.UserId == userId)
                 .OrderByDescending(c => c.CreatedDate)
                 .ToListAsync();

@@ -1,6 +1,7 @@
 ﻿<div align="center">
 
 # BỘ GIÁO DỤC VÀ ĐÀO TẠO
+
 # TRƯỜNG ĐẠI HỌC MỎ - ĐỊA CHẤT  
 
 --- *** ---
@@ -10,8 +11,11 @@
 <br/>
 
 ## Đỗ Thành Luân (2221050046)(C)  
+
 ## Lê Thị Cẩm Tú (2321050120)  
+
 ## Đỗ Quang Huy (2221050047)  
+
 ## Vũ Thị Kim Oanh (2221050566)  
 
 <br/>
@@ -21,6 +25,7 @@
 <br/>
 
 ## ĐỒ ÁN MÔN CHUYÊN ĐỀ  
+
 ## CHUYÊN NGÀNH CÔNG NGHỆ PHẦN MỀM
 
 <br/>
@@ -29,9 +34,9 @@
 
 | Thành phần               | Thông tin                                                                                                                                             |
 | ------------------------ |: --------------------------------------------------------------------------------------------|
-| **Giảng viên hướng dẫn** | Ngô Ngọc Anh																				  |
-| **Nhóm thực hiện**       | 02																							  |
-| **Sinh viên thực hiện**  | - Đỗ Thành Luân (Trưởng nhóm)<br>- Lê Thị Cẩm Tú<br>- Đỗ Quang Huy<br>- Vũ Thị Kim Oanh	  |
+| **Giảng viên hướng dẫn** | Ngô Ngọc Anh                      |
+| **Nhóm thực hiện**       | 02                         |
+| **Sinh viên thực hiện**  | - Đỗ Thành Luân (Trưởng nhóm)<br>- Lê Thị Cẩm Tú<br>- Đỗ Quang Huy<br>- Vũ Thị Kim Oanh   |
 
 </div>
 
@@ -58,7 +63,7 @@
 3. [Danh mục các bảng biểu](#danh-muc-cac-bang-bieu)  
 4. [Danh mục những từ viết tắt](#danh-muc-nhung-tu-viet-tat)  
 5. [Mở đầu](#mo-dau)  
-6. [Chương 1: Cơ sở lý thuyết](#chuong-1-co-so-ly-thuyet) 
+6. [Chương 1: Cơ sở lý thuyết](#chuong-1-co-so-ly-thuyet)
 
 ---
 
@@ -69,6 +74,7 @@
 </center>
 
 Các tác vụ chính của hệ thống:
+
 * Đăng ký phòng, đổi phòng, trả phòng.
 * Quản lý hồ sơ sinh viên nội trú.
 * Quản lý hợp đồng thuê phòng.
@@ -510,11 +516,6 @@ Từ các phân tích đã nêu, chương này đã làm rõ hiện trạng hệ
 # CHƯƠNG 3: PHÂN TÍCH HỆ THỐNG
 
 </center>
-<center>
-
-# CHƯƠNG 3: PHÂN TÍCH HỆ THỐNG
-
-</center>
 
 ## 3.1. Phân tích yêu cầu của hệ thống
 
@@ -592,7 +593,6 @@ Hệ thống quản lý ký túc xá bao gồm các nhóm nghiệp vụ chính s
   Tổng hợp dữ liệu về tình trạng phòng, doanh thu, chi phí, số lượng sinh viên nhằm hỗ trợ quản lý và ra quyết định.
 
 ---
-
 
 ## 3.2. Yêu cầu chức năng và phi chức năng
 
@@ -786,7 +786,6 @@ Cụ thể:
 * Hóa đơn (Invoices) liên kết với thanh toán (Payments), phụ phí (Surcharges) và sử dụng dịch vụ (UtilityUsages).
 
 Việc thiết kế các mối quan hệ này giúp hệ thống đảm bảo tính nhất quán, hạn chế dư thừa dữ liệu và hỗ trợ hiệu quả cho các chức năng nghiệp vụ như quản lý nội trú, tính phí, thanh toán và giám sát hoạt động ký túc xá.
-
 
 ### 3.9.3. Thiết kế chi tiết các bảng
 
