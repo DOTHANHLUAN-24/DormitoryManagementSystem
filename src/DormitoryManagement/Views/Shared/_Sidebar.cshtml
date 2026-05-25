@@ -54,6 +54,16 @@
             <i class="fas fa-concierge-bell"></i>
             <span class="text">Dịch vụ cá nhân</span>
         </a>
+        <a asp-controller="Contract" asp-action="MyContracts"
+            class="@(currentController == "Contract" && currentAction == "MyContracts" ? "active" : "")">
+            <i class="fas fa-file-contract"></i>
+            <span class="text">Hợp đồng của tôi</span>
+        </a>
+        <a asp-controller="Visitor" asp-action="Request"
+            class="@(currentController == "Visitor" && (currentAction == "Request" || currentAction == "CreateRequest") ? "active" : "")">
+            <i class="fas fa-address-book"></i>
+            <span class="text">Đăng ký khách thăm</span>
+        </a>
     }
 
     <!-- LOẠI PHÒNG & GIÁ CẢ / THIẾT BỊ (CÔNG KHAI CHO SINH VIÊN) -->
@@ -249,7 +259,7 @@
     }
 
     <!-- ================= TÀI CHÍNH ================= -->
-    @if (isAuthenticated)
+    @if (isAuthenticated && (isAdminOrManager || User.IsInRole("Student")))
     {
         var isFinanceGroup = currentController == "Payment";
         <a data-bs-toggle="collapse" href="#financeMenu" class="menu-toggle @(isFinanceGroup ? "active" : "collapsed")">
@@ -265,7 +275,7 @@
     }
 
     <!-- ================= VẬN HÀNH & AN NINH ================= -->
-    @if (isAuthenticated)
+    @if (isAuthenticated && isAdminOrManager)
     {
         // Kiểm tra xem có đang ở trong các trang thuộc nhóm Violation (Vận hành & An ninh) hay không
         var isOperationGroup = currentController.Equals("Violation", StringComparison.OrdinalIgnoreCase) ||
@@ -314,7 +324,7 @@
     }
 
     <!-- ================= KHÁCH ĐẾN THĂM ================= -->
-    @if (isAuthenticated)
+    @if (isAdminOrManager)
     {
         var isVisitorGroup = currentController == "Visitor";
         <a data-bs-toggle="collapse" href="#visitorMenu" class="menu-toggle @(isVisitorGroup ? "active" : "collapsed")">

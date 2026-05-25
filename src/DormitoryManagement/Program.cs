@@ -43,6 +43,7 @@ internal class Program
         builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
         builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
         builder.Services.AddScoped<IStatisticRepository, StatisticRepository>();
+        builder.Services.AddScoped<IVisitorLogRepository, VisitorLogRepository>();
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();

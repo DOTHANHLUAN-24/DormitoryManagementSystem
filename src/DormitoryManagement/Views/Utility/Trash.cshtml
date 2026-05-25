@@ -148,13 +148,8 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <!-- Phân trang -->
-    @if (Model != null && Model.TotalPages > 1)
-    {
         @await Html.PartialAsync("_Pagination", Model)
-    }
+    </div>
 </div>
 
 @section Scripts {
