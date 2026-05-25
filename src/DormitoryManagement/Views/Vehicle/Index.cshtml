@@ -1,0 +1,302 @@
+@{
+    ViewData["Title"] = "Quản lý phương tiện";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-custom-header {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-add {
+            background: #4f46e5;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn-add:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        .thanh-tim-kiem {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: none;
+        }
+
+        .input-custom {
+            height: 46px;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 14px;
+            color: #1e293b;
+            background-color: #f8fafc;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .input-custom:focus {
+            border-color: #4f46e5 !important;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important;
+            background-color: #fff;
+        }
+
+        .khung-tim-kiem {
+            position: relative;
+        }
+
+        .khung-tim-kiem i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 10;
+        }
+
+        .khung-tim-kiem input {
+            padding-left: 40px;
+        }
+
+        .btn-search {
+            height: 46px;
+            border-radius: 12px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-search:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+            color: white;
+        }
+
+        .card-custom {
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: none;
+            overflow: hidden;
+        }
+
+        .badge-code-custom {
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .badge-username {
+            background: #eef2ff;
+            color: #4f46e5;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #e0e7ff;
+        }
+
+        /* NÚT HÀNH ĐỘNG VỚI CHỮ MỜ */
+        .nut-hanh-dong {
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 10px;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none !important;
+        }
+
+        .nut-sua {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .nut-xoa {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .hover-label {
+            max-width: 0;
+            opacity: 0;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 600;
+            overflow: hidden;
+        }
+
+        .nut-hanh-dong:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nut-hanh-dong:hover .hover-label {
+            max-width: 40px;
+            opacity: 0.7;
+            margin-left: 6px;
+        }
+    </style>
+}
+
+<div class="container-fluid p-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-motorcycle me-2"></i>Quản lý phương tiện</h1>
+        <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+            <i class="fas fa-plus"></i> Đăng ký xe mới
+        </a>
+    </header>
+
+    <form method="get" class="thanh-tim-kiem">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-7">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" class="input-custom" placeholder="Tìm biển số hoặc chủ xe...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="type" class="form-select input-custom">
+                    <option value="">-- Tất cả loại xe --</option>
+                    <option value="Xe máy">Xe máy</option>
+                    <option value="Xe đạp">Xe đạp/Xe điện</option>
+                    <option value="Ô tô">Ô tô</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-filter"></i> Lọc dữ liệu
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card card-custom mb-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4 py-3">STT</th>
+                        <th class="py-3">Biển số</th>
+                        <th class="py-3">Loại xe</th>
+                        <th class="py-3">Chủ sở hữu</th>
+                        <th class="py-3">Mã định danh</th>
+                        <th class="text-end pe-4 py-3">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* Dữ liệu mock *@
+                    <tr>
+                        <td class="ps-4">1</td>
+                        <td><span class="badge-code-custom">29-A1 123.45</span></td>
+                        <td>
+                            <div class="fw-bold text-dark">Xe máy</div>
+                        </td>
+                        <td>Đỗ Thành Luân</td>
+                        <td><span class="badge-username">SV2221050048</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Edit" asp-route-id="@Guid.NewGuid()" class="nut-hanh-dong nut-sua"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" onclick="deleteVehicle('@Guid.NewGuid()', '29-A1 123.45')"
+                                        class="nut-hanh-dong nut-xoa" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Xóa phương tiện">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ps-4">2</td>
+                        <td><span class="badge-code-custom">88-AK 02486</span></td>
+                        <td>
+                            <div class="fw-bold text-dark">Xe máy</div>
+                        </td>
+                        <td>Lê Thị Cẩm Tú</td>
+                        <td><span class="badge-username">SV2321050120</span></td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-2">
+                                <a asp-action="Edit" asp-route-id="@Guid.NewGuid()" class="nut-hanh-dong nut-sua"
+                                   data-bs-toggle="tooltip" data-bs-placement="top" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" onclick="deleteVehicle('@Guid.NewGuid()', '88-AK 02486')"
+                                        class="nut-hanh-dong nut-xoa" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        title="Xóa phương tiện">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Khởi tạo Tooltip của Bootstrap
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        function deleteVehicle(id, licensePlate) {
+            Swal.fire({
+                title: 'Xóa phương tiện?',
+                html: "Thông tin xe <b>" + licensePlate + "</b> sẽ bị xóa khỏi hệ thống.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gọi AJAX xóa tương tự Violation
+                }
+            });
+        }
+    </script>
+}
