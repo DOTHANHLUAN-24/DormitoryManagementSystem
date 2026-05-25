@@ -174,12 +174,9 @@
         </div>
 
         <!-- Phân trang -->
-        @if (Model.TotalPages > 1)
-        {
-            <div class="d-flex justify-content-center mb-4">
-                @await Html.PartialAsync("_Pagination", Model)
-            </div>
-        }
+        <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; overflow: hidden;">
+            @await Html.PartialAsync("_Pagination", Model)
+        </div>
     }
     else
     {

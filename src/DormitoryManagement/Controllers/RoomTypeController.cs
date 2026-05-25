@@ -17,6 +17,7 @@ namespace DormitoryManagement.Controllers
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         [HttpGet("")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             int pageSize = PageSize;
@@ -32,7 +33,25 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
+        [HttpGet("List")]
+        [AllowAnonymous]
+        public async Task<IActionResult> List(int page = 1, string search = "")
+        {
+            int pageSize = 6;
+
+            var result = await _roomTypeRepository.GetPagedAsync(
+                pageIndex: page,
+                pageSize: pageSize,
+                predicate: x => (string.IsNullOrEmpty(search) || x.TypeName.Contains(search)) && !x.IsDeleted && x.IsActive,
+                orderBy: x => x.OrderBy(rt => rt.TypeName)
+            );
+
+            ViewBag.Search = search;
+            return View(result);
+        }
+
         [HttpGet("Details/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Details(Guid id)
         {
             var roomType = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);
@@ -42,6 +61,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Create")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public IActionResult Create()
         {
             return View();
@@ -49,6 +69,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost("Create")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Create(RoomType roomType)
         {
             if (ModelState.IsValid)
@@ -70,6 +91,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Edit/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Edit(Guid id)
         {
             var roomType = await _roomTypeRepository.GetByIdAsync(id);
@@ -80,6 +102,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Edit(Guid id, RoomType roomType)
         {
             if (id != roomType.Id) return BadRequest();
@@ -122,6 +145,7 @@ namespace DormitoryManagement.Controllers
 
         [HttpPost("Delete/{id}")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var roomType = await _roomTypeRepository.GetByIdAsync(id);

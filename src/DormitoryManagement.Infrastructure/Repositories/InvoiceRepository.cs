@@ -84,7 +84,12 @@ namespace DormitoryManagement.Infrastructure.Repositories
                     .ThenInclude(c => c.User)
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
+                        .ThenInclude(b => b.Room)
+                            .ThenInclude(r => r.RoomType)
                 .Include(i => i.Payments)
+                .Include(i => i.UtilityUsages)
+                    .ThenInclude(u => u.Utility)
+                .Include(i => i.Surcharges)
                 .Where(i => i.ContractId == contractId)
                 .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();

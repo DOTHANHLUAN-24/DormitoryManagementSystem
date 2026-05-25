@@ -1,122 +1,621 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
+
     ViewData["Title"] = "Hướng dẫn sử dụng hệ thống";
 }
 
-<div class="container-fluid">
+@section Styles {
+    <style>
+        /* Custom Styling for Guide Page */
+        .guide-header {
+            background: linear-gradient(135deg, #006b73 0%, #004d54 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(0, 107, 115, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .guide-header::after {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .nav-pills .nav-link {
+            color: #006b73;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 14px 24px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 107, 115, 0.15);
+            margin-right: 12px;
+            margin-bottom: 12px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-pills .nav-link.active {
+            background: #006b73;
+            color: #fff;
+            border-color: #006b73;
+            box-shadow: 0 6px 20px rgba(0, 107, 115, 0.25);
+        }
+
+        .nav-pills .nav-link:hover:not(.active) {
+            background-color: rgba(0, 107, 115, 0.05);
+            border-color: #006b73;
+            transform: translateY(-1px);
+        }
+
+        .guide-card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 25px;
+        }
+
+        .guide-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.07);
+        }
+
+        .card-header-custom {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f1f5f9;
+            background-color: #fafbfc;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .step-timeline {
+            position: relative;
+            padding-left: 45px;
+            margin-bottom: 35px;
+        }
+
+        .step-timeline::before {
+            content: "";
+            position: absolute;
+            left: 17px;
+            top: 35px;
+            bottom: -15px;
+            width: 2px;
+            background: #cbd5e1;
+        }
+
+        .step-timeline:last-child::before {
+            display: none;
+        }
+
+        .step-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #006b73 0%, #00565c 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 107, 115, 0.25);
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-content {
+            color: #475569;
+            font-size: 0.975rem;
+            background-color: #f8fafc;
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .step-content ul {
+            padding-left: 20px;
+            margin-bottom: 0;
+        }
+
+        .step-content li {
+            margin-bottom: 10px;
+        }
+
+        .step-content li:last-child {
+            margin-bottom: 0;
+        }
+
+        .tip-box {
+            background-color: #f0fdfa;
+            border-left: 4px solid #0d9488;
+            padding: 16px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 18px;
+            font-size: 0.925rem;
+            box-shadow: 0 2px 8px rgba(13, 148, 136, 0.03);
+        }
+
+        .tip-title {
+            font-weight: 700;
+            color: #0f766e;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .warning-box {
+            background-color: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            border-radius: 0 12px 12px 0;
+            margin-top: 18px;
+            font-size: 0.925rem;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.03);
+        }
+
+        .warning-title {
+            font-weight: 700;
+            color: #b45309;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-student {
+            background-color: rgba(13, 148, 136, 0.1);
+            color: #0f766e;
+        }
+
+        .badge-admin {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: #4f46e5;
+        }
+
+        .badge-general {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #b45309;
+        }
+
+        .icon-box {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: rgba(0, 107, 115, 0.08);
+            color: #006b73;
+            font-size: 1.3rem;
+            margin-right: 15px;
+        }
+
+        .tab-content {
+            margin-top: 15px;
+        }
+
+        .rule-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .rule-item:last-child {
+            border-bottom: none;
+        }
+
+        .rule-icon {
+            font-size: 1.4rem;
+            margin-top: 2px;
+        }
+    </style>
+}
+
+<div class="container-fluid py-2">
 
     <!-- HEADER -->
-    <div class="mb-4">
-        <h3 class="fw-bold">
-            <i class="fas fa-book-open me-2 text-primary"></i>
-            Hướng dẫn sử dụng hệ thống KTX
-        </h3>
-        <p class="text-muted">
-            Làm theo các bước dưới đây để bắt đầu sử dụng hệ thống.
-        </p>
+    <div class="guide-header d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h2 class="fw-bold mb-2">
+                <i class="fas fa-graduation-cap me-2"></i>
+                CỔNG HƯỚNG DẪN SỬ DỤNG HỆ THỐNG DMS
+            </h2>
+            <p class="mb-0 opacity-90 fs-6">
+                Tài liệu hướng dẫn chi tiết dành cho Sinh viên nội trú và Ban Quản lý Ký túc xá thông minh.
+            </p>
+        </div>
+        <div>
+            <span class="badge bg-white text-dark py-2 px-3 fw-bold rounded-pill">
+                <i class="fas fa-info-circle me-1 text-primary"></i> Phiên bản 2.0
+            </span>
+        </div>
     </div>
 
-    <!-- STEP 1 -->
-    <div class="card shadow-sm border-0 mb-4">
+    <!-- TABS NAVIGATION -->
+    <ul class="nav nav-pills mb-4" id="guideTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="student-tab" data-bs-toggle="pill" data-bs-target="#student-content"
+                type="button" role="tab" aria-controls="student-content" aria-selected="true">
+                <i class="fas fa-user-graduate"></i>
+                Dành Cho Sinh Viên
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="admin-tab" data-bs-toggle="pill" data-bs-target="#admin-content" type="button"
+                role="tab" aria-controls="admin-content" aria-selected="false">
+                <i class="fas fa-user-shield"></i>
+                Dành Cho Ban Quản Lý
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rules-tab" data-bs-toggle="pill" data-bs-target="#rules-content" type="button"
+                role="tab" aria-controls="rules-content" aria-selected="false">
+                <i class="fas fa-gavel"></i>
+                Quy Định & Nội Quy KTX
+            </button>
+        </li>
+    </ul>
 
-        <div class="card-header bg-primary text-white fw-semibold">
-            🔐 Bước 1: Đăng ký / Đăng nhập / Quên mật khẩu
+    <!-- TAB CONTENTS -->
+    <div class="tab-content" id="guideTabsContent">
+
+        <!-- ================= TAB: STUDENT ================= -->
+        <div class="tab-pane fade show active" id="student-content" role="tabpanel" aria-labelledby="student-tab">
+            <div class="guide-card card">
+                <div class="card-header-custom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box">
+                            <i class="fas fa-walking"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0 text-slate-800">Quy Trình Đăng Ký Ở KTX Của Sinh Viên</h4>
+                            <small class="text-muted">Các bước cơ bản để nhận phòng và sinh hoạt tại Ký túc xá</small>
+                        </div>
+                    </div>
+                    <span class="feature-badge badge-student">Sinh viên</span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Bước 1 -->
+                    <div class="step-timeline">
+                        <div class="step-number">1</div>
+                        <h5 class="step-title">Đăng Ký Tài Khoản & Cập Nhật Hồ Sơ</h5>
+                        <div class="step-content">
+                            <p>Đầu tiên, bạn cần sở hữu một tài khoản định danh trên hệ thống DMS để thực hiện các giao
+                                dịch trực tuyến.</p>
+                            <ul>
+                                <li>Truy cập trang <b>Đăng ký</b> tại màn hình đăng nhập. Nhập chính xác Mã số sinh viên
+                                    (MSSV), Họ tên, Số điện thoại và Email cá nhân.</li>
+                                <li>Sau khi đăng ký thành công, hãy đăng nhập và chọn mục <b>Hồ sơ cá nhân</b> (ở góc
+                                    trên cùng bên phải) để bổ sung Số căn cước công dân (CCCD) và các thông tin liên lạc
+                                    khác.</li>
+                            </ul>
+                            <div class="warning-box">
+                                <div class="warning-title">
+                                    <i class="fas fa-exclamation-triangle"></i> Lưu ý quan trọng
+                                </div>
+                                <p class="mb-0">Thông tin MSSV và Số CCCD sẽ được dùng để đối chiếu khi làm hợp đồng và
+                                    bàn giao phòng. Vui lòng kiểm tra kỹ trước khi gửi, tránh sai sót dẫn đến chậm trễ
+                                    phê duyệt.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bước 2 -->
+                    <div class="step-timeline">
+                        <div class="step-number">2</div>
+                        <h5 class="step-title">Tìm Kiếm Phòng & Đăng Ký Lưu Trú</h5>
+                        <div class="step-content">
+                            <p>Duyệt qua danh sách phòng của trường để tìm kiếm phòng ở phù hợp với nhu cầu sinh hoạt
+                                của bạn.</p>
+                            <ul>
+                                <li>Chọn danh mục <b>"Xem phòng KTX"</b> trên thanh menu bên trái.</li>
+                                <li>Sử dụng bộ lọc theo Tòa nhà (Block) hoặc theo <b>Loại phòng & Giá cả</b> để tìm
+                                    phòng mong muốn (phòng Nam/Nữ, số lượng giường, giá cả hàng tháng).</li>
+                                <li>Khi chọn được phòng trống ưng ý, nhấn <b>"Đăng ký thuê phòng"</b>. Điền thời hạn
+                                    mong muốn ở và xác nhận gửi đi. Hệ thống sẽ tự động tạo hợp đồng ở trạng thái <b>Chờ
+                                        duyệt</b> gửi tới Ban quản lý.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bước 3 -->
+                    <div class="step-timeline">
+                        <div class="step-number">3</div>
+                        <h5 class="step-title">Đăng Ký Tiện Ích & Dịch Vụ Cá Nhân</h5>
+                        <div class="step-content">
+                            <p>Đăng ký thêm các tiện ích đi kèm để phục vụ cho sinh hoạt thường nhật tốt hơn.</p>
+                            <ul>
+                                <li>Vào mục <b>"Dịch vụ cá nhân"</b> để đăng ký thêm các dịch vụ bổ sung ngoài tiền
+                                    phòng cơ bản (như: Gửi xe máy/xe đạp, Internet tốc độ cao, Dịch vụ giặt đồ, Tủ khóa
+                                    cá nhân...).</li>
+                                <li>Bạn cũng có thể xem mục <b>"Danh mục thiết bị"</b> để kiểm tra các tài sản, trang bị
+                                    phần cứng sẵn có trong phòng của mình (giường, tủ quần áo, điều hòa, quạt treo
+                                    tường...).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bước 4 -->
+                    <div class="step-timeline">
+                        <div class="step-number">4</div>
+                        <h5 class="step-title">Theo Dõi Hóa Đơn & Thanh Toán Trực Tuyến</h5>
+                        <div class="step-content">
+                            <p>Theo dõi và thanh toán tiền phòng và các chi phí phụ trợ định kỳ hàng tháng trực tiếp qua
+                                mạng.</p>
+                            <ul>
+                                <li>Vào mục <b>"Tài chính"</b> -> <b>"Hóa đơn & Thanh toán"</b> để kiểm tra các khoản
+                                    cần nộp (tiền thuê phòng, tiền điện, nước tiêu dùng thực tế và phí dịch vụ đã đăng
+                                    ký).</li>
+                                <li>Xem trạng thái hóa đơn (Đã thanh toán / Chưa thanh toán / Quá hạn) để nộp tiền đúng
+                                    thời hạn, tránh phát sinh phạt hoặc tạm đình chỉ sử dụng phòng.</li>
+                            </ul>
+                            <div class="tip-box">
+                                <div class="tip-title">
+                                    <i class="fas fa-lightbulb"></i> Mẹo nhỏ hữu ích
+                                </div>
+                                <p class="mb-0">Hóa đơn điện nước phòng thường được Ban quản lý chốt chỉ số và gửi lên
+                                    hệ thống từ ngày 1 đến ngày 5 hàng tháng. Hãy kiểm tra ứng dụng thường xuyên trong
+                                    thời gian này.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bước 5 -->
+                    <div class="step-timeline">
+                        <div class="step-number">5</div>
+                        <h5 class="step-title">Khai Báo Khách Đến Thăm & Theo Dõi Vi Phạm</h5>
+                        <div class="step-content">
+                            <p>Tuân thủ các điều khoản an ninh trong quá trình sinh hoạt nội trú tại KTX.</p>
+                            <ul>
+                                <li>Nếu có người thân, bạn bè tới thăm tại KTX, bạn cần hướng dẫn khách đăng ký tại
+                                    phòng bảo vệ hoặc tự thực hiện tạo thông tin khai báo trước tại mục <b>"Khách đến
+                                        thăm" -> "Ghi nhận khách mới"</b> để được phê duyệt vào khu nội trú.</li>
+                                <li>Xem mục <b>"Vận hành & An ninh" -> "Danh sách vi phạm"</b> để theo dõi điểm kỷ luật
+                                    nội trú của bản thân và cập nhật các quy chế nhắc nhở từ Ban quản lý.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
-        <div class="card-body">
-
-            <!-- REGISTER -->
-            <div class="mb-5">
-                <h5 class="text-primary">
-                    <i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản
-                </h5>
-
-                <p>
-                    Nếu bạn là người dùng mới, hãy tạo tài khoản để truy cập hệ thống.
-                </p>
-
-                <ul>
-                    <li>Nhấn vào <b>Đăng ký</b></li>
-                    <li>Nhập thông tin cá nhân</li>
-                    <li>Xác nhận đăng ký</li>
-                </ul>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <img src="https://picsum.photos/600/350?random=11"
-                             class="img-fluid rounded shadow-sm">
+        <!-- ================= TAB: ADMIN ================= -->
+        <div class="tab-pane fade" id="admin-content" role="tabpanel" aria-labelledby="admin-tab">
+            <div class="guide-card card">
+                <div class="card-header-custom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box" style="background-color: rgba(99, 102, 241, 0.08); color: #4f46e5;">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0 text-slate-800">Quy Trình Quản Lý & Vận Hành KTX</h4>
+                            <small class="text-muted">Các nghiệp vụ chính dành cho Ban Quản trị viên và Nhân viên nghiệp
+                                vụ</small>
+                        </div>
                     </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                        <span class="text-muted">
-                            📸 Giao diện đăng ký (demo)
-                        </span>
+                    <span class="feature-badge badge-admin">Quản lý</span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Bước 1 -->
+                    <div class="step-timeline">
+                        <div class="step-number">1</div>
+                        <h5 class="step-title">Khởi Tạo & Quản Lý Cơ Sở Vật Chất (Tòa nhà, Phòng)</h5>
+                        <div class="step-content">
+                            <p>Xây dựng dữ liệu nền tảng cho hệ thống trước khi bắt đầu tiếp nhận sinh viên ở.</p>
+                            <ul>
+                                <li>Vào mục <b>"Cơ sở vật chất" -> "Quản lý tòa nhà"</b> để khởi tạo sơ đồ các tòa/dãy
+                                    KTX (nhập tên dãy, loại dãy cho Nam hoặc Nữ, số lượng tầng).</li>
+                                <li>Vào mục <b>"Quản lý phòng" -> "Loại phòng"</b> để cài đặt thông tin giá cả, số
+                                    giường và mô tả tiện ích đi kèm (ví dụ: Phòng VIP 2 người, Phòng Thường 8 người).
+                                </li>
+                                <li>Tại <b>"Danh sách phòng"</b>, bấm thêm mới để xếp phòng vào từng tòa nhà tương ứng
+                                    và chỉ định Loại phòng cho phòng đó.</li>
+                            </ul>
+                        </div>
                     </div>
+
+                    <!-- Bước 2 -->
+                    <div class="step-timeline">
+                        <div class="step-number">2</div>
+                        <h5 class="step-title">Xét Duyệt & Thiết Lập Hợp Đồng Thuê Phòng</h5>
+                        <div class="step-content">
+                            <p>Tiếp nhận hồ sơ đăng ký lưu trú của sinh viên và kiểm tra tính hợp lệ trước khi xếp phòng
+                                ở thực tế.</p>
+                            <ul>
+                                <li>Kiểm tra số lượng đơn đăng ký mới tại mục <b>"Quản lý hợp đồng" -> "Hợp đồng chờ
+                                        duyệt"</b>. Ban quản lý sẽ thấy danh sách sinh viên kèm theo phòng đăng ký.</li>
+                                <li>Nhấp xem chi tiết hồ sơ của sinh viên, xác minh các thông tin định danh và thực hiện
+                                    nút <b>"Duyệt hợp đồng"</b> (Hệ thống sẽ cập nhật trạng thái phòng và tự động trừ đi
+                                    số giường trống khả dụng).</li>
+                                <li>Nếu sinh viên làm thủ tục trực tiếp tại văn phòng KTX, chọn <b>"Tạo hợp đồng thủ
+                                        công"</b> để chủ động nhập thông tin nhanh chóng.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bước 3 -->
+                    <div class="step-timeline">
+                        <div class="step-number">3</div>
+                        <h5 class="step-title">Thiết Lập Chỉ Số Điện Nước & Phát Hành Hóa Đơn</h5>
+                        <div class="step-content">
+                            <p>Quản lý dịch vụ tiêu dùng hàng tháng của từng phòng ở KTX.</p>
+                            <ul>
+                                <li><b>Quản lý dịch vụ</b>: Khai báo đơn giá các dịch vụ điện, nước, internet, giặt ủi
+                                    tại mục <b>"Dịch vụ KTX"</b>.</li>
+                                <li><b>Phát hành hóa đơn định kỳ</b>: Vào mỗi cuối tháng, cán bộ quản lý ghi nhận chỉ số
+                                    công tơ điện và chỉ số nước mới của từng phòng. Hệ thống tự động tính toán tổng số
+                                    tiền dựa trên đơn giá và gửi thông báo công nợ thanh toán trực tiếp tới tài khoản
+                                    sinh viên thuộc phòng đó.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bước 4 -->
+                    <div class="step-timeline">
+                        <div class="step-number">4</div>
+                        <h5 class="step-title">Giám Sát Tài Sản Thiết Bị KTX</h5>
+                        <div class="step-content">
+                            <p>Đảm bảo kiểm kê và duy tu cơ sở hạ tầng thiết bị ở mức tốt nhất.</p>
+                            <ul>
+                                <li>Tại mục <b>"Vật tư & Thiết bị" -> "Danh sách tài sản"</b>, ban quản lý ghi nhận và
+                                    theo dõi hiện trạng các thiết bị trong KTX (như Máy lạnh, Máy giặt, Giường gỗ, Bàn
+                                    học...).</li>
+                                <li>Gán tài sản cụ thể vào từng phòng để dễ dàng quản lý việc hư hao thiết bị do sinh
+                                    viên sử dụng gây ra. Khi sinh viên trả phòng, nhân viên kỹ thuật có thể dễ dàng kiểm
+                                    tra đối chiếu.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Bước 5 -->
+                    <div class="step-timeline">
+                        <div class="step-number">5</div>
+                        <h5 class="step-title">Bảo Đảm An Ninh, Xử Lý Vi Phạm & Báo Cáo Thống Kê</h5>
+                        <div class="step-content">
+                            <p>Giữ vững kỷ cương nội quy sinh hoạt nội trú tại ký túc xá.</p>
+                            <ul>
+                                <li><b>Quản lý vi phạm</b>: Lập các biên bản vi phạm kỷ luật (sử dụng thiết bị cấm, tụ
+                                    tập quá giờ, mất vệ sinh...) đối với từng cá nhân hoặc tập thể phòng tại mục <b>"Vận
+                                        hành & An ninh" -> "Lập biên bản mới"</b>.</li>
+                                <li><b>Thống kê tài chính & Vận hành</b>: Xem biểu đồ doanh thu thanh toán hóa đơn, số
+                                    lượng phòng trống thực tế và mật độ phân bố sinh viên để đưa ra các kế hoạch vận
+                                    hành tối ưu tại mục <b>"Báo cáo thống kê"</b>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-
-            <hr />
-
-            <!-- LOGIN -->
-            <div class="mb-5">
-                <h5 class="text-success">
-                    <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
-                </h5>
-
-                <p>
-                    Sau khi có tài khoản, bạn đăng nhập để sử dụng hệ thống.
-                </p>
-
-                <ul>
-                    <li>Nhập Email hoặc Username</li>
-                    <li>Nhập mật khẩu</li>
-                    <li>Nhấn <b>Đăng nhập</b></li>
-                </ul>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <img src="https://picsum.photos/600/350?random=22"
-                             class="img-fluid rounded shadow-sm">
-                    </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                        <span class="text-muted">
-                            📸 Giao diện đăng nhập (demo)
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <hr />
-
-            <!-- FORGOT PASSWORD -->
-            <div>
-                <h5 class="text-danger">
-                    <i class="fas fa-key me-2"></i>Quên mật khẩu
-                </h5>
-
-                <p>
-                    Nếu quên mật khẩu, bạn có thể khôi phục dễ dàng:
-                </p>
-
-                <ul>
-                    <li>Chọn <b>Quên mật khẩu</b></li>
-                    <li>Nhập email đã đăng ký</li>
-                    <li>Nhận link reset qua email</li>
-                </ul>
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <img src="https://picsum.photos/600/350?random=33"
-                             class="img-fluid rounded shadow-sm">
-                    </div>
-                    <div class="col-md-6 d-flex align-items-center">
-                        <span class="text-muted">
-                            📸 Giao diện khôi phục mật khẩu (demo)
-                        </span>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <!-- ================= TAB: RULES ================= -->
+        <div class="tab-pane fade" id="rules-content" role="tabpanel" aria-labelledby="rules-tab">
+            <div class="guide-card card">
+                <div class="card-header-custom d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-box" style="background-color: rgba(245, 158, 11, 0.08); color: #b45309;">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-0 text-slate-800">Quy Định & Nội Quy Sinh Hoạt Chung</h4>
+                            <small class="text-muted">Áp dụng cho toàn thể thành viên cư trú tại Ký túc xá</small>
+                        </div>
+                    </div>
+                    <span class="feature-badge badge-general">Quy định chung</span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <div class="rule-item">
+                        <div class="rule-icon text-primary">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">1. Giờ giấc ra vào & Giờ giới nghiêm</h6>
+                            <p class="text-muted mb-0">Cổng chính Ký túc xá mở cửa phục vụ từ <b>05:00 sáng</b> và đóng
+                                cửa (giờ giới nghiêm) lúc <b>23:00 tối</b> hàng ngày. Sinh viên ra vào ngoài khung giờ
+                                trên vì lý do học tập, làm việc đặc biệt phải xuất trình thẻ sinh viên/giấy tờ liên quan
+                                và đăng ký ghi nhận với lực lượng bảo vệ trực cổng.</p>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-icon text-success">
+                            <i class="fas fa-trash-restore-alt"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">2. Vệ sinh phòng ở & Khu sinh hoạt chung</h6>
+                            <p class="text-muted mb-0">Sinh viên có trách nhiệm giữ gìn vệ sinh sạch sẽ trong phòng ở cá
+                                nhân và lối hành lang dùng chung. Rác thải sinh hoạt phải được gom vào túi nilon buộc
+                                kín và bỏ đúng nơi quy định trước 17:00 chiều hàng ngày. Nghiêm cấm vứt rác qua cửa sổ,
+                                ban công hoặc xả rác bừa bãi tại hành lang.</p>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-icon text-danger">
+                            <i class="fas fa-fire-extinguisher"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">3. An toàn phòng cháy chữa cháy & Sử dụng thiết bị điện
+                            </h6>
+                            <p class="text-muted mb-0">Nghiêm cấm nấu ăn dưới mọi hình thức trong phòng ngủ KTX để phòng
+                                ngừa cháy nổ và mùi hôi (chỉ được phép đun nước nóng bằng ấm siêu tốc chuẩn an toàn).
+                                Không tàng trữ, sử dụng các vật liệu dễ cháy nổ, vũ khí thô sơ hoặc các chất cấm theo
+                                quy định pháp luật. Tắt mọi thiết bị điện trước khi rời phòng.</p>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-icon text-info">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">4. Tiếp nhận khách ngoài & Quy định lưu trú</h6>
+                            <p class="text-muted mb-0">Khách ngoài (bạn bè, người thân) chỉ được đón tiếp tại phòng sinh
+                                hoạt chung hoặc phòng khách của KTX, không được tự ý dẫn vào phòng ngủ của khu nội trú
+                                khi chưa có sự cho phép của Ban quản lý. <b>Tuyệt đối không cho phép khách ngoài lưu trú
+                                    qua đêm</b> tại phòng của sinh viên.</p>
+                        </div>
+                    </div>
+
+                    <div class="rule-item">
+                        <div class="rule-icon text-warning">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold text-dark mb-1">5. Nghĩa vụ tài chính & Đóng lệ phí định kỳ</h6>
+                            <p class="text-muted mb-0">Sinh viên có trách nhiệm theo dõi và thanh toán đầy đủ các khoản
+                                lệ phí (tiền phòng, tiền điện, nước sử dụng) trước **ngày 10 hàng tháng** thông qua tính
+                                năng thanh toán hóa đơn trên hệ thống DMS. Mọi trường hợp trễ hạn quá 15 ngày không có
+                                lý do chính đáng sẽ bị lập biên bản nhắc nhở và xem xét chấm dứt hợp đồng thuê phòng.
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>
