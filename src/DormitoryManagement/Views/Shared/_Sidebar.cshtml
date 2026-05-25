@@ -1,4 +1,4 @@
-@using Common
+﻿@using Common
 @inject DormitoryManagement.Application.Services.Interfaces.IContractService ContractService
 @{
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
@@ -293,6 +293,35 @@
                class="@(isOperationGroup && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
                 <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
             </a>
+        }
+    </div>
+}
+    <!-- ================= PHỤ PHÍ KÈM THEO ================= -->
+@if (isAuthenticated)
+{
+    var isSurchargeGroup = currentController == "Surcharge";
+    <a data-bs-toggle="collapse" href="#surchargeMenu" class="menu-toggle @(isSurchargeGroup ? "active" : "collapsed")">
+        <i class="fas fa-coins"></i>
+        <span class="text">Phụ phí kèm theo</span>
+    </a>
+    <div class="collapse submenu @(isSurchargeGroup ? "show" : "")" id="surchargeMenu">
+        <!-- Trang danh sách -->
+        <a asp-controller="Surcharge" asp-action="Index" class="@(isSurchargeGroup && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-list me-2"></i> Danh sách phụ phí
+        </a>
+        <!-- Trang thêm mới -->
+        <a asp-controller="Surcharge" asp-action="Create" class="@(isSurchargeGroup && currentAction == "Create" ? "active" : "")">
+            <i class="fas fa-plus me-2"></i> Thêm phụ phí mới
+        </a>
+        <!-- Trang chỉnh sửa (Chỉ sáng lên khi đang ở đúng trang Edit) -->
+        @if (isSurchargeGroup && currentAction == "Edit")
+        {
+            <a asp-controller="Surcharge" asp-action="Edit" class="active">
+                <i class="fas fa-edit me-2"></i> Cập nhật phụ phí
+            </a>
+        }
+    </div>
+}
 
             @if (isAdminOrManager)
             {
