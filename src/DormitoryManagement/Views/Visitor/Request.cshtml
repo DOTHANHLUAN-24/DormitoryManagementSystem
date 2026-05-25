@@ -1,0 +1,200 @@
+@model List<DormitoryManagement.Models.VisitorViewModel>
+
+@{
+    ViewData["Title"] = "Lịch sử đăng ký khách thăm - KTX System";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        /* Hệ thống Typography & Tiêu đề */
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        /* Nút chức năng chính */
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; text-decoration: none; }
+        .btn-add { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-add:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        
+        /* Bộ lọc tìm kiếm */
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; background-color: #f8fafc; width: 100%; transition: all 0.2s; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; background-color: #fff; }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input, .khung-tim-kiem select { padding-left: 40px; }
+        
+        .nut-lam-moi { height: 46px; border-radius: 12px; font-weight: 600; font-size: 14px; transition: all 0.2s; color: #64748b; background: #f1f5f9; border: none; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; white-space: nowrap; }
+        .nut-lam-moi:hover { background: #e2e8f0; color: #1e293b; }
+
+        /* Tinh chỉnh Bảng dữ liệu */
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
+        .table thead { background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+        .table th { font-size: 12px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 12px; }
+        .table td { padding: 16px 12px; font-size: 14px; color: #334155; }
+        
+        /* Định dạng mã số */
+        .badge-username { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0; }
+
+        /* Huy hiệu trạng thái mềm mại */
+        .badge-status { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; gap: 5px; }
+        .badge-success-soft { background-color: #ecfdf5; color: #10b981; }
+        .badge-primary-soft { background-color: #eff6ff; color: #3b82f6; }
+        .badge-danger-soft { background-color: #fef2f2; color: #ef4444; }
+        .badge-warning-soft { background-color: #fff7ed; color: #f97316; }
+    </style>
+}
+
+<div class="container-fluid py-2">
+    <!-- TIÊU ĐỀ TRANG VÀ TIỆN ÍCH THÊM MỚI -->
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-1"><i class="fas fa-address-book me-2"></i>Lịch sử khách đến thăm</h1>
+            <p class="text-muted small mb-0">Theo dõi trạng thái các lượt khách đã đăng ký đến thăm phòng của bạn.</p>
+        </div>
+        <a href="/Visitor/CreateRequest" class="btn-custom-header btn-add">
+            <i class="fas fa-plus"></i> Đăng ký khách thăm
+        </a>
+    </div>
+
+    <!-- BỘ LỌC TÌM KIẾM -->
+    <div class="thanh-tim-kiem">
+        <div class="row g-3 align-items-center">
+            <div class="col-12 col-md-5">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" class="input-custom" placeholder="Tìm theo tên khách, số CCCD/CMND...">
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-filter"></i>
+                    <select id="statusFilter" class="input-custom form-select">
+                        <option value="All">-- Tất cả trạng thái --</option>
+                        <option value="Chờ duyệt">Chờ duyệt</option>
+                        <option value="Đang ở trong">Đang ở trong</option>
+                        <option value="Đã rời đi">Đã rời đi</option>
+                        <option value="Quá giờ">Quá giờ</option>
+                        <option value="Từ chối">Từ chối</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-md-3">
+                <button class="nut-lam-moi" title="Làm mới bộ lọc" onclick="resetFilters()">
+                    <i class="fas fa-sync-alt"></i> Làm mới bộ lọc
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BẢNG DỮ LIỆU HIỂN THỊ -->
+    <div class="card card-custom">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="visitorTable">
+                    <thead>
+                        <tr>
+                            <th class="ps-4" style="width: 100px;">Mã</th>
+                            <th>Khách đến thăm</th>
+                            <th>CCCD/CMND</th>
+                            <th>Mối quan hệ</th>
+                            <th>Mục đích thăm</th>
+                            <th>Thời gian vào</th>
+                            <th>Thời gian ra (Dự kiến)</th>
+                            <th class="pe-4" style="width: 150px;">Trạng thái</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        @if (Model == null || !Model.Any())
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-4 text-muted fw-medium">
+                                    <i class="fas fa-folder-open me-2"></i>Bạn chưa đăng ký lượt khách thăm nào.
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model.OrderByDescending(x => x.CreatedDate))
+                            {
+                                <tr class="visitor-row" 
+                                    data-name="@item.VisitorName.ToLower()" 
+                                    data-card="@item.IdentityCard" 
+                                    data-status="@item.Status">
+                                    <td class="ps-4"><span class="badge-username">@item.Id</span></td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@item.VisitorName</div>
+                                        <div class="text-muted small">@item.PhoneNumber</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border font-monospace px-2 py-1" style="font-size: 12px;">@item.IdentityCard</span></td>
+                                    <td><span class="text-secondary">@item.Relationship</span></td>
+                                    <td>@item.Purpose</td>
+                                    <td class="small text-muted">@item.CheckIn.ToString("dd/MM/yyyy - HH:mm")</td>
+                                    <td class="small text-muted">@(item.CheckOut?.ToString("dd/MM/yyyy - HH:mm") ?? "---")</td>
+                                    <td class="pe-4">
+                                        @if (item.Status == "Đã rời đi")
+                                        {
+                                            <span class="badge-status badge-success-soft"><i class="fas fa-check-circle"></i>Đã rời đi</span>
+                                        }
+                                        else if (item.Status == "Đang ở trong")
+                                        {
+                                            <span class="badge-status badge-primary-soft"><i class="fas fa-clock"></i>Đang ở trong</span>
+                                        }
+                                        else if (item.Status == "Chờ duyệt")
+                                        {
+                                            <span class="badge-status badge-warning-soft"><i class="fas fa-hourglass-half"></i>Chờ duyệt</span>
+                                        }
+                                        else if (item.Status == "Từ chối")
+                                        {
+                                            <span class="badge-status badge-danger-soft"><i class="fas fa-times-circle"></i>Từ chối</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge-status badge-danger-soft"><i class="fas fa-exclamation-triangle"></i>Quá giờ</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("searchInput").addEventListener("input", filterData);
+            document.getElementById("statusFilter").addEventListener("change", filterData);
+        });
+
+        function filterData() {
+            const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
+            const statusVal = document.getElementById("statusFilter").value;
+
+            const rows = document.querySelectorAll(".visitor-row");
+            rows.forEach(row => {
+                const name = row.getAttribute("data-name");
+                const card = row.getAttribute("data-card");
+                const status = row.getAttribute("data-status");
+
+                const matchesSearch = name.includes(searchVal) || card.includes(searchVal);
+                const matchesStatus = (statusVal === "All" || status === statusVal);
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        function resetFilters() {
+            document.getElementById("searchInput").value = "";
+            document.getElementById("statusFilter").value = "All";
+            filterData();
+        }
+    </script>
+}

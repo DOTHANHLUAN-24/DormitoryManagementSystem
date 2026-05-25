@@ -1,0 +1,284 @@
+@{
+    ViewData["Title"] = "Chỉnh sửa phương tiện";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #4f46e5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge-account {
+            background: #fff7ed;
+            color: #ea580c;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid #ffedd5;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-custom-header {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-header-back {
+            background: white;
+            color: #64748b !important;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-header-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            color: #1e293b !important;
+            background: #f8fafc;
+        }
+
+        .card-custom {
+            border-radius: 20px;
+            background: #fff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+            border: none;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed #f1f5f9;
+        }
+
+        .section-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #ea580c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .section-icon.green {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #475569;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .input-custom {
+            height: 46px;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0;
+            font-size: 14px;
+            color: #1e293b;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .input-custom:focus {
+            border-color: #ea580c !important;
+            box-shadow: 0 0 0 4px rgba(234, 88, 12, 0.1) !important;
+            background-color: #fff;
+        }
+
+        .btn-action {
+            height: 46px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 24px;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-update {
+            background: #ea580c;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(234, 88, 12, 0.3);
+            background: #d97706;
+        }
+
+        .btn-cancel {
+            background: #fff;
+            color: #64748b !important;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-cancel:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+    </style>
+}
+
+<div class="container-fluid p-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-2"><i class="fas fa-edit me-2"></i>Chỉnh sửa phương tiện</h1>
+            <div class="ms-1">
+                <span class="text-muted small fw-medium me-2">Đang chỉnh sửa xe:</span>
+                <span class="badge-account">
+                    <i class="fas fa-tag me-1 opacity-75"></i>@ViewBag.LicensePlate
+                </span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-custom-header btn-header-back text-decoration-none">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <div class="row justify-content-center">
+        <div class="col-xl-10">
+            <div class="card card-custom">
+                <div class="card-body p-4 p-md-5">
+                    <form asp-action="Edit" method="post">
+                        @* ID của phương tiện cần sửa *@
+                        <input type="hidden" name="Id" value="@ViewBag.VehicleId" />
+
+                        <div class="row g-5">
+                            <!-- CỘT TRÁI: CHỦ SỞ HỮU -->
+                            <div class="col-md-6 border-end-md pe-md-4">
+                                <div class="section-title">
+                                    <div class="section-icon"><i class="fas fa-user-check"></i></div>
+                                    Chủ sở hữu hiện tại
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label">Chủ sở hữu <span class="text-danger">*</span></label>
+                                    <select name="OwnerId" class="form-select input-custom select2" required>
+                                        <option value="@ViewBag.VehicleId" selected>@ViewBag.OwnerName</option>
+                                        @if (ViewBag.Owners != null)
+                                        {
+                                            foreach (var owner in ViewBag.Owners)
+                                            {
+                                                if (owner.Name != ViewBag.OwnerName)
+                                                {
+                                                    <option value="@owner.Id">@owner.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <small class="text-muted mt-2 d-block">Bạn có thể thay đổi chủ sở hữu nếu phương
+                                        tiện được sang nhượng.</small>
+                                    </div>
+                                </div>
+
+                                <!-- CỘT PHẢI: THÔNG TIN XE -->
+                                <div class="col-md-6 ps-md-4">
+                                    <div class="section-title">
+                                        <div class="section-icon green"><i class="fas fa-motorcycle"></i></div>
+                                        Thông tin xe
+                                    </div>
+                                    <div class="row g-3">
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label">Loại phương tiện</label>
+                                            <select name="VehicleType" class="form-select input-custom" required>
+                                                <option value="Xe máy" selected="@(ViewBag.VehicleType == "Xe máy")">Xe máy
+                                                </option>
+                                                <option value="Xe đạp điện"
+                                                        selected="@(ViewBag.VehicleType == "Xe đạp điện")">Xe đạp điện</option>
+                                                <option value="Xe đạp" selected="@(ViewBag.VehicleType == "Xe đạp")">Xe đạp
+                                                </option>
+                                                <option value="Ô tô" selected="@(ViewBag.VehicleType == "Ô tô")">Ô tô
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <label class="form-label">Biển số xe <span class="text-danger">*</span></label>
+                                            <input name="LicensePlate" class="form-control input-custom"
+                                                   value="@ViewBag.LicensePlate" required />
+                                        </div>
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label">Ghi chú sửa đổi</label>
+                                        <textarea name="Note" class="form-control input-custom" rows="2"
+                                                  style="height: auto;">@ViewBag.Note</textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                                <a asp-action="Index" class="btn-action btn-cancel text-decoration-none">
+                                    <i class="fas fa-times"></i> Hủy bỏ
+                                </a>
+                                <button type="submit" class="btn-action btn-update">
+                                    <i class="fas fa-save"></i> Cập nhật dữ liệu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @section Scripts {
+            <script>
+                    $(document).ready(function () {
+                        $('.select2').select2({
+                            theme: 'bootstrap-5',
+                            placeholder: 'Nhập MSSV hoặc Tên để tìm kiếm...',
+                            allowClear: true,
+                            minimumInputLength: 1,
+                            width: '100%',
+                            ajax: {
+                                url: '@Url.Action("SearchUsers", "Vehicle")',
+                                dataType: 'json',
+                                delay: 250,
+                                data: function (params) {
+                                    return {
+                                        q: params.term
+                                    };
+                                },
+                                processResults: function (data) {
+                                    return {
+                                        results: data.items
+                                    };
+                                },
+                                cache: true
+                            },
+                            language: {
+                                inputTooShort: function () { return "Vui lòng nhập từ 1 ký tự..."; },
+                                noResults: function () { return "Không tìm thấy người dùng nào"; }
+                            }
+                        });
+                    });
+            </script>
+        }

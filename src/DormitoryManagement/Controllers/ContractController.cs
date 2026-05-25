@@ -87,6 +87,19 @@ namespace DormitoryManagement.Controllers
             return Json(new { success = false, message = "Có lỗi xảy ra khi tạo yêu cầu. Vui lòng liên hệ Admin." });
         }
 
+        [HttpGet("MyContracts")]
+        public async Task<IActionResult> MyContracts()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var contracts = await _contractService.GetByUserIdAsync(userId);
+            return View(contracts);
+        }
+
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [HttpGet("Create")]
         public async Task<IActionResult> Create()

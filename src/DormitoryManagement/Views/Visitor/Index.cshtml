@@ -8,12 +8,12 @@
         /* Hệ thống Typography & Tiêu đề */
         .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* Nút chức năng chính đồng bộ User */
+        /* Nút chức năng chính */
         .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; text-decoration: none; }
         .btn-add { background: #4f46e5; color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
         .btn-add:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
         
-        /* Bộ lọc tìm kiếm đồng bộ User */
+        /* Bộ lọc tìm kiếm */
         .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; }
         .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; background-color: #f8fafc; width: 100%; transition: all 0.2s; }
         .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; background-color: #fff; }
@@ -33,7 +33,7 @@
         .table th { font-size: 12px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; padding: 16px 12px; }
         .table td { padding: 16px 12px; font-size: 14px; color: #334155; }
         
-        /* Định dạng mã số đồng bộ User */
+        /* Định dạng mã số */
         .badge-username { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0; }
 
         /* Huy hiệu trạng thái mềm mại */
@@ -41,64 +41,99 @@
         .badge-success-soft { background-color: #ecfdf5; color: #10b981; }
         .badge-primary-soft { background-color: #eff6ff; color: #3b82f6; }
         .badge-danger-soft { background-color: #fef2f2; color: #ef4444; }
+        .badge-warning-soft { background-color: #fff7ed; color: #f97316; }
 
-        /* Khung chứa các nút thao tác - Đảm bảo xếp hàng ngang tuyệt đối */
+        /* Khung chứa các nút thao tác */
         .cum-hanh-dong { display: flex; align-items: center; justify-content: flex-end; gap: 6px; white-space: nowrap; flex-wrap: nowrap; }
 
-        /* Nút hành động đồng bộ trang User */
+        /* Nút hành động */
         .nut-hanh-dong { width: 32px; height: 32px; padding: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; transition: all 0.2s; border: none; font-size: 13px; text-decoration: none; flex-shrink: 0; }
         .nut-ra-ve { background-color: #ecfdf5; color: #10b981; }
         .nut-ra-ve:hover { background-color: #10b981; color: #fff; }
+        .nut-duyet { background-color: #ecfdf5; color: #10b981; }
+        .nut-duyet:hover { background-color: #10b981; color: #fff; }
+        .nut-tuchoi { background-color: #fef2f2; color: #ef4444; }
+        .nut-tuchoi:hover { background-color: #ef4444; color: #fff; }
         .nut-sua { background-color: #fef3c7; color: #d97706; }
         .nut-sua:hover { background-color: #d97706; color: #fff; }
         .nut-xoa { background-color: #fef2f2; color: #ef4444; }
         .nut-xoa:hover { background-color: #ef4444; color: #fff; }
 
-        /* Định hình lại thanh phân trang số (Pagination) */
-        .pagination .page-item .page-link { color: #64748b; background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 14px; font-weight: 600; font-size: 13px; margin: 0 2px; transition: all 0.2s ease; border-radius: 6px; }
-        .pagination .page-item:first-child .page-link { border-radius: 6px; }
-        .pagination .page-item:last-child .page-link { border-radius: 6px; }
-        .pagination .page-item.active .page-link { background: linear-gradient(135deg, #4f46e5, #6366f1); border-color: #4f46e5; color: #fff; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15); }
-        .pagination .page-item .page-link:hover:not(.active) { background-color: #e2e8f0; color: #1e293b; }
+        /* Custom Tab Styling */
+        .nav-pills .nav-link {
+            border-radius: 12px;
+            color: #64748b;
+            font-weight: 600;
+            padding: 10px 20px;
+            transition: all 0.2s;
+            border: 1.5px solid transparent;
+        }
+        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+            background-color: #eef2ff;
+            color: #4f46e5;
+            border: 1.5px solid #c7d2fe;
+        }
+        .nav-pills .nav-link:hover:not(.active) {
+            background-color: #f1f5f9;
+            color: #334155;
+        }
     </style>
 }
+
+@Html.AntiForgeryToken()
 
 <div class="container-fluid py-2">
     <!-- TIÊU ĐỀ TRANG VÀ TIỆN ÍCH THÊM MỚI -->
     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
         <div>
             <h1 class="tieu-de-trang mb-1"><i class="fas fa-address-book me-2"></i>Quản lý khách đến thăm</h1>
-            <p class="text-muted small mb-0">Theo dõi, ghi nhận thông tin khách ra vào và kiểm soát thời gian lưu trú tại ký túc xá.</p>
+            <p class="text-muted small mb-0">Theo dõi, phê duyệt yêu cầu đăng ký khách từ sinh viên và kiểm soát lượt khách ra vào KTX.</p>
         </div>
         <a href="/Visitor/Create" class="btn-custom-header btn-add">
             <i class="fas fa-plus"></i> Ghi nhận khách đến
         </a>
     </div>
 
-    <!-- BỘ LỌC TÌM KIẾM ĐỒNG BỘ -->
+    <!-- TABS PHÂN PHÂN LOẠI YÊU CẦU -->
+    <ul class="nav nav-pills mb-4" id="visitorTabs" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" onclick="switchTab('All')">Tất cả khách</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" onclick="switchTab('Đang ở trong')">Đang ở trong KTX</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" onclick="switchTab('Đã rời đi')">Đã rời đi</button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" onclick="switchTab('Chờ duyệt')">
+                Yêu cầu phê duyệt
+                <span class="badge bg-danger rounded-pill ms-1" id="pendingBadge" style="display:none; font-size:0.75rem;">0</span>
+            </button>
+        </li>
+    </ul>
+
+    <!-- BỘ LỌC TÌM KIẾM -->
     <div class="thanh-tim-kiem">
         <div class="row g-3 align-items-center">
-            <div class="col-12 col-md-4">
+            <div class="col-12 col-md-5">
                 <div class="khung-tim-kiem">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" class="input-custom" placeholder="Tìm theo tên khách, số CMND/CCCD...">
+                    <input type="text" id="searchInput" class="input-custom" placeholder="Tìm theo tên khách, số CCCD/CMND, tên sinh viên...">
                 </div>
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-4">
                 <div class="khung-tim-kiem">
                     <i class="fas fa-filter"></i>
                     <select id="statusFilter" class="input-custom form-select">
                         <option value="All">-- Tất cả trạng thái --</option>
-                        <option value="Đang ở trong">Đang ở trong ký túc xá</option>
-                        <option value="Đã rời đi">Đã rời đi hoàn tất</option>
-                        <option value="Quá giờ">Quá giờ quy định</option>
+                        <option value="Đang ở trong">Đang ở trong</option>
+                        <option value="Đã rời đi">Đã rời đi</option>
+                        <option value="Quá giờ">Quá giờ</option>
+                        <option value="Chờ duyệt">Chờ duyệt</option>
+                        <option value="Từ chối">Từ chối</option>
                     </select>
                 </div>
-            </div>
-            <div class="col-12 col-md-2">
-                <button class="btn-search w-100" onclick="filterData()">
-                    <i class="fas fa-search"></i> Tìm kiếm
-                </button>
             </div>
             <div class="col-12 col-md-3">
                 <button class="nut-lam-moi" title="Làm mới bộ lọc" onclick="resetFilters()">
@@ -115,32 +150,23 @@
                 <table class="table table-hover align-middle mb-0" id="visitorTable">
                     <thead>
                         <tr>
-                            <th class="ps-4" style="width: 110px;">Mã khách</th>
-                            <th style="width: 180px;">Họ tên khách</th>
-                            <th style="width: 140px;">Số CCCD/CMND</th>
-                            <th style="width: 170px;">Sinh viên được tiếp</th>
-                            <th style="width: 110px;">Phòng ở</th>
-                            <th style="width: 150px;">Thời gian vào</th>
-                            <th style="width: 150px;">Thời gian ra (Dự kiến)</th>
-                            <th style="width: 140px;">Trạng thái</th>
-                            <th class="text-end pe-4" style="width: 150px;">Thao tác</th>
+                            <th class="ps-4" style="width: 100px;">Mã</th>
+                            <th>Khách đến thăm</th>
+                            <th>CCCD/CMND</th>
+                            <th>Sinh viên tiếp đón</th>
+                            <th>Phòng ở</th>
+                            <th>Thời gian vào</th>
+                            <th>Thời gian ra (Dự kiến)</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end pe-4" style="width: 180px;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Dữ liệu được kết xuất động bằng JavaScript -->
+                        <tr>
+                            <td colspan="9" class="text-center py-4 text-muted"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>
-        </div>
-        
-        <!-- THANH PHÂN TRANG THEO SỐ ĐỒNG BỘ MẪU USER -->
-        <div class="card-footer bg-white border-top py-3">
-            <div class="d-flex justify-content-center align-items-center">
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0" id="paginationList">
-                        <!-- Các đầu số trang 1 2 3 được render tự động qua JavaScript -->
-                    </ul>
-                </nav>
             </div>
         </div>
     </div>
@@ -151,68 +177,128 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Mảng dữ liệu ảo Mock Data cho năm 2026
-        const mockVisitors = [
-            { id: "VIS001", name: "Nguyễn Thành Long", identityCard: "001098001234", studentName: "Nguyễn Văn Anh", room: "P.302-A1", checkIn: "2026-05-18T08:30:00", checkOut: "2026-05-18T11:00:00", isCheckedOut: true, status: "Đã rời đi" },
-            { id: "VIS002", name: "Trần Thị Lan", identityCard: "038175004321", studentName: "Trần Thị Bình", room: "P.105-B2", checkIn: "2026-05-18T14:15:00", checkOut: "2026-05-18T17:00:00", isCheckedOut: false, status: "Đang ở trong" },
-            { id: "VIS003", name: "Lê Hoàng Nam", identityCard: "024099005678", studentName: "Lê Hoàng Chí", room: "P.404-A2", checkIn: "2026-05-18T09:00:00", checkOut: "2026-05-18T11:30:00", isCheckedOut: false, status: "Quá giờ" },
-            { id: "VIS004", name: "Phạm Minh Quang", identityCard: "017095009876", studentName: "Phạm Hồng Duy", room: "P.201-B1", checkIn: "2026-05-17T19:00:00", checkOut: "2026-05-17T21:00:00", isCheckedOut: true, status: "Đã rời đi" },
-            { id: "VIS005", name: "Hoàng Ngọc Mai", identityCard: "031197002468", studentName: "Hoàng Đức Em", room: "P.305-A1", checkIn: "2026-05-18T15:00:00", checkOut: "2026-05-18T18:00:00", isCheckedOut: false, status: "Đang ở trong" }
-        ];
+        let allVisitors = [];
+        let currentTab = 'All';
+
+        // Thiết lập Token bảo vệ Ajax
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+            }
+        });
 
         document.addEventListener("DOMContentLoaded", function () {
-            displayTableData(mockVisitors);
-            renderPagination(1); // Mặc định hiển thị trang 1
+            fetchVisitors();
 
-            // Gắn sự kiện tìm kiếm và lọc dữ liệu trực tiếp dạng Real-time
+            // Gắn sự kiện tìm kiếm
             document.getElementById("searchInput").addEventListener("input", filterData);
             document.getElementById("statusFilter").addEventListener("change", filterData);
         });
+
+        function fetchVisitors() {
+            $.ajax({
+                url: '/Visitor/GetList',
+                type: 'GET',
+                success: function(data) {
+                    allVisitors = data;
+                    filterData();
+                    updatePendingBadge();
+                },
+                error: function() {
+                    $('#tableBody').html('<tr><td colspan="9" class="text-center py-4 text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Lỗi tải dữ liệu từ máy chủ.</td></tr>');
+                }
+            });
+        }
+
+        function switchTab(tabName) {
+            currentTab = tabName;
+            
+            // Cập nhật class active trên nút tab
+            const tabButtons = document.querySelectorAll('#visitorTabs .nav-link');
+            tabButtons.forEach(btn => {
+                if (btn.innerText.includes(tabName === 'All' ? 'Tất cả' : tabName)) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            filterData();
+        }
+
+        function updatePendingBadge() {
+            const pendingCount = allVisitors.filter(v => v.status === 'Chờ duyệt').length;
+            const badge = document.getElementById("pendingBadge");
+            if (pendingCount > 0) {
+                badge.innerText = pendingCount;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
 
         function displayTableData(data) {
             const tableBody = document.getElementById("tableBody");
             tableBody.innerHTML = "";
 
             if (data.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted fw-medium"><i class="fas fa-folder-open me-2"></i>Không tìm thấy dữ liệu lịch sử khách phù hợp.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted fw-medium"><i class="fas fa-folder-open me-2"></i>Không tìm thấy dữ liệu phù hợp.</td></tr>`;
                 return;
             }
 
             data.forEach(visitor => {
-                // Định dạng hiển thị màu sắc theo Badge cao cấp mới
                 let statusBadge = '';
                 if (visitor.status === 'Đã rời đi') {
                     statusBadge = `<span class="badge-status badge-success-soft"><i class="fas fa-check-circle"></i>Đã rời đi</span>`;
                 } else if (visitor.status === 'Đang ở trong') {
                     statusBadge = `<span class="badge-status badge-primary-soft"><i class="fas fa-clock"></i>Đang ở trong</span>`;
+                } else if (visitor.status === 'Chờ duyệt') {
+                    statusBadge = `<span class="badge-status badge-warning-soft"><i class="fas fa-hourglass-half"></i>Chờ duyệt</span>`;
+                } else if (visitor.status === 'Từ chối') {
+                    statusBadge = `<span class="badge-status badge-danger-soft"><i class="fas fa-times-circle"></i>Từ chối</span>`;
                 } else {
                     statusBadge = `<span class="badge-status badge-danger-soft"><i class="fas fa-exclamation-triangle"></i>Quá giờ</span>`;
                 }
 
-                // Cấu hình cụm nút hành động đảm bảo nằm ngang hàng
                 let actionButtons = `<div class="cum-hanh-dong">`;
-                if (!visitor.isCheckedOut) {
+                
+                if (visitor.status === 'Chờ duyệt') {
+                    // Cụm phê duyệt / từ chối yêu cầu của sinh viên
                     actionButtons += `
-                        <button class="nut-hanh-dong nut-ra-ve" onclick="checkOutVisitor('${visitor.id}')" title="Xác nhận khách ra về">
-                            <i class="fas fa-sign-out-alt"></i>
+                        <button class="nut-hanh-dong nut-duyet" onclick="approveRequest('${visitor.id}')" title="Phê duyệt yêu cầu">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="nut-hanh-dong nut-tuchoi" onclick="rejectRequest('${visitor.id}')" title="Từ chối yêu cầu">
+                            <i class="fas fa-times"></i>
                         </button>`;
                 } else {
-                    // Tạo một khoảng trống giữ chỗ (placeholder) ẩn để hàng nút luôn cân bằng kích thước nếu cần
-                    actionButtons += `<div style="width: 32px; height: 32px; flex-shrink: 0;"></div>`;
+                    if (visitor.status === 'Đang ở trong' || visitor.status === 'Quá giờ') {
+                        actionButtons += `
+                            <button class="nut-hanh-dong nut-ra-ve" onclick="checkOutVisitor('${visitor.id}')" title="Xác nhận khách ra về">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>`;
+                    } else {
+                        actionButtons += `<div style="width: 32px; height: 32px; flex-shrink: 0;"></div>`;
+                    }
+
+                    actionButtons += `
+                        <a href="/Visitor/Edit/${visitor.id}" class="nut-hanh-dong nut-sua" title="Sửa thông tin">
+                            <i class="fas fa-edit"></i>
+                        </a>`;
                 }
                 
                 actionButtons += `
-                    <a href="/Visitor/Edit/${visitor.id}" class="nut-hanh-dong nut-sua" title="Sửa thông tin">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <button class="nut-hanh-dong nut-xoa" onclick="deleteVisitor('${visitor.id}')" title="Xóa bản ghi lịch sử">
+                    <button class="nut-hanh-dong nut-xoa" onclick="deleteVisitor('${visitor.id}')" title="Xóa bản ghi">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>`;
 
                 let row = `<tr>
                     <td class="ps-4"><span class="badge-username">${visitor.id}</span></td>
-                    <td class="fw-semibold text-dark">${visitor.name}</td>
+                    <td>
+                        <div class="fw-semibold text-dark">${visitor.visitorName}</div>
+                        <div class="text-muted small">${visitor.phoneNumber || "---"} (${visitor.relationship || "Khách"})</div>
+                    </td>
                     <td><span class="badge bg-light text-dark border font-monospace px-2 py-1" style="font-size: 12px;">${visitor.identityCard}</span></td>
                     <td class="fw-medium">${visitor.studentName}</td>
                     <td><span class="text-primary fw-semibold">${visitor.room}</span></td>
@@ -226,87 +312,117 @@
             });
         }
 
-        // Tạo số trang dạng 1 2 3 giống hệt module User mẫu
-        function renderPagination(activePage) {
-            const paginationList = document.getElementById("paginationList");
-            paginationList.innerHTML = "";
-
-            // Thiết kế phân trang tĩnh mô phỏng theo mẫu dữ liệu Mock
-            let pages = [1, 2, 3];
-            
-            let htmlContent = `<li class="page-item ${activePage === 1 ? 'disabled' : ''}"><a class="page-link" href="#" onclick="changePage(${activePage - 1})">Trước</a></li>`;
-            
-            pages.forEach(p => {
-                htmlContent += `<li class="page-item ${activePage === p ? 'active' : ''}"><a class="page-link" href="#" onclick="changePage(${p})">${p}</a></li>`;
-            });
-
-            htmlContent += `<li class="page-item ${activePage === 3 ? 'disabled' : ''}"><a class="page-link" href="#" onclick="changePage(${activePage + 1})">Sau</a></li>`;
-            
-            paginationList.innerHTML = htmlContent;
-        }
-
-        function changePage(pageNumber) {
-            if (pageNumber < 1 || pageNumber > 3) return;
-            renderPagination(pageNumber);
-            // Có thể bổ sung logic cắt mảng dữ liệu phân trang thực tế tại đây nếu cần
-        }
-
-        // Tìm kiếm thời gian thực
         function filterData() {
             const searchVal = document.getElementById("searchInput").value.toLowerCase().trim();
             const statusVal = document.getElementById("statusFilter").value;
 
-            const filtered = mockVisitors.filter(visitor => {
-                const matchesSearch = visitor.name.toLowerCase().includes(searchVal) || visitor.identityCard.includes(searchVal);
-                const matchesStatus = statusVal === "All" || visitor.status === statusVal;
-                return matchesSearch && matchesStatus;
+            const filtered = allVisitors.filter(visitor => {
+                const matchesSearch = visitor.visitorName.toLowerCase().includes(searchVal) || 
+                                     visitor.identityCard.includes(searchVal) || 
+                                     visitor.studentName.toLowerCase().includes(searchVal);
+                
+                let matchesTab = true;
+                if (currentTab === 'Đang ở trong') {
+                    matchesTab = visitor.status === 'Đang ở trong' || visitor.status === 'Quá giờ';
+                } else if (currentTab === 'Đã rời đi') {
+                    matchesTab = visitor.status === 'Đã rời đi';
+                } else if (currentTab === 'Chờ duyệt') {
+                    matchesTab = visitor.status === 'Chờ duyệt';
+                }
+
+                let matchesStatus = true;
+                if (statusVal !== "All") {
+                    matchesStatus = visitor.status === statusVal;
+                }
+
+                return matchesSearch && matchesTab && matchesStatus;
             });
 
             displayTableData(filtered);
         }
 
-        // Khôi phục bộ lọc ban đầu
         function resetFilters() {
             document.getElementById("searchInput").value = "";
             document.getElementById("statusFilter").value = "All";
-            displayTableData(mockVisitors);
+            filterData();
         }
 
-        // Áp dụng SweetAlert2 cho tính năng cho khách rời đi
+        function approveRequest(id) {
+            Swal.fire({
+                title: 'Phê duyệt?',
+                text: "Bạn có chắc muốn phê duyệt yêu cầu này? Khách sẽ được ghi nhận vào trạng thái 'Đang ở trong KTX'.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Phê duyệt',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Visitor/Approve/' + id,
+                        type: 'POST',
+                        success: function (res) {
+                            Swal.fire('Thành công!', 'Yêu cầu đăng ký đã được phê duyệt.', 'success');
+                            fetchVisitors();
+                        }
+                    });
+                }
+            });
+        }
+
+        function rejectRequest(id) {
+            Swal.fire({
+                title: 'Từ chối?',
+                text: "Xác nhận từ chối lượt khách đến thăm này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Từ chối',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Visitor/Reject/' + id,
+                        type: 'POST',
+                        success: function (res) {
+                            Swal.fire('Thành công!', 'Đã từ chối lượt khách thăm.', 'success');
+                            fetchVisitors();
+                        }
+                    });
+                }
+            });
+        }
+
         function checkOutVisitor(id) {
-            const visitor = mockVisitors.find(v => v.id === id);
-            if (visitor) {
-                Swal.fire({
-                    title: 'Xác nhận ra về',
-                    text: `Xác nhận khách ${visitor.name} đã rời khỏi khu ký túc xá?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#4f46e5',
-                    cancelButtonColor: '#64748b',
-                    confirmButtonText: 'Xác nhận',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        visitor.isCheckedOut = true;
-                        visitor.status = "Đã rời đi";
-                        visitor.checkOut = new Date().toISOString();
-                        displayTableData(mockVisitors);
-                        Swal.fire({
-                            title: 'Thành công!',
-                            text: `Khách ${visitor.name} đã được xác nhận ra về.`,
-                            icon: 'success',
-                            confirmButtonColor: '#4f46e5'
-                        });
-                    }
-                });
-            }
+            Swal.fire({
+                title: 'Xác nhận ra về',
+                text: 'Xác nhận khách đã rời khỏi khu ký túc xá?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#4f46e5',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Xác nhận',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Visitor/CheckOut/' + id,
+                        type: 'POST',
+                        success: function (res) {
+                            Swal.fire('Thành công!', 'Khách đã rời đi.', 'success');
+                            fetchVisitors();
+                        }
+                    });
+                }
+            });
         }
 
-        // Áp dụng SweetAlert2 cho tính năng xóa bản ghi khách lưu trú
         function deleteVisitor(id) {
             Swal.fire({
                 title: 'Xác nhận xóa?',
-                text: 'Bạn có chắc chắn muốn xóa lịch sử lượt đến thăm này không?',
+                text: 'Bạn có chắc chắn muốn xóa bản ghi khách lưu trú này không?',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
@@ -315,19 +431,20 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
-                        title: 'Đã xóa!',
-                        text: `Đã xóa thành công bản ghi khách mang mã: ${id}`,
-                        icon: 'success',
-                        confirmButtonColor: '#ef4444'
+                    $.ajax({
+                        url: '/Visitor/Delete/' + id,
+                        type: 'POST',
+                        success: function (res) {
+                            Swal.fire('Đã xóa!', 'Đã xóa bản ghi thành công.', 'success');
+                            fetchVisitors();
+                        }
                     });
                 }
             });
         }
 
-        // Định dạng hiển thị Ngày/Tháng/Năm - Giờ:Phút chuẩn hóa
         function formatDateTime(dateTimeStr) {
-            if (!dateTimeStr) return "";
+            if (!dateTimeStr) return "---";
             const date = new Date(dateTimeStr);
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
