@@ -43,7 +43,7 @@ internal class Program
         builder.Services.AddScoped<IVehicleRepository, VehicleRepository>();
         builder.Services.AddScoped<IViolationRepository, ViolationRepository>();
         builder.Services.AddScoped<IStatisticRepository, StatisticRepository>();
-
+        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
@@ -58,6 +58,7 @@ internal class Program
         builder.Services.AddScoped<IVehicleService, VehicleService>();
         builder.Services.AddScoped<IStatisticService, StatisticService>();
         builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
