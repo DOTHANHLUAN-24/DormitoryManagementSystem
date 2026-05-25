@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
@@ -177,6 +177,18 @@ Trong phạm vi phân tích yêu cầu, hệ thống quản lý ký túc xá xá
 * **Vật tư/Tài sản (Asset):**
   Quản lý các trang thiết bị, tài sản trong phòng nhằm phục vụ việc theo dõi, bảo trì và kiểm kê.
 
+* **Giường (Bed):**
+  Quản lý chi tiết vị trí lưu trú của từng sinh viên trong phòng, giúp tối ưu hóa việc phân bổ chỗ ở.
+
+* **Khách ra vào (VisitorLog):**
+  Theo dõi thông tin khách đến thăm sinh viên để đảm bảo an ninh trật tự trong khu vực ký túc xá.
+
+* **Phương tiện (Vehicle):**
+  Quản lý thông tin xe cộ (xe máy, xe đạp) của sinh viên nội trú để bố trí bãi đỗ và kiểm soát ra vào.
+
+* **Yêu cầu bảo trì (MaintenanceRequest):**
+  Ghi nhận các yêu cầu sửa chữa cơ sở vật chất, thiết bị từ sinh viên để có kế hoạch xử lý kịp thời.
+
 ---
 
 ## 1.4. Các nghiệp vụ quản lý vận hành hệ thống
@@ -278,12 +290,28 @@ Nghiệp vụ này hỗ trợ nhà quản lý theo dõi tình hình hoạt độ
 * Theo dõi lịch sử điểm danh.
 * Phát hiện các trường hợp vi phạm giờ giấc.
 
-### 1.4.12. Các nghiệp vụ bổ sung
+### 1.4.12. Quản lý khách ra vào và phương tiện
+
+Đây là nghiệp vụ nhằm đảm bảo an ninh trật tự trong khu vực ký túc xá.
+
+* Ghi nhận thông tin khách đến thăm (họ tên, CCCD, sinh viên được thăm).
+* Quản lý thông tin phương tiện (xe máy, xe đạp) của sinh viên nội trú (biển số, loại xe).
+* Theo dõi thời gian ra vào của khách.
+
+### 1.4.13. Quản lý bảo trì và sửa chữa
+
+Nghiệp vụ này giúp ban quản lý tiếp nhận và xử lý kịp thời các sự cố kỹ thuật.
+
+* Tiếp nhận yêu cầu báo hỏng, sửa chữa từ sinh viên (Maintenance Requests).
+* Phân công nhân viên kỹ thuật hoặc bên thứ ba xử lý.
+* Cập nhật trạng thái sửa chữa (chờ xử lý, đang sửa, đã hoàn thành).
+
+### 1.4.14. Các nghiệp vụ bổ sung
 
 Ngoài các nghiệp vụ chính, hệ thống còn hỗ trợ:
 
-* Đăng ký nội trú.
-* Phân phòng tự động.
+* Đăng ký nội trú trực tuyến.
+* Phân phòng tự động theo tiêu chí.
 * Chuyển phòng giữa các khu vực.
 * Quản lý thông tin tạm trú với cơ quan chức năng.
 
@@ -325,97 +353,144 @@ Ngoài các nghiệp vụ chính, hệ thống còn hỗ trợ:
 
 # 2. Lý thuyết nền tảng
 
-## 2.1. Client-Server
+## 2.1. Mô hình Client - Server
 
-Mô hình trong đó client gửi yêu cầu và server xử lý.
+<div style="text-indent: 2em;">
 
-## 2.2. MVC
+Mô hình Client-Server (Khách - Chủ) là một kiến trúc mạng trong đó các máy tính được chia thành hai loại chính: Máy khách (Client) gửi các yêu cầu (Request) và máy chủ (Server) tiếp nhận, xử lý, sau đó trả về kết quả (Response). Trong hệ thống quản lý ký túc xá, Client chính là trình duyệt web của người dùng (sinh viên, nhân viên), còn Server là máy chủ chứa mã nguồn ứng dụng ASP.NET Core và cơ sở dữ liệu SQL Server.
 
-Phân tách Model, View, Controller giúp hệ thống dễ bảo trì.
+</div>
 
-## 2.3. Cơ sở dữ liệu quan hệ
+## 2.2. Kiến trúc MVC (Model - View - Controller)
 
-Dữ liệu lưu dưới dạng bảng có quan hệ với nhau.
+<div style="text-indent: 2em;">
 
-## 2.4. UML
+MVC là một mẫu kiến trúc phần mềm giúp tách biệt ứng dụng thành ba thành phần chính, nhằm quản lý mã nguồn dễ dàng và thuận tiện cho việc bảo trì:
 
-Sử dụng các biểu đồ Use Case, Activity, Class, Sequence, ERD.
+* **Model (Mô hình):** Chịu trách nhiệm quản lý dữ liệu, logic nghiệp vụ và các quy tắc của ứng dụng. Nó trực tiếp giao tiếp với cơ sở dữ liệu (thông qua Entity Framework).
+* **View (Giao diện):** Đảm nhiệm việc hiển thị dữ liệu từ Model lên màn hình cho người dùng (HTML, CSS, JS).
+* **Controller (Bộ điều khiển):** Đóng vai trò trung gian, tiếp nhận các yêu cầu từ người dùng (qua View), gọi Model để lấy/xử lý dữ liệu, và cuối cùng trả kết quả về View tương ứng.
 
----
+</div>
 
-# 3. Công nghệ sử dụng
+## 2.3. Kiến trúc Clean Architecture (Kiến trúc sạch)
 
-## 3.1. Frontend
+<div style="text-indent: 2em;">
 
-HTML, CSS, JavaScript
+Clean Architecture (Kiến trúc sạch) là một mẫu kiến trúc phần mềm do Robert C. Martin (Uncle Bob) đề xuất, chú trọng vào việc phân tách các mối quan tâm (Separation of Concerns). Nguyên tắc cốt lõi của kiến trúc này là **Quy tắc phụ thuộc (The Dependency Rule)**: Mã nguồn chỉ được phép phụ thuộc hướng vào bên trong (hướng về phía trung tâm). Các lớp bên trong (Domain, Application) tuyệt đối không được biết hoặc phụ thuộc vào bất kỳ công nghệ hay chi tiết nào của các lớp bên ngoài (Database, UI, Frameworks).
 
-## 3.2. Backend
+Trong hệ thống quản lý ký túc xá, Clean Architecture được triển khai thành các phân lớp (Layers) rõ ràng như sau:
 
-ASP.NET Core 8 MVC, C#
+</div>
 
-## 3.3. Database
+* **Domain Layer (Lớp Cốt lõi):** Nằm ở vị trí trung tâm nhất của kiến trúc. Lớp này chứa các thực thể nghiệp vụ (Entities như `Room`, `Contract`, `Invoice`), các kiểu liệt kê (Enums), và các quy tắc/ngoại lệ (Exceptions) cốt lõi nhất. Domain Layer hoàn toàn độc lập, không phụ thuộc vào bất kỳ thư viện hay dự án nào khác trong hệ thống.
+* **Application Layer (Lớp Ứng dụng):** Chứa các luồng nghiệp vụ đặc thù của ứng dụng (Use Cases). Lớp này điều phối các hoạt động, ví dụ như xử lý logic đăng ký phòng, tính toán điện nước. Application định nghĩa các DTOs (Data Transfer Objects), các Interfaces (như `IRepository`, `IEmailService`) để tương tác với dữ liệu, nhưng chỉ định nghĩa mà không cài đặt chi tiết (implement) chúng. Nó chỉ phụ thuộc vào Domain Layer.
+* **Infrastructure Layer (Lớp Cơ sở hạ tầng):** Đóng vai trò kết nối hệ thống với "thế giới bên ngoài". Đây là nơi triển khai (implement) các Interfaces đã định nghĩa ở Application. Cụ thể, lớp này chứa `ApplicationDbContext` (dùng Entity Framework Core), thao tác truy xuất dữ liệu vật lý với SQL Server, tích hợp thanh toán hoặc gửi Email.
+* **Presentation/Web Layer (Lớp Giao diện):** Nằm ở lớp ngoài cùng, là điểm giao tiếp trực tiếp với người dùng. Chứa ASP.NET Core MVC Controllers và Views. Nó tiếp nhận HTTP Requests, gọi xuống Application Layer để xử lý logic, sau đó render kết quả (HTML/CSS) trả về trình duyệt.
 
-SQL Server
+<div style="text-indent: 2em;">
 
----
+Việc áp dụng Clean Architecture mang lại nhiều lợi ích quan trọng cho dự án: Logic nghiệp vụ được cô lập giúp hệ thống dễ dàng kiểm thử (Unit Test bằng cách mock các Interface), giảm thiểu rủi ro khi bảo trì, và cho phép linh hoạt thay đổi công nghệ cơ sở hạ tầng (ví dụ: chuyển đổi từ SQL Server sang hệ quản trị CSDL khác) mà không cần viết lại toàn bộ core của phần mềm.
 
-# 4. Thuật toán và kỹ thuật
+</div>
 
-## 4.1. Phân phòng
+## 2.4. Cơ sở dữ liệu quan hệ (Relational Database)
 
-Áp dụng chiến lược tham lam
+<div style="text-indent: 2em;">
 
-## 4.2. Tính điện nước
+Cơ sở dữ liệu quan hệ tổ chức dữ liệu thành các bảng (Table) có liên kết với nhau thông qua khóa chính (Primary Key) và khóa ngoại (Foreign Key). Việc áp dụng cơ sở dữ liệu quan hệ giúp hệ thống quản lý ký túc xá đảm bảo tính toàn vẹn dữ liệu, tránh dư thừa và dễ dàng thực hiện các truy vấn phức tạp (như tính toán công nợ, thống kê số lượng phòng trống).
 
-Tiêu thụ = mới - cũ
+</div>
 
-## 4.3. Công nợ
+## 2.5. Ngôn ngữ mô hình hóa thống nhất (UML)
 
-Công nợ = tổng hóa đơn - thanh toán
+<div style="text-indent: 2em;">
 
-## 4.4. Soft Delete
+UML (Unified Modeling Language) là ngôn ngữ chuẩn để đặc tả, thiết kế và xây dựng tài liệu cho hệ thống phần mềm. Các biểu đồ UML giúp đội ngũ phát triển có cái nhìn trực quan về hệ thống:
 
-Không xóa dữ liệu vật lý
+* **Use Case Diagram:** Mô tả các chức năng hệ thống và tương tác của người dùng.
+* **Class Diagram:** Mô tả cấu trúc các lớp và mối quan hệ giữa chúng.
+* **Activity Diagram / Sequence Diagram:** Mô tả luồng xử lý nghiệp vụ.
+* **ERD (Entity-Relationship Diagram):** Mô hình hóa cấu trúc dữ liệu của hệ thống.
 
-## 4.5. RBAC
-
-Phân quyền theo vai trò
-
----
-
-# 5. Framework và thư viện
-
-ASP.NET Core, Entity Framework, Bootstrap
-
----
-
-# 6. Quy trình phát triển
-
-Agile, SOLID, DRY, Git
+</div>
 
 ---
 
-# 7. Kiểm thử
+# 3. Công nghệ và Framework sử dụng
 
-Black-box, White-box
+## 3.1. Frontend (Công nghệ phía máy khách)
+
+* **HTML5 & CSS3:** Xây dựng cấu trúc và định dạng giao diện trang web.
+* **JavaScript (JS):** Xử lý các sự kiện phía client, kiểm tra tính hợp lệ của dữ liệu trước khi gửi lên server, mang lại trải nghiệm người dùng mượt mà hơn.
+* **Bootstrap 5:** Framework CSS giúp xây dựng giao diện Responsive (tương thích trên nhiều kích thước màn hình như PC, Tablet, Mobile) một cách nhanh chóng.
+
+## 3.2. Backend (Công nghệ phía máy chủ)
+
+* **Ngôn ngữ C#:** Ngôn ngữ lập trình hướng đối tượng mạnh mẽ, an toàn kiểu dữ liệu, do Microsoft phát triển.
+* **ASP.NET Core 8 MVC:** Framework web mã nguồn mở, đa nền tảng, có hiệu năng cao. Phiên bản .NET 8 cung cấp nhiều tính năng tối ưu về bộ nhớ và bảo mật, phù hợp để xây dựng các ứng dụng doanh nghiệp quy mô lớn.
+
+## 3.3. Database & ORM
+
+* **Hệ quản trị CSDL SQL Server:** Hệ quản trị cơ sở dữ liệu quan hệ mạnh mẽ của Microsoft, có tính bảo mật cao, hỗ trợ tốt cho các giao dịch (Transaction) tài chính trong hệ thống (thanh toán, hóa đơn).
+* **Entity Framework Core (EF Core):** Là một ORM (Object-Relational Mapper) giúp lập trình viên thao tác với cơ sở dữ liệu bằng các đối tượng C# thay vì phải viết các câu lệnh SQL truyền thống thuần túy.
 
 ---
 
-# 8. Kỹ thuật kiểm thử
+# 4. Các thuật toán và kỹ thuật cốt lõi
 
-Unit Test, Integration Test, System Test
+## 4.1. Kỹ thuật quản lý và phân phòng
+
+Hệ thống có thể áp dụng logic **Chiến lược tham lam (Greedy Strategy)** trong việc tự động gợi ý phân phòng: Hệ thống sẽ ưu tiên lấp đầy các phòng đang có người nhưng chưa đủ chỉ tiêu (sức chứa), trước khi mở thêm phòng trống mới, nhằm tối ưu hóa việc quản lý điện nước và dọn dẹp vệ sinh.
+
+## 4.2. Logic tính toán dịch vụ và công nợ
+
+* **Tính chi phí dịch vụ (Điện, nước):** Lượng tiêu thụ = Chỉ số mới - Chỉ số cũ. Hệ thống sẽ tự động nhân với đơn giá hiện hành để ra thành tiền.
+* **Tính toán công nợ:** Công nợ hiện tại = (Tổng tiền hóa đơn các tháng) - (Tổng số tiền sinh viên đã thanh toán).
+
+## 4.3. Kỹ thuật Xóa mềm (Soft Delete)
+
+Trong các hệ thống quản lý, dữ liệu tài chính và hợp đồng là cực kỳ quan trọng. Hệ thống áp dụng kỹ thuật Soft Delete bằng cách thêm trường `IsDeleted` (kiểu boolean) vào các bảng dữ liệu. Khi thực hiện lệnh xóa, hệ thống chỉ cập nhật `IsDeleted = true` thay vì xóa vật lý khỏi ổ cứng, giúp dễ dàng khôi phục và phục vụ công tác đối soát (Audit) sau này.
+
+## 4.4. Kiểm soát truy cập dựa trên vai trò (RBAC)
+
+RBAC (Role-Based Access Control) là cơ chế phân quyền dựa trên chức danh của người dùng. Hệ thống sử dụng ASP.NET Core Identity để chia thành các Role: Admin, Manager, Staff, Student. Mỗi Role sẽ được cấp các quyền truy cập vào các Controller/Action khác nhau, ngăn chặn việc leo thang đặc quyền.
 
 ---
 
-# 9. Công cụ kiểm thử
+# 5. Quy trình phát triển phần mềm
 
-xUnit, Postman, Swagger
+Nhóm áp dụng mô hình phát triển phần mềm linh hoạt (Agile) kết hợp với các nguyên lý thiết kế phần mềm chuẩn:
+
+* **SOLID & DRY (Don't Repeat Yourself):** Tuân thủ các nguyên lý hướng đối tượng để code dễ đọc, dễ bảo trì và tái sử dụng.
+* **Quản lý mã nguồn:** Sử dụng Git và nền tảng GitHub để phân nhánh (branching), quản lý phiên bản và làm việc nhóm hiệu quả mà không bị xung đột mã nguồn.
 
 ---
 
-# Kết luận
+# 6. Quy trình và Kỹ thuật Kiểm thử (Testing)
 
-Tài liệu đã được mở rộng chi tiết, đầy đủ nghiệp vụ CRUD và phù hợp triển khai thực tế.
+Để đảm bảo hệ thống hoạt động ổn định trước khi triển khai thực tế, quá trình kiểm thử được thực hiện với các phương pháp sau:
+
+## 6.1. Phương pháp kiểm thử
+
+* **Kiểm thử hộp đen (Black-box Testing):** Kiểm tra dựa trên yêu cầu chức năng mà không cần biết cấu trúc code bên trong (nhập liệu sai, kiểm tra thông báo lỗi, luồng giao diện).
+* **Kiểm thử hộp trắng (White-box Testing):** Kiểm tra trực tiếp các đoạn code logic (kiểm tra vòng lặp, các câu lệnh điều kiện rẽ nhánh trong Controller/Service).
+
+## 6.2. Các cấp độ và công cụ kiểm thử
+
+* **Unit Test (Kiểm thử mức đơn vị):** Sử dụng xUnit hoặc NUnit để test các hàm tính toán độc lập (ví dụ: hàm tính tiền điện nước, hàm mã hóa mật khẩu).
+* **Integration Test (Kiểm thử tích hợp):** Sử dụng Postman / Swagger để gửi các request API, đảm bảo Frontend và Backend giao tiếp đúng chuẩn dữ liệu.
+* **System Test (Kiểm thử hệ thống):** Chạy toàn bộ luồng nghiệp vụ từ đăng ký sinh viên -> phân phòng -> tạo hóa đơn -> thanh toán xem có bị đứt gãy ở bước nào không.
+
+---
+
+# 7. Kết luận chương 1
+
+<div style="text-indent: 2em;">
+
+Chương 1 đã trình bày tổng quan về các khái niệm cơ bản trong nghiệp vụ quản lý ký túc xá, từ đó xác định rõ các thực thể, quy trình vận hành và yêu cầu thực tế. Đồng thời, chương cũng cung cấp cơ sở lý thuyết về các công nghệ, mô hình kiến trúc (MVC, Client-Server), thuật toán cũng như các kỹ thuật (Soft Delete, RBAC) sẽ được áp dụng trong dự án. Những kiến thức nền tảng này chính là kim chỉ nam quan trọng để nhóm tiến hành khảo sát, phân tích và thiết kế hệ thống ở các chương tiếp theo một cách khoa học và tối ưu nhất.
+
+</div>
 
 ---
 
@@ -789,4 +864,133 @@ Việc thiết kế các mối quan hệ này giúp hệ thống đảm bảo t�
 
 ### 3.9.3. Thiết kế chi tiết các bảng
 
+Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt lõi trong hệ thống:
+
+**1. Bảng Users (Người dùng)**
+*Lưu trữ thông tin tài khoản và thông tin cá nhân của người dùng hệ thống (Admin, Staff, Student).*
+
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| Id | UNIQUEIDENTIFIER | PK | Khóa chính, mã người dùng định danh |
+| Username | VARCHAR(50) | UNIQUE, NOT NULL | Tên đăng nhập |
+| PasswordHash | NVARCHAR(MAX) | NOT NULL | Mật khẩu đã được băm mã hóa |
+| Email | VARCHAR(100) | UNIQUE | Địa chỉ email liên hệ |
+| PhoneNumber | VARCHAR(20) | | Số điện thoại |
+| Role | VARCHAR(20) | NOT NULL | Vai trò (Admin, Staff, Student) |
+| FirstName | NVARCHAR(50) | NOT NULL | Tên |
+| LastName | NVARCHAR(50) | NOT NULL | Họ và đệm |
+| DateOfBirth | DATE | | Ngày sinh |
+| IdentityCard| VARCHAR(20) | UNIQUE, NOT NULL | Số Căn cước công dân |
+| Status | TINYINT | NOT NULL | Trạng thái (1: Active, 0: Inactive) |
+
+**2. Bảng Rooms (Phòng ký túc xá)**
+*Lưu trữ thông tin các phòng trong ký túc xá.*
+
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| Id | UNIQUEIDENTIFIER | PK | Khóa chính, mã phòng |
+| Name | NVARCHAR(50) | NOT NULL | Tên/Số phòng (VD: P101) |
+| BlockId | UNIQUEIDENTIFIER | FK | Thuộc tòa nhà/khu nào |
+| RoomTypeId | UNIQUEIDENTIFIER | FK | Loại phòng (Dịch vụ, Thường...) |
+| Floor | INT | NOT NULL | Tầng số mấy |
+| Status | TINYINT | NOT NULL | Trạng thái (Available, Full, Maintenance) |
+
+**3. Bảng Contracts (Hợp đồng nội trú)**
+*Ghi nhận hợp đồng lưu trú giữa sinh viên và ký túc xá.*
+
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| Id | UNIQUEIDENTIFIER | PK | Khóa chính, mã hợp đồng |
+| UserId | UNIQUEIDENTIFIER | FK | Sinh viên thuê phòng |
+| BedId | UNIQUEIDENTIFIER | FK | Giường/Vị trí thuê |
+| StartDate | DATE | NOT NULL | Ngày bắt đầu hợp đồng |
+| EndDate | DATE | NOT NULL | Ngày kết thúc hợp đồng |
+| Price | DECIMAL(18,2)| NOT NULL | Đơn giá thuê (tháng/kỳ) |
+| DepositAmount| DECIMAL(18,2)| | Tiền cọc |
+| Status | TINYINT | NOT NULL | Trạng thái (Active, Expired, Terminated) |
+
+**4. Bảng Invoices (Hóa đơn)**
+*Lưu trữ thông tin hóa đơn thanh toán hàng tháng/kỳ của sinh viên.*
+
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| Id | UNIQUEIDENTIFIER | PK | Khóa chính, mã hóa đơn |
+| ContractId | UNIQUEIDENTIFIER | FK | Tham chiếu đến hợp đồng |
+| Month | INT | NOT NULL | Hóa đơn tháng |
+| Year | INT | NOT NULL | Hóa đơn năm |
+| RoomCharge | DECIMAL(18,2)| NOT NULL | Tiền phòng |
+| UtilityCharge| DECIMAL(18,2)| NOT NULL | Tiền điện nước, dịch vụ |
+| TotalAmount | DECIMAL(18,2)| NOT NULL | Tổng tiền phải thanh toán |
+| Status | TINYINT | NOT NULL | Trạng thái (Unpaid, Paid, Overdue) |
+
+**5. Bảng MaintenanceRequests (Yêu cầu bảo trì)**
+*Lưu trữ các yêu cầu sửa chữa cơ sở vật chất từ sinh viên.*
+
+| Tên trường | Kiểu dữ liệu | Ràng buộc | Mô tả |
+| :--- | :--- | :--- | :--- |
+| Id | UNIQUEIDENTIFIER | PK | Khóa chính, mã yêu cầu |
+| UserId | UNIQUEIDENTIFIER | FK | Sinh viên báo hỏng |
+| RoomId | UNIQUEIDENTIFIER | FK | Phòng xảy ra sự cố |
+| IssueDescription| NVARCHAR(500) | NOT NULL | Mô tả chi tiết sự cố |
+| ReportedDate | DATETIME | NOT NULL | Thời gian báo cáo |
+| Status | TINYINT | NOT NULL | Trạng thái (Pending, InProgress, Resolved) |
+| ResolutionDetails| NVARCHAR(500)| | Chi tiết cách giải quyết/phản hồi |
+
+*(Các bảng khác như Blocks, RoomTypes, Utilities, UtilityUsages, Payments, Assets, VisitorLogs, Vehicles được thiết kế tương tự với các ràng buộc khóa ngoại chặt chẽ để duy trì tính toàn vẹn tham chiếu).*
+
 ## 3.10. Kết luận chương
+
+<div style="text-indent: 2em;">
+
+Chương 3 đã tiến hành phân tích chi tiết hệ thống quản lý ký túc xá từ việc xác định yêu cầu chức năng, phi chức năng, cho đến mô hình hóa hệ thống thông qua các sơ đồ UML (Use Case, ERD). Các phân tích này đã làm rõ luồng nghiệp vụ cũng như cách thức hoạt động của các thành phần trong hệ thống. Bên cạnh đó, kiến trúc cơ sở dữ liệu cũng được thiết kế chuẩn hóa, phản ánh đầy đủ các thực thể và mối quan hệ phức tạp giữa chúng. Đây là bước đệm quan trọng, tạo nền tảng vững chắc để tiến hành thiết kế giao diện và lập trình hệ thống ở các chương tiếp theo.
+
+</div>
+
+---
+
+<center>
+
+# CHƯƠNG 4: THIẾT KẾ KIẾN TRÚC & GIAO DIỆN HỆ THỐNG
+
+</center>
+
+## 4.1. Thiết kế kiến trúc hệ thống
+
+### 4.1.1. Mô hình tổng thể
+
+Hệ thống được thiết kế theo mô hình **Client-Server** kết hợp kiến trúc **MVC (Model-View-Controller)** trên nền tảng ASP.NET Core MVC.
+
+* **Client:** Sử dụng trình duyệt web (Browser) để hiển thị giao diện người dùng (HTML/CSS/JS/Bootstrap), gửi Request (GET/POST) đến Server.
+* **Server:** Ứng dụng ASP.NET Core tiếp nhận Request, Controller đóng vai trò điều hướng, tương tác với Model để xử lý logic nghiệp vụ và truy xuất Database thông qua Entity Framework Core (ORM), sau đó trả về View tương ứng.
+
+### 4.1.2. Kiến trúc Clean Architecture / N-Tier
+
+Để đảm bảo khả năng mở rộng và dễ bảo trì, dự án áp dụng mô hình phân lớp (Onion Architecture/N-Tier):
+
+* **Presentation Layer (Web/MVC):** Chứa các Controllers, Views, ViewModels. Xử lý UI và tương tác người dùng.
+* **Application Layer:** Chứa Interfaces, DTOs, Application Services. Xử lý các logic nghiệp vụ cốt lõi (Business Logic).
+* **Domain Layer:** Chứa các Entities, Enums cốt lõi không phụ thuộc vào bất kỳ công nghệ lưu trữ nào.
+* **Infrastructure Layer:** Chứa ApplicationDbContext, Repositories thực thi, kết nối đến SQL Server, thao tác với CSDL.
+
+## 4.2. Thiết kế giao diện (UI/UX)
+
+### 4.2.1. Tiêu chí thiết kế
+
+* **Responsive:** Tương thích trên đa thiết bị (PC, Tablet, Mobile) với Bootstrap.
+* **Thân thiện:** Dễ sử dụng, thao tác đơn giản với chỉ 2-3 click cho các chức năng chính.
+* **Nhất quán:** Đồng bộ màu sắc, typography và bố cục theo bộ nhận diện thương hiệu của trường.
+
+### 4.2.2. Các màn hình chính (Dự kiến)
+
+1. **Màn hình Đăng nhập (Login):** Nơi người dùng (Admin, Staff, Student) xác thực tài khoản.
+2. **Dashboard Tổng quan:** Hiển thị biểu đồ thống kê (số lượng sinh viên, phòng trống, doanh thu) dành cho ban quản lý.
+3. **Quản lý Sinh viên & Hợp đồng:** Danh sách sinh viên nội trú, thông tin chi tiết và lịch sử hợp đồng.
+4. **Sơ đồ Phòng:** Hiển thị trực quan trạng thái từng phòng, số giường trống.
+5. **Quản lý Hóa đơn:** Danh sách hóa đơn điện nước, tiền phòng, trạng thái thanh toán.
+6. **Portal Sinh viên:** Nơi sinh viên xem thông tin phòng của mình, hóa đơn cần thanh toán, gửi yêu cầu báo hỏng.
+
+## 4.3. Kết luận chương
+
+Chương 4 đã trình bày thiết kế kiến trúc tổng thể, chỉ ra mô hình công nghệ được lựa chọn và định hướng bố cục giao diện cho toàn bộ hệ thống. Với kiến trúc phân lớp rõ ràng, dự án đảm bảo khả năng phát triển độc lập, dễ dàng nâng cấp và tối ưu hóa trải nghiệm người dùng trong quá trình vận hành thực tế.
+
+---
