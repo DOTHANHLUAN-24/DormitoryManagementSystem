@@ -142,5 +142,88 @@ namespace DormitoryManagement.Controllers
                 return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
             }
         }
+
+        [HttpGet("Resolve/{id}")]
+        public async Task<IActionResult> Resolve(Guid id)
+        {
+            Logger.LogInformation("Đang tải trang xử lý vi phạm ID: {Id}", id);
+            var violationResponse = await _violationService.GetViolationByIdAsync(id);
+            if (violationResponse == null)
+            {
+                Logger.LogWarning("Không tìm thấy biên bản vi phạm ID: {Id} để xử lý.", id);
+                return NotFound();
+            }
+
+            if (violationResponse.Status == "Đã xử lý")
+            {
+                Logger.LogWarning("Biên bản vi phạm ID: {Id} đã được xử lý rồi.", id);
+                TempData["Warning"] = "Biên bản vi phạm này đã được xử lý trước đó.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+
+            return View(violationResponse);
+        }
+
+        [HttpPost("Resolve/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Resolve(Guid id, string resolveNote)
+        {
+            Logger.LogInformation("Đang xử lý biên bản vi phạm ID: {Id} với ghi chú: '{Note}'", id, resolveNote);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(resolveNote))
+                {
+                    ModelState.AddModelError("resolveNote", "Vui lòng nhập ghi chú xử lý vi phạm.");
+                    var violationResponse = await _violationService.GetViolationByIdAsync(id);
+                    return View(violationResponse);
+                }
+
+                var success = await _violationService.ResolveViolationAsync(id, resolveNote);
+                if (success)
+                {
+                    Logger.LogInformation("Xử lý biên bản vi phạm ID: {Id} thành công.", id);
+                    TempData["Success"] = "Đã xử lý biên bản vi phạm thành công!";
+                    return RedirectToAction(nameof(Details), new { id });
+                }
+
+                Logger.LogWarning("Không thể xử lý biên bản vi phạm ID: {Id}.", id);
+                TempData["Error"] = "Không thể xử lý biên bản vi phạm. Vui lòng thử lại.";
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi xử lý biên bản vi phạm ID: {Id}.", id);
+                TempData["Error"] = "Lỗi hệ thống: " + ex.Message;
+                return RedirectToAction(nameof(Details), new { id });
+            }
+        }
+
+        [HttpPost("QuickResolve/{id}")]
+        public async Task<IActionResult> QuickResolve(Guid id, [FromForm] string resolveNote)
+        {
+            Logger.LogInformation("Đang xử lý nhanh biên bản vi phạm ID: {Id}", id);
+            try
+            {
+                if (string.IsNullOrWhiteSpace(resolveNote))
+                {
+                    return Json(new { success = false, message = "Vui lòng nhập ghi chú xử lý." });
+                }
+
+                var success = await _violationService.ResolveViolationAsync(id, resolveNote);
+                if (success)
+                {
+                    Logger.LogInformation("Xử lý nhanh biên bản vi phạm ID: {Id} thành công.", id);
+                    return Json(new { success = true, message = "Đã xử lý biên bản vi phạm thành công!" });
+                }
+
+                Logger.LogWarning("Không thể xử lý nhanh biên bản vi phạm ID: {Id}.", id);
+                return Json(new { success = false, message = "Không thể xử lý biên bản vi phạm." });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi xử lý nhanh biên bản vi phạm ID: {Id}.", id);
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
     }
 }

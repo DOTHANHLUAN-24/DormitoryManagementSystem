@@ -44,5 +44,20 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="id">Id bản ghi vi phạm cần xóa</param>
         /// <returns>True nếu xóa thành công, ngược lại là False</returns>
         Task<bool> DeleteViolationAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách vi phạm kỷ luật của sinh viên theo UserId (phục vụ dashboard sinh viên).
+        /// </summary>
+        /// <param name="userId">Id người dùng (sinh viên) cần lấy vi phạm</param>
+        /// <returns>Danh sách DTO vi phạm của sinh viên, sắp xếp theo ngày vi phạm mới nhất</returns>
+        Task<IEnumerable<ViolationResponseDto>> GetViolationsByUserIdAsync(Guid userId);
+
+        /// <summary>
+        /// Xử lý (giải quyết) một biên bản vi phạm: chuyển sang Resolved và ghi nhận ghi chú xử lý.
+        /// </summary>
+        /// <param name="id">Id biên bản vi phạm cần xử lý</param>
+        /// <param name="resolveNote">Ghi chú xử lý (biện pháp, kết quả xử lý)</param>
+        /// <returns>True nếu xử lý thành công, ngược lại là False</returns>
+        Task<bool> ResolveViolationAsync(Guid id, string resolveNote);
     }
 }

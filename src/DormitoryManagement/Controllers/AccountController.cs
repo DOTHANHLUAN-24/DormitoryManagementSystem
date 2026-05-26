@@ -92,7 +92,7 @@ namespace DormitoryManagement.Controllers
             }
 
             var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null && request.Username.Contains("@"))
+            if (user == null && request.Username.Contains('@'))
             {
                 user = await _userManager.FindByEmailAsync(request.Username);
             }
@@ -240,7 +240,6 @@ namespace DormitoryManagement.Controllers
 
 
         // --- ĐẶT LẠI MẬT KHẨU ---
-
         [HttpGet("ResetPassword")]
         public IActionResult ResetPassword(string token = null!, string email = null!)
         {

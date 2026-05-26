@@ -145,7 +145,9 @@ namespace DormitoryManagement.Application.Mappings
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.ViolationDate))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status == DormitoryManagement.Domain.Enums.ViolationStatus.Resolved ? "Đã xử lý" : "Chưa xử lý"))
-                .ForMember(dest => dest.FineAmount, opt => opt.MapFrom(src => src.FineAmount));
+                .ForMember(dest => dest.FineAmount, opt => opt.MapFrom(src => src.FineAmount))
+                .ForMember(dest => dest.ResolveNote, opt => opt.MapFrom(src => src.ResolveNote))
+                .ForMember(dest => dest.ResolvedAt, opt => opt.MapFrom(src => src.ResolvedAt));
             // === MAINTENANCE REQUEST MAPPINGS ===
             CreateMap<MaintenanceRequest, DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))

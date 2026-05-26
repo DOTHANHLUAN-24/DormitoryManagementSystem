@@ -21,99 +21,155 @@ namespace DormitoryManagement.Controllers
         IRoomTypeService roomTypeService,
         IContractService contractService,
         IInvoiceService invoiceService,
-        IUserService userService
+        IUserService userService,
+        IStatisticService statisticService,
+        IViolationService violationService
     ) : BaseController
     {
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
             Logger.LogInformation("Đang truy cập trang chủ (Index).");
-            if (User.Identity?.IsAuthenticated == true && User.IsInRole("Student"))
+            
+            if (User.Identity?.IsAuthenticated == true)
             {
-                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (Guid.TryParse(userIdString, out var userId))
+                // 1. Dành cho Sinh viên
+                if (User.IsInRole("Student"))
                 {
-                    var student = await userService.GetUserByIdAsync(userId);
-                    Logger.LogInformation("Người dùng là sinh viên: {StudentName} (ID: {UserId}). Đang tải thông tin cá nhân và hóa đơn.", student?.FullName ?? User.Identity.Name, userId);
-                    var contracts = await contractService.GetByUserIdAsync(userId);
-                    var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
-
-                    ViewBag.HasActiveContract = activeContract != null;
-                    if (activeContract != null)
+                    var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (Guid.TryParse(userIdString, out var userId))
                     {
-                        var bedNumber = activeContract.Bed?.BedNumber ?? "Chưa xếp giường";
-                        var roomNumber = activeContract.Bed?.Room?.RoomNumber ?? "Chưa xếp phòng";
-                        var blockName = activeContract.Bed?.Room?.Block?.BlockName ?? "";
-                        var roomType = activeContract.Bed?.Room?.RoomType?.TypeName ?? "";
-                        var roomPrice = activeContract.Bed?.Room?.RoomType?.BasePrice ?? 0m;
+                        var student = await userService.GetUserByIdAsync(userId);
+                        Logger.LogInformation("Người dùng là sinh viên: {StudentName} (ID: {UserId}). Đang tải thông tin cá nhân và hóa đơn.", student?.FullName ?? User.Identity.Name, userId);
+                        var contracts = await contractService.GetByUserIdAsync(userId);
+                        var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
 
-                        ViewBag.RoomName = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
-                        ViewBag.BedNumber = bedNumber;
-                        ViewBag.RoomType = roomType;
-                        ViewBag.RoomPrice = roomPrice;
-                        ViewBag.ContractCode = activeContract.ContractCode;
-                        ViewBag.StartDate = activeContract.StartDate.ToString("dd/MM/yyyy");
-                        ViewBag.EndDate = activeContract.EndDate.ToString("dd/MM/yyyy");
-
-                        // Tìm bạn cùng phòng
-                        if (activeContract.Bed?.RoomId != null)
+                        ViewBag.HasActiveContract = activeContract != null;
+                        if (activeContract != null)
                         {
-                            var allActiveContracts = await contractService.GetPagedContractsAsync(1, 1000, status: ContractStatus.Active);
-                            var roommates = allActiveContracts.Items
-                                .Where(c => c.Bed?.RoomId == activeContract.Bed.RoomId && c.UserId != userId)
-                                .Select(c => c.User?.FullName ?? "Ẩn danh")
-                                .ToList();
-                            ViewBag.Roommates = roommates;
+                            var bedNumber = activeContract.Bed?.BedNumber ?? "Chưa xếp giường";
+                            var roomNumber = activeContract.Bed?.Room?.RoomNumber ?? "Chưa xếp phòng";
+                            var blockName = activeContract.Bed?.Room?.Block?.BlockName ?? "";
+                            var roomType = activeContract.Bed?.Room?.RoomType?.TypeName ?? "";
+                            var roomPrice = activeContract.Bed?.Room?.RoomType?.BasePrice ?? 0m;
+
+                            ViewBag.RoomName = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
+                            ViewBag.BedNumber = bedNumber;
+                            ViewBag.RoomType = roomType;
+                            ViewBag.RoomPrice = roomPrice;
+                            ViewBag.ContractCode = activeContract.ContractCode;
+                            ViewBag.StartDate = activeContract.StartDate.ToString("dd/MM/yyyy");
+                            ViewBag.EndDate = activeContract.EndDate.ToString("dd/MM/yyyy");
+
+                            // Tìm bạn cùng phòng
+                            if (activeContract.Bed?.RoomId != null)
+                            {
+                                var allActiveContracts = await contractService.GetPagedContractsAsync(1, 1000, status: ContractStatus.Active);
+                                var roommates = allActiveContracts.Items
+                                    .Where(c => c.Bed?.RoomId == activeContract.Bed.RoomId && c.UserId != userId)
+                                    .Select(c => c.User?.FullName ?? "Ẩn danh")
+                                    .ToList();
+                                ViewBag.Roommates = roommates;
+                            }
                         }
+
+                        // Lấy tất cả hóa đơn của sinh viên
+                        var allInvoices = new List<Invoice>();
+                        foreach (var c in contracts)
+                        {
+                            var invoices = await invoiceService.GetByContractIdAsync(c.Id);
+                            allInvoices.AddRange(invoices);
+                        }
+
+                        // Sắp xếp và lấy ra 4 hóa đơn gần nhất để vẽ biểu đồ
+                        var latestInvoices = allInvoices
+                            .OrderBy(i => i.BillingYear)
+                            .ThenBy(i => i.BillingMonth)
+                            .TakeLast(4)
+                            .ToList();
+
+                        var chartMonths = new List<string>();
+                        var roomFees = new List<decimal>();
+                        var electricityFees = new List<decimal>();
+                        var waterFees = new List<decimal>();
+
+                        foreach (var invoice in latestInvoices)
+                        {
+                            chartMonths.Add($"Tháng {invoice.BillingMonth}/{invoice.BillingYear}");
+                            
+                            // Tiền phòng gốc
+                            var roomFee = invoice.Contract?.Bed?.Room?.RoomType?.BasePrice ?? 0m;
+                            roomFees.Add(roomFee);
+
+                            // Tiền điện từ UtilityUsages
+                            var elec = invoice.UtilityUsages.FirstOrDefault(u => u.Utility?.UtilityName?.Contains("Điện", StringComparison.OrdinalIgnoreCase) == true);
+                            electricityFees.Add(elec?.TotalAmount ?? 0m);
+
+                            // Tiền nước từ UtilityUsages
+                            var wat = invoice.UtilityUsages.FirstOrDefault(u => u.Utility?.UtilityName?.Contains("Nước", StringComparison.OrdinalIgnoreCase) == true);
+                            waterFees.Add(wat?.TotalAmount ?? 0m);
+                        }
+
+                        ViewBag.ChartMonths = chartMonths;
+                        ViewBag.RoomFees = roomFees;
+                        ViewBag.ElectricityFees = electricityFees;
+                        ViewBag.WaterFees = waterFees;
+                        ViewBag.StudentName = student?.FullName ?? User.Identity.Name;
+
+                        // Hóa đơn chưa thanh toán
+                        var unpaidInvoices = allInvoices.Where(i => i.Status == InvoiceStatus.Unpaid || i.Status == InvoiceStatus.Overdue).ToList();
+                        ViewBag.UnpaidAmount = unpaidInvoices.Sum(i => i.TotalAmount);
+                        ViewBag.UnpaidCount = unpaidInvoices.Count;
+
+                        // Vi phạm kỷ luật của sinh viên
+                        var myViolations = (await violationService.GetViolationsByUserIdAsync(userId)).ToList();
+                        Logger.LogInformation("Sinh viên {UserId} có {Count} biên bản vi phạm.", userId, myViolations.Count);
+                        ViewBag.Violations = myViolations;
+                        ViewBag.PendingViolationsCount = myViolations.Count(v => v.Status != "Đã xử lý");
+                        ViewBag.TotalFineAmount = myViolations.Where(v => v.Status != "Đã xử lý").Sum(v => v.FineAmount);
                     }
+                }
+                // 2. Dành cho Admin / Nhân viên Quản lý
+                else if (User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("ManagerStaff") || User.IsInRole("Manager"))
+                {
+                    Logger.LogInformation("Người dùng là Admin/Quản lý. Đang tải thống kê dashboard.");
+                    var stats = await statisticService.GetStatisticSummaryAsync();
 
-                    // Lấy tất cả hóa đơn của sinh viên
-                    var allInvoices = new List<Invoice>();
-                    foreach (var c in contracts)
-                    {
-                        var invoices = await invoiceService.GetByContractIdAsync(c.Id);
-                        allInvoices.AddRange(invoices);
-                    }
+                    ViewBag.TotalStudents = stats.TotalStudents;
+                    ViewBag.EmptyRooms = stats.EmptyRooms;
+                    ViewBag.UnpaidInvoicesCount = stats.UnpaidInvoices;
+                    ViewBag.NewViolationsCount = stats.NewViolations;
 
-                    // Sắp xếp và lấy ra 4 hóa đơn gần nhất để vẽ biểu đồ
-                    var latestInvoices = allInvoices
-                        .OrderBy(i => i.BillingYear)
-                        .ThenBy(i => i.BillingMonth)
-                        .TakeLast(4)
-                        .ToList();
+                    ViewBag.RoomStatusFull = stats.RoomStatusData.Length > 0 ? stats.RoomStatusData[0] : 0;
+                    ViewBag.RoomStatusAvailable = stats.RoomStatusData.Length > 1 ? stats.RoomStatusData[1] : 0;
+                    ViewBag.RoomStatusMaintenance = stats.RoomStatusData.Length > 2 ? stats.RoomStatusData[2] : 0;
+                    ViewBag.TotalRooms = ViewBag.RoomStatusFull + ViewBag.RoomStatusAvailable + ViewBag.RoomStatusMaintenance;
 
-                    var chartMonths = new List<string>();
-                    var roomFees = new List<decimal>();
-                    var electricityFees = new List<decimal>();
-                    var waterFees = new List<decimal>();
+                    ViewBag.TotalBeds = stats.BedOccupancyStats.TotalBeds;
+                    ViewBag.OccupiedBeds = stats.BedOccupancyStats.OccupiedBeds;
+                    ViewBag.OccupancyRate = stats.BedOccupancyStats.OccupancyRate;
 
-                    foreach (var invoice in latestInvoices)
-                    {
-                        chartMonths.Add($"Tháng {invoice.BillingMonth}/{invoice.BillingYear}");
-                        
-                        // Tiền phòng gốc
-                        var roomFee = invoice.Contract?.Bed?.Room?.RoomType?.BasePrice ?? 0m;
-                        roomFees.Add(roomFee);
+                    ViewBag.ActiveContractsCount = stats.ContractStats.ActiveCount;
+                    ViewBag.PendingContractsCount = stats.ContractStats.PendingCount;
 
-                        // Tiền điện từ UtilityUsages
-                        var elec = invoice.UtilityUsages.FirstOrDefault(u => u.Utility?.UtilityName?.Contains("Điện", StringComparison.OrdinalIgnoreCase) == true);
-                        electricityFees.Add(elec?.TotalAmount ?? 0m);
+                    ViewBag.OpenMaintenanceCount = stats.MaintenanceStats.OpenCount;
+                    ViewBag.InProgressMaintenanceCount = stats.MaintenanceStats.InProgressCount;
 
-                        // Tiền nước từ UtilityUsages
-                        var wat = invoice.UtilityUsages.FirstOrDefault(u => u.Utility?.UtilityName?.Contains("Nước", StringComparison.OrdinalIgnoreCase) == true);
-                        waterFees.Add(wat?.TotalAmount ?? 0m);
-                    }
+                    // Doanh thu 6 tháng gần nhất để vẽ biểu đồ
+                    ViewBag.RevenueLabels = stats.RevenueLabels;
+                    ViewBag.RevenuePaid = stats.RevenuePaid;
+                    ViewBag.RevenueUnpaid = stats.RevenueUnpaid;
+                }
+                // 3. Dành cho Nhân viên Kỹ thuật
+                else if (User.IsInRole("TechnicalStaff"))
+                {
+                    Logger.LogInformation("Người dùng là Nhân viên Kỹ thuật. Đang tải thống kê yêu cầu sửa chữa.");
+                    var stats = await statisticService.GetStatisticSummaryAsync();
 
-                    ViewBag.ChartMonths = chartMonths;
-                    ViewBag.RoomFees = roomFees;
-                    ViewBag.ElectricityFees = electricityFees;
-                    ViewBag.WaterFees = waterFees;
-                    ViewBag.StudentName = student?.FullName ?? User.Identity.Name;
-
-                    // Hóa đơn chưa thanh toán
-                    var unpaidInvoices = allInvoices.Where(i => i.Status == InvoiceStatus.Unpaid || i.Status == InvoiceStatus.Overdue).ToList();
-                    ViewBag.UnpaidAmount = unpaidInvoices.Sum(i => i.TotalAmount);
-                    ViewBag.UnpaidCount = unpaidInvoices.Count;
+                    ViewBag.OpenMaintenanceCount = stats.MaintenanceStats.OpenCount;
+                    ViewBag.InProgressMaintenanceCount = stats.MaintenanceStats.InProgressCount;
+                    ViewBag.ResolvedMaintenanceCount = stats.MaintenanceStats.ResolvedCount;
+                    ViewBag.ClosedMaintenanceCount = stats.MaintenanceStats.ClosedCount;
                 }
             }
 

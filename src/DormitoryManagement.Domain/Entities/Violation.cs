@@ -21,6 +21,12 @@ namespace DormitoryManagement.Domain.Entities
         
         public string EvidenceImage { get; set; } = string.Empty;
 
+        /// <summary>Ghi chú khi xử lý vi phạm (nhân viên ghi lại biện pháp, kết quả)</summary>
+        public string? ResolveNote { get; set; }
+
+        /// <summary>Thời gian xử lý xong vi phạm</summary>
+        public DateTime? ResolvedAt { get; set; }
+
         public Guid ContractId { get; set; }
         
         [ForeignKey("ContractId")]
