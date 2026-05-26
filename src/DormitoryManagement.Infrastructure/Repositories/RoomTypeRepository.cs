@@ -8,13 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin loại phòng (RoomType).
     /// </summary>
-    public class RoomTypeRepository : BaseRepository<RoomType>, IRoomTypeRepository
+    public class RoomTypeRepository(ApplicationDbContext db) : BaseRepository<RoomType>(db), IRoomTypeRepository
     {
-        /// <summary>
-        /// Khởi tạo RoomTypeRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public RoomTypeRepository(ApplicationDbContext db) : base(db) { }
 
         /// <summary>
         /// Kiểm tra tên loại phòng đã tồn tại chưa (tránh trùng lặp khi tạo/sửa).

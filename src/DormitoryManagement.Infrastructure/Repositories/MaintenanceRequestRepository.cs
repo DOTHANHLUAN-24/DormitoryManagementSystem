@@ -6,11 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Infrastructure.Repositories
 {
-    public class MaintenanceRequestRepository : BaseRepository<MaintenanceRequest>, IMaintenanceRequestRepository
+    public class MaintenanceRequestRepository(ApplicationDbContext db) : BaseRepository<MaintenanceRequest>(db), IMaintenanceRequestRepository
     {
-        public MaintenanceRequestRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         public async Task<IEnumerable<MaintenanceRequest>> GetRequestsByRoomIdAsync(Guid roomId)
         {

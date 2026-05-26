@@ -12,27 +12,17 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// Áp dụng cho các entity có hỗ trợ audit (IAuditableEntity).
     /// </summary>
     /// <typeparam name="T">Kiểu entity</typeparam>
-    public class BaseRepository<T> : IBaseRepository<T> where T : class, IAuditableEntity
+    public class BaseRepository<T>(ApplicationDbContext db) : IBaseRepository<T> where T : class, IAuditableEntity
     {
         /// <summary>
         /// DbContext dùng để truy cập database
         /// </summary>
-        protected readonly ApplicationDbContext _db;
+        protected readonly ApplicationDbContext _db = db;
 
         /// <summary>
         /// DbSet tương ứng với entity T, giúp thao tác trực tiếp trên bảng dữ liệu của T
         /// </summary>
-        protected readonly DbSet<T> _dbSet;
-
-        /// <summary>
-        /// Khởi tạo repository với DbContext
-        /// </summary>
-        /// <param name="db">ApplicationDbContext</param>
-        public BaseRepository(ApplicationDbContext db)
-        {
-            _db = db;
-            _dbSet = _db.Set<T>();
-        }
+        protected readonly DbSet<T> _dbSet = db.Set<T>();
 
         /// <summary>
         /// Lấy IQueryable để thực hiện truy vấn tùy chỉnh (không tracking)

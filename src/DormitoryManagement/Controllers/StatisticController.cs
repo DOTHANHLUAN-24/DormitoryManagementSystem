@@ -31,6 +31,15 @@ namespace DormitoryManagement.Controllers
             ViewBag.RevenuePaid = stats.RevenuePaid;
             ViewBag.RevenueUnpaid = stats.RevenueUnpaid;
 
+            // Các dữ liệu Thống kê Mở rộng
+            ViewBag.MaintenanceStats = stats.MaintenanceStats;
+            ViewBag.ContractStats = stats.ContractStats;
+            ViewBag.BedOccupancyStats = stats.BedOccupancyStats;
+
+            // Dữ liệu Biểu đồ Vi phạm (Line Chart)
+            ViewBag.ViolationLabels = stats.ViolationLabels;
+            ViewBag.ViolationData = stats.ViolationData;
+
             return View();
         }
     }

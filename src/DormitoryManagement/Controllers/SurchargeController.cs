@@ -6,14 +6,9 @@ namespace DormitoryManagement.Controllers
 {
     // Giới hạn đăng nhập hệ thống mới được vào phân hệ Phụ phí
     [Authorize]
-    public class SurchargeController : Controller
+    public class SurchargeController(ILogger<SurchargeController> logger) : Controller
     {
-        private readonly ILogger<SurchargeController> _logger;
-
-        public SurchargeController(ILogger<SurchargeController> logger)
-        {
-            _logger = logger;
-        }
+        private readonly ILogger<SurchargeController> _logger = logger;
 
         /// <summary>
         /// GET: Surcharge/Index

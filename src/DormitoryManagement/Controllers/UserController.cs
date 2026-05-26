@@ -6,16 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    public class UserController : BaseController
+    public class UserController(IUserService userService, IMapper mapper) : BaseController
     {
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
-
-        public UserController(IUserService userService, IMapper mapper)
-        {
-            _userService = userService;
-            _mapper = mapper;
-        }
+        private readonly IUserService _userService = userService;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
         public async Task<IActionResult> Index(int page = 1, string search = "")

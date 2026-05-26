@@ -8,14 +8,9 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository xử lý các truy vấn thống kê dữ liệu trực tiếp từ cơ sở dữ liệu
     /// </summary>
-    public class StatisticRepository : IStatisticRepository
+    public class StatisticRepository(ApplicationDbContext context) : IStatisticRepository
     {
-        private readonly ApplicationDbContext _context;
-
-        public StatisticRepository(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+        private readonly ApplicationDbContext _context = context;
 
         /// <summary>
         /// Lấy tổng số lượng sinh viên đang nội trú (không bị xóa mềm)
@@ -125,6 +120,84 @@ namespace DormitoryManagement.Infrastructure.Repositories
                     MonthLabel = $"Tháng {m.Month}",
                     RevenuePaid = Math.Round(paidSum, 2),
                     RevenueUnpaid = Math.Round(unpaidSum, 2)
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<MaintenanceStatsModel> GetMaintenanceStatsAsync()
+        {
+            var stats = await _context.MaintenanceRequests
+                .Where(m => !m.IsDeleted)
+                .GroupBy(m => m.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            return new MaintenanceStatsModel
+            {
+                OpenCount = stats.FirstOrDefault(x => x.Status == MaintenanceStatus.Open)?.Count ?? 0,
+                InProgressCount = stats.FirstOrDefault(x => x.Status == MaintenanceStatus.InProgress)?.Count ?? 0,
+                ResolvedCount = stats.FirstOrDefault(x => x.Status == MaintenanceStatus.Resolved)?.Count ?? 0,
+                ClosedCount = stats.FirstOrDefault(x => x.Status == MaintenanceStatus.Closed)?.Count ?? 0
+            };
+        }
+
+        public async Task<ContractStatsModel> GetContractStatsAsync()
+        {
+            var stats = await _context.Contracts
+                .Where(c => !c.IsDeleted)
+                .GroupBy(c => c.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            return new ContractStatsModel
+            {
+                ActiveCount = stats.FirstOrDefault(x => x.Status == ContractStatus.Active)?.Count ?? 0,
+                ExpiredCount = stats.FirstOrDefault(x => x.Status == ContractStatus.Expired)?.Count ?? 0,
+                PendingCount = stats.FirstOrDefault(x => x.Status == ContractStatus.Pending)?.Count ?? 0
+            };
+        }
+
+        public async Task<BedOccupancyModel> GetBedOccupancyStatsAsync()
+        {
+            var beds = await _context.Beds
+                .Where(b => !b.IsDeleted)
+                .GroupBy(b => b.Status)
+                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            var totalBeds = beds.Sum(x => x.Count);
+            var occupiedBeds = beds.FirstOrDefault(x => x.Status == BedStatus.Occupied)?.Count ?? 0;
+
+            return new BedOccupancyModel
+            {
+                TotalBeds = totalBeds,
+                OccupiedBeds = occupiedBeds
+            };
+        }
+
+        public async Task<List<MonthlyViolationModel>> GetLast6MonthsViolationsAsync()
+        {
+            var today = DateTime.Today;
+            var startDate = new DateTime(today.Year, today.Month, 1).AddMonths(-5);
+
+            var violations = await _context.Violations
+                .Where(v => !v.IsDeleted && v.ViolationDate >= startDate)
+                .ToListAsync();
+
+            var result = new List<MonthlyViolationModel>();
+            for (int i = 5; i >= 0; i--)
+            {
+                var d = today.AddMonths(-i);
+                var count = violations.Count(v => v.ViolationDate.Year == d.Year && v.ViolationDate.Month == d.Month);
+
+                result.Add(new MonthlyViolationModel
+                {
+                    Year = d.Year,
+                    Month = d.Month,
+                    MonthLabel = $"Tháng {d.Month}",
+                    ViolationCount = count
                 });
             }
 

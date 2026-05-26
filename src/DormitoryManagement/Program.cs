@@ -46,6 +46,7 @@ internal class Program
 
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
         builder.Services.AddScoped<IVisitorLogRepository, VisitorLogRepository>();
+        builder.Services.AddScoped<IMaintenanceRequestRepository, MaintenanceRequestRepository>();
 
         // Services
         builder.Services.AddScoped<IEmailService, EmailService>();
@@ -64,6 +65,7 @@ internal class Program
         builder.Services.AddScoped<IPaymentService, PaymentService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+        builder.Services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
