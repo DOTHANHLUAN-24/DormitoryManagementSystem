@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 namespace DormitoryManagement.Controllers
 {
     [Authorize]
-    public class VehicleController : Controller
+    public class VehicleController : BaseController
     {
         // GET: Vehicle
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
+            Logger.LogInformation("Đang truy cập trang danh sách phương tiện.");
             // Giả lập danh sách để hiển thị giao diện
             return View();
         }
@@ -16,25 +17,30 @@ namespace DormitoryManagement.Controllers
         // GET: Vehicle/Create
         public IActionResult Create()
         {
+            Logger.LogInformation("Đang truy cập trang đăng ký phương tiện mới.");
             return View();
         }
 
         // POST: Vehicle/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(object vehicleDto)
+        public IActionResult Create(object vehicleDto)
         {
+            Logger.LogInformation("Đang xử lý yêu cầu đăng ký phương tiện mới.");
             if (ModelState.IsValid)
             {
                 // Gọi service lưu dữ liệu
+                Logger.LogInformation("Đăng ký phương tiện thành công, chuyển hướng về Index.");
                 return RedirectToAction(nameof(Index));
             }
+            Logger.LogWarning("Dữ liệu đăng ký phương tiện không hợp lệ.");
             return View(vehicleDto);
         }
 
         // GET: Vehicle/Edit/5
-        public async Task<IActionResult> Edit(Guid id)
+        public IActionResult Edit(Guid id)
         {
+            Logger.LogInformation("Đang truy cập trang chỉnh sửa phương tiện ID: {Id}", id);
             // GIẢ LẬP: Tìm dữ liệu dựa trên ID (Trong thực tế là gọi Service)
             ViewBag.VehicleId = id;
 
@@ -57,20 +63,24 @@ namespace DormitoryManagement.Controllers
         // POST: Vehicle/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, object vehicleDto)
+        public IActionResult Edit(Guid id, object vehicleDto)
         {
+            Logger.LogInformation("Đang xử lý yêu cầu cập nhật phương tiện ID: {Id}", id);
             if (ModelState.IsValid)
             {
                 TempData["Success"] = "Cập nhật phương tiện thành công!";
+                Logger.LogInformation("Cập nhật phương tiện thành công, chuyển hướng về Index.");
                 return RedirectToAction(nameof(Index));
             }
+            Logger.LogWarning("Dữ liệu cập nhật phương tiện không hợp lệ.");
             return View(vehicleDto);
         }
 
         // API phục vụ tìm kiếm cho Select2
         [HttpGet]
-        public async Task<IActionResult> SearchUsers(string q)
+        public IActionResult SearchUsers(string q)
         {
+            Logger.LogInformation("Đang thực hiện tìm kiếm người dùng cho phương tiện với từ khóa: {Query}", q);
             // GIẢ LẬP: Danh sách người dùng trong hệ thống
             var allUsers = new List<dynamic> {
                 new { id = "SV2221050048", text = "SV2221050048 - Đỗ Thành Luân" },

@@ -64,10 +64,17 @@ namespace DormitoryManagement.Infrastructure.Data
         /// </summary>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            // 1. Tự động đồng bộ trạng thái phòng khi giường thay đổi
-            var affectedRoomIds = ChangeTracker.Entries<Bed>()
+            // 1. Tự động đồng bộ trạng thái phòng khi giường thay đổi hoặc phòng thay đổi
+            var affectedRoomIdsFromBeds = ChangeTracker.Entries<Bed>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted)
+                .Select(e => e.Entity.RoomId);
+
+            var affectedRoomIdsFromRooms = ChangeTracker.Entries<Room>()
                 .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
-                .Select(e => e.Entity.RoomId)
+                .Select(e => e.Entity.Id);
+
+            var affectedRoomIds = affectedRoomIdsFromBeds
+                .Concat(affectedRoomIdsFromRooms)
                 .Distinct()
                 .ToList();
 
@@ -75,31 +82,46 @@ namespace DormitoryManagement.Infrastructure.Data
             {
                 foreach (var roomId in affectedRoomIds)
                 {
-                    // Lấy tất cả giường của phòng này từ DB (chưa bị xóa mềm)
+                    // Lấy tất cả giường của phòng này từ DB (chưa bị xóa mềm trong DB)
                     var bedsInRoom = await Beds
                         .Where(b => b.RoomId == roomId && !b.IsDeleted)
                         .ToListAsync(cancellationToken);
 
-                    // Đồng bộ với các giường đang được thay đổi trong ChangeTracker
+                    // Đồng bộ với các giường đang được thay đổi trong ChangeTracker (kể cả xóa)
                     var trackedBeds = ChangeTracker.Entries<Bed>()
-                        .Where(e => e.Entity.RoomId == roomId && !e.Entity.IsDeleted)
-                        .Select(e => e.Entity)
+                        .Where(e => e.Entity.RoomId == roomId)
                         .ToList();
 
-                    foreach (var tb in trackedBeds)
+                    foreach (var entry in trackedBeds)
                     {
-                        var match = bedsInRoom.FirstOrDefault(b => b.Id == tb.Id);
-                        if (match != null)
+                        var bed = entry.Entity;
+                        var isDeleted = entry.State == EntityState.Deleted || bed.IsDeleted;
+
+                        var match = bedsInRoom.FirstOrDefault(b => b.Id == bed.Id);
+                        if (isDeleted)
                         {
-                            match.Status = tb.Status;
+                            if (match != null)
+                            {
+                                bedsInRoom.Remove(match);
+                            }
                         }
                         else
                         {
-                            bedsInRoom.Add(tb);
+                            if (match != null)
+                            {
+                                match.Status = bed.Status;
+                            }
+                            else
+                            {
+                                bedsInRoom.Add(bed);
+                            }
                         }
                     }
 
-                    var room = await Rooms.FirstOrDefaultAsync(r => r.Id == roomId, cancellationToken);
+                    // Ưu tiên tìm trong local change tracker trước để tránh bị null khi seeding/adding mới
+                    var room = Rooms.Local.FirstOrDefault(r => r.Id == roomId)
+                               ?? await Rooms.FirstOrDefaultAsync(r => r.Id == roomId, cancellationToken);
+
                     if (room != null && room.Status != RoomStatus.Maintenance)
                     {
                         // Kiểm tra xem tất cả giường có đều bị chiếm chỗ (Occupied) không

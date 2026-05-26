@@ -27,12 +27,14 @@ namespace DormitoryManagement.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
+            Logger.LogInformation("Đang truy cập trang chủ (Index).");
             if (User.Identity?.IsAuthenticated == true && User.IsInRole("Student"))
             {
                 var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (Guid.TryParse(userIdString, out var userId))
                 {
                     var student = await userService.GetUserByIdAsync(userId);
+                    Logger.LogInformation("Người dùng là sinh viên: {StudentName} (ID: {UserId}). Đang tải thông tin cá nhân và hóa đơn.", student?.FullName ?? User.Identity.Name, userId);
                     var contracts = await contractService.GetByUserIdAsync(userId);
                     var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
 
@@ -124,6 +126,7 @@ namespace DormitoryManagement.Controllers
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
             filter.PageSize = 6; // 3 cột * 2 hàng
 
+            Logger.LogInformation("Đang truy cập danh sách phòng công khai trang {Page}, tìm kiếm: '{Search}', tòa: '{BlockId}', loại: '{RoomTypeId}'", filter.PageNumber, filter.SearchTerm, filter.BlockId, filter.RoomTypeId);
             var pagedRooms = await roomService.GetPagedRoomsAsync(filter);
 
             var blocks = await blockService.GetAllBlocksAsync();
@@ -139,8 +142,13 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Rooms/Details/{id}")]
         public async Task<IActionResult> RoomDetails(Guid id)
         {
+            Logger.LogInformation("Đang xem chi tiết phòng công khai ID: {Id}", id);
             var room = await roomService.GetRoomByIdAsync(id);
-            if (room == null) return NotFound();
+            if (room == null)
+            {
+                Logger.LogWarning("Không tìm thấy thông tin phòng ID: {Id}", id);
+                return NotFound();
+            }
 
             return View(room);
         }
@@ -148,8 +156,13 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Rooms/{id}/AvailableBeds")]
         public async Task<IActionResult> GetAvailableBeds(Guid id)
         {
+            Logger.LogInformation("Đang lấy danh sách giường trống cho phòng ID: {Id}", id);
             var room = await roomService.GetRoomByIdAsync(id);
-            if (room == null) return NotFound();
+            if (room == null)
+            {
+                Logger.LogWarning("Không tìm thấy phòng ID: {Id} để lấy danh sách giường trống.", id);
+                return NotFound();
+            }
 
             var availableBeds = room.Beds
                 .Where(b => !b.IsOccupied)
@@ -163,6 +176,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> Services()
         {
+            Logger.LogInformation("Sinh viên {Username} truy cập trang dịch vụ tiện ích.", CurrentUserName);
             var utilities = await utilityService.GetAllActiveUtilitiesAsync();
             return View(utilities);
         }
@@ -170,6 +184,7 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Privacy")]
         public IActionResult Privacy()
         {
+            Logger.LogInformation("Đang truy cập trang chính sách bảo mật.");
             return View();
         }
 
@@ -177,18 +192,22 @@ namespace DormitoryManagement.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var requestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
+            Logger.LogWarning("Có lỗi hệ thống xảy ra. Request ID: {RequestId}", requestId);
+            return View(new ErrorViewModel { RequestId = requestId });
         }
 
         [HttpGet("Contact")]
         public IActionResult Contact()
         {
+            Logger.LogInformation("Đang truy cập trang liên hệ.");
             return View();
         }
 
         [HttpGet("Guide")]
         public IActionResult Guide()
         {
+            Logger.LogInformation("Đang truy cập trang hướng dẫn sử dụng.");
             return View();
         }
     }

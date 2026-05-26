@@ -27,8 +27,10 @@ namespace DormitoryManagement.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
+            Logger.LogInformation("Đang truy cập trang quản lý khách ghé thăm.");
             if (User.IsInRole("Student"))
             {
+                Logger.LogInformation("Người dùng là sinh viên, chuyển hướng đến trang gửi yêu cầu.");
                 return RedirectToAction(nameof(Request));
             }
             return View();
@@ -38,6 +40,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> GetList()
         {
+            Logger.LogInformation("Đang truy cập API GetList lấy danh sách khách ghé thăm.");
             var visitors = await _visitorLogRepository.GetQuery()
                 .Include(v => v.Host)
                 .Where(v => !v.IsDeleted)
@@ -80,13 +83,22 @@ namespace DormitoryManagement.Controllers
         [HttpGet("GetVisitor/{id}")]
         public async Task<IActionResult> GetVisitor(string id)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang lấy thông tin chi tiết khách ghé thăm ID: {Id}", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách ghé thăm không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var v = await _visitorLogRepository.GetQuery()
                 .Include(v => v.Host)
                 .FirstOrDefaultAsync(v => v.Id == visitorId && !v.IsDeleted);
 
-            if (v == null) return NotFound();
+            if (v == null)
+            {
+                Logger.LogWarning("Không tìm thấy khách ghé thăm ID: {Id}", id);
+                return NotFound();
+            }
 
             var contracts = await _contractService.GetByUserIdAsync(v.HostId);
             var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
@@ -119,6 +131,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public IActionResult Create()
         {
+            Logger.LogInformation("Đang truy cập trang đăng ký khách ghé thăm.");
             return View();
         }
 
@@ -127,10 +140,12 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string visitorName, string identityCard, string phoneNumber, string purpose, string studentName, string room, DateTime checkIn, DateTime checkOut)
         {
+            Logger.LogInformation("Đang xử lý đăng ký khách ghé thăm mới: '{VisitorName}' cho sinh viên '{StudentName}'", visitorName, studentName);
             var users = await _userRepository.GetAllAsync();
             var host = users.FirstOrDefault(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase));
             if (host == null)
             {
+                Logger.LogWarning("Đăng ký khách ghé thăm thất bại: Không tìm thấy sinh viên có tên '{StudentName}'", studentName);
                 return Json(new { success = false, message = "Không tìm thấy sinh viên tương ứng." });
             }
 
@@ -152,6 +167,7 @@ namespace DormitoryManagement.Controllers
             await _visitorLogRepository.AddAsync(newLog);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Đăng ký khách ghé thăm thành công. ID: {Id}", newLog.Id);
             return Json(new { success = true, id = newLog.Id.ToString() });
         }
 
@@ -159,6 +175,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public IActionResult Edit(string id)
         {
+            Logger.LogInformation("Đang truy cập trang chỉnh sửa khách ghé thăm ID: {Id}", id);
             ViewData["VisitorId"] = id;
             return View();
         }
@@ -168,10 +185,19 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, string visitorName, string identityCard, string phoneNumber, string purpose, string studentName, string room, DateTime checkIn, DateTime? checkOut, string status)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang xử lý cập nhật thông tin khách ghé thăm ID: {Id}", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách ghé thăm để cập nhật không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
-            if (visitor == null) return NotFound();
+            if (visitor == null)
+            {
+                Logger.LogWarning("Không tìm thấy thông tin khách ghé thăm ID: {Id} để cập nhật.", id);
+                return NotFound();
+            }
 
             var users = await _userRepository.GetAllAsync();
             var host = users.FirstOrDefault(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase));
@@ -192,6 +218,7 @@ namespace DormitoryManagement.Controllers
             await _visitorLogRepository.UpdateAsync(visitor);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Cập nhật thông tin khách ghé thăm ID: {Id} thành công.", id);
             return Json(new { success = true });
         }
 
@@ -200,10 +227,19 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(string id)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang thực hiện duyệt cho phép khách ghé thăm ID: {Id} vào KTX", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách để duyệt không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
-            if (visitor == null) return NotFound();
+            if (visitor == null)
+            {
+                Logger.LogWarning("Không tìm thấy khách ghé thăm ID: {Id} để duyệt.", id);
+                return NotFound();
+            }
 
             visitor.Status = "Đang ở trong";
             visitor.CheckInTime = DateTime.Now;
@@ -211,6 +247,7 @@ namespace DormitoryManagement.Controllers
             await _visitorLogRepository.UpdateAsync(visitor);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Đã duyệt khách ghé thăm ID: {Id} vào KTX.", id);
             return Json(new { success = true });
         }
 
@@ -219,16 +256,26 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(string id)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang từ chối yêu cầu vào KTX của khách ghé thăm ID: {Id}", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách để từ chối không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
-            if (visitor == null) return NotFound();
+            if (visitor == null)
+            {
+                Logger.LogWarning("Không tìm thấy khách ghé thăm ID: {Id} để từ chối.", id);
+                return NotFound();
+            }
 
             visitor.Status = "Từ chối";
 
             await _visitorLogRepository.UpdateAsync(visitor);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Đã từ chối khách ghé thăm ID: {Id}.", id);
             return Json(new { success = true });
         }
 
@@ -237,10 +284,19 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CheckOut(string id)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang ghi nhận khách rời đi (Check-out) ID: {Id}", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách check-out không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
-            if (visitor == null) return NotFound();
+            if (visitor == null)
+            {
+                Logger.LogWarning("Không tìm thấy khách ghé thăm ID: {Id} để check-out.", id);
+                return NotFound();
+            }
 
             visitor.IsCheckedOut = true;
             visitor.Status = "Đã rời đi";
@@ -249,6 +305,7 @@ namespace DormitoryManagement.Controllers
             await _visitorLogRepository.UpdateAsync(visitor);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Ghi nhận check-out khách ghé thăm ID: {Id} thành công.", id);
             return Json(new { success = true });
         }
 
@@ -257,14 +314,24 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(string id)
         {
-            if (!Guid.TryParse(id, out var visitorId)) return BadRequest();
+            Logger.LogInformation("Đang yêu cầu xóa log khách ghé thăm ID: {Id}", id);
+            if (!Guid.TryParse(id, out var visitorId))
+            {
+                Logger.LogWarning("ID khách để xóa không hợp lệ: {Id}", id);
+                return BadRequest();
+            }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
-            if (visitor == null) return NotFound();
+            if (visitor == null)
+            {
+                Logger.LogWarning("Không tìm thấy khách ghé thăm ID: {Id} để xóa.", id);
+                return NotFound();
+            }
 
             await _visitorLogRepository.DeleteAsync(visitor);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Đã xóa log khách ghé thăm ID: {Id} thành công.", id);
             return Json(new { success = true });
         }
 
@@ -275,8 +342,10 @@ namespace DormitoryManagement.Controllers
         public new async Task<IActionResult> Request()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Logger.LogInformation("Sinh viên ID {UserIdString} truy cập trang danh sách yêu cầu đăng ký khách ghé thăm.", userIdString);
             if (!Guid.TryParse(userIdString, out var userId))
             {
+                Logger.LogWarning("Sinh viên chưa đăng nhập, chuyển hướng về đăng nhập.");
                 return RedirectToAction("Login", "Account");
             }
 
@@ -318,8 +387,10 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> CreateRequest()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Logger.LogInformation("Sinh viên ID {UserIdString} đang truy cập form tạo yêu cầu đăng ký khách ghé thăm.", userIdString);
             if (!Guid.TryParse(userIdString, out var userId))
             {
+                Logger.LogWarning("Chưa đăng nhập, chuyển hướng về trang đăng nhập.");
                 return RedirectToAction("Login", "Account");
             }
 
@@ -342,8 +413,10 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> CreateRequest(string visitorName, string identityCard, string phoneNumber, string relationship, string purpose, DateTime checkIn, DateTime checkOut)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Logger.LogInformation("Sinh viên ID {UserIdString} gửi yêu cầu đăng ký khách ghé thăm '{VisitorName}'", userIdString, visitorName);
             if (!Guid.TryParse(userIdString, out var userId))
             {
+                Logger.LogWarning("Yêu cầu thất bại do phiên đăng nhập hết hạn.");
                 return Json(new { success = false, message = "Phiên đăng nhập đã hết hạn." });
             }
 
@@ -365,6 +438,7 @@ namespace DormitoryManagement.Controllers
             await _visitorLogRepository.AddAsync(newRequest);
             await _unitOfWork.SaveChangesAsync();
 
+            Logger.LogInformation("Gửi yêu cầu đăng ký khách ghé thăm thành công. ID: {Id}", newRequest.Id);
             return Json(new { success = true });
         }
     }

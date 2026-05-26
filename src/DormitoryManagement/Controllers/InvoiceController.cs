@@ -16,6 +16,7 @@ namespace DormitoryManagement.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string search = "", string status = "", int page = 1)
         {
+            Logger.LogInformation("Đang tải danh sách hóa đơn trang {Page}, tìm kiếm: '{Search}', trạng thái: '{Status}'", page, search, status);
             int pageSize = PageSize;
 
             DormitoryManagement.Domain.Enums.InvoiceStatus? invoiceStatus = null;
@@ -44,6 +45,7 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Create")]
         public IActionResult Create()
         {
+            Logger.LogInformation("Đang truy cập trang tạo mới hóa đơn.");
             return View();
         }
 
@@ -54,9 +56,15 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Invoice invoice)
         {
-            if (!ModelState.IsValid) return View(invoice);
+            Logger.LogInformation("Đang xử lý tạo hóa đơn mới cho hợp đồng ID: {ContractId}", invoice.ContractId);
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu tạo hóa đơn không hợp lệ.");
+                return View(invoice);
+            }
 
             await invoiceService.CreateInvoiceAsync(invoice);
+            Logger.LogInformation("Tạo hóa đơn cho hợp đồng ID: {ContractId} thành công.", invoice.ContractId);
             TempData["Success"] = "Tạo hóa đơn thành công!";
             return RedirectToAction(nameof(Index));
         }
@@ -67,8 +75,13 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Edit/{id}")]
         public async Task<IActionResult> Edit(Guid id)
         {
+            Logger.LogInformation("Đang truy cập trang chỉnh sửa hóa đơn ID: {Id}", id);
             var invoice = await invoiceService.GetByIdAsync(id);
-            if (invoice == null) return NotFound();
+            if (invoice == null)
+            {
+                Logger.LogWarning("Không tìm thấy hóa đơn ID {Id} để chỉnh sửa.", id);
+                return NotFound();
+            }
             return View(invoice);
         }
 
@@ -79,10 +92,20 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, Invoice invoice)
         {
-            if (id != invoice.Id) return BadRequest();
-            if (!ModelState.IsValid) return View(invoice);
+            Logger.LogInformation("Đang xử lý cập nhật hóa đơn ID: {Id}", id);
+            if (id != invoice.Id)
+            {
+                Logger.LogWarning("Yêu cầu cập nhật hóa đơn không khớp ID: {Id} vs {InvoiceId}", id, invoice.Id);
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu cập nhật hóa đơn ID: {Id} không hợp lệ.", id);
+                return View(invoice);
+            }
 
             await invoiceService.UpdateInvoiceAsync(invoice);
+            Logger.LogInformation("Cập nhật hóa đơn ID: {Id} thành công.", id);
             TempData["Success"] = "Cập nhật hóa đơn thành công!";
             return RedirectToAction(nameof(Index));
         }
@@ -94,13 +117,16 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
+            Logger.LogInformation("Đang yêu cầu xóa hóa đơn ID: {Id}", id);
             var result = await invoiceService.DeleteInvoiceAsync(id);
             if (result)
             {
+                Logger.LogInformation("Xóa hóa đơn ID: {Id} thành công.", id);
                 TempData["Success"] = "Xóa hóa đơn thành công!";
             }
             else
             {
+                Logger.LogWarning("Xóa hóa đơn ID: {Id} thất bại (Không tìm thấy hoặc lỗi xảy ra).", id);
                 TempData["Error"] = "Xóa hóa đơn thất bại hoặc không tìm thấy hóa đơn.";
             }
             return RedirectToAction(nameof(Index));
