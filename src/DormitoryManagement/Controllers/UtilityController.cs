@@ -3,13 +3,15 @@ using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Controllers
 {
     /// <summary>
     /// Controller quản lý dịch vụ / tiện ích sử dụng IUtilityService.
     /// </summary>
-    [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+    [Authorize]
     public class UtilityController
     (
         IUtilityService utilityService,
@@ -20,6 +22,7 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Index(string search = "", int page = 1)
         {
             Logger.LogInformation("Đang tải danh sách dịch vụ hoạt động trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -38,6 +41,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Trash")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Trash(string search = "", int page = 1)
         {
             Logger.LogInformation("Đang tải danh sách dịch vụ bị ngưng hoạt động trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -56,6 +60,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Create")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public IActionResult Create()
         {
             Logger.LogInformation("Đang truy cập trang tạo mới dịch vụ.");
@@ -63,6 +68,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpPost("Create")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(UtilityRequestDto request)
         {
@@ -96,6 +102,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("Edit/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Edit(Guid id)
         {
             Logger.LogInformation("Đang tải trang chỉnh sửa dịch vụ ID: {Id}", id);
@@ -111,6 +118,7 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpPost("Edit/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UtilityRequestDto request)
         {
@@ -145,12 +153,13 @@ namespace DormitoryManagement.Controllers
 
         // Xóa mềm: Đưa dịch vụ vào thùng rác (đặt IsActive = false)
         [HttpPost("Delete/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
             Logger.LogInformation("Đang yêu cầu xóa mềm (ngừng hoạt động) dịch vụ ID: {Id}", id);
             var result = await _utilityService.SoftDeleteUtilityAsync(id);
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers.XRequestedWith.Equals("XMLHttpRequest"))
             {
                 Logger.LogInformation("Đã trả về kết quả xóa mềm AJAX cho dịch vụ ID {Id}: {Result}", id, result);
                 return Json(new { success = result, message = result ? "Đã đưa dịch vụ vào thùng rác." : "Xóa thất bại. Không tìm thấy dịch vụ." });
@@ -170,12 +179,13 @@ namespace DormitoryManagement.Controllers
 
         // Khôi phục dịch vụ từ thùng rác
         [HttpPost("Restore/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Restore(Guid id)
         {
             Logger.LogInformation("Đang yêu cầu khôi phục hoạt động dịch vụ ID: {Id}", id);
             var result = await _utilityService.RestoreUtilityAsync(id);
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers.XRequestedWith.Equals("XMLHttpRequest"))
             {
                 Logger.LogInformation("Đã trả về kết quả khôi phục AJAX cho dịch vụ ID {Id}: {Result}", id, result);
                 return Json(new { success = result, message = result ? "Khôi phục dịch vụ thành công." : "Khôi phục thất bại. Không tìm thấy dịch vụ." });
@@ -195,12 +205,13 @@ namespace DormitoryManagement.Controllers
 
         // Xóa cứng: Xóa hoàn toàn khỏi database
         [HttpPost("HardDelete/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> HardDelete(Guid id)
         {
             Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn dịch vụ ID: {Id}", id);
             var result = await _utilityService.HardDeleteUtilityAsync(id);
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (Request.Headers.XRequestedWith.Equals("XMLHttpRequest"))
             {
                 Logger.LogInformation("Đã trả về kết quả xóa vĩnh viễn AJAX cho dịch vụ ID {Id}: {Result}", id, result);
                 return Json(new { success = result, message = result ? "Đã xóa vĩnh viễn dịch vụ khỏi hệ thống." : "Xóa vĩnh viễn thất bại. Không tìm thấy dịch vụ." });
@@ -216,6 +227,80 @@ namespace DormitoryManagement.Controllers
                 TempData["Error"] = "Xóa vĩnh viễn thất bại. Không tìm thấy dịch vụ.";
             }
             return RedirectToAction(nameof(Trash));
+        }
+
+        [HttpPost("RegisterService")]
+        [Authorize(Roles = "Student")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterService(Guid utilityId, int quantity = 1, string? notes = null)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Logger.LogInformation("Sinh viên ID {UserIdString} đang đăng ký dịch vụ ID: {UtilityId} với số lượng: {Quantity}", userIdString, utilityId, quantity);
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Json(new { success = false, message = "Người dùng chưa đăng nhập hoặc phiên làm việc đã hết hạn." });
+            }
+
+            try
+            {
+                var result = await _utilityService.RegisterServiceRequestAsync(userId, utilityId, quantity, notes);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đăng ký dịch vụ thành công! Yêu cầu đang được chờ phê duyệt." });
+                }
+                return Json(new { success = false, message = "Đăng ký dịch vụ thất bại." });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi sinh viên đăng ký dịch vụ ID: {UtilityId}", utilityId);
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpGet("Requests")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        public async Task<IActionResult> Requests(string search = "", string? status = null, int page = 1)
+        {
+            Logger.LogInformation("Đang tải danh sách yêu cầu đăng ký dịch vụ trang {Page}, tìm kiếm: '{Search}', trạng thái: '{Status}'", page, search, status);
+            int pageSize = PageSize;
+            var pagedRequests = await _utilityService.GetPagedServiceRequestsAsync(page, pageSize, search, status);
+
+            ViewBag.Search = search;
+            ViewBag.Status = status;
+
+            return View(pagedRequests);
+        }
+
+        [HttpPost("ApproveRequest/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveRequest(Guid id)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Json(new { success = false, message = "Người dùng chưa đăng nhập." });
+            }
+
+            Logger.LogInformation("Quản lý ID {UserIdString} phê duyệt yêu cầu đăng ký dịch vụ ID: {Id}", userIdString, id);
+            var result = await _utilityService.ApproveServiceRequestAsync(id, userId);
+            return Json(new { success = result, message = result ? "Phê duyệt đăng ký dịch vụ thành công." : "Phê duyệt thất bại." });
+        }
+
+        [HttpPost("RejectRequest/{id}")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RejectRequest(Guid id)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out var userId))
+            {
+                return Json(new { success = false, message = "Người dùng chưa đăng nhập." });
+            }
+
+            Logger.LogInformation("Quản lý ID {UserIdString} từ chối yêu cầu đăng ký dịch vụ ID: {Id}", userIdString, id);
+            var result = await _utilityService.RejectServiceRequestAsync(id, userId);
+            return Json(new { success = result, message = result ? "Từ chối đăng ký dịch vụ thành công." : "Từ chối thất bại." });
         }
     }
 }

@@ -1,0 +1,406 @@
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Domain.Entities.UtilityServiceRequest>
+@{
+    ViewData["Title"] = "Duyệt Đăng ký Dịch vụ";
+
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        /* 1. Header & Tổng thể */
+        .tieu-de-trang {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 2. Thanh tìm kiếm & lọc */
+        .thanh-tim-kiem {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .input-custom,
+        .select-custom {
+            height: 46px;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 14px;
+            color: #1e293b;
+        }
+
+        .input-custom:focus,
+        .select-custom:focus {
+            border-color: #0f6b6d !important;
+            box-shadow: 0 0 0 4px rgba(15, 107, 109, 0.1) !important;
+        }
+
+        .khung-tim-kiem {
+            position: relative;
+        }
+
+        .khung-tim-kiem i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 10;
+        }
+
+        .khung-tim-kiem input {
+            padding-left: 40px;
+        }
+
+        .btn-filter-action {
+            height: 46px;
+            width: 46px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-apply {
+            background: #0f6b6d;
+            color: white;
+        }
+
+        .btn-apply:hover {
+            background: #0c5658;
+            transform: scale(1.05);
+        }
+
+        .btn-refresh {
+            background: #fff;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-refresh:hover {
+            background: #f8fafc;
+            transform: scale(1.05);
+        }
+
+        /* 3. Trạng thái */
+        .trang-thai {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .trang-thai.cho-duyet {
+            background: #fffbeb;
+            color: #d97706;
+        }
+
+        .trang-thai.da-duyet {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .trang-thai.tu-choi {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .ma-yeu-cau-badge {
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .nut-hanh-dong {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .nut-duyet {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .nut-tu-choi {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+
+        .nut-hanh-dong:hover {
+            transform: scale(1.1);
+        }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-clipboard-check me-2"></i>Duyệt Đăng ký Dịch vụ</h1>
+    </header>
+
+    <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
+    <form method="get" asp-action="Requests" class="thanh-tim-kiem shadow-sm">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-5 col-lg-6">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control input-custom"
+                        placeholder="Tìm theo phòng, tên sinh viên, dịch vụ...">
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-3">
+                <select name="status" class="form-select select-custom">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    @if (ViewBag.Status == "Pending")
+
+                    {
+                        <option value="Pending" selected>Chờ duyệt</option>
+                    }
+
+                    else
+
+                    {
+                        <option value="Pending">Chờ duyệt</option>
+                    }
+                    @if (ViewBag.Status == "Approved")
+
+                    {
+                        <option value="Approved" selected>Đã duyệt</option>
+                    }
+
+                    else
+
+                    {
+                        <option value="Approved">Đã duyệt</option>
+                    }
+                    @if (ViewBag.Status == "Rejected")
+
+                    {
+                        <option value="Rejected" selected>Từ chối</option>
+                    }
+
+                    else
+
+                    {
+                        <option value="Rejected">Từ chối</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 col-lg-3 d-flex gap-2 justify-content-end">
+                <button type="submit" class="btn-filter-action btn-apply" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a asp-action="Requests" class="btn-filter-action btn-refresh" title="Làm mới">
+                    <i class="fas fa-redo"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Danh sách yêu cầu -->
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Mã yêu cầu</th>
+                        <th>Phòng</th>
+                        <th>Sinh viên đăng ký</th>
+                        <th>Dịch vụ yêu cầu</th>
+                        <th>Đơn giá</th>
+                        <th>Ngày đăng ký</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4" style="width: 150px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Items.Any())
+
+                    {
+
+                        foreach (var item in Model.Items)
+
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="ma-yeu-cau-badge">#YCDV-@item.Id.ToString().Substring(0, 8).ToUpper()</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark"><i class="fas fa-door-closed text-muted me-1"></i>
+                                        @item.Room.RoomNumber</span>
+                                    <div class="small text-muted">@item.Room.Block?.BlockName</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@item.Requester.FullName</div>
+                                    <div class="small text-muted">Mã SV: @item.Requester.Code</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@item.Utility.UtilityName</div>
+                                    <div class="small text-muted">Số lượng: @item.Quantity (@item.Utility.Unit)</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@((item.Utility.UnitPrice * item.Quantity).ToString("N0")) đ
+                                    </div>
+                                    <div class="small text-muted">Đơn giá: @item.Utility.UnitPrice.ToString("N0") đ</div>
+                                </td>
+                                <td>
+                                    <div class="text-dark">@item.CreatedDate.ToString("dd/MM/yyyy")</div>
+                                    <div class="small text-muted">@item.CreatedDate.ToString("HH:mm")</div>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Pending")
+
+                                    {
+                                        <span class="trang-thai cho-duyet"><i class="fas fa-clock me-1"></i> Chờ duyệt</span>
+                                    }
+
+                                    else if (item.Status == "Approved")
+
+                                    {
+                                        <span class="trang-thai da-duyet"><i class="fas fa-check-circle me-1"></i> Đã duyệt</span>
+                                    }
+
+                                    else
+
+                                    {
+                                        <span class="trang-thai tu-choi"><i class="fas fa-times-circle me-1"></i> Từ chối</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-4">
+                                    @if (item.Status == "Pending")
+
+                                    {
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <button type="button" class="nut-hanh-dong nut-duyet"
+                                                onclick="processRequest('@item.Id', 'Approve', '@item.Requester.FullName', '@item.Utility.UtilityName')"
+                                                title="Phê duyệt yêu cầu">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="nut-hanh-dong nut-tu-choi"
+                                                onclick="processRequest('@item.Id', 'Reject', '@item.Requester.FullName', '@item.Utility.UtilityName')"
+                                                title="Từ chối yêu cầu">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    }
+
+                                    else
+
+                                    {
+                                        <span class="text-muted small">Đã xử lý</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+
+                    }
+
+                    else
+
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 text-secondary"></i>
+                                <p class="mb-0">Không tìm thấy yêu cầu đăng ký dịch vụ nào</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function processRequest(id, action, studentName, serviceName) {
+            const isApprove = action === 'Approve';
+            const actionText = isApprove ? 'phê duyệt' : 'từ chối';
+            const confirmButtonColor = isApprove ? '#10b981' : '#ef4444';
+            const titleText = isApprove ? 'Phê duyệt yêu cầu?' : 'Từ chối yêu cầu?';
+            const bodyText = `Bạn có chắc muốn ${actionText} đăng ký dịch vụ "${serviceName}" của sinh viên ${studentName}?`;
+
+            Swal.fire({
+                title: titleText,
+                text: bodyText,
+                icon: isApprove ? 'question' : 'warning',
+                showCancelButton: true,
+                confirmButtonColor: confirmButtonColor,
+                cancelButtonColor: '#64748b',
+                confirmButtonText: isApprove ? '<i class="fas fa-check me-1"></i> Đồng ý duyệt' : '<i class="fas fa-times me-1"></i> Từ chối',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang xử lý...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    const url = isApprove ? `/Utility/ApproveRequest/${id}` : `/Utility/RejectRequest/${id}`;
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi!',
+                                    text: res.message || 'Xử lý yêu cầu thất bại.',
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi hệ thống',
+                                text: 'Không thể kết nối đến máy chủ hoặc bạn không có quyền.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

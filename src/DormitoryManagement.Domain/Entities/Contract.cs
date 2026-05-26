@@ -43,9 +43,9 @@ namespace DormitoryManagement.Domain.Entities
         public virtual Bed Bed { get; set; } = null!;
 
         /// <summary>Danh sách hóa đơn phát sinh trong kỳ hợp đồng này.</summary>
-        public virtual ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        public virtual ICollection<Invoice> Invoices { get; set; } = [];
 
         /// <summary>Danh sách biên bản vi phạm kỷ luật liên quan đến hợp đồng này.</summary>
-        public virtual ICollection<Violation> Violations { get; set; } = new List<Violation>();
+        public virtual ICollection<Violation> Violations { get; set; } = [];
     }
 }

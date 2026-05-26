@@ -299,6 +299,10 @@
                class="@(isServiceGroup && currentAction == "Trash" ? "active" : "")">
                 <i class="fas fa-trash-alt me-2"></i> Thùng rác dịch vụ
             </a>
+            <a asp-controller="Utility" asp-action="Requests"
+               class="@(isServiceGroup && currentAction == "Requests" ? "active" : "")">
+                <i class="fas fa-clipboard-check me-2"></i> Duyệt đăng ký dịch vụ
+            </a>
         </div>
 
         <!-- Phụ phí kèm theo -->
