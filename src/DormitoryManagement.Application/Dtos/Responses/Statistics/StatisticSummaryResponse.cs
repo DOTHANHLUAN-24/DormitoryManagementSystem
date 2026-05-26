@@ -22,5 +22,13 @@ namespace DormitoryManagement.Application.Dtos.Responses.Statistics
         public decimal[] RevenuePaid { get; set; } = Array.Empty<decimal>();
         
         public decimal[] RevenueUnpaid { get; set; } = Array.Empty<decimal>();
+
+        // New properties for Extended Statistics
+        public DormitoryManagement.Domain.Interfaces.Repositories.MaintenanceStatsModel MaintenanceStats { get; set; } = new();
+        public DormitoryManagement.Domain.Interfaces.Repositories.ContractStatsModel ContractStats { get; set; } = new();
+        public DormitoryManagement.Domain.Interfaces.Repositories.BedOccupancyModel BedOccupancyStats { get; set; } = new();
+
+        public string[] ViolationLabels { get; set; } = Array.Empty<string>();
+        public int[] ViolationData { get; set; } = Array.Empty<int>();
     }
 }

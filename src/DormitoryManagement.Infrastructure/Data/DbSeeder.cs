@@ -1,4 +1,5 @@
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Infrastructure.Data.DataGenerator;
 using DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication;
 using Microsoft.AspNetCore.Identity;
@@ -97,6 +98,32 @@ namespace DormitoryManagement.Infrastructure.Data
             if (!await context.Violations.AnyAsync() && data.Violations.Any())
             {
                 await context.Violations.AddRangeAsync(data.Violations);
+                await context.SaveChangesAsync();
+            }
+
+            // 🟢 11. Đồng bộ lại trạng thái phòng bị sai lệch (ví dụ do dữ liệu cũ hoặc seeding)
+            var rooms = await context.Rooms.Include(r => r.Beds).Where(r => !r.IsDeleted).ToListAsync();
+            bool hasChanges = false;
+            foreach (var room in rooms)
+            {
+                if (room.Status == RoomStatus.Maintenance) continue;
+
+                var activeBeds = room.Beds.Where(b => !b.IsDeleted).ToList();
+                bool allOccupied = activeBeds.Count > 0 && activeBeds.All(b => b.Status == BedStatus.Occupied);
+
+                if (allOccupied && room.Status != RoomStatus.Full)
+                {
+                    room.Status = RoomStatus.Full;
+                    hasChanges = true;
+                }
+                else if (!allOccupied && room.Status == RoomStatus.Full)
+                {
+                    room.Status = RoomStatus.Available;
+                    hasChanges = true;
+                }
+            }
+            if (hasChanges)
+            {
                 await context.SaveChangesAsync();
             }
         }

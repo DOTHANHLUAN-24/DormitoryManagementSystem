@@ -1,0 +1,79 @@
+@using DormitoryManagement.Domain.Enums
+@model DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests.CreateMaintenanceRequestDto
+
+@{
+    ViewData["Title"] = "Gửi yêu cầu sửa chữa";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .form-control-custom { border-radius: 12px; padding: 12px 16px; border: 1px solid #e2e8f0; }
+        .form-control-custom:focus { border-color: #4f46e5; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .btn-submit { background: #4f46e5; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 600; width: 100%; transition: all 0.2s; }
+        .btn-submit:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+    </style>
+}
+
+<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card border-0 shadow-lg" style="border-radius: 20px; max-width: 600px; width: 100%;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <div class="bg-light d-inline-flex align-items-center justify-content-center mb-3" style="width: 64px; height: 64px; border-radius: 16px; color: #4f46e5; font-size: 28px;">
+                    <i class="fas fa-wrench"></i>
+                </div>
+                <h2 class="tieu-de-trang">Báo Cáo Sửa Chữa</h2>
+                <p class="text-muted">Điền thông tin sự cố để ban quản lý cử kỹ thuật viên đến hỗ trợ bạn.</p>
+            </div>
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger" role="alert">@TempData["Error"]</div>
+            }
+
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+                
+                <input type="hidden" asp-for="RoomId" />
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">Phòng hiện tại của bạn</label>
+                    <input type="text" class="form-control form-control-custom bg-light text-muted" value="@ViewBag.RoomNumber" readonly disabled />
+                    <div class="form-text text-danger">Lưu ý: Nếu đây không phải phòng của bạn, vui lòng liên hệ Ban quản lý.</div>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Title" class="form-label fw-bold text-dark">Tiêu đề (Tóm tắt sự cố) <span class="text-danger">*</span></label>
+                    <input asp-for="Title" class="form-control form-control-custom" placeholder="Ví dụ: Đèn tuýp bị hỏng, Điều hòa chảy nước..." />
+                    <span asp-validation-for="Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Priority" class="form-label fw-bold text-dark">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                    <select asp-for="Priority" class="form-select form-control-custom">
+                        <option value="@MaintenancePriority.Low">Thấp (Có thể chờ)</option>
+                        <option value="@MaintenancePriority.Medium" selected>Trung bình (Nên sửa sớm)</option>
+                        <option value="@MaintenancePriority.High">Cao (Ảnh hưởng sinh hoạt)</option>
+                        <option value="@MaintenancePriority.Urgent">Khẩn cấp (Nguy hiểm, chập điện...)</option>
+                    </select>
+                    <span asp-validation-for="Priority" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Description" class="form-label fw-bold text-dark">Mô tả chi tiết <span class="text-danger">*</span></label>
+                    <textarea asp-for="Description" class="form-control form-control-custom" rows="4" placeholder="Mô tả rõ ràng vị trí và biểu hiện của thiết bị hỏng để kỹ thuật viên chuẩn bị dụng cụ phù hợp."></textarea>
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn-submit"><i class="fas fa-paper-plane me-2"></i>Gửi Yêu Cầu</button>
+                    <a asp-action="MyRequests" class="btn btn-light" style="border-radius: 12px; padding: 12px; font-weight: 600;">Hủy bỏ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

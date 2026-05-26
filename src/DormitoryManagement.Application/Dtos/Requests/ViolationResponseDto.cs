@@ -12,5 +12,9 @@ namespace DormitoryManagement.Application.Dtos.Requests
         public string Content { get; set; } = string.Empty;
         public string Status { get; set; } = "Chưa xử lý";
         public decimal FineAmount { get; set; }
+        /// <summary>Ghi chú xử lý của nhân viên</summary>
+        public string? ResolveNote { get; set; }
+        /// <summary>Thời điểm xử lý xong</summary>
+        public DateTime? ResolvedAt { get; set; }
     }
 }

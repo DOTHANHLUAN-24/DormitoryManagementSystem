@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin giường (Bed).
     /// </summary>
-    public class BedRepository : BaseRepository<Bed>, IBedRepository
+    public class BedRepository(ApplicationDbContext db) : BaseRepository<Bed>(db), IBedRepository
     {
-        /// <summary>
-        /// Khởi tạo BedRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public BedRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Lấy thông tin giường theo Id kèm thông tin Phòng (Room).

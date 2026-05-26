@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin hợp đồng thuê phòng (Contract).
     /// </summary>
-    public class ContractRepository : BaseRepository<Contract>, IContractRepository
+    public class ContractRepository(ApplicationDbContext db) : BaseRepository<Contract>(db), IContractRepository
     {
-        /// <summary>
-        /// Khởi tạo ContractRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public ContractRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Tìm kiếm hợp đồng theo mã hợp đồng (ContractCode).

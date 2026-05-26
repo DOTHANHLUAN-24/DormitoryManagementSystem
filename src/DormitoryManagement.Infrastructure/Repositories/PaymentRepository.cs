@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Repository triển khai quản lý thông tin thanh toán (Payment).
     /// </summary>
-    public class PaymentRepository : BaseRepository<Payment>, IPaymentRepository
+    public class PaymentRepository(ApplicationDbContext db) : BaseRepository<Payment>(db), IPaymentRepository
     {
-        /// <summary>
-        /// Khởi tạo PaymentRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext</param>
-        public PaymentRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Tìm thanh toán theo mã giao dịch (TransactionCode).

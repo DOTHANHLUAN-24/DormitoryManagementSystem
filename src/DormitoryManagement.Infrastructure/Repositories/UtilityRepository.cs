@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin dịch vụ / tiện ích (Utility).
     /// </summary>
-    public class UtilityRepository : BaseRepository<Utility>, IUtilityRepository
+    public class UtilityRepository(ApplicationDbContext db) : BaseRepository<Utility>(db), IUtilityRepository
     {
-        /// <summary>
-        /// Khởi tạo UtilityRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public UtilityRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Lấy dịch vụ theo Id (chỉ lấy dịch vụ chưa bị xóa).

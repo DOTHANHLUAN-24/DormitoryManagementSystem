@@ -315,7 +315,7 @@ namespace DormitoryManagement.Application.Services.Implements
             if (!users.Any()) return false;
 
             var activeAdminIdsInRequest = users.Where(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted).Select(u => u.Id).ToList();
-            if (activeAdminIdsInRequest.Any())
+            if (activeAdminIdsInRequest.Count > 0)
             {
                 var activeAdminsInDb = _userManager.Users.Where(u => u.Role == UserRole.Admin && u.IsActive && !u.IsDeleted).Select(u => u.Id).ToList();
                 if (activeAdminsInDb.All(id => activeAdminIdsInRequest.Contains(id)))

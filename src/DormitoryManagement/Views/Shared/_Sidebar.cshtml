@@ -25,30 +25,36 @@
         <span class="text">KTX System</span>
     </div>
 
-    <!-- BẢNG ĐIỀU KHIỂN -->
-    <a asp-controller="Home" asp-action="Index"
-       class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
-        <i class="fas fa-tachometer-alt"></i>
-        <span class="text">Bảng điều khiển</span>
-    </a>
+    <!-- ================= SECTION: TỔNG QUAN (ADMIN / MANAGER) ================= -->
+    @if (isAuthenticated && isAdminOrManager)
+    {
+        <div class="sidebar-section-title">Tổng quan & Báo cáo</div>
+        <a asp-controller="Home" asp-action="Index"
+           class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="text">Bảng điều khiển</span>
+        </a>
+        <a asp-controller="Statistic" asp-action="Index"
+           class="@(currentController == "Statistic" ? "active" : "")">
+            <i class="fas fa-chart-line"></i>
+            <span class="text">Báo cáo thống kê</span>
+        </a>
+        <a asp-controller="Home" asp-action="Guide"
+           class="@(currentController == "Home" && currentAction == "Guide" ? "active" : "")">
+            <i class="fas fa-book-reader"></i>
+            <span class="text">Hướng dẫn sử dụng</span>
+        </a>
+    }
 
-    <!-- DANH SÁCH PHÒNG (CÔNG KHAI) -->
-    <a asp-controller="Home" asp-action="Rooms"
-       class="@(currentController == "Home" && (currentAction == "Rooms" || currentAction == "RoomDetails") ? "active" : "")">
-        <i class="fas fa-door-closed"></i>
-        <span class="text">Xem phòng KTX</span>
-    </a>
-
-    <!-- HƯỚNG DẪN SỬ DỤNG -->
-    <a asp-controller="Home" asp-action="Guide"
-       class="@(currentController == "Home" && currentAction == "Guide" ? "active" : "")">
-        <i class="fas fa-book-reader"></i>
-        <span class="text">Hướng dẫn sử dụng</span>
-    </a>
-
-    <!-- DỊCH VỤ CÁ NHÂN (STUDENT) -->
+    <!-- ================= SECTION: DỊCH VỤ CÁ NHÂN (STUDENT) ================= -->
     @if (isAuthenticated && User.IsInRole("Student"))
     {
+        <div class="sidebar-section-title">Dịch vụ cá nhân</div>
+        <a asp-controller="Home" asp-action="Index"
+           class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="text">Bảng điều khiển</span>
+        </a>
         <a asp-controller="Home" asp-action="Services"
            class="@(currentController == "Home" && currentAction == "Services" ? "active" : "")">
             <i class="fas fa-concierge-bell"></i>
@@ -64,11 +70,38 @@
             <i class="fas fa-address-book"></i>
             <span class="text">Đăng ký khách thăm</span>
         </a>
+        <a asp-controller="MaintenanceRequest" asp-action="MyRequests"
+            class="@(currentController == "MaintenanceRequest" && (currentAction == "MyRequests" || currentAction == "Create") ? "active" : "")">
+            <i class="fas fa-tools"></i>
+            <span class="text">Báo cáo sửa chữa</span>
+        </a>
     }
 
-    <!-- LOẠI PHÒNG & GIÁ CẢ / THIẾT BỊ (CÔNG KHAI CHO SINH VIÊN) -->
-    @if (!isAdminOrManager)
+    <!-- ================= SECTION: CÔNG VIỆC BẢO TRÌ (STAFF) ================= -->
+    @if (isAuthenticated && isStaff)
     {
+        <div class="sidebar-section-title">Công việc bảo trì</div>
+        <a asp-controller="Home" asp-action="Index"
+           class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-tachometer-alt"></i>
+            <span class="text">Bảng điều khiển</span>
+        </a>
+        <a asp-controller="MaintenanceRequest" asp-action="Index"
+           class="@(currentController == "MaintenanceRequest" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-toolbox"></i>
+            <span class="text">Quản lý sửa chữa</span>
+        </a>
+    }
+
+    <!-- ================= SECTION: TRA CỨU CÔNG KHAI (GUEST) ================= -->
+    @if (!isAuthenticated)
+    {
+        <div class="sidebar-section-title">Tra cứu công khai</div>
+        <a asp-controller="Home" asp-action="Rooms"
+           class="@(currentController == "Home" && (currentAction == "Rooms" || currentAction == "RoomDetails") ? "active" : "")">
+            <i class="fas fa-door-closed"></i>
+            <span class="text">Xem phòng KTX</span>
+        </a>
         <a asp-controller="RoomType" asp-action="List"
            class="@(currentController == "RoomType" && currentAction == "List" ? "active" : "")">
             <i class="fas fa-tags"></i>
@@ -79,11 +112,24 @@
             <i class="fas fa-couch"></i>
             <span class="text">Danh mục thiết bị</span>
         </a>
+        <a asp-controller="Regulation" asp-action="Index"
+           class="@((currentController == "Regulation" || currentController == "Regulations") && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-book-open"></i>
+            <span class="text">Nội quy KTX</span>
+        </a>
+        <a asp-controller="Home" asp-action="Guide"
+           class="@(currentController == "Home" && currentAction == "Guide" ? "active" : "")">
+            <i class="fas fa-book-reader"></i>
+            <span class="text">Hướng dẫn sử dụng</span>
+        </a>
     }
 
-    <!-- ================= QUẢN LÝ NGƯỜI DÙNG ================= -->
-    @if (isAdminOrManager)
+    <!-- ================= SECTION: QUẢN LÝ DÂN CƯ (ADMIN / MANAGER) ================= -->
+    @if (isAuthenticated && isAdminOrManager)
     {
+        <div class="sidebar-section-title">Quản lý dân cư</div>
+
+        <!-- Quản lý người dùng -->
         var isUserGroup = currentController == "User";
         <a data-bs-toggle="collapse" href="#userMenu" class="menu-toggle @(isUserGroup ? "active" : "collapsed")">
             <i class="fas fa-users"></i>
@@ -109,11 +155,8 @@
                 </a>
             }
         </div>
-    }
 
-    <!-- ================= QUẢN LÝ HỢP ĐỒNG ================= -->
-    @if (isAdminOrManager)
-    {
+        <!-- Quản lý hợp đồng -->
         var isContractGroup = currentController == "Contract";
         <a data-bs-toggle="collapse" href="#contractMenu"
            class="menu-toggle @(isContractGroup ? "active" : "collapsed") d-flex align-items-center">
@@ -144,13 +187,32 @@
                 <i class="fas fa-plus me-2"></i> Tạo hợp đồng thủ công
             </a>
         </div>
+
+        <!-- Khách đến thăm -->
+        var isVisitorGroup = currentController == "Visitor";
+        <a data-bs-toggle="collapse" href="#visitorMenu" class="menu-toggle @(isVisitorGroup ? "active" : "collapsed")">
+            <i class="fas fa-address-book"></i>
+            <span class="text">Khách đến thăm</span>
+        </a>
+        <div class="collapse submenu @(isVisitorGroup ? "show" : "")" id="visitorMenu">
+            <a asp-controller="Visitor" asp-action="Index"
+               class="@(isVisitorGroup && currentAction == "Index" ? "active" : "")">
+                <i class="fas fa-list me-2"></i> Danh sách khách đến
+            </a>
+            <a asp-controller="Visitor" asp-action="Create"
+               class="@(isVisitorGroup && currentAction == "Create" ? "active" : "")">
+                <i class="fas fa-plus me-2"></i> Ghi nhận khách mới
+            </a>
+        </div>
     }
 
-    <!-- ================= CƠ SỞ VẬT CHẤT ================= -->
-    @if (isAdminOrManager)
+    <!-- ================= SECTION: CƠ SỞ VẬT CHẤT & DỊCH VỤ (ADMIN / MANAGER) ================= -->
+    @if (isAuthenticated && isAdminOrManager)
     {
-        var isInfraGroup = currentController == "Block" || currentController == "RoomType" || currentController == "Room" ||
-        currentController == "Asset";
+        <div class="sidebar-section-title">Cơ sở vật chất & Dịch vụ</div>
+
+        <!-- Cơ sở vật chất -->
+        var isInfraGroup = currentController == "Block" || currentController == "RoomType" || currentController == "Room" || currentController == "Asset";
         var isBlockGroup = currentController == "Block";
         var isRoomGroup = currentController == "Room" || currentController == "RoomType";
         var isAssetGroup = currentController == "Asset";
@@ -160,30 +222,26 @@
             <span class="text">Cơ sở vật chất</span>
         </a>
         <div class="collapse submenu @(isInfraGroup ? "show" : "")" id="infraMenu">
-
             <!-- Cấp 2: Quản lý tòa nhà -->
-            @if (isAdminOrManager)
-            {
-                <a data-bs-toggle="collapse" href="#blockMenu"
-                   class="submenu-toggle-l2 @(isBlockGroup ? "active" : "collapsed")">
-                    <span><i class="fas fa-building me-2"></i> Quản lý tòa nhà</span>
-                    <i class="fas fa-chevron-down arrow-icon"></i>
+            <a data-bs-toggle="collapse" href="#blockMenu"
+               class="submenu-toggle-l2 @(isBlockGroup ? "active" : "collapsed")">
+                <span><i class="fas fa-building me-2"></i> Quản lý tòa nhà</span>
+                <i class="fas fa-chevron-down arrow-icon"></i>
+            </a>
+            <div class="collapse submenu-l3 @(isBlockGroup ? "show" : "")" id="blockMenu">
+                <a asp-controller="Block" asp-action="Index"
+                   class="@(isBlockGroup && currentAction == "Index" ? "active" : "")">
+                    Danh sách tòa nhà
                 </a>
-                <div class="collapse submenu-l3 @(isBlockGroup ? "show" : "")" id="blockMenu">
-                    <a asp-controller="Block" asp-action="Index"
-                       class="@(isBlockGroup && currentAction == "Index" ? "active" : "")">
-                        Danh sách tòa nhà
-                    </a>
-                    <a asp-controller="Block" asp-action="SuspendedList"
-                       class="@(isBlockGroup && currentAction == "SuspendedList" ? "active" : "")">
-                        Tòa nhà tạm ngưng
-                    </a>
-                    <a asp-controller="Block" asp-action="RecycleBin"
-                       class="@(isBlockGroup && currentAction == "RecycleBin" ? "active" : "")">
-                        Tòa nhà đã xóa
-                    </a>
-                </div>
-            }
+                <a asp-controller="Block" asp-action="SuspendedList"
+                   class="@(isBlockGroup && currentAction == "SuspendedList" ? "active" : "")">
+                    Tòa nhà tạm ngưng
+                </a>
+                <a asp-controller="Block" asp-action="RecycleBin"
+                   class="@(isBlockGroup && currentAction == "RecycleBin" ? "active" : "")">
+                    Tòa nhà đã xóa
+                </a>
+            </div>
 
             <!-- Cấp 2: Quản lý phòng -->
             <a data-bs-toggle="collapse" href="#roomMenu" class="submenu-toggle-l2 @(isRoomGroup ? "active" : "collapsed")">
@@ -191,25 +249,17 @@
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </a>
             <div class="collapse submenu-l3 @(isRoomGroup ? "show" : "")" id="roomMenu">
-                @if (isAdminOrManager)
-                {
-                    <a asp-controller="Room" asp-action="Index"
-                       class="@(currentController == "Room" && currentAction == "Index" ? "active" : "")">
-                        Danh sách phòng
-                    </a>
-                }
-
+                <a asp-controller="Room" asp-action="Index"
+                   class="@(currentController == "Room" && currentAction == "Index" ? "active" : "")">
+                    Danh sách phòng
+                </a>
                 <a asp-controller="RoomType" asp-action="Index" class="@(currentController == "RoomType" ? "active" : "")">
                     Loại phòng
                 </a>
-
-                @if (isAdminOrManager)
-                {
-                    <a asp-controller="Room" asp-action="RecycleBin"
-                       class="@(currentController == "Room" && currentAction == "RecycleBin" ? "active" : "")">
-                        Phòng đã xóa
-                    </a>
-                }
+                <a asp-controller="Room" asp-action="RecycleBin"
+                   class="@(currentController == "Room" && currentAction == "RecycleBin" ? "active" : "")">
+                    Phòng đã xóa
+                </a>
             </div>
 
             <!-- Cấp 2: Vật tư & Thiết bị -->
@@ -219,28 +269,22 @@
                 <i class="fas fa-chevron-down arrow-icon"></i>
             </a>
             <div class="collapse submenu-l3 @(isAssetGroup ? "show" : "")" id="assetMenu">
-                @if (isAdminOrManager)
-                {
-                    <a asp-controller="Asset" asp-action="Index"
-                       class="@(isAssetGroup && currentAction == "Index" ? "active" : "")">
-                        Danh sách tài sản
-                    </a>
-                    <a asp-controller="Asset" asp-action="RecycleBin"
-                       class="@(isAssetGroup && currentAction == "RecycleBin" ? "active" : "")">
-                        Thùng rác tài sản
-                    </a>
-                }
+                <a asp-controller="Asset" asp-action="Index"
+                   class="@(isAssetGroup && currentAction == "Index" ? "active" : "")">
+                    Danh sách tài sản
+                </a>
+                <a asp-controller="Asset" asp-action="RecycleBin"
+                   class="@(isAssetGroup && currentAction == "RecycleBin" ? "active" : "")">
+                    Thùng rác tài sản
+                </a>
                 <a asp-controller="Asset" asp-action="Catalog"
                    class="@(isAssetGroup && currentAction == "Catalog" ? "active" : "")">
                     Danh mục công khai
                 </a>
             </div>
         </div>
-    }
 
-    <!-- ================= DỊCH VỤ KTX ================= -->
-    @if (isAdminOrManager)
-    {
+        <!-- Dịch vụ KTX -->
         var isServiceGroup = currentController == "Utility";
         <a data-bs-toggle="collapse" href="#serviceMenu" class="menu-toggle @(isServiceGroup ? "active" : "collapsed")">
             <i class="fas fa-plug"></i>
@@ -256,28 +300,35 @@
                 <i class="fas fa-trash-alt me-2"></i> Thùng rác dịch vụ
             </a>
         </div>
-    }
 
-    <!-- ================= TÀI CHÍNH ================= -->
-    @if (isAuthenticated && (isAdminOrManager || User.IsInRole("Student")))
-    {
-        var isFinanceGroup = currentController == "Payment";
-        <a data-bs-toggle="collapse" href="#financeMenu" class="menu-toggle @(isFinanceGroup ? "active" : "collapsed")">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <span class="text">Tài chính</span>
+        <!-- Phụ phí kèm theo -->
+        var isSurchargeGroup = currentController == "Surcharge";
+        <a data-bs-toggle="collapse" href="#surchargeMenu" class="menu-toggle @(isSurchargeGroup ? "active" : "collapsed")">
+            <i class="fas fa-coins"></i>
+            <span class="text">Phụ phí kèm theo</span>
         </a>
-        <div class="collapse submenu @(isFinanceGroup ? "show" : "")" id="financeMenu">
-            <a asp-controller="Payment" asp-action="Index"
-               class="@(isFinanceGroup && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-credit-card me-2"></i> Hóa đơn & Thanh toán
+        <div class="collapse submenu @(isSurchargeGroup ? "show" : "")" id="surchargeMenu">
+            <a asp-controller="Surcharge" asp-action="Index" class="@(isSurchargeGroup && currentAction == "Index" ? "active" : "")">
+                <i class="fas fa-list me-2"></i> Danh sách phụ phí
             </a>
+            <a asp-controller="Surcharge" asp-action="Create" class="@(isSurchargeGroup && currentAction == "Create" ? "active" : "")">
+                <i class="fas fa-plus me-2"></i> Thêm phụ phí mới
+            </a>
+            @if (isSurchargeGroup && currentAction == "Edit")
+            {
+                <a asp-controller="Surcharge" asp-action="Edit" class="active">
+                    <i class="fas fa-edit me-2"></i> Cập nhật phụ phí
+                </a>
+            }
         </div>
     }
 
-    <!-- ================= VẬN HÀNH & AN NINH ================= -->
+    <!-- ================= SECTION: VẬN HÀNH & AN NINH (ADMIN / MANAGER) ================= -->
     @if (isAuthenticated && isAdminOrManager)
     {
-        // Kiểm tra xem có đang ở trong các trang thuộc nhóm Violation (Vận hành & An ninh) hay không
+        <div class="sidebar-section-title">Vận hành & An ninh</div>
+
+        <!-- Vận hành & An ninh -->
         var isOperationGroup = currentController.Equals("Violation", StringComparison.OrdinalIgnoreCase) ||
                                currentController.Equals("Vehicle", StringComparison.OrdinalIgnoreCase);
 
@@ -287,20 +338,15 @@
             <i class="fas fa-shield-alt"></i>
             <span class="text">Vận hành & An ninh</span>
         </a>
-
         <div class="collapse submenu @(isOperationGroup ? "show" : "")" id="operationMenu">
             <a asp-controller="Violation" asp-action="Index"
-               class="@(isOperationGroup && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+               class="@(currentController.Equals("Violation", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
                 <i class="fas fa-exclamation-triangle me-2 text-danger"></i> Danh sách vi phạm
             </a>
-
-            @if (isAdminOrManager)
-            {
-                <a asp-controller="Violation" asp-action="Create"
-                   class="@(isOperationGroup && currentAction.Equals("Create", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
-                    <i class="fas fa-plus me-2"></i> Lập biên bản mới
-                </a>
-            }
+            <a asp-controller="Violation" asp-action="Create"
+               class="@(currentController.Equals("Violation", StringComparison.OrdinalIgnoreCase) && currentAction.Equals("Create", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                <i class="fas fa-plus me-2"></i> Lập biên bản mới
+            </a>
 
             @{
                 var isVehicleGroup = currentController.Equals("Vehicle", StringComparison.OrdinalIgnoreCase);
@@ -321,61 +367,15 @@
                 </a>
             </div>
         </div>
-    }
 
-    <!-- ================= PHỤ PHÍ KÈM THEO ================= -->
-    @if (isAuthenticated)
-    {
-        var isSurchargeGroup = currentController == "Surcharge";
-        <a data-bs-toggle="collapse" href="#surchargeMenu" class="menu-toggle @(isSurchargeGroup ? "active" : "collapsed")">
-            <i class="fas fa-coins"></i>
-            <span class="text">Phụ phí kèm theo</span>
+        <!-- Bảo trì & Sửa chữa (Quản lý) -->
+        <a asp-controller="MaintenanceRequest" asp-action="Index"
+           class="@(currentController == "MaintenanceRequest" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-toolbox"></i>
+            <span class="text">Quản lý sửa chữa</span>
         </a>
-        <div class="collapse submenu @(isSurchargeGroup ? "show" : "")" id="surchargeMenu">
-            <!-- Trang danh sách -->
-            <a asp-controller="Surcharge" asp-action="Index" class="@(isSurchargeGroup && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-list me-2"></i> Danh sách phụ phí
-            </a>
-            @if (isAdminOrManager)
-            {
-                <!-- Trang thêm mới -->
-                <a asp-controller="Surcharge" asp-action="Create" class="@(isSurchargeGroup && currentAction == "Create" ? "active" : "")">
-                    <i class="fas fa-plus me-2"></i> Thêm phụ phí mới
-                </a>
-                <!-- Trang chỉnh sửa (Chỉ sáng lên khi đang ở đúng trang Edit) -->
-                @if (isSurchargeGroup && currentAction == "Edit")
-                {
-                    <a asp-controller="Surcharge" asp-action="Edit" class="active">
-                        <i class="fas fa-edit me-2"></i> Cập nhật phụ phí
-                    </a>
-                }
-            }
-        </div>
-    }
 
-    <!-- ================= KHÁCH ĐẾN THĂM ================= -->
-    @if (isAdminOrManager)
-    {
-        var isVisitorGroup = currentController == "Visitor";
-        <a data-bs-toggle="collapse" href="#visitorMenu" class="menu-toggle @(isVisitorGroup ? "active" : "collapsed")">
-            <i class="fas fa-address-book"></i>
-            <span class="text">Khách đến thăm</span>
-        </a>
-        <div class="collapse submenu @(isVisitorGroup ? "show" : "")" id="visitorMenu">
-            <a asp-controller="Visitor" asp-action="Index"
-               class="@(isVisitorGroup && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-list me-2"></i> Danh sách khách đến
-            </a>
-            <a asp-controller="Visitor" asp-action="Create"
-               class="@(isVisitorGroup && currentAction == "Create" ? "active" : "")">
-                <i class="fas fa-plus me-2"></i> Ghi nhận khách mới
-            </a>
-        </div>
-    }
-
-    <!-- ================= NỘI QUY KTX ================= -->
-    @if (isAdminOrManager)
-    {
+        <!-- Nội quy KTX -->
         var isRegulationGroup = currentController == "Regulation" || currentController == "Regulations";
         <a data-bs-toggle="collapse" href="#regulationMenu"
            class="menu-toggle @(isRegulationGroup ? "active" : "collapsed")">
@@ -393,30 +393,55 @@
             </a>
         </div>
     }
-    else
+
+    <!-- ================= SECTION: TÀI CHÍNH & THANH TOÁN (ADMIN / MANAGER / STUDENT) ================= -->
+    @if (isAuthenticated && (isAdminOrManager || User.IsInRole("Student")))
     {
-        var isRegulationGroup = currentController == "Regulation" || currentController == "Regulations";
-        <a asp-controller="Regulation" asp-action="Index"
-           class="@(isRegulationGroup && currentAction == "Index" ? "active" : "")">
-            <i class="fas fa-book-open"></i>
-            <span class="text">Nội quy KTX</span>
+        <div class="sidebar-section-title">Tài chính & Thanh toán</div>
+        <a asp-controller="Payment" asp-action="Index"
+           class="@(currentController == "Payment" ? "active" : "")">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span class="text">Hóa đơn & Thanh toán</span>
         </a>
     }
 
-    <!-- ================= BÁO CÁO THỐNG KÊ ================= -->
-    @if (isAuthenticated && isAdminOrManager)
+    <!-- ================= SECTION: TRA CỨU & THÔNG TIN (STUDENT / STAFF) ================= -->
+    @if (isAuthenticated && !isAdminOrManager)
     {
-        var isStatisticGroup = currentController == "Statistic";
-        <a data-bs-toggle="collapse" href="#statisticMenu" class="menu-toggle @(isStatisticGroup ? "active" : "collapsed")">
-            <i class="fas fa-chart-line"></i>
-            <span class="text">Báo cáo thống kê</span>
-        </a>
-        <div class="collapse submenu @(isStatisticGroup ? "show" : "")" id="statisticMenu">
-            <a asp-controller="Statistic" asp-action="Index"
-               class="@(isStatisticGroup && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-chart-bar me-2"></i> Xem báo cáo thống kê
+        <div class="sidebar-section-title">Tra cứu & Thông tin</div>
+        @if (User.IsInRole("Student"))
+        {
+            <a asp-controller="Home" asp-action="Rooms"
+               class="@(currentController == "Home" && (currentAction == "Rooms" || currentAction == "RoomDetails") ? "active" : "")">
+                <i class="fas fa-door-closed"></i>
+                <span class="text">Xem phòng KTX</span>
             </a>
-        </div>
+            <a asp-controller="RoomType" asp-action="List"
+               class="@(currentController == "RoomType" && currentAction == "List" ? "active" : "")">
+                <i class="fas fa-tags"></i>
+                <span class="text">Loại phòng & Giá cả</span>
+            </a>
+            <a asp-controller="Asset" asp-action="Catalog"
+               class="@(currentController == "Asset" && currentAction == "Catalog" ? "active" : "")">
+                <i class="fas fa-couch"></i>
+                <span class="text">Danh mục thiết bị</span>
+            </a>
+        }
+        <a asp-controller="Surcharge" asp-action="Index"
+           class="@(currentController == "Surcharge" && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-coins"></i>
+            <span class="text">Danh sách phụ phí</span>
+        </a>
+        <a asp-controller="Regulation" asp-action="Index"
+           class="@((currentController == "Regulation" || currentController == "Regulations") && currentAction == "Index" ? "active" : "")">
+            <i class="fas fa-book-open"></i>
+            <span class="text">Nội quy KTX</span>
+        </a>
+        <a asp-controller="Home" asp-action="Guide"
+           class="@(currentController == "Home" && currentAction == "Guide" ? "active" : "")">
+            <i class="fas fa-book-reader"></i>
+            <span class="text">Hướng dẫn sử dụng</span>
+        </a>
     }
 
 </div>
