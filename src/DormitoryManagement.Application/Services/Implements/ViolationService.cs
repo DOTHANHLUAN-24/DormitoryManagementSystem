@@ -48,10 +48,10 @@ namespace DormitoryManagement.Application.Services.Implements
             {
                 var lowerSearch = search.ToLower();
                 query = query.Where(v => v.Contract.User != null &&
-                                    (v.Contract.User.Code.ToLower().Contains(lowerSearch)
-                                     || v.Contract.User.FullName.ToLower().Contains(lowerSearch)
-                                     || v.Contract.Bed.Room.RoomNumber.ToLower().Contains(lowerSearch)
-                                     || v.Description.ToLower().Contains(lowerSearch)));
+                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)));
             }
 
             var totalCount = await query.CountAsync();
@@ -90,19 +90,13 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             // Tìm sinh viên theo mã số (Code)
             var student = await _userRepository.GetQuery()
-                .FirstOrDefaultAsync(u => u.Code == violationDto.StudentId && !u.IsDeleted);
-            if (student == null)
-            {
-                throw new Exception($"Không tìm thấy sinh viên với mã số '{violationDto.StudentId}' trong hệ thống.");
-            }
+                    .FirstOrDefaultAsync(u => u.Code == violationDto.StudentId && !u.IsDeleted)
+                    ?? throw new Exception($"Không tìm thấy sinh viên với mã số '{violationDto.StudentId}' trong hệ thống.");
 
             // Tìm hợp đồng ở trạng thái Active của sinh viên
             var contract = await _contractRepository.GetQuery()
-                .FirstOrDefaultAsync(c => c.UserId == student.Id && c.Status == ContractStatus.Active && !c.IsDeleted);
-            if (contract == null)
-            {
-                throw new Exception($"Sinh viên {student.FullName} ({violationDto.StudentId}) hiện tại không có hợp đồng thuê phòng ở trạng thái hoạt động.");
-            }
+                .FirstOrDefaultAsync(c => c.UserId == student.Id && c.Status == ContractStatus.Active && !c.IsDeleted)
+                ?? throw new Exception($"Sinh viên {student.FullName} ({violationDto.StudentId}) hiện tại không có hợp đồng thuê phòng ở trạng thái hoạt động.");
 
             // Xác định số tiền phạt dựa trên mức độ vi phạm
             decimal fineAmount = violationDto.Severity switch
@@ -184,8 +178,8 @@ namespace DormitoryManagement.Application.Services.Implements
                 .Select(c => c.Id)
                 .ToListAsync();
 
-            if (!(contracts.Count > 0))
-                return Enumerable.Empty<ViolationResponseDto>();
+            if (contracts.Count is 0)
+                return [];
 
             // Lấy vi phạm của tất cả hợp đồng, kèm thông tin Contract -> User, Bed -> Room -> Block
             var violations = await _violationRepository.GetQuery()

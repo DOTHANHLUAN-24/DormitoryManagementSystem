@@ -21,6 +21,6 @@ namespace DormitoryManagement.Domain.Entities
         public string Description { get; set; } = string.Empty;
 
         /// <summary>Danh sách các phòng thuộc tòa nhà này.</summary>
-        public virtual ICollection<Room> Rooms { get; set; } = new List<Room>();
+        public virtual ICollection<Room> Rooms { get; set; } = [];
     }
 }
