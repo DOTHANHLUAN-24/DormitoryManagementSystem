@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Số lần sử dụng cụ thể của Dịch vụ / tiện ích
+    /// <summary>
+    /// Thực thể lưu trữ lượng tiêu thụ điện/nước hàng tháng của từng phòng.
+    /// </summary>
     [Table("UtilityUsages")]
     public class UtilityUsage : BaseEntity
     {

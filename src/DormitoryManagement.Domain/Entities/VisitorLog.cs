@@ -4,7 +4,9 @@ using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Lưu dữ liệu khách đến thăm
+    /// <summary>
+    /// Thực thể lưu trữ thông tin khách đến thăm ký túc xá.
+    /// </summary>
     [Table("VisitorLogs")]
     public class VisitorLog : BaseEntity
     {

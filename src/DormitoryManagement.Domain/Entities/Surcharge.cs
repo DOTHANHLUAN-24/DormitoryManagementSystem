@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Phụ phí kèm theo
+    /// <summary>
+    /// Thực thể đại diện cho các phụ phí kèm theo trong hóa đơn.
+    /// </summary>
     [Table("Surcharges")]
     public class Surcharge : BaseEntity
     {

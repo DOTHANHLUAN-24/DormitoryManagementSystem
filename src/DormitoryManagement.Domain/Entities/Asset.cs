@@ -6,7 +6,7 @@ using DormitoryManagement.Domain.Interfaces.Entities;
 namespace DormitoryManagement.Domain.Entities
 {
     /// <summary>
-    /// Thực thể tài sản/trang thiết bị trong ký túc xá.
+    /// Thực thể tài sản/trang thiết bị trong phòng của ký túc xá.
     /// </summary>
     [Table("Assets")]
     public class Asset : BaseEntity

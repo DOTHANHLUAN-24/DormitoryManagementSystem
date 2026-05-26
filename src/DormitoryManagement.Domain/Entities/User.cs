@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Người dùng
+    /// <summary>
+    /// Thực thể đại diện cho người dùng (Sinh viên, Nhân viên, Quản trị viên).
+    /// </summary>
     [Table("Users")]
     public class User : IdentityUser<Guid>, IAuditableEntity
     {

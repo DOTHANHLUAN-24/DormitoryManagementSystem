@@ -1,11 +1,13 @@
-﻿    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
     using DormitoryManagement.Domain.Enums;
     using DormitoryManagement.Domain.Interfaces.Entities;
 
     namespace DormitoryManagement.Domain.Entities
     {
-        // Phòng
+        /// <summary>
+        /// Thực thể đại diện cho phòng trong ký túc xá.
+        /// </summary>
         [Table("Rooms")]
         public class Room : BaseEntity
         {

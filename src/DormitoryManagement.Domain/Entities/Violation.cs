@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Vi phạm
+    /// <summary>
+    /// Thực thể ghi nhận các vi phạm nội quy của sinh viên.
+    /// </summary>
     [Table("Violations")]
     public class Violation : BaseEntity
     {

@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Quản lý chi tiết từng giường - gần giống quân sự khu B (Giường có ghi tên)
+    /// <summary>
+    /// Thực thể quản lý chi tiết từng giường trong phòng ký túc xá.
+    /// </summary>
     [Table("Beds")]
     public class Bed : BaseEntity
     {

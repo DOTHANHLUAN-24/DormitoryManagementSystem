@@ -4,7 +4,9 @@ using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Loại phòng
+    /// <summary>
+    /// Thực thể đại diện cho loại phòng trong ký túc xá.
+    /// </summary>
     [Table("RoomTypes")]
     public class RoomType : BaseEntity
     {

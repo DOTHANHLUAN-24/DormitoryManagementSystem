@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Hợp đồng
+    /// <summary>
+    /// Thực thể đại diện cho hợp đồng thuê giường/phòng của sinh viên.
+    /// </summary>
     [Table("Contracts")]
     public class Contract : BaseEntity
     {

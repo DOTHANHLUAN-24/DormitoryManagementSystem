@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Hóa đơn
+    /// <summary>
+    /// Thực thể đại diện cho hóa đơn thanh toán hàng tháng của sinh viên.
+    /// </summary>
     [Table("Invoices")]
     public class Invoice : BaseEntity
     {

@@ -1,11 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Yêu cầu bảo trì
+    /// <summary>
+    /// Thực thể đại diện cho yêu cầu bảo trì, sửa chữa trong ký túc xá.
+    /// </summary>
     [Table("MaintenanceRequests")]
     public class MaintenanceRequest : BaseEntity
     {

@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Vị trí tòa nhà
+    /// <summary>
+    /// Thực thể đại diện cho một tòa nhà (khu/block) trong ký túc xá.
+    /// </summary>
     [Table("Blocks")]
     public class Block : BaseEntity
     {

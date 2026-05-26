@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Thanh toán
+    /// <summary>
+    /// Thực thể đại diện cho giao dịch thanh toán hóa đơn.
+    /// </summary>
     [Table("Payments")]
     public class Payment : BaseEntity
     {

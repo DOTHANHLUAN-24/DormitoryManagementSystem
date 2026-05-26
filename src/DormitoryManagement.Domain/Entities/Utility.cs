@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Dịch vụ / tiện ích (Điện, nước, internet, phí giữ xe)
+    /// <summary>
+    /// Thực thể đại diện cho dịch vụ hoặc tiện ích (Điện, nước, internet...).
+    /// </summary>
     [Table("Utilities")]
     public class Utility : BaseEntity
     {

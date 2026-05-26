@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
 using DormitoryManagement.Domain.Interfaces.Entities;
 
 namespace DormitoryManagement.Domain.Entities
 {
-    // Phương tiện
+    /// <summary>
+    /// Thực thể quản lý phương tiện cá nhân của sinh viên/nhân viên.
+    /// </summary>
     [Table("Vehicles")]
     public class Vehicle : BaseEntity
     {
