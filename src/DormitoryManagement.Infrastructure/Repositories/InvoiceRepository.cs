@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin hóa đơn (Invoice).
     /// </summary>
-    public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
+    public class InvoiceRepository(ApplicationDbContext db) : BaseRepository<Invoice>(db), IInvoiceRepository
     {
-        /// <summary>
-        /// Khởi tạo InvoiceRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public InvoiceRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Tìm hóa đơn theo mã hóa đơn (InvoiceCode).
@@ -84,7 +77,12 @@ namespace DormitoryManagement.Infrastructure.Repositories
                     .ThenInclude(c => c.User)
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
+                        .ThenInclude(b => b.Room)
+                            .ThenInclude(r => r.RoomType)
                 .Include(i => i.Payments)
+                .Include(i => i.UtilityUsages)
+                    .ThenInclude(u => u.Utility)
+                .Include(i => i.Surcharges)
                 .Where(i => i.ContractId == contractId)
                 .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();

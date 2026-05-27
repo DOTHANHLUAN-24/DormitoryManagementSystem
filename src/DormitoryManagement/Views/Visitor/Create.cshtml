@@ -54,6 +54,7 @@
             <div class="card card-custom">
                 <div class="card-body p-4 p-md-5">
                     <form id="createVisitorForm" onsubmit="createNewVisitor(event)">
+                        @Html.AntiForgeryToken()
                         <div class="row g-5">
                             <!-- CỘT TRÁI: THÔNG TIN KHÁCH -->
                             <div class="col-md-6 border-end-md pe-md-4">
@@ -130,7 +131,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // Tự động điền ngày giờ hiện tại khi mở form ghi nhận (Thời gian neo thực tế năm 2026)
+            // Tự động điền ngày giờ hiện tại
             const now = new Date();
             
             const year = now.getFullYear();
@@ -142,7 +143,7 @@
             const currentDateTimeStr = `${year}-${month}-${day}T${hours}:${minutes}`;
             document.getElementById("checkIn").value = currentDateTimeStr;
 
-            // Tính toán giờ ra dự kiến mặc định (Thăm nuôi tiêu chuẩn trong 3 tiếng)
+            // Tính toán giờ ra dự kiến mặc định (3 tiếng)
             const defaultCheckOut = new Date(now.getTime() + 3 * 60 * 60 * 1000);
             const outYear = defaultCheckOut.getFullYear();
             const outMonth = String(defaultCheckOut.getMonth() + 1).padStart(2, '0');
@@ -153,15 +154,18 @@
             document.getElementById("checkOut").value = `${outYear}-${outMonth}-${outDay}T${outHours}:${outMinutes}`;
         });
 
-        // Xử lý logic nghiệp vụ và đẩy thông báo thành công cao cấp
         function createNewVisitor(event) {
             event.preventDefault();
 
             const name = document.getElementById("visitorName").value;
             const checkInTime = document.getElementById("checkIn").value;
             const checkOutTime = document.getElementById("checkOut").value;
+            const identityCard = document.getElementById("identityCard").value;
+            const purpose = document.getElementById("purpose").value;
+            const studentName = document.getElementById("studentName").value;
+            const room = document.getElementById("room").value;
+            const token = $('input[name="__RequestVerificationToken"]').val();
 
-            // Kiểm tra ràng buộc logic dòng thời gian 
             if (new Date(checkInTime) >= new Date(checkOutTime)) {
                 Swal.fire({
                     icon: 'error',
@@ -172,19 +176,37 @@
                 return;
             }
 
-            // Sinh mã định danh ngẫu nhiên phục vụ lưu trữ Mock Data
-            const randomId = "VIS" + Math.floor(100 + Math.random() * 900);
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Đăng ký thành công!',
-                text: `Đã ghi nhận khách ${name} (Mã định danh hệ thống: ${randomId}) vào sổ theo dõi lịch sử ra vào.`,
-                confirmButtonColor: '#4f46e5',
-                timer: 3000,
-                timerProgressBar: true
-            }).then(() => {
-                // Điều hướng quay trở về trang danh sách chính
-                window.location.href = "/Visitor";
+            $.ajax({
+                url: '/Visitor/Create',
+                type: 'POST',
+                data: {
+                    visitorName: name,
+                    identityCard: identityCard,
+                    phoneNumber: '',
+                    purpose: purpose,
+                    studentName: studentName,
+                    room: room,
+                    checkIn: checkInTime,
+                    checkOut: checkOutTime,
+                    __RequestVerificationToken: token
+                },
+                success: function(res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Đăng ký thành công!',
+                            text: `Đã ghi nhận khách ${name} (Mã: ${res.id}) vào sổ theo dõi.`,
+                            confirmButtonColor: '#4f46e5',
+                            timer: 2500,
+                            timerProgressBar: true
+                        }).then(() => {
+                            window.location.href = "/Visitor";
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Không thể lưu bản ghi khách thăm.', 'error');
+                }
             });
         }
     </script>

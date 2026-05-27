@@ -10,13 +10,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin phòng (Room).
     /// </summary>
-    public class RoomRepository : BaseRepository<Room>, IRoomRepository
+    public class RoomRepository(ApplicationDbContext db) : BaseRepository<Room>(db), IRoomRepository
     {
-        /// <summary>
-        /// Khởi tạo RoomRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public RoomRepository(ApplicationDbContext db) : base(db) { }
 
         /// <summary>
         /// Tìm kiếm nâng cao: lọc theo tên, tòa nhà, loại phòng, trạng thái và khoảng giá có phân trang.

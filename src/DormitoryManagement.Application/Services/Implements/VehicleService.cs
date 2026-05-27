@@ -3,7 +3,6 @@ using DormitoryManagement.Application.Dtos.Requests.Vehicles;
 using DormitoryManagement.Application.Dtos.Responses.Vehicles;
 using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Application.Services.Interfaces;
-using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;

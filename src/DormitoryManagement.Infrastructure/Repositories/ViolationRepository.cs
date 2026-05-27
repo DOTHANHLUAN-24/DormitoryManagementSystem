@@ -9,13 +9,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin vi phạm kỷ luật (Violation).
     /// </summary>
-    public class ViolationRepository : BaseRepository<Violation>, IViolationRepository
+    public class ViolationRepository(ApplicationDbContext db) : BaseRepository<Violation>(db), IViolationRepository
     {
-        /// <summary>
-        /// Khởi tạo ViolationRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public ViolationRepository(ApplicationDbContext db) : base(db) { }
 
         /// <summary>
         /// Lấy thông tin vi phạm theo Id (chỉ lấy vi phạm chưa bị xóa).

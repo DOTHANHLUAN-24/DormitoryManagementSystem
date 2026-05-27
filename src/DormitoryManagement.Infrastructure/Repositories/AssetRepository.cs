@@ -10,15 +10,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin tài sản (Asset).
     /// </summary>
-    public class AssetRepository : BaseRepository<Asset>, IAssetRepository
+    public class AssetRepository(ApplicationDbContext db) : BaseRepository<Asset>(db), IAssetRepository
     {
-        /// <summary>
-        /// Khởi tạo AssetRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public AssetRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Lấy thông tin tài sản theo Id kèm thông tin Phòng (Room) và Tòa (Block).

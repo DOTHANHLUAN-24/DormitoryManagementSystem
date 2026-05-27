@@ -8,9 +8,6 @@ using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace DormitoryManagement.Application.Services.Implements
 {

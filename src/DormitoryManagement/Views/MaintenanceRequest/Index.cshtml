@@ -1,0 +1,265 @@
+@using DormitoryManagement.Domain.Enums
+@using DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>
+
+@{
+    ViewData["Title"] = "Quản lý Yêu cầu Bảo trì";
+    var filter = ViewBag.Filter as MaintenanceRequestFilterRequest ?? new MaintenanceRequestFilterRequest();
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input { padding-left: 40px; }
+
+        .btn-filter-action { height: 46px; width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
+        .btn-apply { background: #0d6efd; color: white; }
+        .btn-apply:hover { background: #0b5ed7; transform: scale(1.05); }
+        .btn-refresh { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; }
+        .btn-refresh:hover { background: #f8fafc; transform: scale(1.05); }
+
+        .trang-thai { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .open { background: #e0f2fe; color: #0284c7; }
+        .in-progress { background: #fff7ed; color: #f97316; }
+        .resolved { background: #ecfdf5; color: #10b981; }
+        .closed { background: #f1f5f9; color: #64748b; }
+        
+        .priority-high { color: #ef4444; font-weight: bold; }
+        .priority-medium { color: #f59e0b; font-weight: bold; }
+        .priority-low { color: #10b981; }
+
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
+        .nut-sua { background: #eff6ff; color: #3b82f6; }
+        .nut-xoa { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.1); }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-tools me-2"></i>Quản lý Yêu cầu Bảo trì</h1>
+    </header>
+
+    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
+        <div class="row g-2 align-items-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="SearchTerm" value="@filter.SearchTerm" class="form-control input-custom" placeholder="Tìm theo tiêu đề, mô tả...">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <select name="Status" class="form-select input-custom">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="Open" selected="@(filter.Status == MaintenanceStatus.Open)">Mới tiếp nhận (Open)</option>
+                    <option value="InProgress" selected="@(filter.Status == MaintenanceStatus.InProgress)">Đang xử lý (InProgress)</option>
+                    <option value="Resolved" selected="@(filter.Status == MaintenanceStatus.Resolved)">Đã giải quyết (Resolved)</option>
+                    <option value="Closed" selected="@(filter.Status == MaintenanceStatus.Closed)">Đã đóng (Closed)</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <select name="Priority" class="form-select input-custom">
+                    <option value="">Tất cả mức ưu tiên</option>
+                    <option value="Low" selected="@(filter.Priority == MaintenancePriority.Low)">Thấp</option>
+                    <option value="Medium" selected="@(filter.Priority == MaintenancePriority.Medium)">Trung bình</option>
+                    <option value="High" selected="@(filter.Priority == MaintenancePriority.High)">Cao</option>
+                    <option value="Urgent" selected="@(filter.Priority == MaintenancePriority.Urgent)">Khẩn cấp</option>
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-12 d-flex gap-2 justify-content-end">
+                <button type="submit" class="btn-filter-action btn-apply" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i>
+                </button>
+                <a asp-action="Index" class="btn-filter-action btn-refresh" title="Làm mới">
+                    <i class="fas fa-redo"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Tiêu đề</th>
+                        <th>Phòng</th>
+                        <th>Người yêu cầu</th>
+                        <th>Mức độ</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark">@item.Title</div>
+                                    <div class="small text-muted text-truncate" style="max-width: 250px;">@item.Description</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary">@item.RoomNumber</div>
+                                    <div class="small text-muted">@item.BlockName</div>
+                                </td>
+                                <td>
+                                    <div>@item.RequesterName</div>
+                                    <div class="small text-muted">@item.RequesterCode</div>
+                                </td>
+                                <td>
+                                    @if (item.Priority == "High" || item.Priority == "Urgent")
+                                    {
+                                        <span class="priority-high"><i class="fas fa-exclamation-triangle me-1"></i>@item.Priority</span>
+                                    }
+                                    else if (item.Priority == "Medium")
+                                    {
+                                        <span class="priority-medium">@item.Priority</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="priority-low">@item.Priority</span>
+                                    }
+                                </td>
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case "Open": <span class="trang-thai open">Mới</span> break;
+                                        case "InProgress": <span class="trang-thai in-progress">Đang xử lý</span> break;
+                                        case "Resolved": <span class="trang-thai resolved">Đã xử lý</span> break;
+                                        case "Closed": <span class="trang-thai closed">Đã đóng</span> break;
+                                        default: <span class="trang-thai">@item.Status</span> break;
+                                    }
+                                </td>
+                                <td><span class="small">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <button type="button" class="nut-hanh-dong nut-sua" onclick="openUpdateStatusModal('@item.Id', '@item.Status')" title="Cập nhật trạng thái"><i class="fas fa-edit"></i></button>
+                                        <button type="button" class="nut-hanh-dong nut-xoa" onclick="confirmDelete('@item.Id')" title="Xóa"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="7" class="text-center py-5 text-muted">Không tìm thấy yêu cầu bảo trì phù hợp</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Phân trang -->
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+<!-- Modal cập nhật trạng thái -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cập nhật trạng thái</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <input type="hidden" id="requestId" />
+          <div class="mb-3">
+              <label class="form-label">Trạng thái mới</label>
+              <select id="newStatus" class="form-select">
+                  <option value="Open">Mới tiếp nhận (Open)</option>
+                  <option value="InProgress">Đang xử lý (InProgress)</option>
+                  <option value="Resolved">Đã giải quyết (Resolved)</option>
+                  <option value="Closed">Đã đóng (Closed)</option>
+              </select>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="submitUpdateStatus()">Cập nhật</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+    <script>
+        function openUpdateStatusModal(id, currentStatus) {
+            $('#requestId').val(id);
+            $('#newStatus').val(currentStatus);
+            var myModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
+            myModal.show();
+        }
+
+        function submitUpdateStatus() {
+            var id = $('#requestId').val();
+            var status = $('#newStatus').val();
+
+            $.ajax({
+                url: '/api/MaintenanceRequest/' + id + '/status',
+                type: 'PATCH',
+                data: {
+                    status: status,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Thành công',
+                            text: res.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('Lỗi', res.message, 'error');
+                    }
+                },
+                error: function () {
+                    Swal.fire('Lỗi', 'Không thể cập nhật trạng thái.', 'error');
+                }
+            });
+        }
+
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Bạn có chắc chắn muốn xóa yêu cầu này?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/api/MaintenanceRequest/' + id,
+                        type: 'DELETE',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Đã xóa!', res.message, 'success').then(() => { location.reload(); });
+                            } else {
+                                Swal.fire('Lỗi', res.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

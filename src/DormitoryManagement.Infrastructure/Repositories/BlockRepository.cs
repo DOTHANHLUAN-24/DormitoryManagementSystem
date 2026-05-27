@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin tòa nhà (Block).
     /// </summary>
-    public class BlockRepository : BaseRepository<Block>, IBlockRepository
+    public class BlockRepository(ApplicationDbContext db) : BaseRepository<Block>(db), IBlockRepository
     {
-        /// <summary>
-        /// Khởi tạo BlockRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public BlockRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Lấy thông tin tòa nhà kèm theo danh sách phòng chưa bị xóa.

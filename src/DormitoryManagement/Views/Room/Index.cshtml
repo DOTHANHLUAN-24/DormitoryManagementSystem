@@ -195,28 +195,9 @@
                 </tbody>
             </table>
         </div>
+        <!-- Phân trang -->
+        @await Html.PartialAsync("_Pagination", Model)
     </div>
-
-    <!-- Phân trang -->
-    @if (Model.TotalPages > 1)
-    {
-        <nav class="mt-4">
-            <ul class="pagination pagination-sm justify-content-center">
-                <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                    <a class="page-link" href="@Url.Action("Index", new { PageNumber = Model.PageNumber - 1, SearchTerm = filter.SearchTerm, BlockId = filter.BlockId, Status = filter.Status, MinPrice = filter.MinPrice, MaxPrice = filter.MaxPrice })">&laquo;</a>
-                </li>
-                @for (int i = 1; i <= Model.TotalPages; i++)
-                {
-                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { PageNumber = i, SearchTerm = filter.SearchTerm, BlockId = filter.BlockId, Status = filter.Status, MinPrice = filter.MinPrice, MaxPrice = filter.MaxPrice })">@i</a>
-                    </li>
-                }
-                <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                    <a class="page-link" href="@Url.Action("Index", new { PageNumber = Model.PageNumber + 1, SearchTerm = filter.SearchTerm, BlockId = filter.BlockId, Status = filter.Status, MinPrice = filter.MinPrice, MaxPrice = filter.MaxPrice })">&raquo;</a>
-                </li>
-            </ul>
-        </nav>
-    }
 </div>
 
 @section Scripts {

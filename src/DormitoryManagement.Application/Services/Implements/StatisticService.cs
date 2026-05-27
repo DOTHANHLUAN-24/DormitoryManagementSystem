@@ -23,6 +23,11 @@ namespace DormitoryManagement.Application.Services.Implements
             var roomStatusData = await _statisticRepository.GetRoomStatusDataAsync();
             var revenueData = await _statisticRepository.GetLast6MonthsRevenueAsync();
 
+            var maintenanceStats = await _statisticRepository.GetMaintenanceStatsAsync();
+            var contractStats = await _statisticRepository.GetContractStatsAsync();
+            var bedOccupancyStats = await _statisticRepository.GetBedOccupancyStatsAsync();
+            var violationData = await _statisticRepository.GetLast6MonthsViolationsAsync();
+
             return new StatisticSummaryResponse
             {
                 TotalStudents = totalStudents,
@@ -32,7 +37,13 @@ namespace DormitoryManagement.Application.Services.Implements
                 RoomStatusData = roomStatusData,
                 RevenueLabels = revenueData.Select(r => r.MonthLabel).ToArray(),
                 RevenuePaid = revenueData.Select(r => r.RevenuePaid).ToArray(),
-                RevenueUnpaid = revenueData.Select(r => r.RevenueUnpaid).ToArray()
+                RevenueUnpaid = revenueData.Select(r => r.RevenueUnpaid).ToArray(),
+
+                MaintenanceStats = maintenanceStats,
+                ContractStats = contractStats,
+                BedOccupancyStats = bedOccupancyStats,
+                ViolationLabels = violationData.Select(v => v.MonthLabel).ToArray(),
+                ViolationData = violationData.Select(v => v.ViolationCount).ToArray()
             };
         }
     }

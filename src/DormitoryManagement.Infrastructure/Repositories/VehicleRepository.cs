@@ -9,15 +9,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin phương tiện (Vehicle).
     /// </summary>
-    public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
+    public class VehicleRepository(ApplicationDbContext db) : BaseRepository<Vehicle>(db), IVehicleRepository
     {
-        /// <summary>
-        /// Khởi tạo VehicleRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public VehicleRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Lấy phương tiện theo Id kèm thông tin chủ sở hữu (Owner) nếu tìm thấy.
