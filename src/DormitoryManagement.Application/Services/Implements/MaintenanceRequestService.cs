@@ -44,18 +44,12 @@ namespace DormitoryManagement.Application.Services.Implements
 
         public async Task<PagedResult<MaintenanceRequestResponseDto>> GetAllPagedAsync(int pageIndex, int pageSize, string? searchTerm = null, MaintenanceStatus? status = null, MaintenancePriority? priority = null)
         {
-            // Note: Since IMaintenanceRequestRepository does not have a specific GetPaged method with all these filters built-in,
-            // we will use the base repository's GetByStatusPagedAsync or GetPagedAsync
-            // Constructing predicate
-            System.Linq.Expressions.Expression<Func<MaintenanceRequest, bool>> predicate = x => !x.IsDeleted;
+            System.Linq.Expressions.Expression<Func<MaintenanceRequest, bool>> predicate = x =>
+                !x.IsDeleted
+                && (string.IsNullOrEmpty(searchTerm) || x.Title.Contains(searchTerm) || x.Description.Contains(searchTerm))
+                && (!status.HasValue || x.Status == status.Value)
+                && (!priority.HasValue || x.Priority == priority.Value);
 
-            if (!string.IsNullOrEmpty(searchTerm))
-            {
-                predicate = x => !x.IsDeleted && (x.Title.Contains(searchTerm) || x.Description.Contains(searchTerm));
-            }
-
-            // This is a simplified filtering. For full complex filtering, we might need to chain IQueryable in Repo.
-            // But IBaseRepository provides GetByStatusPagedAsync which accepts predicate.
             var pagedData = await _repository.GetByStatusPagedAsync(
                 pageIndex, pageSize, true, false, predicate,
                 x => x.Room, x => x.Room.Block, x => x.Requester, x => x.Handler!);
