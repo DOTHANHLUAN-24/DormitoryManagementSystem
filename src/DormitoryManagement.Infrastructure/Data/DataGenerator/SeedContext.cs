@@ -1,4 +1,4 @@
-﻿using Bogus;
+using Bogus;
 using DormitoryManagement.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 
@@ -39,5 +39,7 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator
         public List<Vehicle> Vehicles { get; set; } = new();
         
         public List<Violation> Violations { get; set; } = new();
+
+        public List<UtilityServiceRequest> UtilityServiceRequests { get; set; } = new();
     }
 }

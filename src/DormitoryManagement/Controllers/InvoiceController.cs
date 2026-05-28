@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
-using System.Threading.Tasks;
 
 namespace DormitoryManagement.Controllers
 {
@@ -13,7 +12,8 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Hiển thị danh sách hóa đơn (Trang Index)
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(string search = "", string status = "", int page = 1)
         {
             Logger.LogInformation("Đang tải danh sách hóa đơn trang {Page}, tìm kiếm: '{Search}', trạng thái: '{Status}'", page, search, status);
@@ -122,14 +122,49 @@ namespace DormitoryManagement.Controllers
             if (result)
             {
                 Logger.LogInformation("Xóa hóa đơn ID: {Id} thành công.", id);
-                TempData["Success"] = "Xóa hóa đơn thành công!";
+                return Json(new { success = true, message = "Xóa hóa đơn thành công!" });
             }
             else
             {
                 Logger.LogWarning("Xóa hóa đơn ID: {Id} thất bại (Không tìm thấy hoặc lỗi xảy ra).", id);
-                TempData["Error"] = "Xóa hóa đơn thất bại hoặc không tìm thấy hóa đơn.";
+                return Json(new { success = false, message = "Xóa hóa đơn thất bại hoặc không tìm thấy hóa đơn." });
             }
-            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác hóa đơn trang {Page}, tìm kiếm: '{Search}'", page, search);
+            int pageSize = PageSize;
+            var result = await invoiceService.GetDeletedInvoicesAsync(page, pageSize, search);
+            ViewBag.Search = search;
+            return View(result);
+        }
+
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục hóa đơn ID: {Id}", id);
+            var success = await invoiceService.RestoreInvoiceAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Khôi phục hóa đơn thành công!" });
+            }
+            return Json(new { success = false, message = "Khôi phục hóa đơn thất bại." });
+        }
+
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn hóa đơn ID: {Id}", id);
+            var success = await invoiceService.DeletePermanentlyAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Đã xóa vĩnh viễn hóa đơn khỏi cơ sở dữ liệu." });
+            }
+            return Json(new { success = false, message = "Xóa vĩnh viễn hóa đơn thất bại." });
         }
     }
 }

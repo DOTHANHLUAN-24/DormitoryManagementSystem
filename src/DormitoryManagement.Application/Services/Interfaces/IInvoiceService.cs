@@ -46,5 +46,20 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// Xóa hóa đơn theo Id (xóa mềm).
         /// </summary>
         Task<bool> DeleteInvoiceAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách hóa đơn đã bị xóa phân trang.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Invoice>> GetDeletedInvoicesAsync(int pageIndex, int pageSize, string? searchString = null);
+
+        /// <summary>
+        /// Khôi phục hóa đơn đã bị xóa mềm.
+        /// </summary>
+        Task<bool> RestoreInvoiceAsync(Guid id);
+
+        /// <summary>
+        /// Xóa vĩnh viễn hóa đơn khỏi database.
+        /// </summary>
+        Task<bool> DeletePermanentlyAsync(Guid id);
     }
 }

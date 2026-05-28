@@ -27,6 +27,7 @@ namespace DormitoryManagement.Controllers
     ) : BaseController
     {
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
             Logger.LogInformation("Đang truy cập trang chủ (Index).");
@@ -233,6 +234,34 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Services()
         {
             Logger.LogInformation("Sinh viên {Username} truy cập trang dịch vụ tiện ích.", CurrentUserName);
+            
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (Guid.TryParse(userIdString, out var userId))
+            {
+                var contracts = await contractService.GetByUserIdAsync(userId);
+                var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
+                if (activeContract != null && activeContract.Bed?.RoomId != null)
+                {
+                    var usages = await utilityService.GetUtilityUsagesByRoomIdAsync(activeContract.Bed.RoomId);
+                    ViewBag.UtilityUsages = usages;
+                    ViewBag.RoomNumber = activeContract.Bed.Room.RoomNumber;
+                }
+                else
+                {
+                    ViewBag.UtilityUsages = new List<UtilityUsage>();
+                    ViewBag.RoomNumber = null;
+                }
+
+                var requests = await utilityService.GetServiceRequestsByUserIdAsync(userId);
+                ViewBag.ServiceRequests = requests;
+            }
+            else
+            {
+                ViewBag.UtilityUsages = new List<UtilityUsage>();
+                ViewBag.RoomNumber = null;
+                ViewBag.ServiceRequests = new List<UtilityServiceRequest>();
+            }
+
             var utilities = await utilityService.GetAllActiveUtilitiesAsync();
             return View(utilities);
         }

@@ -17,6 +17,7 @@ namespace DormitoryManagement.Application.Services.Interfaces
             int pageIndex,
             int pageSize,
             string? searchTerm,
+            string? vehicleType = null,
             bool? isActive = null,
             bool? isDeleted = false,
             Guid? ownerId = null);

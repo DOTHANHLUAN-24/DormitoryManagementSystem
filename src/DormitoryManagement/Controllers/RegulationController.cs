@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Route("Regulation")]
     public class RegulationController(IWebHostEnvironment env) : BaseController
     {
         private readonly string _filePath = Path.Combine(env.WebRootPath, "data", "regulation.html");
 
         [HttpGet("")]
+        [HttpGet("Index")]
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {

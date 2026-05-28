@@ -1,0 +1,211 @@
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Application.Dtos.Responses.Vehicles.VehicleResponseDto>
+
+@{
+    ViewData["Title"] = "Thùng Rác Phương Tiện";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
+        .da-xoa { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+        .trang-thai-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .data-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; opacity: 0.7; }
+        
+        .nut-hanh-dong { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: none; text-decoration: none !important; transition: all 0.2s; cursor: pointer; }
+        .nut-khoi-phuc { background: #ecfdf5; color: #10b981; }
+        .nut-xoa-vinh-vien { background: #fff1f2; color: #e11d48; }
+        .nut-hanh-dong:hover { transform: scale(1.1); }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác: Phương tiện
+        </h1>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-sync-action btn-sync-secondary">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
+
+    <!-- Thanh tìm kiếm -->
+    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync">
+        <div class="row g-3">
+            <div class="col-md-10">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control input-sync" placeholder="Tìm theo biển số xe, tên chủ xe...">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-search-sync" style="background: #ef4444;">
+                    Tìm kiếm
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Bảng Dữ Liệu -->
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid #fecaca !important;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Biển Số Xe</th>
+                        <th>Loại Xe</th>
+                        <th>Chủ Xe</th>
+                        <th>Ngày Đăng Ký</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr class="opacity-75">
+                                <td class="ps-4">
+                                    <span class="data-badge text-decoration-line-through">@item.LicensePlate</span>
+                                </td>
+                                <td>
+                                    <span class="text-dark text-decoration-line-through">@item.VehicleType</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark text-decoration-line-through">@item.OwnerFullName</div>
+                                    <div class="text-muted small text-decoration-line-through">MSSV: @item.OwnerCode</div>
+                                </td>
+                                <td>
+                                    <span class="text-muted small text-decoration-line-through"><i class="far fa-calendar-alt me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                </td>
+                                <td>
+                                    <span class="trang-thai-badge da-xoa"><i class="fas fa-trash-alt me-1"></i> Đã xóa</span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="button" onclick="restoreVehicle('@item.Id')" class="nut-hanh-dong nut-khoi-phuc" title="Khôi phục lại">
+                                            <i class="fas fa-trash-restore"></i>
+                                        </button>
+                                        <button type="button" onclick="deletePermanently('@item.Id')" class="nut-hanh-dong nut-xoa-vinh-vien" title="Xóa vĩnh viễn">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fas fa-box-open fs-1 mb-3 text-light"></i>
+                                <br />
+                                <span class="fs-5 fw-semibold text-secondary">Thùng rác hiện đang trống.</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function restoreVehicle(id) {
+            Swal.fire({
+                title: "Khôi phục phương tiện?",
+                text: "Phương tiện này sẽ được khôi phục về danh sách hoạt động.",
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-undo me-1"></i> Khôi phục',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Vehicle/Restore/' + id,
+                        type: 'POST',
+                        headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ 
+                                    icon: 'success', 
+                                    title: 'Đã khôi phục!', 
+                                    text: data.message, 
+                                    timer: 1500, 
+                                    showConfirmButton: false 
+                                }).then(() => location.reload());
+                            } else {
+                                Swal.fire('Lỗi!', data.message, 'error');
+                            }
+                        },
+                        error: function () {
+                            Swal.fire('Lỗi!', 'Không thể kết nối đến máy chủ.', 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function deletePermanently(id) {
+            Swal.fire({
+                title: 'CẢNH BÁO NGUY HIỂM!',
+                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> phương tiện này.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e11d48',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-skull-crossbones me-1"></i> Vẫn xóa vĩnh viễn',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Xác nhận lần cuối',
+                        text: "Gõ chữ 'XOA' vào ô bên dưới để xác nhận.",
+                        input: 'text',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Thực thi xóa',
+                        cancelButtonText: 'Hủy',
+                        preConfirm: (inputValue) => {
+                            if (inputValue !== 'XOA') {
+                                Swal.showValidationMessage('Bạn phải gõ đúng chữ XOA');
+                            }
+                        }
+                    }).then((finalResult) => {
+                        if (finalResult.isConfirmed) {
+                            $.ajax({
+                                url: '/Vehicle/DeletePermanently/' + id,
+                                type: 'POST',
+                                headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
+                                success: function (data) {
+                                    if (data.success) {
+                                        Swal.fire({ 
+                                            icon: 'success', 
+                                            title: 'Đã xóa!', 
+                                            text: data.message, 
+                                            timer: 1500, 
+                                            showConfirmButton: false 
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire('Không thể xóa!', data.message, 'error');
+                                    }
+                                },
+                                error: function () { 
+                                    Swal.fire('Lỗi hệ thống!', 'Vui lòng kiểm tra lại kết nối.', 'error'); 
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

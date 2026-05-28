@@ -1,127 +1,248 @@
 @model IEnumerable<DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>
 
 @{
-    ViewData["Title"] = "Yêu cầu bảo trì của tôi";
+    ViewData["Title"] = "Yêu cầu sửa chữa của tôi";
+    var items = Model?.ToList() ?? new List<DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>();
 }
 
 @section Styles {
-    <style>
-        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; }
-        .btn-add { background: #4f46e5; color: white !important; border: none; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
-        .btn-add:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+<style>
+    .page-title { font-size: 1.55rem; font-weight: 800; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .btn-add-new { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: none; padding: 9px 20px; border-radius: 12px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all .2s; box-shadow: 0 4px 12px rgba(79,70,229,.25); text-decoration: none; }
+    .btn-add-new:hover { color:#fff; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(79,70,229,.35); }
 
-        .trang-thai { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .open { background: #e0f2fe; color: #0284c7; }
-        .in-progress { background: #fff7ed; color: #f97316; }
-        .resolved { background: #ecfdf5; color: #10b981; }
-        .closed { background: #f1f5f9; color: #64748b; }
-        
-        .priority-high { color: #ef4444; font-weight: bold; }
-        .priority-medium { color: #f59e0b; font-weight: bold; }
-        .priority-low { color: #10b981; }
-    </style>
+    /* Stats */
+    .mini-stat { background:#fff; border-radius:14px; padding:16px 18px; border:1px solid #e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+    .mini-stat-num { font-size:1.5rem; font-weight:800; }
+    .mini-stat-label { font-size:11px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:.4px; }
+
+    /* Timeline card list */
+    .request-list { display:flex; flex-direction:column; gap:12px; }
+    .request-card { background:#fff; border-radius:16px; border:1px solid #e8edf5; box-shadow:0 2px 8px rgba(0,0,0,.04); padding:18px 20px; transition:all .2s; position:relative; overflow:hidden; }
+    .request-card:hover { box-shadow:0 4px 20px rgba(0,0,0,.09); transform:translateY(-1px); }
+    .request-card::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; border-radius:4px 0 0 4px; }
+    .request-card.status-open::before { background:#3b82f6; }
+    .request-card.status-inprogress::before { background:#f97316; }
+    .request-card.status-resolved::before { background:#22c55e; }
+    .request-card.status-closed::before { background:#94a3b8; }
+
+    .badge-status { padding:3px 11px; border-radius:20px; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.4px; display:inline-block; }
+    .badge-open { background:#e0f2fe; color:#0369a1; }
+    .badge-inprogress { background:#fff7ed; color:#c2410c; }
+    .badge-resolved { background:#dcfce7; color:#15803d; }
+    .badge-closed { background:#f1f5f9; color:#475569; }
+
+    .badge-priority { padding:3px 9px; border-radius:8px; font-size:10.5px; font-weight:700; display:inline-block; }
+    .priority-urgent { background:#fef2f2; color:#dc2626; }
+    .priority-high { background:#fff7ed; color:#c2410c; }
+    .priority-medium { background:#fefce8; color:#b45309; }
+    .priority-low { background:#f0fdf4; color:#166534; }
+
+    .cancel-btn { background:#fef2f2; color:#dc2626; border:none; border-radius:8px; padding:5px 12px; font-size:12px; font-weight:600; cursor:pointer; transition:all .2s; }
+    .cancel-btn:hover { background:#fee2e2; transform:scale(1.05); }
+
+    .handler-badge { background:#f1f5f9; color:#475569; border-radius:8px; padding:3px 10px; font-size:12px; font-weight:600; display:inline-flex; align-items:center; gap:5px; }
+    .empty-state { text-align:center; padding:70px 20px; color:#94a3b8; }
+    .empty-state .icon-wrap { width:80px; height:80px; background:#f8fafc; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 16px; }
+    .empty-state i { font-size:32px; opacity:.5; }
+</style>
 }
 
+@Html.AntiForgeryToken()
+
 <div class="container-fluid">
+    <!-- Header -->
     <header class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="tieu-de-trang mb-0"><i class="fas fa-tools me-2"></i>Lịch sử yêu cầu sửa chữa</h1>
-        <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+        <h1 class="page-title mb-0">
+            <i class="fas fa-clipboard-list me-2" style="font-size:1.3rem;"></i>Yêu cầu sửa chữa của tôi
+        </h1>
+        <a asp-action="Create" class="btn-add-new">
             <i class="fas fa-plus"></i> Gửi yêu cầu mới
         </a>
     </header>
 
+    <!-- Alerts -->
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert" style="border-radius:12px;border:none;box-shadow:0 2px 8px rgba(34,197,94,.15);">
+            <i class="fas fa-check-circle text-success fs-5"></i>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
     }
-
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center gap-2 mb-3" role="alert" style="border-radius:12px;border:none;box-shadow:0 2px 8px rgba(239,68,68,.15);">
+            <i class="fas fa-exclamation-circle text-danger fs-5"></i>
+            <span>@TempData["Error"]</span>
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
         </div>
     }
 
-    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Tiêu đề</th>
-                        <th>Phòng</th>
-                        <th>Mức độ</th>
-                        <th>Trạng thái</th>
-                        <th>Ngày gửi</th>
-                        <th>Người xử lý</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        foreach (var item in Model)
-                        {
-                            <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-dark">@item.Title</div>
-                                    <div class="small text-muted text-truncate" style="max-width: 250px;">@item.Description</div>
-                                </td>
-                                <td>
-                                    <div class="fw-bold text-primary">@item.RoomNumber</div>
-                                    <div class="small text-muted">@item.BlockName</div>
-                                </td>
-                                <td>
-                                    @if (item.Priority == "High" || item.Priority == "Urgent")
-                                    {
-                                        <span class="priority-high"><i class="fas fa-exclamation-triangle me-1"></i>@item.Priority</span>
-                                    }
-                                    else if (item.Priority == "Medium")
-                                    {
-                                        <span class="priority-medium">@item.Priority</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="priority-low">@item.Priority</span>
-                                    }
-                                </td>
-                                <td>
-                                    @switch (item.Status)
-                                    {
-                                        case "Open": <span class="trang-thai open">Mới</span> break;
-                                        case "InProgress": <span class="trang-thai in-progress">Đang xử lý</span> break;
-                                        case "Resolved": <span class="trang-thai resolved">Đã xử lý</span> break;
-                                        case "Closed": <span class="trang-thai closed">Đã đóng</span> break;
-                                        default: <span class="trang-thai">@item.Status</span> break;
-                                    }
-                                </td>
-                                <td>
-                                    <div class="small">@item.CreatedDate.ToString("dd/MM/yyyy")</div>
-                                    <div class="small text-muted">@item.CreatedDate.ToString("HH:mm")</div>
-                                </td>
-                                <td>
-                                    @if (!string.IsNullOrEmpty(item.HandlerName))
-                                    {
-                                        <span class="badge bg-secondary">@item.HandlerName</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-muted small">Chưa phân công</span>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr><td colspan="6" class="text-center py-5 text-muted">Bạn chưa có yêu cầu sửa chữa nào.</td></tr>
-                    }
-                </tbody>
-            </table>
+    @if (items.Any())
+    {
+        <!-- Stats mini row -->
+        var openCnt     = items.Count(x => x.Status == "Open");
+        var inProgCnt   = items.Count(x => x.Status == "InProgress");
+        var resolvedCnt = items.Count(x => x.Status == "Resolved");
+        var closedCnt   = items.Count(x => x.Status == "Closed");
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="mini-stat">
+                    <div class="mini-stat-num" style="color:#1e293b;">@items.Count</div>
+                    <div class="mini-stat-label">Tổng yêu cầu</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="mini-stat">
+                    <div class="mini-stat-num" style="color:#3b82f6;">@openCnt</div>
+                    <div class="mini-stat-label">Đang chờ</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="mini-stat">
+                    <div class="mini-stat-num" style="color:#f97316;">@inProgCnt</div>
+                    <div class="mini-stat-label">Đang xử lý</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="mini-stat">
+                    <div class="mini-stat-num" style="color:#22c55e;">@resolvedCnt</div>
+                    <div class="mini-stat-label">Đã giải quyết</div>
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Request cards -->
+        <div class="request-list">
+            @foreach (var item in items)
+            {
+                var cardClass = item.Status switch {
+                    "Open"       => "status-open",
+                    "InProgress" => "status-inprogress",
+                    "Resolved"   => "status-resolved",
+                    "Closed"     => "status-closed",
+                    _            => ""
+                };
+                var priorityClass = item.Priority switch {
+                    "Urgent" => "priority-urgent",
+                    "High"   => "priority-high",
+                    "Medium" => "priority-medium",
+                    _        => "priority-low"
+                };
+                var priorityText = item.Priority switch {
+                    "Urgent" => "🔴 Khẩn cấp",
+                    "High"   => "🟠 Cao",
+                    "Medium" => "🟡 Trung bình",
+                    _        => "🟢 Thấp"
+                };
+                var statusBadgeClass = item.Status switch {
+                    "Open"       => "badge-open",
+                    "InProgress" => "badge-inprogress",
+                    "Resolved"   => "badge-resolved",
+                    "Closed"     => "badge-closed",
+                    _            => ""
+                };
+                var statusText = item.Status switch {
+                    "Open"       => "Mới tiếp nhận",
+                    "InProgress" => "Đang xử lý",
+                    "Resolved"   => "Đã giải quyết",
+                    "Closed"     => "Đã đóng / Hủy",
+                    _            => item.Status
+                };
+
+                <div class="request-card @cardClass">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+                        <!-- Left: title + meta -->
+                        <div style="flex:1; min-width:0;">
+                            <div class="fw-bold text-dark mb-1" style="font-size:15px;">@item.Title</div>
+                            <div class="text-muted small mb-2" style="max-width:600px;">@item.Description</div>
+                            <div class="d-flex flex-wrap gap-2 align-items-center">
+                                <span class="badge-status @statusBadgeClass">@statusText</span>
+                                <span class="badge-priority @priorityClass">@priorityText</span>
+                                <span class="text-muted small">
+                                    <i class="fas fa-door-open me-1"></i>@item.RoomNumber
+                                    @if (!string.IsNullOrEmpty(item.BlockName))
+                                    { <span class="opacity-60">· @item.BlockName</span> }
+                                </span>
+                                <span class="text-muted small">
+                                    <i class="fas fa-clock me-1"></i>@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                </span>
+                                @if (!string.IsNullOrEmpty(item.HandlerName))
+                                {
+                                    <span class="handler-badge">
+                                        <i class="fas fa-user-cog"></i>@item.HandlerName
+                                    </span>
+                                }
+                                @if (item.ResolvedAt.HasValue)
+                                {
+                                    <span class="text-muted small">
+                                        <i class="fas fa-check-double me-1 text-success"></i>Xử lý lúc @item.ResolvedAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                        <!-- Right: cancel button (only for Open) -->
+                        @if (item.Status == "Open")
+                        {
+                            <button type="button" class="cancel-btn flex-shrink-0"
+                                    onclick="confirmCancel('@item.Id', '@item.Title')">
+                                <i class="fas fa-times me-1"></i>Hủy yêu cầu
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="icon-wrap">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div class="fw-bold text-dark mb-1" style="font-size:16px;">Bạn chưa có yêu cầu sửa chữa nào</div>
+            <div class="small mb-3">Khi có sự cố thiết bị trong phòng, hãy gửi yêu cầu để được hỗ trợ kịp thời.</div>
+            <a asp-action="Create" class="btn-add-new d-inline-flex">
+                <i class="fas fa-plus"></i> Gửi yêu cầu đầu tiên
+            </a>
+        </div>
+    }
 </div>
+
+@section Scripts {
+<script>
+    function confirmCancel(id, title) {
+        Swal.fire({
+            title: 'Hủy yêu cầu?',
+            html: `Bạn muốn hủy yêu cầu:<br><strong>"${title}"</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="fas fa-times me-1"></i>Hủy yêu cầu',
+            cancelButtonText: 'Không hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                $.ajax({
+                    url: '/MaintenanceRequest/' + id + '/Cancel',
+                    type: 'POST',
+                    data: { __RequestVerificationToken: token },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({ icon: 'success', title: 'Đã hủy!', text: res.message, timer: 1400, showConfirmButton: false })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Không thể hủy', res.message, 'warning');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi', 'Không thể hủy yêu cầu. Vui lòng thử lại.', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
+}

@@ -1,106 +1,248 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using DormitoryManagement.Application.Services.Interfaces;
+using DormitoryManagement.Application.Dtos.Requests.Vehicles;
+using AutoMapper;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
-    public class VehicleController : BaseController
+    public class VehicleController(IVehicleService vehicleService, IUserService userService, IMapper mapper) : BaseController
     {
-        // GET: Vehicle
-        public IActionResult Index()
+        private readonly IVehicleService _vehicleService = vehicleService;
+        private readonly IUserService _userService = userService;
+        private readonly IMapper _mapper = mapper;
+
+        [HttpGet("")]
+        [HttpGet("Index")]
+        public async Task<IActionResult> Index(int page = 1, string search = "", string type = "")
         {
-            Logger.LogInformation("Đang truy cập trang danh sách phương tiện.");
-            // Giả lập danh sách để hiển thị giao diện
-            return View();
+            Logger.LogInformation("Đang truy cập trang danh sách phương tiện. Trang: {Page}, Tìm kiếm: {Search}, Loại: {Type}", page, search, type);
+
+            var result = await _vehicleService.GetPagedVehiclesAsync(page, PageSize, search, type);
+
+            ViewBag.Search = search;
+            ViewBag.TypeFilter = type;
+
+            return View(result);
         }
 
-        // GET: Vehicle/Create
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             Logger.LogInformation("Đang truy cập trang đăng ký phương tiện mới.");
-            return View();
+            return View(new VehicleRequestDto());
         }
 
-        // POST: Vehicle/Create
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(object vehicleDto)
+        public async Task<IActionResult> Create(VehicleRequestDto vehicleDto)
         {
             Logger.LogInformation("Đang xử lý yêu cầu đăng ký phương tiện mới.");
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                // Gọi service lưu dữ liệu
-                Logger.LogInformation("Đăng ký phương tiện thành công, chuyển hướng về Index.");
-                return RedirectToAction(nameof(Index));
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Logger.LogWarning("Dữ liệu đăng ký phương tiện không hợp lệ: {Errors}", string.Join(", ", errors));
+                return View(vehicleDto);
             }
-            Logger.LogWarning("Dữ liệu đăng ký phương tiện không hợp lệ.");
+
+            try
+            {
+                var success = await _vehicleService.CreateVehicleAsync(vehicleDto);
+                if (success)
+                {
+                    TempData["Success"] = "Đăng ký phương tiện mới thành công!";
+                    Logger.LogInformation("Đăng ký phương tiện thành công, chuyển hướng về Index.");
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError(string.Empty, "Đăng ký phương tiện thất bại. Vui lòng thử lại.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi đăng ký phương tiện mới.");
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
             return View(vehicleDto);
         }
 
-        // GET: Vehicle/Edit/5
-        public IActionResult Edit(Guid id)
+        [HttpGet("Edit/{id}")]
+        public async Task<IActionResult> Edit(Guid id)
         {
             Logger.LogInformation("Đang truy cập trang chỉnh sửa phương tiện ID: {Id}", id);
-            // GIẢ LẬP: Tìm dữ liệu dựa trên ID (Trong thực tế là gọi Service)
-            ViewBag.VehicleId = id;
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
+            if (vehicle == null)
+            {
+                Logger.LogWarning("Không tìm thấy phương tiện với ID: {Id}", id);
+                return NotFound();
+            }
 
-            // Để demo không bị hiện sai thông tin, tôi gán dữ liệu mẫu linh hoạt
-            ViewBag.OwnerName = "Lê Thị Cẩm Tú (SV2321050120)";
-            ViewBag.LicensePlate = "88-AK 02486";
-            ViewBag.VehicleType = "Xe máy";
-            ViewBag.Note = "Phương tiện đã kiểm tra định kỳ.";
-
-            // Load danh sách chủ sở hữu cho Dropdown
-            ViewBag.Owners = new List<dynamic> {
-                new { Id = Guid.NewGuid(), Name = "Đỗ Thành Luân (SV2221050048)" },
-                new { Id = id, Name = "Lê Thị Cẩm Tú (SV2321050120)" },
-                new { Id = Guid.NewGuid(), Name = "Đỗ Quang Huy (SV2221050047)" }
+            var updateDto = new VehicleUpdateDto
+            {
+                Id = vehicle.Id,
+                VehicleType = vehicle.VehicleType,
+                LicensePlate = vehicle.LicensePlate,
+                OwnerId = vehicle.OwnerId,
+                IsActive = vehicle.IsActive
             };
 
-            return View();
+            ViewBag.VehicleId = vehicle.Id;
+            ViewBag.LicensePlate = vehicle.LicensePlate;
+            ViewBag.VehicleType = vehicle.VehicleType;
+            ViewBag.OwnerName = $"{vehicle.OwnerCode} - {vehicle.OwnerFullName}";
+            return View(updateDto);
         }
 
-        // POST: Vehicle/Edit/5
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, object vehicleDto)
+        public async Task<IActionResult> Edit(Guid id, VehicleUpdateDto vehicleDto)
         {
             Logger.LogInformation("Đang xử lý yêu cầu cập nhật phương tiện ID: {Id}", id);
-            if (ModelState.IsValid)
+            if (id != vehicleDto.Id)
             {
-                TempData["Success"] = "Cập nhật phương tiện thành công!";
-                Logger.LogInformation("Cập nhật phương tiện thành công, chuyển hướng về Index.");
-                return RedirectToAction(nameof(Index));
+                return BadRequest();
             }
-            Logger.LogWarning("Dữ liệu cập nhật phương tiện không hợp lệ.");
+
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu cập nhật phương tiện không hợp lệ.");
+                return View(vehicleDto);
+            }
+
+            try
+            {
+                var success = await _vehicleService.UpdateVehicleAsync(id, vehicleDto);
+                if (success)
+                {
+                    TempData["Success"] = "Cập nhật phương tiện thành công!";
+                    Logger.LogInformation("Cập nhật phương tiện thành công, chuyển hướng về Index.");
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError(string.Empty, "Cập nhật phương tiện thất bại.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi cập nhật phương tiện ID: {Id}.", id);
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+
+            // Reload Owner Name for View in case of error
+            var vehicle = await _vehicleService.GetVehicleByIdAsync(id);
+            if (vehicle != null)
+            {
+                ViewBag.VehicleId = vehicle.Id;
+                ViewBag.LicensePlate = vehicle.LicensePlate;
+                ViewBag.VehicleType = vehicle.VehicleType;
+                ViewBag.OwnerName = $"{vehicle.OwnerCode} - {vehicle.OwnerFullName}";
+            }
             return View(vehicleDto);
         }
 
-        // API phục vụ tìm kiếm cho Select2
-        [HttpGet]
-        public IActionResult SearchUsers(string q)
+        [HttpGet("SearchUser/{id}")]
+        public async Task<IActionResult> SearchUsers(string q)
         {
             Logger.LogInformation("Đang thực hiện tìm kiếm người dùng cho phương tiện với từ khóa: {Query}", q);
-            // GIẢ LẬP: Danh sách người dùng trong hệ thống
-            var allUsers = new List<dynamic> {
-                new { id = "SV2221050048", text = "SV2221050048 - Đỗ Thành Luân" },
-                new { id = "SV2321050120", text = "SV2321050120 - Lê Thị Cẩm Tú" },
-                new { id = "SV2221050047", text = "SV2221050047 - Đỗ Quang Huy" },
-                new { id = "SV2221050566", text = "SV2221050566 - Vũ Thị Kim Oanh" },
-                new { id = "QL001", text = "QL001 - Quản lý KTX" }
-            };
-
-            if (string.IsNullOrWhiteSpace(q))
+            var usersResult = await _userService.GetActiveUsersPagedAsync(1, 20, q);
+            var items = usersResult.Items.Select(u => new
             {
-                return Json(new { items = allUsers.Take(10) });
+                id = u.Id,
+                text = $"{u.Code} - {u.FullName}"
+            });
+            return Json(new { items });
+        }
+
+        // AJAX POST: ToggleStatus
+        [HttpPost("ToggleStatus/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu thay đổi trạng thái hoạt động phương tiện ID: {Id}", id);
+            try
+            {
+                var result = await _vehicleService.ToggleVehicleStatusAsync(id);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đã thay đổi trạng thái hoạt động của phương tiện." });
+                }
+                return Json(new { success = false, message = "Không tìm thấy phương tiện." });
             }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi thay đổi trạng thái phương tiện ID: {Id}.", id);
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
-            // Tìm kiếm không phân biệt hoa thường trong cả mã và tên
-            var filtered = allUsers
-                .Where(u => u.text.Contains(q, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+        [HttpPost("SoftDelete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa phương tiện ID: {Id}", id);
+            try
+            {
+                var result = await _vehicleService.SoftDeleteVehicleAsync(id);
+                if (result)
+                {
+                    return Json(new { success = true, message = "Đã xóa phương tiện thành công." });
+                }
+                return Json(new { success = false, message = "Không tìm thấy phương tiện." });
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Lỗi xảy ra khi xóa phương tiện ID: {Id}.", id);
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
 
-            return Json(new { items = filtered });
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác phương tiện trang {Page}, tìm kiếm: '{Search}'", page, search);
+            var result = await _vehicleService.GetPagedVehiclesAsync(page, PageSize, search, isDeleted: true);
+            ViewBag.Search = search;
+            return View(result);
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục phương tiện ID: {Id}", id);
+            try
+            {
+                var success = await _vehicleService.RestoreVehicleAsync(id);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Khôi phục phương tiện thành công!" });
+                }
+                return Json(new { success = false, message = "Không tìm thấy phương tiện." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn phương tiện ID: {Id}", id);
+            try
+            {
+                var success = await _vehicleService.DeletePermanentlyAsync(id);
+                if (success)
+                {
+                    return Json(new { success = true, message = "Đã xóa vĩnh viễn phương tiện khỏi cơ sở dữ liệu." });
+                }
+                return Json(new { success = false, message = "Không tìm thấy phương tiện." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

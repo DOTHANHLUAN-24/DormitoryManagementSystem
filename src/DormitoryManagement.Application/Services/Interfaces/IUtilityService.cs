@@ -1,6 +1,7 @@
 using DormitoryManagement.Application.Dtos.Requests.Utilities;
 using DormitoryManagement.Application.Dtos.Responses.Utilities;
 using DormitoryManagement.Domain.Common;
+using DormitoryManagement.Domain.Entities;
 
 namespace DormitoryManagement.Application.Services.Interfaces
 {
@@ -68,5 +69,35 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="id">Id dịch vụ cần xóa vĩnh viễn</param>
         /// <returns>True nếu xóa thành công, ngược lại là False</returns>
         Task<bool> HardDeleteUtilityAsync(Guid id);
+
+        /// <summary>
+        /// Đăng ký dịch vụ cho sinh viên với số lượng cụ thể.
+        /// </summary>
+        Task<bool> RegisterServiceRequestAsync(Guid userId, Guid utilityId, int quantity, string? notes);
+
+        /// <summary>
+        /// Lấy danh sách yêu cầu đăng ký dịch vụ phân trang.
+        /// </summary>
+        Task<PagedResult<UtilityServiceRequest>> GetPagedServiceRequestsAsync(int pageIndex, int pageSize, string? searchString, string? status = null);
+
+        /// <summary>
+        /// Phê duyệt yêu cầu đăng ký dịch vụ.
+        /// </summary>
+        Task<bool> ApproveServiceRequestAsync(Guid requestId, Guid processedById);
+
+        /// <summary>
+        /// Từ chối yêu cầu đăng ký dịch vụ.
+        /// </summary>
+        Task<bool> RejectServiceRequestAsync(Guid requestId, Guid processedById);
+
+        /// <summary>
+        /// Lấy lịch sử sử dụng dịch vụ của một phòng.
+        /// </summary>
+        Task<IEnumerable<UtilityUsage>> GetUtilityUsagesByRoomIdAsync(Guid roomId);
+
+        /// <summary>
+        /// Lấy danh sách tất cả yêu cầu đăng ký dịch vụ của sinh viên.
+        /// </summary>
+        Task<IEnumerable<UtilityServiceRequest>> GetServiceRequestsByUserIdAsync(Guid userId);
     }
 }

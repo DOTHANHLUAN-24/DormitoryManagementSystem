@@ -57,18 +57,18 @@
     </div>
 
     <!-- BỘ LỌC TÌM KIẾM -->
-    <div class="thanh-tim-kiem">
+    <form class="thanh-tim-kiem-sync" onsubmit="return false;">
         <div class="row g-3 align-items-center">
             <div class="col-12 col-md-5">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="searchInput" class="input-custom" placeholder="Tìm theo tên khách, số CCCD/CMND...">
+                    <input type="text" id="searchInput" class="input-sync" placeholder="Tìm theo tên khách, số CCCD/CMND...">
                 </div>
             </div>
             <div class="col-12 col-md-4">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-filter"></i>
-                    <select id="statusFilter" class="input-custom form-select">
+                    <select id="statusFilter" class="input-sync">
                         <option value="All">-- Tất cả trạng thái --</option>
                         <option value="Chờ duyệt">Chờ duyệt</option>
                         <option value="Đang ở trong">Đang ở trong</option>
@@ -79,12 +79,12 @@
                 </div>
             </div>
             <div class="col-12 col-md-3">
-                <button class="nut-lam-moi" title="Làm mới bộ lọc" onclick="resetFilters()">
+                <button type="button" class="btn-search-sync" style="background: #f1f5f9; color: #475569 !important; border: 1px solid #e2e8f0;" title="Làm mới bộ lọc" onclick="resetFilters()">
                     <i class="fas fa-sync-alt"></i> Làm mới bộ lọc
                 </button>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- BẢNG DỮ LIỆU HIỂN THỊ -->
     <div class="card card-custom">
