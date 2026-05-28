@@ -191,7 +191,9 @@
             if ($breadcrumb.length) {
                 let $header = $('header').first();
                 if (!$header.length) {
-                    const $title = $('.tieu-de-trang, h1, h3').first();
+                    const $title = $('.tieu-de-trang, h1, h2, h3, h4').filter(function() {
+                        return $(this).closest('.card, .table, .table-responsive, .modal, .dropdown-menu, .dropdown').length === 0;
+                    }).first();
                     if ($title.length) {
                         $header = $title.closest('.row, [class*="mb-"], [class*="pb-"]');
                         if (!$header.length) {

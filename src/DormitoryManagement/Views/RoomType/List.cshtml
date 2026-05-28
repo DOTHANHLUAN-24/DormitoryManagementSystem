@@ -1,5 +1,5 @@
 @using DormitoryManagement.Domain.Common
-@model PagedResult<DormitoryManagement.Domain.Entities.RoomType>
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Domain.Entities.RoomType>
 
 @{
     ViewData["Title"] = "Loại phòng & Giá cả";
@@ -47,7 +47,7 @@
 
     <!-- Grid of cards -->
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @if (Model.Items.Any(x => x.IsActive))
+        @if (Model != null && Model.Items != null && Model.Items.Any(x => x.IsActive))
         {
             foreach (var item in Model.Items.Where(x => x.IsActive))
             {
