@@ -24,6 +24,7 @@ namespace DormitoryManagement.Application
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<ISurchargeService, SurchargeService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
