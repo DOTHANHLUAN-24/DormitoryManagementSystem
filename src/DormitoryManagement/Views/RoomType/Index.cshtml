@@ -107,10 +107,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    @* Phân trang *@
-    <div class="mt-4">
         @await Html.PartialAsync("_Pagination", Model)
     </div>
 </div>
@@ -128,7 +124,6 @@
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Gọi action Delete bằng POST
                     $.ajax({
                         url: '/RoomType/Delete/' + id,
                         type: 'POST',

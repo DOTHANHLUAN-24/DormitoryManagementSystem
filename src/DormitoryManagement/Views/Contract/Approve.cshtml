@@ -433,10 +433,13 @@
                 <span class="ms-3">- Tòa nhà:</span>
                 <span class="fw-bold ms-1">@(Model.Bed?.Room?.Block?.BlockName ?? "Chưa rõ")</span>
             </div>
-            <div class="info-row" style="margin-top: 8px;">
+            <div class="info-row align-items-center" style="margin-top: 8px;">
                 <span class="info-label-long">- Mã Số Hợp Đồng (bắt buộc):</span>
-                <div style="flex-grow: 1;">
+                <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">
                     <input type="text" class="paper-input fw-bold" id="contractCode" value="@Model.ContractCode" required style="color: #4f46e5;" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary no-print" onclick="regenerateApproveContractCode()" title="Tự động sinh mã mới" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px 8px; background-color: #f8fafc;">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                 </div>
             </div>
             <div class="info-row">
@@ -495,6 +498,12 @@
 
 @section Scripts {
     <script>
+        function regenerateApproveContractCode() {
+            const currentYear = new Date().getFullYear();
+            const randCode = 'HD-' + currentYear + '-' + Math.floor(1000 + Math.random() * 9000);
+            $('#contractCode').val(randCode);
+        }
+
         // HÀM XỬ LÝ CHUYÊN DỤNG CHO VIỆC IN CHÍNH XÁC KHU VỰC GIẤY
         function printContractA4() {
             // Bước 1: Lưu lại giá trị text mà người dùng đang gõ dở trên form để khi in không bị mất

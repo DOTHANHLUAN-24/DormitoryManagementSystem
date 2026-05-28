@@ -93,6 +93,17 @@ namespace DormitoryManagement.Application.Services.Implements
         public async Task<bool> CreateContractAsync(Contract contract)
         {
             await _contractRepository.AddAsync(contract);
+
+            if (contract.Status == ContractStatus.Active)
+            {
+                var bed = await _bedRepository.GetByIdAsync(contract.BedId);
+                if (bed != null)
+                {
+                    bed.Status = BedStatus.Occupied;
+                    await _bedRepository.UpdateAsync(bed);
+                }
+            }
+
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 

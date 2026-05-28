@@ -80,26 +80,28 @@
 
         .btn-filter-action { 
             height: 46px; 
-            width: 46px; 
             border-radius: 12px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             border: none; 
             transition: all 0.2s; 
+            font-weight: 600;
         }
         .btn-apply { 
             background: #4f46e5; 
             color: white; 
+            padding: 0 20px;
         }
         .btn-apply:hover { 
             background: #4338ca; 
-            transform: scale(1.05); 
+            transform: scale(1.02); 
         }
         .btn-refresh { 
             background: #fff; 
             color: #1e293b; 
             border: 1px solid #e2e8f0; 
+            width: 46px;
         }
         .btn-refresh:hover { 
             background: #f8fafc; 
@@ -236,15 +238,15 @@
     </div>
 
     <!-- Bộ lọc tìm kiếm -->
-    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
         <div class="row g-2 align-items-center">
-            <div class="col-lg-5 col-md-6">
+            <div class="col-lg-7 col-md-6">
                 <div class="khung-tim-kiem">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" value="@search" class="form-control input-custom" placeholder="Tìm theo mã hợp đồng, tài khoản sinh viên...">
                 </div>
             </div>
-            <div class="col-lg-3 col-md-4">
+            <div class="col-lg-3 col-md-3">
                 <select name="status" class="form-select input-custom">
                     <option value="">-- Tất cả trạng thái --</option>
                     @foreach (ContractStatus statusVal in Enum.GetValues(typeof(ContractStatus)))
@@ -262,9 +264,9 @@
                     }
                 </select>
             </div>
-            <div class="col-lg-2 col-md-2 d-flex gap-2">
-                <button type="submit" class="btn-filter-action btn-apply" title="Tìm kiếm">
-                    <i class="fas fa-filter text-white"></i>
+            <div class="col-lg-2 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-filter-action btn-apply flex-grow-1" title="Tìm kiếm">
+                    <i class="fas fa-filter text-white me-2"></i> Lọc
                 </button>
                 <a asp-action="Index" class="btn-filter-action btn-refresh text-decoration-none" title="Làm mới">
                     <i class="fas fa-sync-alt"></i>
@@ -370,34 +372,7 @@
         </div>
 
         <!-- Phân trang -->
-        @if (Model.TotalPages > 1)
-        {
-            <div class="card-footer bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-                <span class="text-muted small">
-                    Hiển thị trang <strong>@Model.PageNumber</strong> / <strong>@Model.TotalPages</strong> (Tổng cộng <strong>@Model.TotalCount</strong> hợp đồng)
-                </span>
-                <nav aria-label="Page navigation">
-                    <ul class="pagination pagination-sm mb-0">
-                        <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
-                            <a class="page-link" href="?page=@(Model.PageNumber - 1)&search=@(search)&status=@(currentStatus)" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        @for (int i = 1; i <= Model.TotalPages; i++)
-                        {
-                            <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                                <a class="page-link" href="?page=@i&search=@(search)&status=@(currentStatus)">@i</a>
-                            </li>
-                        }
-                        <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
-                            <a class="page-link" href="?page=@(Model.PageNumber + 1)&search=@(search)&status=@(currentStatus)" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        }
+        @await Html.PartialAsync("_Pagination", Model)
     </div>
 </div>
 

@@ -57,6 +57,7 @@
             <div class="card card-custom">
                 <div class="card-body p-4 p-md-5">
                     <form id="editVisitorForm" onsubmit="saveVisitorData(event)">
+                        @Html.AntiForgeryToken()
                         <input type="hidden" id="visitorId" value="@visitorId" />
 
                         <div class="row g-5">
@@ -80,9 +81,11 @@
                                 <div class="mb-4">
                                     <label class="form-label">Trạng thái lưu trú</label>
                                     <select id="status" class="form-select input-custom">
+                                        <option value="Chờ duyệt">Chờ duyệt</option>
                                         <option value="Đang ở trong">Đang ở trong</option>
                                         <option value="Đã rời đi">Đã rời đi</option>
                                         <option value="Quá giờ">Quá giờ quy định</option>
+                                        <option value="Từ chối">Từ chối</option>
                                     </select>
                                 </div>
                             </div>
@@ -138,58 +141,84 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Mạng dữ liệu dùng chung bộ Mock Data 2026 đồng bộ với trang Index
-        const mockData = [
-            { id: "VIS001", name: "Nguyễn Thành Long", identityCard: "001098001234", studentName: "Nguyễn Văn Anh", room: "P.302-A1", checkIn: "2026-05-18T08:30", checkOut: "2026-05-18T11:00", status: "Đã rời đi" },
-            { id: "VIS002", name: "Trần Thị Lan", identityCard: "038175004321", studentName: "Trần Thị Bình", room: "P.105-B2", checkIn: "2026-05-18T14:15", checkOut: "2026-05-18T17:00", status: "Đang ở trong" },
-            { id: "VIS003", name: "Lê Hoàng Nam", identityCard: "024099005678", studentName: "Lê Hoàng Chí", room: "P.404-A2", checkIn: "2026-05-18T09:00", checkOut: "2026-05-18T11:30", status: "Quá giờ" },
-            { id: "VIS004", name: "Phạm Minh Quang", identityCard: "017095009876", studentName: "Phạm Hồng Duy", room: "P.201-B1", checkIn: "2026-05-17T19:00", checkOut: "2026-05-17T21:00", status: "Đã rời đi" },
-            { id: "VIS005", name: "Hoàng Ngọc Mai", identityCard: "031197002468", studentName: "Hoàng Đức Em", room: "P.305-A1", checkIn: "2026-05-18T15:00", checkOut: "2026-05-18T18:00", status: "Đang ở trong" }
-        ];
-
         document.addEventListener("DOMContentLoaded", function () {
             const currentId = document.getElementById("visitorId").value;
-            const visitor = mockData.find(v => v.id === currentId);
-
-            if (visitor) {
-                // Đổ ngược dữ liệu vào các thẻ input tương ứng
-                document.getElementById("visitorName").value = visitor.name;
-                document.getElementById("identityCard").value = visitor.identityCard;
-                document.getElementById("studentName").value = visitor.studentName;
-                document.getElementById("room").value = visitor.room;
-                document.getElementById("checkIn").value = visitor.checkIn;
-                document.getElementById("checkOut").value = visitor.checkOut;
-                document.getElementById("status").value = visitor.status;
-            } else {
-                // Hiển thị thông báo lỗi cao cấp nếu không tìm thấy ID bản ghi
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Lỗi tìm kiếm!',
-                    text: 'Không tìm thấy dữ liệu khách phù hợp với ID hệ thống cung cấp.',
-                    confirmButtonColor: '#4f46e5'
-                }).then(() => {
-                    window.location.href = "/Visitor";
-                });
-            }
+            
+            // Load real data from server
+            $.ajax({
+                url: '/Visitor/GetVisitor/' + currentId,
+                type: 'GET',
+                success: function(visitor) {
+                    document.getElementById("visitorName").value = visitor.visitorName;
+                    document.getElementById("identityCard").value = visitor.identityCard;
+                    document.getElementById("studentName").value = visitor.studentName;
+                    document.getElementById("room").value = visitor.room;
+                    
+                    // Format dates for datetime-local input (YYYY-MM-DDTHH:mm)
+                    if (visitor.checkIn) {
+                        document.getElementById("checkIn").value = new Date(visitor.checkIn).toISOString().slice(0, 16);
+                    }
+                    if (visitor.checkOut) {
+                        document.getElementById("checkOut").value = new Date(visitor.checkOut).toISOString().slice(0, 16);
+                    }
+                    document.getElementById("status").value = visitor.status;
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi tìm kiếm!',
+                        text: 'Không tìm thấy dữ liệu khách phù hợp với ID hệ thống cung cấp.',
+                        confirmButtonColor: '#4f46e5'
+                    }).then(() => {
+                        window.location.href = "/Visitor";
+                    });
+                }
+            });
         });
 
-        // Xử lý sự kiện lưu dữ liệu bằng SweetAlert2 đẩy đẹp mắt
         function saveVisitorData(event) {
             event.preventDefault();
 
             const name = document.getElementById("visitorName").value;
             const currentId = document.getElementById("visitorId").value;
+            const identityCard = document.getElementById("identityCard").value;
+            const studentName = document.getElementById("studentName").value;
+            const room = document.getElementById("room").value;
+            const checkIn = document.getElementById("checkIn").value;
+            const checkOut = document.getElementById("checkOut").value;
+            const status = document.getElementById("status").value;
+            const token = $('input[name="__RequestVerificationToken"]').val();
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Cập nhật thành công!',
-                text: `Thông tin của khách ${name} (Mã: ${currentId}) đã được đồng bộ hóa lên hệ thống KTX.`,
-                confirmButtonColor: '#4f46e5',
-                timer: 2500,
-                timerProgressBar: true
-            }).then(() => {
-                // Chuyển hướng mượt mà về trang danh sách tổng hợp
-                window.location.href = "/Visitor";
+            $.ajax({
+                url: '/Visitor/Edit/' + currentId,
+                type: 'POST',
+                data: {
+                    visitorName: name,
+                    identityCard: identityCard,
+                    phoneNumber: '',
+                    purpose: '',
+                    studentName: studentName,
+                    room: room,
+                    checkIn: checkIn,
+                    checkOut: checkOut,
+                    status: status,
+                    __RequestVerificationToken: token
+                },
+                success: function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cập nhật thành công!',
+                        text: `Thông tin của khách ${name} (Mã: ${currentId}) đã được đồng bộ hóa lên hệ thống KTX.`,
+                        confirmButtonColor: '#4f46e5',
+                        timer: 2500,
+                        timerProgressBar: true
+                    }).then(() => {
+                        window.location.href = "/Visitor";
+                    });
+                },
+                error: function() {
+                    Swal.fire('Lỗi!', 'Không thể cập nhật thông tin khách thăm.', 'error');
+                }
             });
         }
     </script>

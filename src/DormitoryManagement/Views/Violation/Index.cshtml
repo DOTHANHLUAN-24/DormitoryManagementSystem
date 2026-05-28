@@ -1,161 +1,194 @@
-@using Common
+@using DormitoryManagement.Domain.Common
+@model PagedResult<DormitoryManagement.Application.Dtos.Requests.ViolationResponseDto>
+
 @{
     ViewData["Title"] = "Quản lý vi phạm";
     var isAdmin = User.IsInRole("Admin");
     var isManager = User.IsInRole("ManagementStaff") || User.IsInRole("ManagerStaff") || User.IsInRole("Manager");
     var isAdminOrManager = isAdmin || isManager;
-
-    var mockViolations = new List<dynamic>
-    {
-        new { Code = "VIO001", StudentName = "Nguyễn Thành Long", StudentCode = "001098001234", Title = "Sử dụng bếp từ công suất lớn trong phòng", Room = "P.302-A1", Date = "24/05/2026 - 08:30", Severity = "Trung bình", Status = "Chờ xử lý" },
-        new { Code = "VIO002", StudentName = "Trần Thị Lan", StudentCode = "038175004321", Title = "Về muộn sau giờ nghiêm quân (23h15)", Room = "P.105-B2", Date = "23/05/2026 - 23:20", Severity = "Nhẹ", Status = "Đã xử lý" },
-        new { Code = "VIO003", StudentName = "Lê Hoàng Nam", StudentCode = "024099005678", Title = "Tổ chức uống rượu bia, hát hò gây mất trật tự", Room = "P.404-A2", Date = "22/05/2026 - 21:45", Severity = "Nghiêm trọng", Status = "Đã hủy" },
-        new { Code = "VIO004", StudentName = "Phạm Minh Quang", StudentCode = "017095009876", Title = "Không tham gia hoạt động vệ sinh chung của tầng", Room = "P.201-B1", Date = "20/05/2026 - 17:00", Severity = "Nhẹ", Status = "Đã xử lý" },
-        new { Code = "VIO005", StudentName = "Hoàng Trung Đức", StudentCode = "035099004512", Title = "Tự ý đóng đinh, làm thay đổi kết cấu tường phòng", Room = "P.503-A1", Date = "19/05/2026 - 10:15", Severity = "Trung bình", Status = "Chờ xử lý" }
-    };
 }
 
-<div class="container-fluid px-4 py-4 main-content-custom">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1 fw-bold text-dark-navy"><i class="fas fa-exclamation-triangle me-2" style="color: #3b3f5c;"></i>Quản lý vi phạm</h1>
-            <p class="text-muted small mb-0">Theo dõi, ghi nhận thông tin vi phạm nội quy và kiểm soát hình thức kỷ luật tại ký túc xá.</p>
-        </div>
+@section Styles {
+    <style>
+        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; border: none; }
+        .btn-add { background: #4f46e5; color: white !important; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+        .btn-add:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); }
+        .btn-trash { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+        .btn-trash:hover { background: #f8fafc; color: #1e293b !important; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; }
+        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; background-color: #f8fafc; width: 100%; transition: all 0.2s; }
+        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; background-color: #fff; }
+        .khung-tim-kiem { position: relative; }
+        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
+        .khung-tim-kiem input { padding-left: 40px; }
+        .btn-search { height: 46px; border-radius: 12px; background: #4f46e5; color: white; border: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .btn-search:hover { background: #4338ca; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); color: white; }
+        .card-custom { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03); border: none; overflow: hidden; }
+        .badge-code-custom { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; }
+        .badge-username { background: #eef2ff; color: #4f46e5; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e0e7ff; }
+        .trang-thai-user { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; display: inline-block; }
+        .dang-hoat-dong { background: #ecfdf5; color: #10b981; }
+        .da-khoa { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
+        .nut-chi-tiet { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
+        .nut-sua { background: #eff6ff; color: #3b82f6; }
+        .nut-xoa { background: #fef2f2; color: #ef4444; }
+        .nut-hanh-dong:hover { transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        .severity-pill { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 20px; display: inline-block; text-transform: uppercase; }
+        .s-low { background-color: #ecfdf5; color: #10b981; }
+        .s-medium { background-color: #fff7ed; color: #f97316; }
+        .s-high { background-color: #fff2f2; color: #ef4444; }
+        .s-warning { background-color: #fffbeb; color: #d97706; }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Quản lý vi phạm</h1>
         @if (isAdminOrManager)
         {
-            <a asp-controller="Violation" asp-action="Create" class="btn btn-purple-gradient shadow-sm"><i class="fas fa-plus me-2"></i>Lập biên bản mới</a>
+            <div class="d-flex gap-2">
+                <a asp-controller="Violation" asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+                    <i class="fas fa-plus"></i> Lập biên bản mới
+                </a>
+            </div>
         }
-    </div>
+    </header>
 
-    <div class="card card-filter-custom mb-4 border-0">
-        <div class="card-body p-3">
-            <form method="get" class="row g-2 align-items-center">
-                <div class="col-md-4">
-                    <div class="input-group input-group-custom">
-                        <span class="input-group-text border-end-0 bg-white text-muted py-1 px-2" style="font-size: 0.85rem;"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control border-start-0 py-1.5" style="font-size: 0.85rem;" placeholder="Tìm theo tên SV, mã số, phòng...">
-                    </div>
+    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-10">
+                <div class="khung-tim-kiem">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm theo mã sinh viên (MSSV), phòng ở hoặc nội dung vi phạm...">
                 </div>
-                <div class="col-md-3">
-                    <div class="input-group input-group-custom">
-                        <span class="input-group-text border-end-0 bg-white text-muted py-1 px-2" style="font-size: 0.85rem;"><i class="fas fa-filter"></i></span>
-                        <select class="form-select border-start-0 py-1.5 text-muted-select" style="font-size: 0.85rem;">
-                            <option value="">-- Tất cả mức độ --</option>
-                            <option>Nhẹ</option>
-                            <option>Trung bình</option>
-                            <option>Nghiêm trọng</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group input-group-custom">
-                        <span class="input-group-text border-end-0 bg-white text-muted py-1 px-2" style="font-size: 0.85rem;"><i class="fas fa-history"></i></span>
-                        <select class="form-select border-start-0 py-1.5 text-muted-select" style="font-size: 0.85rem;">
-                            <option value="">-- Tất cả trạng thái --</option>
-                            <option>Chờ xử lý</option>
-                            <option>Đã xử lý</option>
-                            <option>Đã hủy</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="col-md-2 d-flex gap-2">
-                    <button type="button" class="btn btn-search-primary flex-grow-1 py-1.5" style="font-size: 0.85rem;"><i class="fas fa-search me-1.5"></i>Tìm kiếm</button>
-                    <button type="button" class="btn btn-refresh-light py-1.5" style="width: 38px;"><i class="fas fa-sync-alt" style="font-size: 0.85rem;"></i></button>
-                </div>
-            </form>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-search">
+                    <i class="fas fa-filter"></i> Tìm kiếm
+                </button>
+            </div>
         </div>
-    </div>
+    </form>
 
-    <div class="card card-table-custom border-0 shadow-sm overflow-hidden">
+    <div class="card card-custom mb-4">
         <div class="table-responsive">
-            <table class="table align-middle table-hover mb-0">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
                     <tr>
-                        <th>MÃ BIÊN BẢN</th>
-                        <th>HỌ TÊN SINH VIÊN</th>
-                        <th>MÃ SỐ SV</th>
-                        <th>NỘI DUNG VI PHẠM</th>
-                        <th>PHÒNG Ở</th>
-                        <th>THỜI GIAN GHI NHẬN</th>
-                        <th>MỨC ĐỘ</th>
-                        <th>TRẠNG THÁI</th>
+                        <th class="ps-4 py-3">Mã biên bản</th>
+                        <th class="py-3">Mã số SV</th>
+                        <th class="py-3">Phòng ở</th>
+                        <th class="py-3">Thời gian ghi nhận</th>
+                        <th class="py-3">Nội dung vi phạm</th>
+                        <th class="py-3">Mức độ</th>
+                        <th class="py-3">Trạng thái</th>
                         @if (isAdminOrManager)
                         {
-                            <th class="text-center">THAO TÁC</th>
+                            <th class="text-end pe-4 py-3">Thao tác</th>
                         }
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in mockViolations)
+                    @if (Model.Items != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4 py-3"><span class="badge-code-custom">VIO-@item.Id.ToString().Substring(0, 5).ToUpper()</span></td>
+                                <td><span class="badge-username">@item.StudentId</span></td>
+                                <td><div class="fw-bold text-dark">@item.Room</div></td>
+                                <td><span class="text-muted small">@item.Date.ToString("dd/MM/yyyy - HH:mm")</span></td>
+                                <td style="max-width: 250px;" class="text-truncate" title="@item.Content">@item.Content</td>
+                                <td>
+                                    <span class="severity-pill @(item.Severity == "Nhẹ" ? "s-low" : item.Severity == "Trung bình" ? "s-medium" : item.Severity == "Nghiêm trọng" ? "s-high" : "s-warning")">
+                                        @item.Severity
+                                    </span>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Đã xử lý")
+                                    {
+                                        <span class="trang-thai-user dang-hoat-dong"><i class="fas fa-check-circle me-1"></i> Đã xử lý</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="trang-thai-user da-khoa"><i class="fas fa-clock me-1"></i> Chưa xử lý</span>
+                                    }
+                                </td>
+                                @if (isAdminOrManager)
+                                {
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-chi-tiet text-decoration-none" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua text-decoration-none" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
+                                            <button type="button" onclick="deleteViolation('@item.Id', 'VIO-@item.Id.ToString().Substring(0, 5).ToUpper()')" 
+                                                    class="nut-hanh-dong nut-xoa" title="Xóa biên bản">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                    else
                     {
                         <tr>
-                            <td><span class="badge-code-custom">@item.Code</span></td>
-                            <td class="fw-semibold text-dark-navy">@item.StudentName</td>
-                            <td><span class="badge-info-box">@item.StudentCode</span></td>
-                            <td class="text-secondary text-truncate-custom" title="@item.Title">@item.Title</td>
-                            <td><a href="#" class="room-link-custom fw-semibold text-decoration-none">@item.Room</a></td>
-                            <td class="text-muted small">@item.Date</td>
-                            <td>
-                                <span class="severity-pill @(item.Severity == "Nhẹ" ? "s-low" : item.Severity == "Trung bình" ? "s-medium" : "s-high")">@item.Severity</span>
+                            <td colspan="@(isAdminOrManager ? 8 : 7)" class="text-center py-5">
+                                <div class="text-muted">
+                                    <i class="fas fa-shield-virus fa-3x mb-3 d-block opacity-25"></i>
+                                    <p class="mb-0 fw-medium">Không tìm thấy biên bản vi phạm nào.</p>
+                                </div>
                             </td>
-                            <td>
-                                <span class="status-pill-custom @(item.Status == "Chờ xử lý" ? "p-pending" : item.Status == "Đã xử lý" ? "p-success" : "p-cancelled")">
-                                    <i class="fas @(item.Status == "Chờ xử lý" ? "fa-clock" : item.Status == "Đã xử lý" ? "fa-check-circle" : "fa-times-circle") me-1"></i> @item.Status
-                                </span>
-                            </td>
-                            @if (isAdminOrManager)
-                            {
-                                <td class="text-center">
-                                    <div class="d-inline-flex gap-2">
-                                        <a asp-controller="Violation" asp-action="Edit" asp-route-id="@item.Code" class="btn-action-custom btn-action-edit"><i class="fas fa-pencil-alt"></i></a>
-                                        <button class="btn-action-custom btn-action-delete" onclick="return confirm('Xóa biên bản này?')"><i class="fas fa-trash-alt"></i></button>
-                                    </div>
-                                </td>
-                            }
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-
-        <div class="card-footer bg-white border-top border-light-subtle d-flex justify-content-center py-3">
-            <nav>
-                <ul class="pagination pagination-modern mb-0">
-                    <li class="page-item disabled"><a class="page-link" href="#">Trước</a></li>
-                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Sau</a></li>
-                </ul>
-            </nav>
-        </div>
+        @await Html.PartialAsync("_Pagination", Model)
     </div>
 </div>
 
-<style>
-    body { background-color: #f4f7f6; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .text-dark-navy { color: #3b3f5c; }
-    .btn-purple-gradient { background: linear-gradient(135deg, #5c51d6, #4a3ec7); color: white; border: none; font-weight: 500; padding: 9px 20px; border-radius: 10px; font-size: 0.9rem; }
-    .btn-purple-gradient:hover { color: white; opacity: 0.9; box-shadow: 0 4px 12px rgba(92, 81, 214, 0.2); }
-    .card-filter-custom, .card-table-custom { border-radius: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); background: white; }
-    .table thead th { background-color: #f9fbfd; color: #515365; font-size: 11px; font-weight: 700; padding: 14px 12px; border-bottom: 1px solid #ebedf2; }
-    .table tbody td { padding: 14px 12px; font-size: 13.5px; border-bottom: 1px solid #f1f2f3; }
-    .badge-code-custom { background-color: #f1f2f3; color: #3b3f5c; font-weight: 700; font-size: 11px; padding: 5px 9px; border-radius: 6px; }
-    .badge-info-box { border: 1px solid #e0e6ed; color: #0e1726; font-weight: 600; padding: 3px 7px; border-radius: 6px; font-size: 11.5px; }
-    .room-link-custom { color: #4361ee; }
-    .severity-pill { font-size: 11.5px; font-weight: 500; padding: 2px 7px; border-radius: 4px; }
-    .s-low { background-color: #e7f7ff; color: #009688; }
-    .s-medium { background-color: #fff9e6; color: #e2a03f; }
-    .s-high { background-color: #fff2f2; color: #e7515a; font-weight: 600; }
-    .status-pill-custom { display: inline-flex; align-items: center; padding: 5px 14px; font-size: 12.5px; font-weight: 600; border-radius: 50px; }
-    .p-success { background-color: #e8fbf4; color: #1abc9c; }
-    .p-pending { background-color: #eef2fe; color: #4361ee; }
-    .p-cancelled { background-color: #fff2f2; color: #e7515a; }
-    .btn-action-custom { width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; border: none; border-radius: 6px; font-size: 12px; }
-    .btn-action-edit { background-color: #fff5e6; color: #e2a03f; }
-    .btn-action-delete { background-color: #fff2f2; color: #e7515a; }
-    .text-truncate-custom { max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .pagination-modern { display: flex; gap: 4px; }
-    .pagination-modern .page-link { border: 1px solid #e0e6ed; color: #3b3f5c; padding: 5px 12px; font-size: 12.5px; border-radius: 8px !important; }
-    .pagination-modern .page-item.active .page-link { background-color: #4361ee; border-color: #4361ee; color: white; }
-</style>
+@section Scripts {
+    <script>
+        function getAntiforgeryToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
+        }
+
+        function deleteViolation(id, code) {
+            Swal.fire({
+                title: 'Xóa biên bản vi phạm?',
+                html: "Biên bản <b>" + code + "</b> sẽ bị xóa tạm thời khỏi danh sách hoạt động.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                    $.ajax({
+                        url: '/Violation/Delete/' + id,
+                        type: 'POST',
+                        headers: { "RequestVerificationToken": getAntiforgeryToken() },
+                        success: function (data) {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1500, showConfirmButton: false }).then(() => location.reload());
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message, confirmButtonColor: '#4f46e5' });
+                            }
+                        },
+                        error: function () { Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể thực hiện thao tác' }); }
+                    });
+                }
+            });
+        }
+    </script>
+}

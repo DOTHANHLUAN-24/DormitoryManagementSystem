@@ -1,4 +1,4 @@
-﻿using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -109,5 +109,6 @@ namespace DormitoryManagement.Infrastructure.Data
         public DbSet<Bed> Beds { get; set; } = null!;
         public DbSet<Asset> Assets { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
+        public DbSet<VisitorLog> VisitorLogs { get; set; } = null!;
     }
 }
