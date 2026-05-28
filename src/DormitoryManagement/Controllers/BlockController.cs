@@ -6,12 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize(Roles = "Admin,ManagerStaff")]
+    [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
     public class BlockController(IBlockService blockService) : BaseController
     {
         private readonly IBlockService _blockService = blockService;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách tòa nhà hoạt động trang {Page}, tìm kiếm: '{Search}'", page, search);

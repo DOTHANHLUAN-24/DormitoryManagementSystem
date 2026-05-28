@@ -24,7 +24,8 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Danh sách tất cả yêu cầu bảo trì có phân trang và bộ lọc (Admin/Manager/TechnicalStaff).
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         [Authorize(Roles = "Admin, ManagementStaff, TechnicalStaff")]
         public async Task<IActionResult> Index(MaintenanceRequestFilterRequest filter)
         {
@@ -50,7 +51,7 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Danh sách yêu cầu bảo trì của chính sinh viên đang đăng nhập.
         /// </summary>
-        [HttpGet]
+        [HttpGet("MyRequests")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> MyRequests()
         {
@@ -69,7 +70,7 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Form tạo yêu cầu bảo trì mới (GET – Student).
         /// </summary>
-        [HttpGet]
+        [HttpGet("Create")]
         [Authorize(Roles = "Student")]
         public async Task<IActionResult> Create()
         {
@@ -95,7 +96,7 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Xử lý gửi yêu cầu bảo trì mới (POST – Student).
         /// </summary>
-        [HttpPost]
+        [HttpPost("Create")]
         [Authorize(Roles = "Student")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateMaintenanceRequestDto dto)
@@ -134,7 +135,7 @@ namespace DormitoryManagement.Controllers
         /// Student hủy yêu cầu của mình (chỉ được hủy khi trạng thái còn là Open).
         /// </summary>
         [HttpPost]
-        [Route("MaintenanceRequest/{id}/Cancel")]
+        [Route("/MaintenanceRequest/{id}/Cancel")]
         [Authorize(Roles = "Student")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Cancel(Guid id)
@@ -173,7 +174,7 @@ namespace DormitoryManagement.Controllers
         /// Route: POST /MaintenanceRequest/{id}/UpdateStatus
         /// </summary>
         [HttpPost]
-        [Route("MaintenanceRequest/{id}/UpdateStatus")]
+        [Route("/MaintenanceRequest/{id}/UpdateStatus")]
         [Authorize(Roles = "Admin, TechnicalStaff, ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(Guid id, string status)
@@ -200,7 +201,7 @@ namespace DormitoryManagement.Controllers
         /// Route: POST /MaintenanceRequest/{id}/Delete
         /// </summary>
         [HttpPost]
-        [Route("MaintenanceRequest/{id}/Delete")]
+        [Route("/MaintenanceRequest/{id}/Delete")]
         [Authorize(Roles = "Admin, ManagementStaff")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
@@ -212,10 +213,45 @@ namespace DormitoryManagement.Controllers
                 : new { success = false, message = "Xóa thất bại." });
         }
 
+        [Authorize(Roles = "Admin, ManagementStaff")]
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác yêu cầu bảo trì trang {Page}, tìm kiếm: '{Search}'", page, search);
+            var result = await _service.GetDeletedPagedAsync(page, PageSize, search);
+            ViewBag.Search = search;
+            return View(result);
+        }
+
+        [HttpPost]
+        [Route("/MaintenanceRequest/{id}/Restore")]
+        [Authorize(Roles = "Admin, ManagementStaff")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục yêu cầu bảo trì ID: {Id}", id);
+            var success = await _service.RestoreAsync(id);
+            return Json(success
+                ? new { success = true, message = "Khôi phục yêu cầu bảo trì thành công!" }
+                : new { success = false, message = "Khôi phục thất bại." });
+        }
+
+        [HttpPost]
+        [Route("/MaintenanceRequest/{id}/DeletePermanently")]
+        [Authorize(Roles = "Admin, ManagementStaff")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn yêu cầu bảo trì ID: {Id}", id);
+            var success = await _service.DeletePermanentlyAsync(id);
+            return Json(success
+                ? new { success = true, message = "Đã xóa vĩnh viễn yêu cầu bảo trì khỏi cơ sở dữ liệu." }
+                : new { success = false, message = "Xóa vĩnh viễn thất bại." });
+        }
+
         // =====================================================================
         // PRIVATE HELPERS
         // =====================================================================
-
         private Guid? GetCurrentUserId()
         {
             var claim = User.FindFirst(ClaimTypes.NameIdentifier);

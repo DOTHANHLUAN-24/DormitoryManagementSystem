@@ -163,58 +163,52 @@
     </header>
 
     <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
-    <form method="get" asp-action="Requests" class="thanh-tim-kiem shadow-sm">
-        <div class="row g-2 align-items-center">
+    <form method="get" asp-action="Requests" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
             <div class="col-md-5 col-lg-6">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="form-control input-custom"
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync"
                         placeholder="Tìm theo phòng, tên sinh viên, dịch vụ...">
                 </div>
             </div>
             <div class="col-md-4 col-lg-3">
-                <select name="status" class="form-select select-custom">
-                    <option value="">-- Tất cả trạng thái --</option>
-                    @if (ViewBag.Status == "Pending")
-
-                    {
-                        <option value="Pending" selected>Chờ duyệt</option>
-                    }
-
-                    else
-
-                    {
-                        <option value="Pending">Chờ duyệt</option>
-                    }
-                    @if (ViewBag.Status == "Approved")
-
-                    {
-                        <option value="Approved" selected>Đã duyệt</option>
-                    }
-
-                    else
-
-                    {
-                        <option value="Approved">Đã duyệt</option>
-                    }
-                    @if (ViewBag.Status == "Rejected")
-
-                    {
-                        <option value="Rejected" selected>Từ chối</option>
-                    }
-
-                    else
-
-                    {
-                        <option value="Rejected">Từ chối</option>
-                    }
-                </select>
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-info-circle"></i>
+                    <select name="status" class="input-sync">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        @if (ViewBag.Status == "Pending")
+                        {
+                            <option value="Pending" selected>Chờ duyệt</option>
+                        }
+                        else
+                        {
+                            <option value="Pending">Chờ duyệt</option>
+                        }
+                        @if (ViewBag.Status == "Approved")
+                        {
+                            <option value="Approved" selected>Đã duyệt</option>
+                        }
+                        else
+                        {
+                            <option value="Approved">Đã duyệt</option>
+                        }
+                        @if (ViewBag.Status == "Rejected")
+                        {
+                            <option value="Rejected" selected>Từ chối</option>
+                        }
+                        else
+                        {
+                            <option value="Rejected">Từ chối</option>
+                        }
+                    </select>
+                </div>
             </div>
             <div class="col-md-3 col-lg-3 d-flex gap-2 justify-content-end">
-                <button type="submit" class="btn-filter-action btn-apply" title="Lọc dữ liệu">
-                    <i class="fas fa-filter"></i>
+                <button type="submit" class="btn-search-sync" style="background: #0f6b6d;" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i> Lọc
                 </button>
-                <a asp-action="Requests" class="btn-filter-action btn-refresh" title="Làm mới">
+                <a asp-action="Requests" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>

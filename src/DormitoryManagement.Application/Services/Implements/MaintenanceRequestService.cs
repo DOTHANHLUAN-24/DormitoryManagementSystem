@@ -8,6 +8,7 @@ using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -92,6 +93,37 @@ namespace DormitoryManagement.Application.Services.Implements
             if (entity == null) return false;
 
             await _repository.DeleteAsync(entity, true); // Soft delete
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<PagedResult<MaintenanceRequestResponseDto>> GetDeletedPagedAsync(int pageIndex, int pageSize, string? searchTerm = null)
+        {
+            System.Linq.Expressions.Expression<Func<MaintenanceRequest, bool>> predicate = x =>
+                x.IsDeleted
+                && (string.IsNullOrEmpty(searchTerm) || x.Title.Contains(searchTerm) || x.Description.Contains(searchTerm));
+
+            var pagedData = await _repository.GetByStatusPagedAsync(
+                pageIndex, pageSize, null, true, predicate,
+                x => x.Room, x => x.Room.Block, x => x.Requester, x => x.Handler!);
+
+            return pagedData.MapToPagedResult<MaintenanceRequest, MaintenanceRequestResponseDto>(_mapper);
+        }
+
+        public async Task<bool> RestoreAsync(Guid id)
+        {
+            var entity = await _repository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null || !entity.IsDeleted) return false;
+
+            await _repository.RestoreAsync(entity);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
+        {
+            var entity = await _repository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null) return false;
+
+            await _repository.DeleteAsync(entity, false);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }

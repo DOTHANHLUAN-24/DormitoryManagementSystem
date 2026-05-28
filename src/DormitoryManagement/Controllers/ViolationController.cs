@@ -1,7 +1,9 @@
 using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Violations;
 using DormitoryManagement.Application.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DormitoryManagement.Controllers
 {
@@ -11,6 +13,7 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách biên bản vi phạm trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -99,6 +102,7 @@ namespace DormitoryManagement.Controllers
             }
 
             Logger.LogWarning("Dữ liệu cập nhật biên bản vi phạm ID: {Id} không hợp lệ.", id);
+
             // Ánh xạ sang ViolationResponseDto để trả về View tương thích kiểu dữ liệu
             var violationResponse = new ViolationResponseDto
             {
@@ -224,6 +228,45 @@ namespace DormitoryManagement.Controllers
                 Logger.LogError(ex, "Lỗi xảy ra khi xử lý nhanh biên bản vi phạm ID: {Id}.", id);
                 return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
             }
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác vi phạm trang {Page}, tìm kiếm: '{Search}'", page, search);
+            int pageSize = PageSize;
+            var result = await _violationService.GetDeletedViolationsPagedAsync(page, pageSize, search);
+            ViewBag.Search = search;
+            return View(result);
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục biên bản vi phạm ID: {Id}", id);
+            var success = await _violationService.RestoreViolationAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Khôi phục biên bản vi phạm thành công!" });
+            }
+            return Json(new { success = false, message = "Khôi phục biên bản vi phạm thất bại." });
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn biên bản vi phạm ID: {Id}", id);
+            var success = await _violationService.DeletePermanentlyAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Đã xóa vĩnh viễn biên bản vi phạm khỏi cơ sở dữ liệu." });
+            }
+            return Json(new { success = false, message = "Xóa vĩnh viễn biên bản vi phạm thất bại." });
         }
     }
 }

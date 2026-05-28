@@ -30,7 +30,8 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Danh sách tài sản phân trang với tìm kiếm và lọc trạng thái.
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Index(int page = 1, string search = "", string statusFilter = "")
         {

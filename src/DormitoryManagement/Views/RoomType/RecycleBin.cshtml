@@ -1,11 +1,9 @@
 @using DormitoryManagement.Domain.Common
-@using DormitoryManagement.Application.Dtos.Responses.Rooms
-@using DormitoryManagement.Application.Dtos.Requests.Rooms
-@model PagedResult<RoomResponse>
+@model PagedResult<DormitoryManagement.Domain.Entities.RoomType>
 
 @{
-    ViewData["Title"] = "Thùng rác phòng";
-    var filter = ViewBag.Filter as RoomFilterRequest ?? new RoomFilterRequest();
+    ViewData["Title"] = "Thùng rác loại phòng";
+    var search = ViewBag.Search as string ?? "";
 }
 
 @Html.AntiForgeryToken()
@@ -15,22 +13,22 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4 class="text-danger fw-bold mb-0">
-                <i class="fas fa-trash-alt me-2"></i> Thùng rác phòng
+                <i class="fas fa-trash-alt me-2"></i> Thùng rác loại phòng
             </h4>
-            <p class="text-muted small mb-0">Quản lý các phòng đã xóa tạm thời. Bạn có thể khôi phục hoặc xóa vĩnh viễn khỏi hệ thống.</p>
+            <p class="text-muted small mb-0">Quản lý các loại phòng đã xóa tạm thời. Bạn có thể khôi phục hoặc xóa vĩnh viễn khỏi hệ thống.</p>
         </div>
         <a asp-action="Index" class="btn btn-outline-primary shadow-sm" style="border-radius: 10px;">
             <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
         </a>
     </div>
 
-    <!-- Thanh tìm kiếm nhanh -->
+    <!-- Thanh tìm kiếm -->
     <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync" style="border: 1px solid #fecaca !important;">
         <div class="row g-3">
             <div class="col-md-10">
                 <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="SearchTerm" value="@filter.SearchTerm" class="input-sync" placeholder="Tìm kiếm theo số phòng trong thùng rác...">
+                    <input type="text" name="search" value="@search" class="input-sync" placeholder="Tìm loại phòng trong thùng rác...">
                 </div>
             </div>
             <div class="col-md-2">
@@ -41,51 +39,50 @@
         </div>
     </form>
 
-    <!-- Bảng danh sách phòng đã xóa -->
+    <!-- Bảng danh sách loại phòng đã xóa -->
     <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Số phòng</th>
-                        <th>Tòa & Tầng</th>
-                        <th>Loại phòng</th>
-                        <th>Giá thuê</th>
+                        <th class="ps-4">Tên loại phòng</th>
+                        <th>Giá cơ bản</th>
                         <th>Sức chứa</th>
+                        <th>Mô tả</th>
+                        <th>Trạng thái</th>
                         <th class="text-end pe-4">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
                     @if (Model.Items != null && Model.Items.Any())
                     {
                         foreach (var item in Model.Items)
                         {
                             <tr class="opacity-75">
                                 <td class="ps-4">
-                                    <span class="badge bg-secondary px-3 py-2 text-decoration-line-through" style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem;">
-                                        @item.RoomNumber
+                                    <span class="fw-bold text-secondary text-decoration-line-through">@item.TypeName</span>
+                                </td>
+                                <td>
+                                    <span class="text-muted text-decoration-line-through">@item.BasePrice.ToString("N0") đ</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-muted border">
+                                        <i class="fas fa-users me-1"></i>@item.MaxOccupants người
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-dark text-decoration-line-through">@item.BlockName</div>
-                                    <div class="small text-muted text-decoration-line-through">Tầng @item.Floor</div>
+                                    <small class="text-muted text-truncate d-inline-block" style="max-width: 200px;">@item.Description</small>
                                 </td>
                                 <td>
-                                    <span class="text-primary fw-medium text-decoration-line-through">@item.RoomTypeName</span>
-                                </td>
-                                <td>
-                                    <span class="fw-bold text-dark text-decoration-line-through">@item.BasePrice.ToString("N0")</span> 
-                                    <small class="text-muted">đ</small>
-                                </td>
-                                <td>
-                                    <span class="badge rounded-pill bg-light text-dark border">
-                                        <i class="fas fa-users me-1 text-muted"></i>@item.MaxOccupants
-                                    </span>
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Đã xóa</span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <button onclick="restoreRoom('@item.Id', '@item.RoomNumber')" 
+                                        <button onclick="restoreRoomType('@item.Id', '@item.TypeName')"
                                                 class="btn btn-sm btn-outline-success px-3" title="Khôi phục" style="border-radius: 8px;">
                                             <i class="fas fa-undo-alt me-1"></i> Khôi phục
                                         </button>
-                                        <button onclick="deletePermanently('@item.Id', '@item.RoomNumber')" 
+                                        <button onclick="deletePermanently('@item.Id', '@item.TypeName')"
                                                 class="btn btn-sm btn-outline-danger px-2" title="Xóa vĩnh viễn" style="border-radius: 8px;">
                                             <i class="fas fa-eraser"></i>
                                         </button>
@@ -114,16 +111,14 @@
 
 @section Scripts {
     <script>
-        // Hàm lấy Token chống giả mạo (CSRF)
         function getAntiforgeryToken() {
             return $('input[name="__RequestVerificationToken"]').val();
         }
 
-        // 1. Hàm Khôi phục phòng
-        function restoreRoom(id, roomNumber) {
+        function restoreRoomType(id, name) {
             Swal.fire({
-                title: 'Khôi phục phòng?',
-                text: "Phòng " + roomNumber + " sẽ hiển thị lại trong danh sách hoạt động.",
+                title: 'Khôi phục loại phòng?',
+                text: `Loại phòng "${name}" sẽ hiển thị lại trong danh sách hoạt động.`,
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#28a745',
@@ -134,37 +129,27 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '/Room/Restore/' + id,
+                        url: '/RoomType/Restore/' + id,
                         type: 'POST',
-                        data: {
-                            __RequestVerificationToken: getAntiforgeryToken()
-                        },
+                        data: { __RequestVerificationToken: getAntiforgeryToken() },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Thành công',
-                                    text: res.message,
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                }).then(() => location.reload());
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: res.message, timer: 1500, showConfirmButton: false })
+                                    .then(() => location.reload());
                             } else {
                                 Swal.fire('Lỗi', res.message, 'error');
                             }
                         },
-                        error: function () {
-                            Swal.fire('Lỗi', 'Không thể kết nối máy chủ', 'error');
-                        }
+                        error: function () { Swal.fire('Lỗi', 'Không thể kết nối máy chủ', 'error'); }
                     });
                 }
             });
         }
 
-        // 2. Hàm Xóa vĩnh viễn
-        function deletePermanently(id, roomNumber) {
+        function deletePermanently(id, name) {
             Swal.fire({
                 title: 'Xác nhận xóa vĩnh viễn?',
-                text: "Phòng " + roomNumber + " sẽ bị xóa hoàn toàn. Dữ liệu này không thể khôi phục lại!",
+                text: `Loại phòng "${name}" sẽ bị xóa hoàn toàn. Dữ liệu không thể khôi phục!`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -174,35 +159,20 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Hiện loading
-                    Swal.fire({
-                        title: 'Đang xử lý...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
                     $.ajax({
-                        url: '/Room/DeletePermanently/' + id,
+                        url: '/RoomType/DeletePermanently/' + id,
                         type: 'POST',
-                        data: {
-                            __RequestVerificationToken: getAntiforgeryToken()
-                        },
+                        data: { __RequestVerificationToken: getAntiforgeryToken() },
                         success: function (res) {
                             if (res.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Đã xóa!',
-                                    text: res.message,
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                }).then(() => location.reload());
+                                Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
+                                    .then(() => location.reload());
                             } else {
                                 Swal.fire('Lỗi', res.message, 'error');
                             }
                         },
-                        error: function () {
-                            Swal.fire('Lỗi', 'Có lỗi xảy ra trong quá trình xóa', 'error');
-                        }
+                        error: function () { Swal.fire('Lỗi', 'Có lỗi xảy ra trong quá trình xóa', 'error'); }
                     });
                 }
             });

@@ -10,7 +10,6 @@ using System.Security.Claims;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
     public class ContractController(
         IContractService contractService,
         IUserRepository userRepository,
@@ -275,6 +274,44 @@ namespace DormitoryManagement.Controllers
             }
             Logger.LogWarning("Xóa hợp đồng ID: {Id} thất bại.", id);
             return Json(new { success = false, message = "Xóa hợp đồng thất bại." });
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác hợp đồng trang {Page}, tìm kiếm: '{Search}'", page, search);
+            var pagedContracts = await _contractService.GetDeletedContractsPagedAsync(page, PageSize, search);
+            ViewBag.Search = search;
+            return View(pagedContracts);
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục hợp đồng ID: {Id}", id);
+            var success = await _contractService.RestoreContractAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Khôi phục hợp đồng thành công!" });
+            }
+            return Json(new { success = false, message = "Khôi phục hợp đồng thất bại." });
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn hợp đồng ID: {Id}", id);
+            var success = await _contractService.DeletePermanentlyAsync(id);
+            if (success)
+            {
+                return Json(new { success = true, message = "Đã xóa vĩnh viễn hợp đồng khỏi cơ sở dữ liệu." });
+            }
+            return Json(new { success = false, message = "Xóa vĩnh viễn hợp đồng thất bại." });
         }
     }
 }

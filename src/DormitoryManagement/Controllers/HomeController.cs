@@ -27,6 +27,7 @@ namespace DormitoryManagement.Controllers
     ) : BaseController
     {
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
             Logger.LogInformation("Đang truy cập trang chủ (Index).");

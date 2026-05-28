@@ -135,38 +135,44 @@
     }
 
     <!-- Filter bar -->
-    <form method="get" asp-action="Index" class="filter-bar">
-        <div class="row g-2 align-items-center">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
             <div class="col-lg-4 col-md-6">
-                <div class="search-wrap">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
                     <input type="text" name="SearchTerm" value="@filter.SearchTerm"
-                           class="form-control input-ctrl" placeholder="Tìm theo tiêu đề, mô tả...">
+                           class="input-sync" placeholder="Tìm theo tiêu đề, mô tả...">
                 </div>
             </div>
             <div class="col-lg-3 col-md-4">
-                <select name="Status" class="form-select input-ctrl">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="Open"       selected="@(filter.Status == MaintenanceStatus.Open)">🔵 Mới tiếp nhận</option>
-                    <option value="InProgress" selected="@(filter.Status == MaintenanceStatus.InProgress)">🟠 Đang xử lý</option>
-                    <option value="Resolved"   selected="@(filter.Status == MaintenanceStatus.Resolved)">🟢 Đã giải quyết</option>
-                    <option value="Closed"     selected="@(filter.Status == MaintenanceStatus.Closed)">⚫ Đã đóng</option>
-                </select>
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-info-circle"></i>
+                    <select name="Status" class="input-sync">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Open"       selected="@(filter.Status == MaintenanceStatus.Open)">🔵 Mới tiếp nhận</option>
+                        <option value="InProgress" selected="@(filter.Status == MaintenanceStatus.InProgress)">🟠 Đang xử lý</option>
+                        <option value="Resolved"   selected="@(filter.Status == MaintenanceStatus.Resolved)">🟢 Đã giải quyết</option>
+                        <option value="Closed"     selected="@(filter.Status == MaintenanceStatus.Closed)">⚫ Đã đóng</option>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-3 col-md-4">
-                <select name="Priority" class="form-select input-ctrl">
-                    <option value="">Tất cả mức ưu tiên</option>
-                    <option value="Low"    selected="@(filter.Priority == MaintenancePriority.Low)">🟢 Thấp</option>
-                    <option value="Medium" selected="@(filter.Priority == MaintenancePriority.Medium)">🟡 Trung bình</option>
-                    <option value="High"   selected="@(filter.Priority == MaintenancePriority.High)">🟠 Cao</option>
-                    <option value="Urgent" selected="@(filter.Priority == MaintenancePriority.Urgent)">🔴 Khẩn cấp</option>
-                </select>
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <select name="Priority" class="input-sync">
+                        <option value="">Tất cả mức ưu tiên</option>
+                        <option value="Low"    selected="@(filter.Priority == MaintenancePriority.Low)">🟢 Thấp</option>
+                        <option value="Medium" selected="@(filter.Priority == MaintenancePriority.Medium)">🟡 Trung bình</option>
+                        <option value="High"   selected="@(filter.Priority == MaintenancePriority.High)">🟠 Cao</option>
+                        <option value="Urgent" selected="@(filter.Priority == MaintenancePriority.Urgent)">🔴 Khẩn cấp</option>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-2 col-md-12 d-flex gap-2 justify-content-end">
-                <button type="submit" class="btn-sq btn-sq-primary" title="Lọc dữ liệu">
-                    <i class="fas fa-filter"></i>
+                <button type="submit" class="btn-search-sync" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i> Lọc
                 </button>
-                <a asp-action="Index" class="btn-sq btn-sq-light" title="Làm mới">
+                <a asp-action="Index" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>

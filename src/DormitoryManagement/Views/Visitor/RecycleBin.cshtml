@@ -1,57 +1,44 @@
-@using DormitoryManagement.Domain.Common
-@using DormitoryManagement.Application.Dtos.Responses.Blocks
-@model PagedResult<BlockResponseDto>
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Models.VisitorViewModel>
 
 @{
-    ViewData["Title"] = "Thùng Rác - Tòa Nhà";
+    ViewData["Title"] = "Thùng Rác Khách Ghé Thăm";
 }
 
 @section Styles {
     <style>
         .tieu-de-trang { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #ef4444); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0; }
-        .nut-quay-lai { padding: 10px 20px; border-radius: 10px; font-weight: 600; transition: all 0.3s ease; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; background: #fff; color: #64748b !important; border: 1px solid #e2e8f0; }
-        .nut-quay-lai:hover { background: #f8fafc; color: #1e293b !important; border-color: #cbd5e1; transform: translateY(-1px); }
-        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 20px; margin-bottom: 28px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
-        .khung-tim-kiem { position: relative; }
-        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .khung-tim-kiem input { width: 100%; padding: 10px 16px 10px 42px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; }
-        
-        .trang-thai-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
         .da-xoa { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+        .trang-thai-badge { padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .data-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; opacity: 0.7; }
         
-        .data-badge { background: #f8fafc; color: #1e293b; padding: 6px 10px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; border: 1px solid #e2e8f0; text-decoration: line-through; opacity: 0.7; }
-        
-        .table thead th { background: #f8fafc; color: #64748b; font-size: 12px; text-transform: uppercase; padding: 15px; }
-        
-        .nut-hanh-dong { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: none; text-decoration: none !important; transition: all 0.2s; }
+        .nut-hanh-dong { width: 36px; height: 36px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; border: none; text-decoration: none !important; transition: all 0.2s; cursor: pointer; }
         .nut-khoi-phuc { background: #ecfdf5; color: #10b981; }
         .nut-xoa-vinh-vien { background: #fff1f2; color: #e11d48; }
         .nut-hanh-dong:hover { transform: scale(1.1); }
     </style>
 }
 
-@* Token bảo mật cho thao tác AJAX *@
 @Html.AntiForgeryToken()
 
-<div class="container-fluid">
+<div class="container-fluid py-4">
     <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang">
-            <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác: Tòa nhà
+            <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác: Lượt khách đến thăm
         </h1>
         <div class="d-flex gap-2">
-            <a asp-action="Index" class="nut-quay-lai">
+            <a asp-action="Index" class="btn-sync-action btn-sync-secondary">
                 <i class="fas fa-arrow-left"></i> Quay lại danh sách
             </a>
         </div>
     </header>
 
-    @* Thanh tìm kiếm *@
-    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync" style="border: 1px solid #fecaca !important;">
+    <!-- Thanh tìm kiếm -->
+    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync">
         <div class="row g-3">
             <div class="col-md-10">
                 <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm kiếm các tòa nhà đã xóa...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="form-control input-sync" placeholder="Tìm theo tên khách, số CCCD/CMND...">
                 </div>
             </div>
             <div class="col-md-2">
@@ -62,15 +49,18 @@
         </div>
     </form>
 
-    @* Bảng Dữ Liệu *@
-    <div class="card border-0 shadow-sm border border-danger border-opacity-10" style="border-radius: 20px; overflow: hidden;">
+    <!-- Bảng Dữ Liệu -->
+    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden; border: 1px solid #fecaca !important;">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="ps-4">Tên tòa nhà</th>
-                        <th>Số tầng</th>
-                        <th>Ngày tạo</th>
+                        <th class="ps-4">Khách đến thăm</th>
+                        <th>CCCD/CMND</th>
+                        <th>Sinh Viên Đón</th>
+                        <th>Mối Quan Hệ</th>
+                        <th>Mục Đích Thăm</th>
+                        <th>Thời Gian Vào - Ra</th>
                         <th>Trạng thái</th>
                         <th class="text-end pe-4">Thao tác</th>
                     </tr>
@@ -81,22 +71,35 @@
                         foreach (var item in Model.Items)
                         {
                             <tr class="opacity-75">
-                                <td class="ps-4"><span class="data-badge text-decoration-line-through">@item.BlockName</span></td>
-                                <td><div class="fw-bold text-muted text-decoration-line-through">@item.TotalFloors tầng</div></td>
-                                <td>
-                                    <span class="text-muted small text-decoration-line-through"><i class="far fa-calendar-alt me-1"></i> @item.CreatedDate.ToString("dd/MM/yyyy")</span>
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark text-decoration-line-through">@item.VisitorName</div>
+                                    <div class="text-muted small text-decoration-line-through">SĐT: @item.PhoneNumber</div>
                                 </td>
                                 <td>
-                                    <span class="trang-thai-badge da-xoa text-decoration-line-through"><i class="fas fa-trash-alt me-1"></i> Đã xóa</span>
+                                    <span class="data-badge text-decoration-line-through">@item.IdentityCard</span>
+                                </td>
+                                <td>
+                                    <span class="fw-medium text-dark text-decoration-line-through">@item.StudentName</span>
+                                    <div class="text-muted small text-decoration-line-through">Phòng @item.Room</div>
+                                </td>
+                                <td><span class="text-secondary text-decoration-line-through">@item.Relationship</span></td>
+                                <td><span class="text-muted small text-decoration-line-through">@item.Purpose</span></td>
+                                <td>
+                                    <div class="small text-muted text-decoration-line-through">
+                                        Vào: @item.CheckIn.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                    <div class="small text-muted text-decoration-line-through">
+                                        Ra: @(item.CheckOut?.ToString("dd/MM/yyyy HH:mm") ?? "---")
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="trang-thai-badge da-xoa"><i class="fas fa-trash-alt me-1"></i> Đã xóa</span>
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-2">
-                                        <!-- Nút Khôi phục -->
-                                        <button type="button" onclick="restoreBlock('@item.Id')" class="nut-hanh-dong nut-khoi-phuc" title="Khôi phục lại">
+                                        <button type="button" onclick="restoreVisitor('@item.Id')" class="nut-hanh-dong nut-khoi-phuc" title="Khôi phục lại">
                                             <i class="fas fa-trash-restore"></i>
                                         </button>
-
-                                        <!-- Nút Xóa vĩnh viễn -->
                                         <button type="button" onclick="deletePermanently('@item.Id')" class="nut-hanh-dong nut-xoa-vinh-vien" title="Xóa vĩnh viễn">
                                             <i class="fas fa-times"></i>
                                         </button>
@@ -108,7 +111,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
+                            <td colspan="8" class="text-center py-5 text-muted">
                                 <i class="fas fa-box-open fs-1 mb-3 text-light"></i>
                                 <br />
                                 <span class="fs-5 fw-semibold text-secondary">Thùng rác hiện đang trống.</span>
@@ -124,21 +127,20 @@
 
 @section Scripts {
     <script>
-        // 1. Hàm Khôi Phục (Restore)
-        function restoreBlock(id) {
+        function restoreVisitor(id) {
             Swal.fire({
-                title: "Khôi phục tòa nhà?",
-                text: "Tòa nhà này sẽ được đưa trở lại danh sách hoạt động chính.",
+                title: "Khôi phục lượt khách ghé thăm?",
+                text: "Dữ liệu khách ghé thăm này sẽ được khôi phục.",
                 icon: 'info',
                 showCancelButton: true,
-                confirmButtonColor: '#10b981', // Màu xanh lá
+                confirmButtonColor: '#10b981',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: '<i class="fas fa-undo me-1"></i> Khôi phục',
                 cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '/Block/Restore/' + id,
+                        url: '/Visitor/Restore/' + id,
                         type: 'POST',
                         headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                         success: function (data) {
@@ -162,20 +164,18 @@
             });
         }
 
-        // 2. Hàm Xóa Vĩnh Viễn (Delete Permanently)
         function deletePermanently(id) {
             Swal.fire({
                 title: 'CẢNH BÁO NGUY HIỂM!',
-                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> tòa nhà này.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
+                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> bản ghi khách ghé thăm này.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#e11d48', // Màu đỏ đậm
+                confirmButtonColor: '#e11d48',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: '<i class="fas fa-skull-crossbones me-1"></i> Vẫn xóa vĩnh viễn',
-                cancelButtonText: 'Thoát an toàn'
+                cancelButtonText: 'Hủy'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Double check (Bắt nhập chữ XACNHAN) để tránh click nhầm
                     Swal.fire({
                         title: 'Xác nhận lần cuối',
                         text: "Gõ chữ 'XOA' vào ô bên dưới để xác nhận.",
@@ -192,14 +192,14 @@
                     }).then((finalResult) => {
                         if (finalResult.isConfirmed) {
                             $.ajax({
-                                url: '/Block/DeletePermanently/' + id,
+                                url: '/Visitor/DeletePermanently/' + id,
                                 type: 'POST',
                                 headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                                 success: function (data) {
                                     if (data.success) {
                                         Swal.fire({ 
                                             icon: 'success', 
-                                            title: 'Đã bay màu!', 
+                                            title: 'Đã xóa!', 
                                             text: data.message, 
                                             timer: 1500, 
                                             showConfirmButton: false 

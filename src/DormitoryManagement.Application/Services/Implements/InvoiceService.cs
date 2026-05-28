@@ -3,6 +3,7 @@ using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using DormitoryManagement.Domain.Common;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -84,6 +85,40 @@ namespace DormitoryManagement.Application.Services.Implements
             if (invoice == null) return false;
 
             await _invoiceRepository.DeleteAsync(invoice, isSoftDelete: true);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<PagedResult<Invoice>> GetDeletedInvoicesAsync(int pageIndex, int pageSize, string? searchString = null)
+        {
+            System.Linq.Expressions.Expression<Func<Invoice, bool>>? predicate = null;
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                var lowerSearch = searchString.ToLower().Trim();
+                predicate = x => x.InvoiceCode.ToLower().Contains(lowerSearch) || x.Title.ToLower().Contains(lowerSearch);
+            }
+
+            var pagedData = await _invoiceRepository.GetByStatusPagedAsync(
+                pageIndex, pageSize, null, true, predicate,
+                x => x.Contract!, x => x.Contract!.User!);
+
+            return pagedData;
+        }
+
+        public async Task<bool> RestoreInvoiceAsync(Guid id)
+        {
+            var invoice = await _invoiceRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (invoice == null || !invoice.IsDeleted) return false;
+
+            await _invoiceRepository.RestoreAsync(invoice);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
+        {
+            var invoice = await _invoiceRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (invoice == null) return false;
+
+            await _invoiceRepository.DeleteAsync(invoice, false);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }

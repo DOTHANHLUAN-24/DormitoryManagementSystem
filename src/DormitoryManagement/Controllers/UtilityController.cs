@@ -11,7 +11,6 @@ namespace DormitoryManagement.Controllers
     /// <summary>
     /// Controller quản lý dịch vụ / tiện ích sử dụng IUtilityService.
     /// </summary>
-    [Authorize]
     public class UtilityController
     (
         IUtilityService utilityService,
@@ -22,6 +21,7 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Index(string search = "", int page = 1)
         {
@@ -40,7 +40,7 @@ namespace DormitoryManagement.Controllers
             return View(pagedUtilities);
         }
 
-        [HttpGet("Trash")]
+        [HttpGet("RecycleBin")]
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Trash(string search = "", int page = 1)
         {

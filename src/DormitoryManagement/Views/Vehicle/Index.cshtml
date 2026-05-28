@@ -214,32 +214,30 @@
 <div class="container-fluid p-4">
     <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang mb-0"><i class="fas fa-motorcycle me-2"></i>Quản lý phương tiện</h1>
-        <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+        <a asp-action="Create" class="btn-sync-action btn-sync-add">
             <i class="fas fa-plus"></i> Đăng ký xe mới
         </a>
     </header>
 
-    <form method="get" class="thanh-tim-kiem" asp-action="Index">
+    <form method="get" class="thanh-tim-kiem-sync" asp-action="Index">
         <div class="row g-2 align-items-center">
             <div class="col-md-7">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm biển số hoặc tên/mã định danh chủ xe...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm biển số hoặc tên/mã định danh chủ xe...">
                 </div>
             </div>
             <div class="col-md-3">
-                <select name="type" class="form-select input-custom">
+                <select name="type" class="input-sync">
                     <option value="">-- Tất cả loại xe --</option>
                     <option value="Xe máy" selected="@(ViewBag.TypeFilter == "Xe máy")">Xe máy</option>
                     <option value="Xe máy điện" selected="@(ViewBag.TypeFilter == "Xe máy điện")">Xe máy điện</option>
                     <option value="Xe đạp điện" selected="@(ViewBag.TypeFilter == "Xe đạp điện")">Xe đạp điện</option>
-                    <option value="Xe đạp" selected="@(ViewBag.TypeFilter == "Xe đạp")">Xe đạp</option>
-                    <option value="Ô tô" selected="@(ViewBag.TypeFilter == "Ô tô")">Ô tô</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn-search">
-                    <i class="fas fa-filter"></i> Lọc dữ liệu
+                <button type="submit" class="btn-search-sync">
+                    <i class="fas fa-search"></i> Tìm kiếm
                 </button>
             </div>
         </div>
@@ -296,7 +294,7 @@
                                             <i class="fas @(item.IsActive ? "fa-pause" : "fa-play")"></i>
                                         </button>
 
-                                        <button type="button" onclick="deleteVehicle('@item.Id', '@item.LicensePlate')"
+                                        <button type="button" onclick="softDeleteVehicle('@item.Id', '@item.LicensePlate')"
                                                 class="nut-hanh-dong nut-xoa" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Xóa phương tiện">
                                             <i class="fas fa-trash"></i>
@@ -368,7 +366,7 @@
             });
         }
 
-        function deleteVehicle(id, licensePlate) {
+        function softDeleteVehicle(id, licensePlate) {
             Swal.fire({
                 title: 'Xóa phương tiện?',
                 html: "Thông tin xe <b>" + licensePlate + "</b> sẽ bị xóa khỏi hệ thống.",
@@ -382,7 +380,7 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
-                        url: '/Vehicle/Delete/' + id,
+                        url: '/Vehicle/SoftDelete/' + id,
                         type: 'POST',
                         headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val() },
                         success: function (data) {

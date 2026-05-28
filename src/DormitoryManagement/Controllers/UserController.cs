@@ -12,6 +12,7 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách người dùng hoạt động trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -23,8 +24,7 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        [HttpGet]
-        [Route("Banned")]
+        [HttpGet("Banned")]
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách tài khoản bị khóa trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -35,8 +35,7 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        [HttpGet]
-        [Route("RecycleBin")]
+        [HttpGet("RecycleBin")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách người dùng đã bị xóa trang {Page}, tìm kiếm: '{Search}'", page, search);
@@ -47,8 +46,7 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
-        [HttpGet]
-        [Route("Details/{id}")]
+        [HttpGet("Details/{id}")]
         public async Task<IActionResult> Details(Guid id)
         {
             Logger.LogInformation("Đang xem chi tiết người dùng ID: {Id}", id);
@@ -62,8 +60,7 @@ namespace DormitoryManagement.Controllers
             return View(user);
         }
 
-        [HttpGet]
-        [Route("Create")]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             Logger.LogInformation("Đang truy cập trang thêm mới người dùng.");
