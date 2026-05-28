@@ -5,6 +5,7 @@ using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -164,6 +165,64 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             return await _contractRepository.GetQuery()
                 .CountAsync(c => c.Status == ContractStatus.Pending);
+        }
+
+        /// <summary>
+        /// Lấy danh sách hợp đồng đã bị xóa phân trang.
+        /// </summary>
+        public async Task<PagedResult<Contract>> GetDeletedContractsPagedAsync(int pageIndex, int pageSize, string? searchString = null)
+        {
+            Expression<Func<Contract, bool>>? predicate = null;
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var term = searchString.ToLower().Trim();
+                predicate = x => x.ContractCode.ToLower().Contains(term) || (x.User != null && x.User.FullName.ToLower().Contains(term));
+            }
+
+            var pagedData = await _contractRepository.GetByStatusPagedAsync(
+                pageIndex, pageSize,
+                isActive: null,
+                isDeleted: true,
+                predicate: predicate,
+                x => x.User!,
+                x => x.Bed!,
+                x => x.Bed!.Room!,
+                x => x.Bed!.Room!.Block!);
+
+            return pagedData;
+        }
+
+        /// <summary>
+        /// Khôi phục hợp đồng đã bị xóa mềm.
+        /// </summary>
+        public async Task<bool> RestoreContractAsync(Guid id)
+        {
+            var contract = await _contractRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (contract == null || !contract.IsDeleted) return false;
+
+            await _contractRepository.RestoreAsync(contract);
+            
+            // Tự động cập nhật trạng thái giường tương ứng dựa vào trạng thái hợp đồng
+            var bed = await _bedRepository.GetByIdAsync(contract.BedId);
+            if (bed != null && contract.Status == ContractStatus.Active)
+            {
+                bed.Status = BedStatus.Occupied;
+                await _bedRepository.UpdateAsync(bed);
+            }
+
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Xóa vĩnh viễn hợp đồng khỏi database.
+        /// </summary>
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
+        {
+            var contract = await _contractRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (contract == null) return false;
+
+            await _contractRepository.DeleteAsync(contract, isSoftDelete: false);
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }
 }

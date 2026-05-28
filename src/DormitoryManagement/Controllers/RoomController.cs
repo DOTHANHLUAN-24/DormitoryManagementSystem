@@ -39,6 +39,7 @@ namespace DormitoryManagement.Controllers
         private readonly IMapper _mapper = mapper;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index(RoomFilterRequest filter)
         {
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;

@@ -16,7 +16,12 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
         public async Task<IEnumerable<MaintenanceRequest>> GetRequestsByRequesterIdAsync(Guid requesterId)
         {
-            return await _dbSet.AsNoTracking().Where(m => m.RequesterId == requesterId && !m.IsDeleted).ToListAsync();
+            return await _dbSet.AsNoTracking()
+                .Include(m => m.Room).ThenInclude(r => r.Block)
+                .Include(m => m.Handler)
+                .Where(m => m.RequesterId == requesterId && !m.IsDeleted)
+                .OrderByDescending(m => m.CreatedDate)
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<MaintenanceRequest>> GetRequestsByHandlerIdAsync(Guid handlerId)

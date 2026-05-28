@@ -1,3 +1,5 @@
+@model DormitoryManagement.Application.Dtos.Requests.Vehicles.VehicleUpdateDto
+
 @{
     ViewData["Title"] = "Chỉnh sửa phương tiện";
 }
@@ -170,9 +172,11 @@
         <div class="col-xl-10">
             <div class="card card-custom">
                 <div class="card-body p-4 p-md-5">
+                    
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4" style="border-radius: 12px;"></div>
+
                     <form asp-action="Edit" method="post">
-                        @* ID của phương tiện cần sửa *@
-                        <input type="hidden" name="Id" value="@ViewBag.VehicleId" />
+                        <input type="hidden" asp-for="Id" />
 
                         <div class="row g-5">
                             <!-- CỘT TRÁI: CHỦ SỞ HỮU -->
@@ -182,103 +186,95 @@
                                     Chủ sở hữu hiện tại
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label">Chủ sở hữu <span class="text-danger">*</span></label>
-                                    <select name="OwnerId" class="form-select input-custom select2" required>
-                                        <option value="@ViewBag.VehicleId" selected>@ViewBag.OwnerName</option>
-                                        @if (ViewBag.Owners != null)
-                                        {
-                                            foreach (var owner in ViewBag.Owners)
-                                            {
-                                                if (owner.Name != ViewBag.OwnerName)
-                                                {
-                                                    <option value="@owner.Id">@owner.Name</option>
-                                                }
-                                            }
-                                        }
+                                    <label class="form-label" asp-for="OwnerId">Chủ sở hữu <span class="text-danger">*</span></label>
+                                    <select asp-for="OwnerId" class="form-select input-custom select2" required>
+                                        <option value="@Model.OwnerId" selected>@ViewBag.OwnerName</option>
                                     </select>
-                                    <small class="text-muted mt-2 d-block">Bạn có thể thay đổi chủ sở hữu nếu phương
-                                        tiện được sang nhượng.</small>
-                                    </div>
+                                    <span asp-validation-for="OwnerId" class="text-danger small mt-1 d-block"></span>
+                                    <small class="text-muted mt-2 d-block">Bạn có thể thay đổi chủ sở hữu nếu phương tiện được sang nhượng.</small>
                                 </div>
 
-                                <!-- CỘT PHẢI: THÔNG TIN XE -->
-                                <div class="col-md-6 ps-md-4">
-                                    <div class="section-title">
-                                        <div class="section-icon green"><i class="fas fa-motorcycle"></i></div>
-                                        Thông tin xe
+                                <div class="mb-4">
+                                    <div class="form-check form-switch mt-4">
+                                        <input class="form-check-input" type="checkbox" asp-for="IsActive" id="IsActiveSwitch">
+                                        <label class="form-check-label fw-semibold text-muted ms-2" for="IsActiveSwitch">Trạng thái hoạt động</label>
                                     </div>
-                                    <div class="row g-3">
-                                        <div class="col-md-6 mb-4">
-                                            <label class="form-label">Loại phương tiện</label>
-                                            <select name="VehicleType" class="form-select input-custom" required>
-                                                <option value="Xe máy" selected="@(ViewBag.VehicleType == "Xe máy")">Xe máy
-                                                </option>
-                                                <option value="Xe đạp điện"
-                                                        selected="@(ViewBag.VehicleType == "Xe đạp điện")">Xe đạp điện</option>
-                                                <option value="Xe đạp" selected="@(ViewBag.VehicleType == "Xe đạp")">Xe đạp
-                                                </option>
-                                                <option value="Ô tô" selected="@(ViewBag.VehicleType == "Ô tô")">Ô tô
-                                                </option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-6 mb-4">
-                                            <label class="form-label">Biển số xe <span class="text-danger">*</span></label>
-                                            <input name="LicensePlate" class="form-control input-custom"
-                                                   value="@ViewBag.LicensePlate" required />
-                                        </div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label class="form-label">Ghi chú sửa đổi</label>
-                                        <textarea name="Note" class="form-control input-custom" rows="2"
-                                                  style="height: auto;">@ViewBag.Note</textarea>
-                                    </div>
+                                    <span asp-validation-for="IsActive" class="text-danger small mt-1 d-block"></span>
                                 </div>
                             </div>
 
-                            <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
-                                <a asp-action="Index" class="btn-action btn-cancel text-decoration-none">
-                                    <i class="fas fa-times"></i> Hủy bỏ
-                                </a>
-                                <button type="submit" class="btn-action btn-update">
-                                    <i class="fas fa-save"></i> Cập nhật dữ liệu
-                                </button>
+                            <!-- CỘT PHẢI: THÔNG TIN XE -->
+                            <div class="col-md-6 ps-md-4">
+                                <div class="section-title">
+                                    <div class="section-icon green"><i class="fas fa-motorcycle"></i></div>
+                                    Thông tin xe
+                                </div>
+                                <div class="row g-3">
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label" asp-for="VehicleType">Loại phương tiện</label>
+                                        <select asp-for="VehicleType" class="form-select input-custom" required>
+                                            <option value="Xe máy">Xe máy</option>
+                                            <option value="Xe máy điện">Xe máy điện</option>
+                                            <option value="Xe đạp điện">Xe đạp điện</option>
+                                            <option value="Xe đạp">Xe đạp</option>
+                                            <option value="Ô tô">Ô tô</option>
+                                        </select>
+                                        <span asp-validation-for="VehicleType" class="text-danger small mt-1 d-block"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-4">
+                                        <label class="form-label" asp-for="LicensePlate">Biển số xe <span class="text-danger">*</span></label>
+                                        <input asp-for="LicensePlate" class="form-control input-custom" required />
+                                        <span asp-validation-for="LicensePlate" class="text-danger small mt-1 d-block"></span>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
-                    </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-top d-flex justify-content-end gap-3">
+                            <a asp-action="Index" class="btn-action btn-cancel text-decoration-none">
+                                <i class="fas fa-times"></i> Hủy bỏ
+                            </a>
+                            <button type="submit" class="btn-action btn-update">
+                                <i class="fas fa-save"></i> Cập nhật dữ liệu
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        @section Scripts {
-            <script>
-                    $(document).ready(function () {
-                        $('.select2').select2({
-                            theme: 'bootstrap-5',
-                            placeholder: 'Nhập MSSV hoặc Tên để tìm kiếm...',
-                            allowClear: true,
-                            minimumInputLength: 1,
-                            width: '100%',
-                            ajax: {
-                                url: '@Url.Action("SearchUsers", "Vehicle")',
-                                dataType: 'json',
-                                delay: 250,
-                                data: function (params) {
-                                    return {
-                                        q: params.term
-                                    };
-                                },
-                                processResults: function (data) {
-                                    return {
-                                        results: data.items
-                                    };
-                                },
-                                cache: true
-                            },
-                            language: {
-                                inputTooShort: function () { return "Vui lòng nhập từ 1 ký tự..."; },
-                                noResults: function () { return "Không tìm thấy người dùng nào"; }
-                            }
-                        });
-                    });
-            </script>
-        }
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Nhập MSSV hoặc Tên để tìm kiếm...',
+                allowClear: true,
+                minimumInputLength: 1,
+                width: '100%',
+                ajax: {
+                    url: '@Url.Action("SearchUsers", "Vehicle")',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return {
+                            q: params.term
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data.items
+                        };
+                    },
+                    cache: true
+                },
+                language: {
+                    inputTooShort: function () { return "Vui lòng nhập từ 1 ký tự..."; },
+                    noResults: function () { return "Không tìm thấy người dùng nào"; }
+                }
+            });
+        });
+    </script>
+}

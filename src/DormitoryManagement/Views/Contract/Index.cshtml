@@ -195,11 +195,11 @@
         <div class="d-flex gap-2">
             @if (pendingCount > 0)
             {
-                <a asp-action="Pending" class="btn-custom-header btn-pending-badge text-decoration-none">
+                <a asp-action="Pending" class="btn-sync-action btn-sync-warning-light">
                     <i class="fas fa-clock"></i> Chờ duyệt (@pendingCount)
                 </a>
             }
-            <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none text-white">
+            <a asp-action="Create" class="btn-sync-action btn-sync-add">
                 <i class="fas fa-plus"></i> Tạo hợp đồng
             </a>
         </div>
@@ -238,37 +238,40 @@
     </div>
 
     <!-- Bộ lọc tìm kiếm -->
-    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
-        <div class="row g-2 align-items-center">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
             <div class="col-lg-7 col-md-6">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@search" class="form-control input-custom" placeholder="Tìm theo mã hợp đồng, tài khoản sinh viên...">
+                    <input type="text" name="search" value="@search" class="input-sync" placeholder="Tìm theo mã hợp đồng, tài khoản sinh viên...">
                 </div>
             </div>
             <div class="col-lg-3 col-md-3">
-                <select name="status" class="form-select input-custom">
-                    <option value="">-- Tất cả trạng thái --</option>
-                    @foreach (ContractStatus statusVal in Enum.GetValues(typeof(ContractStatus)))
-                    {
-                        var isSelected = currentStatus == statusVal ? "selected" : "";
-                        var label = statusVal switch
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-info-circle"></i>
+                    <select name="status" class="input-sync">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        @foreach (ContractStatus statusVal in Enum.GetValues(typeof(ContractStatus)))
                         {
-                            ContractStatus.Active => "Đang hoạt động",
-                            ContractStatus.Pending => "Chờ duyệt",
-                            ContractStatus.Expired => "Hết hạn",
-                            ContractStatus.Terminated => "Đã chấm dứt",
-                            _ => statusVal.ToString()
-                        };
-                        <!option value="@statusVal" @isSelected>@label</!option>
-                    }
-                </select>
+                            var isSelected = currentStatus == statusVal ? "selected" : "";
+                            var label = statusVal switch
+                            {
+                                ContractStatus.Active => "Đang hoạt động",
+                                ContractStatus.Pending => "Chờ duyệt",
+                                ContractStatus.Expired => "Hết hạn",
+                                ContractStatus.Terminated => "Đã chấm dứt",
+                                _ => statusVal.ToString()
+                            };
+                            <!option value="@statusVal" @isSelected>@label</!option>
+                        }
+                    </select>
+                </div>
             </div>
             <div class="col-lg-2 col-md-3 d-flex gap-2">
-                <button type="submit" class="btn-filter-action btn-apply flex-grow-1" title="Tìm kiếm">
-                    <i class="fas fa-filter text-white me-2"></i> Lọc
+                <button type="submit" class="btn-search-sync" title="Lọc">
+                    <i class="fas fa-filter"></i> Lọc
                 </button>
-                <a asp-action="Index" class="btn-filter-action btn-refresh text-decoration-none" title="Làm mới">
+                <a asp-action="Index" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-sync-alt"></i>
                 </a>
             </div>

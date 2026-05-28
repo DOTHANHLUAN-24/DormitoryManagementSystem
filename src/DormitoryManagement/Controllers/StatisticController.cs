@@ -9,10 +9,10 @@ namespace DormitoryManagement.Controllers
     /// Controller xử lý các logic liên quan đến Báo cáo và Thống kê
     /// </summary>
     [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
-    [Route("Statistic")]
     public class StatisticController(IStatisticService statisticService) : BaseController
     {
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
             Logger.LogInformation("Đang tải dữ liệu báo cáo thống kê tổng quan hệ thống.");

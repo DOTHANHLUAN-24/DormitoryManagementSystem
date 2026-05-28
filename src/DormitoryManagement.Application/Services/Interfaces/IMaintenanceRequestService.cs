@@ -46,5 +46,20 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// Xóa một yêu cầu bảo trì.
         /// </summary>
         Task<bool> DeleteAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách yêu cầu bảo trì đã bị xóa phân trang.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<MaintenanceRequestResponseDto>> GetDeletedPagedAsync(int pageIndex, int pageSize, string? searchTerm = null);
+
+        /// <summary>
+        /// Khôi phục yêu cầu bảo trì đã bị xóa mềm.
+        /// </summary>
+        Task<bool> RestoreAsync(Guid id);
+
+        /// <summary>
+        /// Xóa vĩnh viễn yêu cầu bảo trì khỏi database.
+        /// </summary>
+        Task<bool> DeletePermanentlyAsync(Guid id);
     }
 }

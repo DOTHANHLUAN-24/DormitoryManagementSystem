@@ -26,7 +26,7 @@
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" href="~/css/_Layout.css" />
+    <link rel="stylesheet" href="~/css/_Layout.css" asp-append-version="true" />
     @RenderSection("Styles", required: false)
 </head>
 
@@ -143,6 +143,9 @@
 
         <!-- CONTENT -->
         <div class="p-4">
+            <div id="global-breadcrumb-wrapper">
+                <partial name="_Breadcrumbs" />
+            </div>
             @RenderBody()
         </div>
 
@@ -183,6 +186,24 @@
 
     <script>
         $(document).ready(function () {
+            // Di chuyển breadcrumb xuống dưới header/tiêu đề trang nếu có
+            const $breadcrumb = $('#global-breadcrumb-wrapper');
+            if ($breadcrumb.length) {
+                let $header = $('header').first();
+                if (!$header.length) {
+                    const $title = $('.tieu-de-trang, h1, h3').first();
+                    if ($title.length) {
+                        $header = $title.closest('.row, [class*="mb-"], [class*="pb-"]');
+                        if (!$header.length) {
+                            $header = $title.parent();
+                        }
+                    }
+                }
+                if ($header.length) {
+                    $breadcrumb.detach().insertAfter($header);
+                }
+            }
+
             var successMsg = @Html.Raw(Json.Serialize(TempData["Success"]));
             var errorMsg = @Html.Raw(Json.Serialize(TempData["Error"]));
 

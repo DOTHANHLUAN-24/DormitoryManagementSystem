@@ -57,5 +57,20 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// Lấy số lượng hợp đồng ở trạng thái chờ duyệt (Pending).
         /// </summary>
         Task<int> GetPendingCountAsync();
+
+        /// <summary>
+        /// Lấy danh sách hợp đồng đã bị xóa phân trang.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Contract>> GetDeletedContractsPagedAsync(int pageIndex, int pageSize, string? searchString = null);
+
+        /// <summary>
+        /// Khôi phục hợp đồng đã bị xóa mềm.
+        /// </summary>
+        Task<bool> RestoreContractAsync(Guid id);
+
+        /// <summary>
+        /// Xóa vĩnh viễn hợp đồng khỏi database.
+        /// </summary>
+        Task<bool> DeletePermanentlyAsync(Guid id);
     }
 }

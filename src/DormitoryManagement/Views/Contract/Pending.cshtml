@@ -145,19 +145,19 @@
     </header>
 
     <!-- Bộ lọc tìm kiếm -->
-    <form method="get" asp-action="Pending" class="thanh-tim-kiem">
-        <div class="row g-2 align-items-center">
-            <div class="col-lg-6 col-md-8">
-                <div class="khung-tim-kiem">
+    <form method="get" asp-action="Pending" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-10 col-md-9">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@search" class="form-control input-custom" placeholder="Tìm theo mã tạm tính, tài khoản sinh viên...">
+                    <input type="text" name="search" value="@search" class="input-sync" placeholder="Tìm theo mã tạm tính, tài khoản sinh viên...">
                 </div>
             </div>
-            <div class="col-lg-2 col-md-4 d-flex gap-2">
-                <button type="submit" class="btn-filter-action btn-apply" title="Tìm kiếm">
-                    <i class="fas fa-filter text-white"></i>
+            <div class="col-lg-2 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-search-sync" style="background: #d97706;" title="Tìm kiếm">
+                    <i class="fas fa-filter"></i> Lọc
                 </button>
-                <a asp-action="Pending" class="btn-filter-action btn-refresh text-decoration-none" title="Làm mới">
+                <a asp-action="Pending" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-sync-alt"></i>
                 </a>
             </div>

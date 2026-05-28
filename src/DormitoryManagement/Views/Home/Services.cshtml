@@ -179,129 +179,425 @@
             box-shadow: 0 6px 14px rgba(15, 107, 109, 0.3);
             color: #ffffff;
         }
+
+        /* Custom styles for utility usage history */
+        .section-title {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #0f172a;
+            position: relative;
+            padding-left: 14px;
+            border-left: 4px solid #0f6b6d;
+        }
+
+        .table-custom {
+            margin-bottom: 0;
+        }
+
+        .table-custom th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 700;
+            font-size: 0.82rem;
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table-custom td {
+            padding: 1.1rem 1.25rem;
+            vertical-align: middle;
+            font-size: 0.88rem;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .badge-status-usage {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-status-usage.unbilled {
+            background-color: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+        }
+
+        .badge-status-usage.billed {
+            background-color: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .bg-amber-soft {
+            background-color: #fffbeb !important;
+        }
+
+        .text-amber {
+            color: #d97706 !important;
+        }
+
+        .bg-sky-soft {
+            background-color: #f0f9ff !important;
+        }
+
+        .text-sky {
+            color: #0284c7 !important;
+        }
+
+        .bg-slate-soft {
+            background-color: #f8fafc !important;
+        }
+
+        .text-slate {
+            color: #64748b !important;
+        }
     </style>
 }
 
 <div class="services-container container-fluid p-4">
+    @Html.AntiForgeryToken()
     <!-- Hero Banner -->
     <div class="hero-banner">
         <h1 class="hero-title"><i class="fas fa-concierge-bell me-2"></i>Dịch Vụ Tiện Ích Sinh Viên</h1>
-        <p class="hero-subtitle">Bảng kê các dịch vụ tiện ích nội khu KTX. Các dịch vụ thiết yếu sẽ được kích hoạt tự động theo phòng của sinh viên.</p>
+        <p class="hero-subtitle">Bảng kê các dịch vụ tiện ích nội khu KTX. Quý khách có thể tự đăng ký dịch vụ theo nhu cầu hoặc theo dõi chỉ số tiêu thụ.</p>
     </div>
 
-    <!-- Grid of Services -->
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model)
+    @{
+        var meteredServices = Model?.Where(u => u.UtilityName.ToLower().Contains("điện") || u.UtilityName.ToLower().Contains("nước")).ToList() ?? new List<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>();
+        var prepaidServices = Model?.Where(u => !u.UtilityName.ToLower().Contains("điện") && !u.UtilityName.ToLower().Contains("nước")).ToList() ?? new List<DormitoryManagement.Application.Dtos.Responses.Utilities.UtilityResponseDto>();
+    }
+
+    <!-- SECTION 1: REGISTERED SERVICES -->
+    <div class="mb-5">
+        <h3 class="section-title mb-4">
+            <i class="fas fa-shopping-cart text-primary me-2"></i>
+            1. Dịch Vụ Đăng Ký (Biết trước giá dịch vụ)
+        </h3>
+        
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @if (prepaidServices.Any())
             {
-                var normalizedName = item.UtilityName.ToLower();
+                foreach (var item in prepaidServices)
+                {
+                    var normalizedName = item.UtilityName.ToLower();
+                    string iconClass = "fas fa-plug";
+                    string colorClass = "icon-default";
+                    string desc = "Dịch vụ tiện ích phục vụ đời sống sinh hoạt tại ký túc xá.";
 
-                // Select appropriate icon and color based on name
-                string iconClass = "fas fa-plug";
-                string colorClass = "icon-default";
-                string desc = "Dịch vụ tiện ích phục vụ đời sống sinh hoạt tại ký túc xá.";
+                    if (normalizedName.Contains("wifi") || normalizedName.Contains("internet"))
+                    {
+                        iconClass = "fas fa-wifi";
+                        colorClass = "icon-wifi";
+                        desc = "Đường truyền Internet tốc độ cao phủ sóng toàn phòng, phục vụ học tập giải trí không giới hạn.";
+                    }
+                    else if (normalizedName.Contains("xe"))
+                    {
+                        iconClass = "fas fa-motorcycle";
+                        colorClass = "icon-guixe";
+                        desc = "Vé giữ xe tháng an toàn tại nhà xe KTX, có bảo vệ trông giữ và camera giám sát 24/7.";
+                    }
+                    else if (normalizedName.Contains("vệ sinh") || normalizedName.Contains("rác"))
+                    {
+                        iconClass = "fas fa-broom";
+                        colorClass = "icon-vesinh";
+                        desc = "Dịch vụ vệ sinh hành lang, khu vực chung và thu gom rác thải định kỳ đảm bảo môi trường sạch sẽ.";
+                    }
 
-                if (normalizedName.Contains("điện"))
-                {
-                    iconClass = "fas fa-bolt";
-                    colorClass = "icon-dien";
-                    desc = "Cung cấp nguồn điện sinh hoạt ổn định cho các thiết bị phòng. Đo chỉ số công tơ điện hàng tháng.";
-                }
-                else if (normalizedName.Contains("nước"))
-                {
-                    iconClass = "fas fa-tint";
-                    colorClass = "icon-nuoc";
-                    desc = "Cung cấp nguồn nước sạch sinh hoạt hàng ngày. Đọc chỉ số nước và thanh toán theo khối tiêu thụ.";
-                }
-                else if (normalizedName.Contains("wifi") || normalizedName.Contains("internet"))
-                {
-                    iconClass = "fas fa-wifi";
-                    colorClass = "icon-wifi";
-                    desc = "Đường truyền Internet tốc độ cao phủ sóng toàn phòng, phục vụ học tập giải trí không giới hạn.";
-                }
-                else if (normalizedName.Contains("xe"))
-                {
-                    iconClass = "fas fa-motorcycle";
-                    colorClass = "icon-guixe";
-                    desc = "Vé giữ xe tháng an toàn tại nhà xe KTX, có bảo vệ trông giữ và camera giám sát 24/7.";
-                }
-                else if (normalizedName.Contains("vệ sinh") || normalizedName.Contains("rác"))
-                {
-                    iconClass = "fas fa-broom";
-                    colorClass = "icon-vesinh";
-                    desc = "Dịch vụ vệ sinh hành lang, khu vực chung và thu gom rác thải định kỳ đảm bảo môi trường sạch sẽ.";
-                }
+                    var userRequests = ViewBag.ServiceRequests as IEnumerable<DormitoryManagement.Domain.Entities.UtilityServiceRequest>;
+                    var latestRequest = userRequests?.Where(r => r.UtilityId == item.Id).OrderByDescending(r => r.CreatedDate).FirstOrDefault();
 
-                <div class="col">
-                    <div class="service-card">
-                        <!-- Icon -->
-                        <div class="icon-wrapper @colorClass">
-                            <i class="@iconClass"></i>
+                    bool isPending = latestRequest != null && latestRequest.Status == "Pending";
+                    bool isApproved = latestRequest != null && latestRequest.Status == "Approved";
+                    bool isNearExpiration = false;
+                    bool isExpired = false;
+                    DateTime? expirationDate = null;
+
+                    if (isApproved && latestRequest != null)
+                    {
+                        var registrationDate = latestRequest.CreatedDate;
+                        expirationDate = registrationDate.AddMonths(1);
+                        var warningStartDate = expirationDate.Value.AddDays(-5);
+
+                        isNearExpiration = DateTime.Now >= warningStartDate && DateTime.Now < expirationDate;
+                        isExpired = DateTime.Now >= expirationDate;
+                    }
+
+                    <div class="col">
+                        <div class="service-card d-flex flex-column justify-content-between h-100">
+                            <div>
+                                <div class="icon-wrapper @colorClass mx-auto">
+                                    <i class="@iconClass"></i>
+                                </div>
+                                <h3 class="service-name">@item.UtilityName</h3>
+                                <div class="service-price-block">
+                                    <span>@item.UnitPrice.ToString("N0") đ</span>
+                                    <span class="service-unit">/ @item.Unit</span>
+                                </div>
+                                <p class="service-description">@desc</p>
+                            </div>
+                            
+                            <div class="w-100 mt-auto">
+                                @if (latestRequest == null || latestRequest.Status == "Rejected" || (isApproved && isExpired))
+                                {
+                                    <button type="button" class="btn btn-service-action" onclick="onRegisterService('@item.Id', '@item.UtilityName')">
+                                        <i class="fas fa-plus-circle"></i> Đăng ký sử dụng
+                                    </button>
+                                }
+                                else if (isPending)
+                                {
+                                    <div class="alert alert-warning py-2 px-3 mb-0 text-center w-100" style="border-radius: 12px; font-size: 0.82rem; border: 1px dashed #d97706; background-color: #fffbeb; color: #d97706;">
+                                        <i class="fas fa-clock me-1"></i> Chờ duyệt (SL: @latestRequest.Quantity)
+                                    </div>
+                                }
+                                else if (isApproved && !isExpired)
+                                {
+                                    <div class="alert alert-success py-2 px-3 mb-2 text-start w-100" style="border-radius: 12px; font-size: 0.82rem; border: 1px dashed #10b981; background-color: #ecfdf5; color: #10b981;">
+                                        <i class="fas fa-check-circle me-1"></i> Đã đăng ký (SL: @latestRequest.Quantity)
+                                        <div class="small text-muted mt-1">Hạn dùng: @expirationDate?.ToString("dd/MM/yyyy")</div>
+                                    </div>
+
+                                    if (isNearExpiration && expirationDate.HasValue)
+                                    {
+                                        <div class="alert alert-danger py-2 px-3 mb-2 text-start w-100" style="border-radius: 12px; font-size: 0.78rem; border: 1px dashed #ef4444; background-color: #fef2f2; color: #ef4444; line-height: 1.3;">
+                                            <i class="fas fa-exclamation-triangle me-1"></i> Sắp hết hạn (còn @((expirationDate.Value - DateTime.Now).Days) ngày). Bạn có muốn gia hạn không?
+                                        </div>
+                                        <button type="button" class="btn btn-danger w-100 py-2" style="border-radius: 12px; font-weight: 700; font-size: 0.85rem;" onclick="onRegisterService('@item.Id', '@item.UtilityName')">
+                                            <i class="fas fa-sync-alt me-1"></i> Đăng ký gia hạn
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button" class="btn btn-secondary w-100 py-2" style="border-radius: 12px; font-weight: 700; font-size: 0.85rem;" disabled>
+                                            <i class="fas fa-play-circle me-1"></i> Đang hoạt động
+                                        </button>
+                                    }
+                                }
+                            </div>
                         </div>
-
-                        <!-- Name -->
-                        <h3 class="service-name">@item.UtilityName</h3>
-
-                        <!-- Price -->
-                        <div class="service-price-block">
-                            <span>@item.UnitPrice.ToString("N0") đ</span>
-                            <span class="service-unit">/ @item.Unit</span>
-                        </div>
-
-                        <!-- Description -->
-                        <p class="service-description">@desc</p>
-
-                        <!-- Action -->
-                        <button type="button" class="btn btn-service-action" onclick="onRegisterService('@item.UtilityName')">
-                            <i class="fas fa-plus-circle"></i> Đăng ký sử dụng
-                        </button>
                     </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 py-4 text-center">
+                    <p class="text-muted mb-0">Không có dịch vụ trả trước nào đang hoạt động.</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="col-12 py-5 text-center">
-                <div class="text-muted fs-4"><i class="fas fa-concierge-bell fa-2x mb-3"></i></div>
-                <h5 class="text-muted fw-bold">Hiện chưa có dịch vụ nào hoạt động</h5>
-                <p class="text-muted small">Ban quản lý KTX sẽ cập nhật các dịch vụ trong thời gian sớm nhất.</p>
+        </div>
+    </div>
+
+    <!-- SECTION 2: METERED SERVICES -->
+    <div class="mb-5">
+        <h3 class="section-title mb-4">
+            <i class="fas fa-bolt text-warning me-2"></i>
+            2. Dịch Vụ Chỉ Số (Dùng xong trả sau - Theo lượng tiêu thụ thực tế)
+        </h3>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @if (meteredServices.Any())
+            {
+                foreach (var item in meteredServices)
+                {
+                    var normalizedName = item.UtilityName.ToLower();
+                    string iconClass = "fas fa-bolt";
+                    string colorClass = "icon-dien";
+                    string desc = "Cung cấp nguồn điện sinh hoạt ổn định cho các thiết bị phòng. Đo chỉ số công tơ điện hàng tháng.";
+
+                    if (normalizedName.Contains("nước"))
+                    {
+                        iconClass = "fas fa-tint";
+                        colorClass = "icon-nuoc";
+                        desc = "Cung cấp nguồn nước sạch sinh hoạt hàng ngày. Đọc chỉ số nước và thanh toán theo khối tiêu thụ.";
+                    }
+
+                    <div class="col">
+                        <div class="service-card">
+                            <div class="icon-wrapper @colorClass">
+                                <i class="@iconClass"></i>
+                            </div>
+                            <h3 class="service-name">@item.UtilityName</h3>
+                            <div class="service-price-block">
+                                <span>@item.UnitPrice.ToString("N0") đ</span>
+                                <span class="service-unit">/ @item.Unit</span>
+                            </div>
+                            <p class="service-description">@desc</p>
+                            <div class="alert alert-info py-2 px-3 mb-0 text-start w-100" style="border-radius: 12px; font-size: 0.82rem; border: 1px dashed #0284c7; background-color: #f0f9ff; color: #0284c7;">
+                                <i class="fas fa-info-circle me-1"></i> Dịch vụ tự động kích hoạt. Trả tiền sau dựa trên lượng tiêu thụ thực tế của phòng.
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12 py-4 text-center">
+                    <p class="text-muted mb-0">Không có dịch vụ tính theo chỉ số nào đang hoạt động.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- SECTION 3: UTILITY USAGES HISTORY -->
+    <div class="mb-5">
+        <h3 class="section-title mb-4">
+            <i class="fas fa-history text-success me-2"></i>
+            3. Lịch Sử Chỉ Số & Tiêu Thụ Điện Nước (Phòng @(ViewBag.RoomNumber ?? "chưa có"))
+        </h3>
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-custom table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Kỳ Ghi Nhận</th>
+                                <th>Loại Dịch Vụ</th>
+                                <th class="text-end">Chỉ số đầu</th>
+                                <th class="text-end">Chỉ số cuối</th>
+                                <th class="text-end">Lượng tiêu thụ</th>
+                                <th class="text-end">Đơn giá</th>
+                                <th class="text-end">Thành tiền</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var usages = ViewBag.UtilityUsages as IEnumerable<DormitoryManagement.Domain.Entities.UtilityUsage>;
+                            }
+                            @if (usages != null && usages.Any())
+                            {
+                                foreach (var usage in usages)
+                                {
+                                    <tr>
+                                        <td class="fw-bold">Tháng @usage.Month/@usage.Year</td>
+                                        <td>
+                                            @if (usage.Utility?.UtilityName.ToLower().Contains("điện") == true)
+                                            {
+                                                <span class="badge bg-amber-soft text-amber px-2.5 py-1.5 rounded-3"><i class="fas fa-bolt me-1"></i> @usage.Utility.UtilityName</span>
+                                            }
+                                            else if (usage.Utility?.UtilityName.ToLower().Contains("nước") == true)
+                                            {
+                                                <span class="badge bg-sky-soft text-sky px-2.5 py-1.5 rounded-3"><i class="fas fa-tint me-1"></i> @usage.Utility.UtilityName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-slate-soft text-slate px-2.5 py-1.5 rounded-3"><i class="fas fa-plug me-1"></i> @(usage.Utility?.UtilityName ?? "Dịch vụ khác")</span>
+                                            }
+                                        </td>
+                                        <td class="text-end text-muted">@usage.PreviousIndex.ToString("N0")</td>
+                                        <td class="text-end fw-semibold">@usage.CurrentIndex.ToString("N0")</td>
+                                        <td class="text-end fw-bold text-primary">@usage.UsageQuantity.ToString("N0") @(usage.Utility?.Unit)</td>
+                                        <td class="text-end">@(usage.Utility?.UnitPrice.ToString("N0") ?? "0") đ</td>
+                                        <td class="text-end fw-extrabold text-danger">@usage.TotalAmount.ToString("N0") đ</td>
+                                        <td class="text-center">
+                                            @if (usage.InvoiceId == null)
+                                            {
+                                                <span class="badge-status-usage unbilled"><i class="fas fa-clock me-1"></i> Chưa chốt hóa đơn</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge-status-usage billed"><i class="fas fa-check-circle me-1"></i> Đã xuất hóa đơn</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="8" class="text-center py-5 text-muted">
+                                        <i class="fas fa-receipt fa-2x mb-3 opacity-25"></i>
+                                        <p class="mb-0">Chưa có chỉ số điện nước nào được ghi nhận cho phòng của bạn.</p>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        }
+        </div>
     </div>
 </div>
 
 @section Scripts {
     <script>
-        function onRegisterService(serviceName) {
+        function onRegisterService(utilityId, serviceName) {
             Swal.fire({
                 title: 'Đăng ký dịch vụ',
-                text: 'Bạn có muốn đăng ký sử dụng dịch vụ "' + serviceName + '" cho phòng của mình không?',
-                icon: 'question',
+                text: 'Nhập số lượng sử dụng dịch vụ "' + serviceName + '" cho phòng của bạn:',
+                input: 'number',
+                inputValue: 1,
+                inputAttributes: {
+                    min: 1,
+                    step: 1
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#0f6b6d',
                 cancelButtonColor: '#64748b',
                 confirmButtonText: 'Đăng ký ngay',
                 cancelButtonText: 'Đóng',
-                reverseButtons: true
+                reverseButtons: true,
+                inputValidator: (value) => {
+                    if (!value || value < 1) {
+                        return 'Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)!'
+                    }
+                }
             }).then((result) => {
                 if (result.isConfirmed) {
+                    const qty = parseInt(result.value) || 1;
+
                     Swal.fire({
                         title: 'Đang xử lý...',
                         allowOutsideClick: false,
                         didOpen: () => { Swal.showLoading(); }
                     });
 
-                    setTimeout(() => {
-                        // Mock register success or popup explanation
-                        Swal.fire({
-                            title: 'Đăng ký thành công!',
-                            text: 'Yêu cầu đăng ký dịch vụ "' + serviceName + '" của bạn đã được gửi lên hệ thống. Ban quản lý KTX sẽ kích hoạt dịch vụ này cho phòng của bạn.',
-                            icon: 'success',
-                            confirmButtonColor: '#0f6b6d',
-                            confirmButtonText: 'Đồng ý'
-                        });
-                    }, 1000);
+                    const token = $('input[name="__RequestVerificationToken"]').val();
+
+                    $.ajax({
+                        url: '/Utility/RegisterService',
+                        type: 'POST',
+                        data: {
+                            utilityId: utilityId,
+                            quantity: qty,
+                            notes: '',
+                            __RequestVerificationToken: token
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    title: 'Đăng ký thành công!',
+                                    text: res.message,
+                                    icon: 'success',
+                                    confirmButtonColor: '#0f6b6d',
+                                    confirmButtonText: 'Đồng ý'
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: 'Thất bại!',
+                                    text: res.message || 'Có lỗi xảy ra.',
+                                    icon: 'error',
+                                    confirmButtonColor: '#0f6b6d',
+                                    confirmButtonText: 'Đóng'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                title: 'Lỗi!',
+                                text: 'Không thể kết nối đến máy chủ.',
+                                icon: 'error',
+                                confirmButtonColor: '#0f6b6d',
+                                confirmButtonText: 'Đóng'
+                            });
+                        }
+                    });
                 }
             });
         }

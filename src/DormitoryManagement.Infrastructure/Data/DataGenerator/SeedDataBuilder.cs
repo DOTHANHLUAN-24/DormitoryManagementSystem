@@ -30,6 +30,7 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator
             InvoiceDataGenerator.Generate(ctx);
             MaintenanceRequestDataGenerator.Generate(ctx);
             ViolationDataGenerator.Generate(ctx);
+            UtilityServiceRequestDataGenerator.Generate(ctx);
 
             return ctx;
         }
