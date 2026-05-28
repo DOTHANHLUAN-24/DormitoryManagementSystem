@@ -1188,7 +1188,7 @@ Việc áp dụng UML giúp:
 #### 13. UC08 – XÉT DUYỆT ĐĂNG KÝ
 
 ##### 13.1. Use case diagram
-![UC08 - XÉT DUYỆT ĐĂNG KÝ](./images/UC08_XetDuyetDangKy.png)
+![UC08 - XÉT DUYỆT ĐĂNG KÝ](./images/UC08_XetDuyetDangKi.jpg)
 
 ##### 13.2. Đặc tả Use case
 | Thuộc tính | Nội dung |
@@ -1215,7 +1215,7 @@ Việc áp dụng UML giúp:
 #### 14. UC09 – PHÂN GIƯỜNG
 
 ##### 14.1. Use case diagram
-![UC09 - PHÂN GIƯỜNG](./images/UC08_XetDuyetDangKi.jpg)
+![UC09 - PHÂN GIƯỜNG](./images/UC09_PhanGiuong.png)
 
 ##### 14.2. Đặc tả Use case
 | Thuộc tính | Nội dung |
@@ -1701,6 +1701,60 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 |:---:|:---|:---|:---|:---|:---:|
 | **TC_UC21_01** | Thanh toán trực tuyến thành công *(Luồng chính)* | 1. Chọn hóa đơn nợ.<br>2. Nhấn "Xác nhận thanh toán".<br>3. Cổng thanh toán giả lập báo thành công. | - Hóa đơn tháng 05/2026.<br>- Số tiền: 650,000đ. | - Hóa đơn cập nhật thành **"Đã thanh toán"**.<br>- Hệ thống ghi nhận mã giao dịch.<br>- Gửi Email biên lai điện tử (Bước 13). | **Pass** |
 | **TC_UC21_02** | Chặn lỗi trùng lặp giao dịch đồng thời *(Ngoại lệ 6A)* | 1. Mở hóa đơn trên 2 tab trình duyệt.<br>2. Nhấn nút xác nhận thanh toán liên tiếp ở cả 2 tab. | - Thao tác đồng thời trên 1 mã hóa đơn. | Tab xử lý sau bị hệ thống chặn lại và cảnh báo: **"Hóa đơn này đã được thanh toán hoặc đang được xử lý."** nhằm tránh trừ tiền hai lần. | **Pass** |
+
+### 5.2.8. Ca kiểm thử cho UC17 – Đăng ký nội trú (Đáp ứng FR5)
+* **Tiền điều kiện:** Sinh viên đã đăng nhập tài khoản.
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC17_01** | Đăng ký thành công *(Luồng chính)* | 1. Chọn Đăng ký nội trú.<br>2. Nhập thông tin thời gian, loại phòng.<br>3. Nhấn "Gửi đăng ký". | - Loại phòng: 4 người.<br>- Thời gian: 1 học kỳ. | - Tạo yêu cầu thành công.<br>- Trạng thái yêu cầu: **"Pending"**.<br>- Gửi thông báo cho quản lý. | **Pass** |
+| **TC_UC17_02** | Chặn đăng ký khi đã có phòng *(Ngoại lệ 2A)* | 1. Đăng nhập tài khoản sinh viên đang ở KTX.<br>2. Truy cập chức năng Đăng ký. | - SV: Nguyễn Văn A (Đang có hợp đồng Active). | Hệ thống chặn truy cập và báo lỗi: **"Bạn đã có phòng, không thể đăng ký mới"** (BR02). | **Pass** |
+
+### 5.2.9. Ca kiểm thử cho UC08 – Xét duyệt đăng ký (Đáp ứng FR6)
+* **Tiền điều kiện:** Có yêu cầu đăng ký ở trạng thái Pending.
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC08_01** | Phê duyệt yêu cầu thành công *(Luồng chính)* | 1. Chọn yêu cầu Pending.<br>2. Xem chi tiết và nhấn "Duyệt". | - Yêu cầu ID: REQ_001. | - Cập nhật trạng thái thành **"Approved"**.<br>- Gửi email thông báo cho SV. | **Pass** |
+| **TC_UC08_02** | Chặn xử lý yêu cầu đã duyệt bởi người khác *(Ngoại lệ 7A)* | 1. Nhân viên A và B cùng mở 1 yêu cầu.<br>2. A duyệt trước.<br>3. B nhấn "Duyệt" sau đó. | - Thao tác đồng thời trên REQ_002. | Hệ thống báo lỗi cho nhân viên B: **"Yêu cầu đã được xử lý"** và làm mới danh sách. | **Pass** |
+
+### 5.2.10. Ca kiểm thử cho UC09 – Phân giường (Đáp ứng FR7)
+* **Tiền điều kiện:** Sinh viên có yêu cầu trạng thái Approved.
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC09_01** | Phân giường thành công *(Luồng chính)* | 1. Chọn SV Approved.<br>2. Chọn giường trống từ sơ đồ.<br>3. Nhấn "Xác nhận". | - Giường: P102_G02. | - Gán giường thành công.<br>- Trạng thái giường: **"Occupied"**.<br>- Lưu thông tin vào CSDL. | **Pass** |
+| **TC_UC09_02** | Chặn gán giường đã bị chiếm *(Ngoại lệ 7A)* | 1. Chọn giường vừa bị nhân viên khác gán.<br>2. Nhấn xác nhận. | - Giường: P105_G01 (Vừa có người ở). | Hệ thống báo lỗi: **"Giường đã được sử dụng"** và yêu cầu chọn giường khác. | **Pass** |
+
+### 5.2.11. Ca kiểm thử cho UC22 – Tạo yêu cầu sửa chữa (Đáp ứng FR15)
+* **Tiền điều kiện:** Sinh viên đang cư trú (có hợp đồng Active).
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC22_01** | Tạo yêu cầu thành công *(Luồng chính)* | 1. Vào mục Báo hỏng.<br>2. Nhập mô tả sự cố.<br>3. Nhấn "Gửi yêu cầu". | - Tài sản: Bóng đèn.<br>- Mô tả: Đèn bị cháy. | - Yêu cầu được lưu.<br>- Trạng thái: **"Chờ tiếp nhận"**.<br>- Hệ thống tự lấy đúng mã phòng của SV. | **Pass** |
+| **TC_UC22_02** | Chặn yêu cầu khi thiếu thông tin *(Ngoại lệ 2A)* | 1. Để trống mô tả.<br>2. Nhấn gửi. | - Mô tả: [Rỗng]. | Hệ thống tô đỏ trường thiếu và báo: **"Vui lòng nhập đầy đủ thông tin!"**. | **Pass** |
+
+### 5.2.12. Ca kiểm thử cho UC24 – Tiếp nhận yêu cầu sửa chữa (Đáp ứng FR15)
+* **Tiền điều kiện:** Tài khoản Kỹ thuật viên đã đăng nhập.
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC24_01** | Tiếp nhận yêu cầu thành công *(Luồng chính)* | 1. Chọn yêu cầu "Chờ tiếp nhận".<br>2. Nhấn "Tiếp nhận". | - Mã yêu cầu: REQ_FIX_001. | - Gán ID kỹ thuật viên vào yêu cầu.<br>- Trạng thái chuyển thành: **"Đang xử lý"**. | **Pass** |
+
+### 5.2.13. Ca kiểm thử cho UC25 – Xử lý sự cố kỹ thuật (Đáp ứng FR15)
+* **Tiền điều kiện:** Yêu cầu đang ở trạng thái "Đang xử lý".
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC25_01** | Hoàn tất xử lý thành công *(Luồng chính)* | 1. Tick chọn checklist sửa chữa.<br>2. Nhấn "Hoàn tất xử lý". | - Checklist: Đã kiểm tra dây, Đã thay bóng. | - Hệ thống kiểm tra checklist đầy đủ.<br>- Trạng thái chuyển thành: **"Chờ hoàn thành"**. | **Pass** |
+| **TC_UC25_02** | Chặn hoàn tất khi chưa xong checklist *(Ngoại lệ 8A)* | 1. Bỏ trống 1 bước trong checklist.<br>2. Nhấn "Hoàn tất". | - Checklist: [Thiếu bước thay pin]. | Hệ thống báo lỗi: **"Chưa hoàn thành các bước: [Tên bước]"** và không cho lưu. | **Pass** |
+
+### 5.2.14. Ca kiểm thử cho UC26 – Cập nhật trạng thái sửa chữa (Đáp ứng FR15)
+
+| Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
+|:---:|:---|:---|:---|:---|:---:|
+| **TC_UC26_01** | Cập nhật trạng thái hợp lệ *(Luồng chính)* | 1. Chọn Cập nhật trạng thái.<br>2. Chọn trạng thái mới.<br>3. Lưu. | - Trạng thái: Hoàn thành. | - Lưu thành công vào database.<br>- Ghi nhật ký repair_logs chính xác. | **Pass** |
+| **TC_UC26_02** | Chặn chuyển trạng thái sai quy trình *(Ngoại lệ 5A)* | 1. Cố tình chọn trạng thái không theo luồng. | - "Chờ tiếp nhận" -> "Hoàn thành". | Hệ thống báo lỗi: **"Không thể chuyển từ Chờ tiếp nhận sang Hoàn thành"** (Sai ma trận trạng thái). | **Pass** |
 
 ---
 
