@@ -165,7 +165,8 @@ Dưới đây là các tài liệu kỹ thuật chi tiết của dự án nằm 
 - 📄 [Phân Tích và Thiết Kế Hệ Thống](./src/DormitoryManagement/Docs/PhanTichVaThietKeHeThong.md) - Tài liệu SRS chi tiết về kiến trúc dự án và thiết kế cơ sở dữ liệu.
 - 📄 [Chi Tiết Phân Quyền & Thuật Toán](./src/DormitoryManagement/Docs/phanQuyen.md) - Mô tả thuật toán xếp phòng, tính tiền điện nước, tính công nợ và cơ chế Xóa mềm (Soft Delete).
 - 📄 [Yêu Cầu Chức Năng & Phi Chức Năng](./src/DormitoryManagement/Docs/FunctionAndNonFunction.md) - Đặc tả yêu cầu phần mềm chi tiết.
-- 📄 [Hướng Hướng Dẫn Đóng Góp Mã Nguồn](./src/DormitoryManagement/Docs/HowToContribute.md) - Quy tắc Git branch, commit message và Coding Convention của nhóm.
+- 📄 [Hướng Dẫn Đóng Góp Mã Nguồn](./src/DormitoryManagement/Docs/HowToContribute.md) - Quy tắc Git branch, commit message và Coding Convention của nhóm.
+- 📄 [Hướng Dẫn Sử Dụng VS Code để Migration](./src/DormitoryManagement/Docs/EFCoreMigrationGuide/UsingVSCode.md) - Các bước cấu hình và chạy Entity Framework Core Migration trên Visual Studio Code.
 
 ---
 
