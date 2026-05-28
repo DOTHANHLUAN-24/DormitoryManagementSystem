@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagement.Controllers
 {
-    [Authorize]
     public class VisitorController(
         IContractService contractService,
         IUserRepository userRepository,
@@ -25,6 +24,7 @@ namespace DormitoryManagement.Controllers
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         public IActionResult Index()
         {
             Logger.LogInformation("Đang truy cập trang quản lý khách ghé thăm.");
@@ -440,6 +440,81 @@ namespace DormitoryManagement.Controllers
 
             Logger.LogInformation("Gửi yêu cầu đăng ký khách ghé thăm thành công. ID: {Id}", newRequest.Id);
             return Json(new { success = true });
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpGet("RecycleBin")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang truy cập thùng rác khách ghé thăm trang {Page}, tìm kiếm: '{Search}'", page, search);
+            int pageSize = PageSize;
+            
+            var query = _visitorLogRepository.GetQuery()
+                .Include(v => v.Host)
+                .Where(v => v.IsDeleted);
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                var lowerSearch = search.ToLower().Trim();
+                query = query.Where(v => v.VisitorName.ToLower().Contains(lowerSearch) || v.IdNumber.Contains(lowerSearch));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query.OrderByDescending(v => v.CreatedDate)
+                                  .Skip((page - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
+
+            var list = items.Select(v => new VisitorViewModel
+            {
+                Id = v.Id.ToString(),
+                VisitorName = v.VisitorName,
+                IdentityCard = v.IdNumber,
+                PhoneNumber = v.PhoneNumber,
+                Relationship = v.Relationship,
+                Purpose = v.Purpose,
+                HostId = v.HostId,
+                StudentName = v.Host?.FullName ?? "Sinh viên",
+                CheckIn = v.CheckInTime,
+                CheckOut = v.CheckOutTime,
+                IsCheckedOut = v.IsCheckedOut,
+                Status = v.Status,
+                CreatedDate = v.CreatedDate
+            }).ToList();
+
+            var pagedResult = new DormitoryManagement.Domain.Common.PagedResult<VisitorViewModel>(list, totalCount, page, pageSize);
+
+            ViewBag.Search = search;
+            return View(pagedResult);
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục log khách ghé thăm ID: {Id}", id);
+            var visitor = await _visitorLogRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (visitor == null || !visitor.IsDeleted) return Json(new { success = false, message = "Không tìm thấy khách hoặc không ở trạng thái đã xóa." });
+
+            visitor.IsDeleted = false;
+            await _visitorLogRepository.UpdateAsync(visitor);
+            await _unitOfWork.SaveChangesAsync();
+            return Json(new { success = true, message = "Khôi phục khách ghé thăm thành công!" });
+        }
+
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn log khách ghé thăm ID: {Id}", id);
+            var visitor = await _visitorLogRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (visitor == null) return Json(new { success = false, message = "Không tìm thấy khách ghé thăm." });
+
+            await _visitorLogRepository.DeleteAsync(visitor, isSoftDelete: false);
+            await _unitOfWork.SaveChangesAsync();
+            return Json(new { success = true, message = "Đã xóa vĩnh viễn khách ghé thăm khỏi cơ sở dữ liệu." });
         }
     }
 }

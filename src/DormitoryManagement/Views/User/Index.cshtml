@@ -44,29 +44,29 @@
     <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang mb-0"><i class="fas fa-users-cog me-2"></i>Quản lý người dùng</h1>
         <div class="d-flex gap-2">
-            <a asp-action="BannedList" class="btn-custom-header btn-banned text-decoration-none" title="Xem tài khoản bị khóa">
+            <a asp-action="BannedList" class="btn-sync-action btn-sync-danger-light" title="Xem tài khoản bị khóa">
                 <i class="fas fa-user-lock"></i> DS Bị khóa
             </a>
-            <a asp-action="RecycleBin" class="btn-custom-header btn-trash text-decoration-none">
+            <a asp-action="RecycleBin" class="btn-sync-action btn-sync-secondary">
                 <i class="fas fa-trash-restore"></i> Thùng rác
             </a>
-            <a asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+            <a asp-action="Create" class="btn-sync-action btn-sync-add">
                 <i class="fas fa-plus"></i> Thêm người dùng
             </a>
         </div>
     </header>
 
-    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
         <div class="row g-2 align-items-center">
             <div class="col-md-10">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm theo tên đăng nhập, email, họ tên...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm theo tên đăng nhập, email, họ tên...">
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn-search">
-                    <i class="fas fa-filter"></i> Tìm kiếm
+                <button type="submit" class="btn-search-sync">
+                    <i class="fas fa-search"></i> Tìm kiếm
                 </button>
             </div>
         </div>

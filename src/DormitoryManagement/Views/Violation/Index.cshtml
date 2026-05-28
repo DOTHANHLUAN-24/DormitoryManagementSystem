@@ -53,24 +53,24 @@
         @if (isAdminOrManager)
         {
             <div class="d-flex gap-2">
-                <a asp-controller="Violation" asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+                <a asp-controller="Violation" asp-action="Create" class="btn-sync-action btn-sync-add">
                     <i class="fas fa-plus"></i> Lập biên bản mới
                 </a>
             </div>
         }
     </header>
 
-    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
         <div class="row g-2 align-items-center">
             <div class="col-md-10">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm theo mã sinh viên (MSSV), phòng ở hoặc nội dung vi phạm...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm theo mã sinh viên (MSSV), phòng ở hoặc nội dung vi phạm...">
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn-search">
-                    <i class="fas fa-filter"></i> Tìm kiếm
+                <button type="submit" class="btn-search-sync">
+                    <i class="fas fa-search"></i> Tìm kiếm
                 </button>
             </div>
         </div>

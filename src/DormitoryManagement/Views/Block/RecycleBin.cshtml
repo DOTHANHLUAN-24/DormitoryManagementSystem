@@ -46,16 +46,16 @@
     </header>
 
     @* Thanh tìm kiếm *@
-    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem shadow-sm border border-danger border-opacity-10">
+    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync" style="border: 1px solid #fecaca !important;">
         <div class="row g-3">
             <div class="col-md-10">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm các tòa nhà đã xóa...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm kiếm các tòa nhà đã xóa...">
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-danger w-100 fw-bold text-white bg-opacity-75" style="border-radius: 10px; height: 42px;">
+                <button type="submit" class="btn-search-sync" style="background: #ef4444;">
                     Tìm kiếm
                 </button>
             </div>

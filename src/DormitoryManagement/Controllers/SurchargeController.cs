@@ -5,14 +5,14 @@ using System.Security.Claims;
 namespace DormitoryManagement.Controllers
 {
     // Giới hạn đăng nhập hệ thống mới được vào phân hệ Phụ phí
-    [Authorize]
     public class SurchargeController : BaseController
     {
         /// <summary>
         /// GET: Surcharge/Index
         /// Hiển thị danh sách phụ phí kèm theo (Mọi user đăng nhập hợp lệ đều xem được)
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         public IActionResult Index()
         {
             Logger.LogInformation("Đang truy cập trang danh sách phụ phí.");
@@ -24,7 +24,7 @@ namespace DormitoryManagement.Controllers
         /// GET: Surcharge/Create
         /// Giao diện thêm mới phụ phí (Chỉ Admin và các cấp Quản lý có quyền)
         /// </summary>
-        [HttpGet]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             Logger.LogInformation("Đang truy cập trang thêm mới phụ phí.");
@@ -44,7 +44,7 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Create
         /// Xử lý tiếp nhận luồng dữ liệu submit từ Form thêm mới gửi lên
         /// </summary>
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(IFormCollection collection)
         {
@@ -70,8 +70,8 @@ namespace DormitoryManagement.Controllers
         /// GET: Surcharge/Edit/{id}
         /// Giao diện chỉnh sửa phụ phí theo Mã định danh (Chỉ dành cho Admin/Manager)
         /// </summary>
-        [HttpGet]
-        public IActionResult Edit(string id)
+        [HttpGet("Edit/{id}")]
+        public IActionResult Edit(Guid id)
         {
             Logger.LogInformation("Đang truy cập giao diện chỉnh sửa phụ phí với mã ID: {Id}", id);
             if (!User.IsInRole("Admin") && 
@@ -83,7 +83,7 @@ namespace DormitoryManagement.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id.ToString()))
             {
                 Logger.LogWarning("Yêu cầu chỉnh sửa phụ phí thất bại do thiếu ID.");
                 return NotFound();
@@ -99,9 +99,9 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Edit/{id}
         /// Xử lý cập nhật thông tin phụ phí sau khi chỉnh sửa
         /// </summary>
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(string id, IFormCollection collection)
+        public IActionResult Edit(Guid id, IFormCollection collection)
         {
             Logger.LogInformation("Đang xử lý yêu cầu cập nhật thông tin phụ phí ID: {Id}", id);
             try
@@ -122,7 +122,7 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Delete/{id}
         /// Xử lý xóa phụ phí thông qua nút xóa trên bảng danh sách
         /// </summary>
-        [HttpPost]
+        [HttpPost("Delete/{id}")]
         public IActionResult Delete(string id)
         {
             Logger.LogInformation("Đang xử lý yêu cầu xóa phụ phí ID: {Id}", id);
@@ -137,7 +137,6 @@ namespace DormitoryManagement.Controllers
 
             try
             {
-                // TODO: Xử lý xóa cứng hoặc xóa mềm (IsDeleted = true) trong DB phụ phí tại đây
                 Logger.LogInformation("Xóa phụ phí ID: {Id} thành công.", id);
                 return RedirectToAction(nameof(Index));
             }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Violations;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
@@ -11,6 +12,7 @@ using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -212,6 +214,61 @@ namespace DormitoryManagement.Application.Services.Implements
             violation.LastModified = DateTime.Now;
 
             await _violationRepository.UpdateAsync(violation);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Lấy danh sách vi phạm đã bị xóa phân trang.
+        /// </summary>
+        public async Task<PagedResult<ViolationResponseDto>> GetDeletedViolationsPagedAsync(int page, int pageSize, string search)
+        {
+            Expression<Func<Violation, bool>>? predicate = null;
+            if (!string.IsNullOrEmpty(search))
+            {
+                var lowerSearch = search.ToLower().Trim();
+                predicate = v => v.Contract.User != null &&
+                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var pagedData = await _violationRepository.GetByStatusPagedAsync(
+                page, pageSize,
+                isActive: null,
+                isDeleted: true,
+                predicate: predicate,
+                v => v.Contract!,
+                v => v.Contract!.User!,
+                v => v.Contract!.Bed!,
+                v => v.Contract!.Bed!.Room!,
+                v => v.Contract!.Bed!.Room!.Block!);
+
+            var dtos = _mapper.Map<List<ViolationResponseDto>>(pagedData.Items);
+            return new PagedResult<ViolationResponseDto>(dtos, pagedData.TotalCount, page, pageSize);
+        }
+
+        /// <summary>
+        /// Khôi phục vi phạm đã bị xóa mềm.
+        /// </summary>
+        public async Task<bool> RestoreViolationAsync(Guid id)
+        {
+            var violation = await _violationRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (violation == null || !violation.IsDeleted) return false;
+
+            await _violationRepository.RestoreAsync(violation);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Xóa vĩnh viễn vi phạm khỏi database.
+        /// </summary>
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
+        {
+            var violation = await _violationRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (violation == null) return false;
+
+            await _violationRepository.DeleteAsync(violation, isSoftDelete: false);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }

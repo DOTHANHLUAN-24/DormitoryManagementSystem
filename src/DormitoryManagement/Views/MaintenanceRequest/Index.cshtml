@@ -5,261 +5,399 @@
 @{
     ViewData["Title"] = "Quản lý Yêu cầu Bảo trì";
     var filter = ViewBag.Filter as MaintenanceRequestFilterRequest ?? new MaintenanceRequestFilterRequest();
+    var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+    var canDelete = isAdminOrManager;
 }
 
 @section Styles {
-    <style>
-        .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
-        .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; }
-        .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; }
-        .khung-tim-kiem { position: relative; }
-        .khung-tim-kiem i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 10; }
-        .khung-tim-kiem input { padding-left: 40px; }
+<style>
+    .page-title { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #1e293b 0%, #4f46e5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
 
-        .btn-filter-action { height: 46px; width: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
-        .btn-apply { background: #0d6efd; color: white; }
-        .btn-apply:hover { background: #0b5ed7; transform: scale(1.05); }
-        .btn-refresh { background: #fff; color: #1e293b; border: 1px solid #e2e8f0; }
-        .btn-refresh:hover { background: #f8fafc; transform: scale(1.05); }
+    /* Filter bar */
+    .filter-bar { background: #fff; border-radius: 16px; padding: 14px 18px; margin-bottom: 20px; border: 1px solid #e8edf5; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .input-ctrl { height: 42px; border-radius: 10px !important; border: 1px solid #e2e8f0 !important; font-size: 13.5px; color: #1e293b; transition: all .2s; }
+    .input-ctrl:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,.12) !important; }
+    .search-wrap { position: relative; }
+    .search-wrap i { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; z-index: 5; font-size: 13px; }
+    .search-wrap .input-ctrl { padding-left: 36px; }
+    .btn-sq { height: 42px; width: 42px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; border: none; transition: all .2s; cursor: pointer; }
+    .btn-sq-primary { background: #4f46e5; color: #fff; }
+    .btn-sq-primary:hover { background: #4338ca; transform: scale(1.06); }
+    .btn-sq-light { background: #fff; color: #475569; border: 1px solid #e2e8f0; }
+    .btn-sq-light:hover { background: #f8fafc; transform: scale(1.06); }
 
-        .trang-thai { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .open { background: #e0f2fe; color: #0284c7; }
-        .in-progress { background: #fff7ed; color: #f97316; }
-        .resolved { background: #ecfdf5; color: #10b981; }
-        .closed { background: #f1f5f9; color: #64748b; }
-        
-        .priority-high { color: #ef4444; font-weight: bold; }
-        .priority-medium { color: #f59e0b; font-weight: bold; }
-        .priority-low { color: #10b981; }
+    /* Stats cards */
+    .stat-card { background: #fff; border-radius: 14px; padding: 14px 18px; border: 1px solid #e8edf5; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 14px; }
+    .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .stat-num { font-size: 1.4rem; font-weight: 800; line-height: 1; }
+    .stat-label { font-size: 0.72rem; color: #64748b; font-weight: 500; margin-top: 2px; text-transform: uppercase; letter-spacing: .4px; }
 
-        .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
-        .nut-sua { background: #eff6ff; color: #3b82f6; }
-        .nut-xoa { background: #fef2f2; color: #ef4444; }
-        .nut-hanh-dong:hover { transform: scale(1.1); }
-    </style>
+    /* Table */
+    .table-card { background: #fff; border-radius: 18px; overflow: hidden; border: 1px solid #e8edf5; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+    .table thead th { background: #f8fafc; color: #64748b; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; border-bottom: 1px solid #e8edf5; padding: 12px 14px; white-space: nowrap; }
+    .table tbody td { vertical-align: middle; padding: 12px 14px; border-bottom: 1px solid #f1f5f9; font-size: 13.5px; }
+    .table tbody tr:last-child td { border-bottom: none; }
+    .table tbody tr:hover { background: #fafbff; }
+
+    /* Badges */
+    .badge-status { padding: 4px 11px; border-radius: 20px; font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; display: inline-block; }
+    .badge-open { background: #e0f2fe; color: #0369a1; }
+    .badge-inprogress { background: #fff7ed; color: #c2410c; }
+    .badge-resolved { background: #dcfce7; color: #15803d; }
+    .badge-closed { background: #f1f5f9; color: #475569; }
+
+    .priority-urgent { color: #dc2626; font-weight: 700; }
+    .priority-high { color: #ea580c; font-weight: 700; }
+    .priority-medium { color: #d97706; font-weight: 600; }
+    .priority-low { color: #16a34a; }
+
+    /* Action buttons */
+    .action-btn { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; font-size: 13px; transition: all .2s; cursor: pointer; }
+    .btn-edit-status { background: #eff6ff; color: #2563eb; }
+    .btn-edit-status:hover { background: #dbeafe; transform: scale(1.1); }
+    .btn-delete { background: #fef2f2; color: #dc2626; }
+    .btn-delete:hover { background: #fee2e2; transform: scale(1.1); }
+
+    /* Modal */
+    .modal-content { border-radius: 16px; border: none; box-shadow: 0 20px 60px rgba(0,0,0,.15); }
+    .modal-header { border-bottom: 1px solid #f1f5f9; padding: 18px 22px; }
+    .modal-footer { border-top: 1px solid #f1f5f9; padding: 14px 22px; }
+
+    /* Empty state */
+    .empty-state { padding: 60px 20px; text-align: center; color: #94a3b8; }
+    .empty-state i { font-size: 48px; margin-bottom: 12px; opacity: .4; }
+</style>
 }
 
 @Html.AntiForgeryToken()
 
 <div class="container-fluid">
+    <!-- Header -->
     <header class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="tieu-de-trang mb-0"><i class="fas fa-tools me-2"></i>Quản lý Yêu cầu Bảo trì</h1>
+        <h1 class="page-title mb-0">
+            <i class="fas fa-toolbox me-2" style="font-size:1.3rem;"></i>Quản lý Yêu cầu Bảo trì
+        </h1>
     </header>
 
-    <form method="get" asp-action="Index" class="thanh-tim-kiem shadow-sm">
-        <div class="row g-2 align-items-center">
-            <div class="col-lg-4 col-md-6">
-                <div class="khung-tim-kiem">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="SearchTerm" value="@filter.SearchTerm" class="form-control input-custom" placeholder="Tìm theo tiêu đề, mô tả...">
+    <!-- Stats row -->
+    @if (Model != null)
+    {
+        var totalItems = Model.TotalCount;
+        var openCount    = Model.Items?.Count(x => x.Status == "Open") ?? 0;
+        var progressCount = Model.Items?.Count(x => x.Status == "InProgress") ?? 0;
+        var resolvedCount = Model.Items?.Count(x => x.Status == "Resolved") ?? 0;
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#eff6ff;">
+                        <i class="fas fa-clipboard-list" style="color:#3b82f6;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:#1e293b;">@totalItems</div>
+                        <div class="stat-label">Tổng yêu cầu</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <select name="Status" class="form-select input-custom">
-                    <option value="">Tất cả trạng thái</option>
-                    <option value="Open" selected="@(filter.Status == MaintenanceStatus.Open)">Mới tiếp nhận (Open)</option>
-                    <option value="InProgress" selected="@(filter.Status == MaintenanceStatus.InProgress)">Đang xử lý (InProgress)</option>
-                    <option value="Resolved" selected="@(filter.Status == MaintenanceStatus.Resolved)">Đã giải quyết (Resolved)</option>
-                    <option value="Closed" selected="@(filter.Status == MaintenanceStatus.Closed)">Đã đóng (Closed)</option>
-                </select>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#e0f2fe;">
+                        <i class="fas fa-inbox" style="color:#0284c7;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:#0284c7;">@openCount</div>
+                        <div class="stat-label">Mới tiếp nhận</div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <select name="Priority" class="form-select input-custom">
-                    <option value="">Tất cả mức ưu tiên</option>
-                    <option value="Low" selected="@(filter.Priority == MaintenancePriority.Low)">Thấp</option>
-                    <option value="Medium" selected="@(filter.Priority == MaintenancePriority.Medium)">Trung bình</option>
-                    <option value="High" selected="@(filter.Priority == MaintenancePriority.High)">Cao</option>
-                    <option value="Urgent" selected="@(filter.Priority == MaintenancePriority.Urgent)">Khẩn cấp</option>
-                </select>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#fff7ed;">
+                        <i class="fas fa-spinner" style="color:#f97316;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:#f97316;">@progressCount</div>
+                        <div class="stat-label">Đang xử lý</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#dcfce7;">
+                        <i class="fas fa-check-circle" style="color:#16a34a;"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num" style="color:#16a34a;">@resolvedCount</div>
+                        <div class="stat-label">Đã giải quyết</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Filter bar -->
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-4 col-md-6">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="SearchTerm" value="@filter.SearchTerm"
+                           class="input-sync" placeholder="Tìm theo tiêu đề, mô tả...">
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-info-circle"></i>
+                    <select name="Status" class="input-sync">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="Open"       selected="@(filter.Status == MaintenanceStatus.Open)">🔵 Mới tiếp nhận</option>
+                        <option value="InProgress" selected="@(filter.Status == MaintenanceStatus.InProgress)">🟠 Đang xử lý</option>
+                        <option value="Resolved"   selected="@(filter.Status == MaintenanceStatus.Resolved)">🟢 Đã giải quyết</option>
+                        <option value="Closed"     selected="@(filter.Status == MaintenanceStatus.Closed)">⚫ Đã đóng</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-4">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <select name="Priority" class="input-sync">
+                        <option value="">Tất cả mức ưu tiên</option>
+                        <option value="Low"    selected="@(filter.Priority == MaintenancePriority.Low)">🟢 Thấp</option>
+                        <option value="Medium" selected="@(filter.Priority == MaintenancePriority.Medium)">🟡 Trung bình</option>
+                        <option value="High"   selected="@(filter.Priority == MaintenancePriority.High)">🟠 Cao</option>
+                        <option value="Urgent" selected="@(filter.Priority == MaintenancePriority.Urgent)">🔴 Khẩn cấp</option>
+                    </select>
+                </div>
             </div>
             <div class="col-lg-2 col-md-12 d-flex gap-2 justify-content-end">
-                <button type="submit" class="btn-filter-action btn-apply" title="Lọc dữ liệu">
-                    <i class="fas fa-filter"></i>
+                <button type="submit" class="btn-search-sync" title="Lọc dữ liệu">
+                    <i class="fas fa-filter"></i> Lọc
                 </button>
-                <a asp-action="Index" class="btn-filter-action btn-refresh" title="Làm mới">
+                <a asp-action="Index" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>
         </div>
     </form>
 
-    <div class="card border-0 shadow-sm" style="border-radius: 20px; overflow: hidden;">
+    <!-- Table card -->
+    <div class="table-card">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
+            <table class="table mb-0">
+                <thead>
                     <tr>
-                        <th class="ps-4">Tiêu đề</th>
+                        <th class="ps-4">#</th>
+                        <th>Tiêu đề</th>
                         <th>Phòng</th>
                         <th>Người yêu cầu</th>
                         <th>Mức độ</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
+                        <th>Người xử lý</th>
                         <th class="text-end pe-4">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @if (Model.Items != null && Model.Items.Any())
+                    @if (Model != null && Model.Items != null && Model.Items.Any())
                     {
+                        int stt = (Model.PageNumber - 1) * Model.PageSize + 1;
                         foreach (var item in Model.Items)
                         {
                             <tr>
-                                <td class="ps-4">
-                                    <div class="fw-bold text-dark">@item.Title</div>
-                                    <div class="small text-muted text-truncate" style="max-width: 250px;">@item.Description</div>
+                                <td class="ps-4 text-muted small">@stt</td>
+                                <td style="max-width:220px;">
+                                    <div class="fw-semibold text-dark text-truncate">@item.Title</div>
+                                    <div class="small text-muted text-truncate">@item.Description</div>
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-primary">@item.RoomNumber</div>
+                                    <div class="fw-semibold text-primary" style="font-size:13px;">@item.RoomNumber</div>
                                     <div class="small text-muted">@item.BlockName</div>
                                 </td>
                                 <td>
-                                    <div>@item.RequesterName</div>
+                                    <div style="font-size:13px;">@item.RequesterName</div>
                                     <div class="small text-muted">@item.RequesterCode</div>
                                 </td>
                                 <td>
-                                    @if (item.Priority == "High" || item.Priority == "Urgent")
+                                    @switch (item.Priority)
                                     {
-                                        <span class="priority-high"><i class="fas fa-exclamation-triangle me-1"></i>@item.Priority</span>
-                                    }
-                                    else if (item.Priority == "Medium")
-                                    {
-                                        <span class="priority-medium">@item.Priority</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="priority-low">@item.Priority</span>
+                                        case "Urgent": <span class="priority-urgent"><i class="fas fa-fire me-1"></i>Khẩn cấp</span> break;
+                                        case "High":   <span class="priority-high"><i class="fas fa-exclamation-triangle me-1"></i>Cao</span> break;
+                                        case "Medium": <span class="priority-medium">Trung bình</span> break;
+                                        default:       <span class="priority-low">Thấp</span> break;
                                     }
                                 </td>
                                 <td>
                                     @switch (item.Status)
                                     {
-                                        case "Open": <span class="trang-thai open">Mới</span> break;
-                                        case "InProgress": <span class="trang-thai in-progress">Đang xử lý</span> break;
-                                        case "Resolved": <span class="trang-thai resolved">Đã xử lý</span> break;
-                                        case "Closed": <span class="trang-thai closed">Đã đóng</span> break;
-                                        default: <span class="trang-thai">@item.Status</span> break;
+                                        case "Open":       <span class="badge-status badge-open">Mới</span> break;
+                                        case "InProgress": <span class="badge-status badge-inprogress">Đang xử lý</span> break;
+                                        case "Resolved":   <span class="badge-status badge-resolved">Đã xử lý</span> break;
+                                        case "Closed":     <span class="badge-status badge-closed">Đã đóng</span> break;
+                                        default:           <span class="badge-status">@item.Status</span> break;
                                     }
                                 </td>
-                                <td><span class="small">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</span></td>
+                                <td class="small text-muted">@item.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.HandlerName))
+                                    {
+                                        <span class="badge" style="background:#f1f5f9;color:#475569;font-weight:600;font-size:11px;">
+                                            <i class="fas fa-user-cog me-1"></i>@item.HandlerName
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Chưa phân công</span>
+                                    }
+                                </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-1">
-                                        <button type="button" class="nut-hanh-dong nut-sua" onclick="openUpdateStatusModal('@item.Id', '@item.Status')" title="Cập nhật trạng thái"><i class="fas fa-edit"></i></button>
-                                        <button type="button" class="nut-hanh-dong nut-xoa" onclick="confirmDelete('@item.Id')" title="Xóa"><i class="fas fa-trash"></i></button>
+                                        <button type="button" class="action-btn btn-edit-status"
+                                                onclick="openStatusModal('@item.Id', '@item.Status', '@item.Title')"
+                                                title="Cập nhật trạng thái">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        @if (canDelete)
+                                        {
+                                            <button type="button" class="action-btn btn-delete"
+                                                    onclick="confirmDelete('@item.Id', '@item.Title')"
+                                                    title="Xóa yêu cầu">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
+                            stt++;
                         }
                     }
                     else
                     {
-                        <tr><td colspan="7" class="text-center py-5 text-muted">Không tìm thấy yêu cầu bảo trì phù hợp</td></tr>
+                        <tr>
+                            <td colspan="9">
+                                <div class="empty-state">
+                                    <i class="fas fa-search-minus d-block"></i>
+                                    <div class="fw-semibold mt-2">Không tìm thấy yêu cầu bảo trì phù hợp</div>
+                                    <div class="small mt-1">Thử thay đổi bộ lọc hoặc làm mới trang</div>
+                                </div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>
         </div>
-        <!-- Phân trang -->
         @await Html.PartialAsync("_Pagination", Model)
     </div>
 </div>
 
 <!-- Modal cập nhật trạng thái -->
 <div class="modal fade" id="updateStatusModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Cập nhật trạng thái</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <input type="hidden" id="requestId" />
-          <div class="mb-3">
-              <label class="form-label">Trạng thái mới</label>
-              <select id="newStatus" class="form-select">
-                  <option value="Open">Mới tiếp nhận (Open)</option>
-                  <option value="InProgress">Đang xử lý (InProgress)</option>
-                  <option value="Resolved">Đã giải quyết (Resolved)</option>
-                  <option value="Closed">Đã đóng (Closed)</option>
-              </select>
-          </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <button type="button" class="btn btn-primary" onclick="submitUpdateStatus()">Cập nhật</button>
-      </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="fas fa-sync-alt me-2 text-primary"></i>Cập nhật trạng thái
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <input type="hidden" id="requestId" />
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing:.5px;">Yêu cầu</label>
+                    <div id="requestTitle" class="fw-semibold text-dark border rounded-3 p-2 px-3 bg-light"></div>
+                </div>
+                <div class="mb-1">
+                    <label class="form-label small fw-semibold text-muted text-uppercase" style="letter-spacing:.5px;">Trạng thái mới</label>
+                    <select id="newStatus" class="form-select" style="border-radius:10px;">
+                        <option value="Open">🔵 Mới tiếp nhận</option>
+                        <option value="InProgress">🟠 Đang xử lý</option>
+                        <option value="Resolved">🟢 Đã giải quyết</option>
+                        <option value="Closed">⚫ Đã đóng</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary px-4" onclick="submitUpdateStatus()">
+                    <i class="fas fa-save me-1"></i>Lưu thay đổi
+                </button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 @section Scripts {
-    <script>
-        function openUpdateStatusModal(id, currentStatus) {
-            $('#requestId').val(id);
-            $('#newStatus').val(currentStatus);
-            var myModal = new bootstrap.Modal(document.getElementById('updateStatusModal'));
-            myModal.show();
-        }
+<script>
+    function openStatusModal(id, currentStatus, title) {
+        document.getElementById('requestId').value = id;
+        document.getElementById('requestTitle').textContent = title;
+        document.getElementById('newStatus').value = currentStatus;
+        new bootstrap.Modal(document.getElementById('updateStatusModal')).show();
+    }
 
-        function submitUpdateStatus() {
-            var id = $('#requestId').val();
-            var status = $('#newStatus').val();
+    function submitUpdateStatus() {
+        var id     = document.getElementById('requestId').value;
+        var status = document.getElementById('newStatus').value;
+        var token  = document.querySelector('input[name="__RequestVerificationToken"]').value;
 
-            $.ajax({
-                url: '/api/MaintenanceRequest/' + id + '/status',
-                type: 'PATCH',
-                data: {
-                    status: status,
-                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                },
-                success: function (res) {
-                    if (res.success) {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Thành công',
-                            text: res.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        Swal.fire('Lỗi', res.message, 'error');
-                    }
-                },
-                error: function () {
-                    Swal.fire('Lỗi', 'Không thể cập nhật trạng thái.', 'error');
+        var btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang lưu...';
+
+        $.ajax({
+            url: '/MaintenanceRequest/' + id + '/UpdateStatus',
+            type: 'POST',
+            data: { status: status, __RequestVerificationToken: token },
+            success: function (res) {
+                bootstrap.Modal.getInstance(document.getElementById('updateStatusModal')).hide();
+                if (res.success) {
+                    Swal.fire({
+                        icon: 'success', title: 'Thành công', text: res.message,
+                        timer: 1500, showConfirmButton: false
+                    }).then(() => location.reload());
+                } else {
+                    Swal.fire('Lỗi', res.message, 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu thay đổi';
                 }
-            });
-        }
+            },
+            error: function () {
+                Swal.fire('Lỗi', 'Không thể cập nhật trạng thái. Vui lòng thử lại.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save me-1"></i>Lưu thay đổi';
+            }
+        });
+    }
 
-        function confirmDelete(id) {
-            Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: "Bạn có chắc chắn muốn xóa yêu cầu này?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Đồng ý',
-                cancelButtonText: 'Hủy bỏ'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.ajax({
-                        url: '/api/MaintenanceRequest/' + id,
-                        type: 'DELETE',
-                        data: {
-                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
-                        },
-                        success: function (res) {
-                            if (res.success) {
-                                Swal.fire('Đã xóa!', res.message, 'success').then(() => { location.reload(); });
-                            } else {
-                                Swal.fire('Lỗi', res.message, 'error');
-                            }
+    function confirmDelete(id, title) {
+        Swal.fire({
+            title: 'Xác nhận xóa?',
+            html: `Bạn có chắc muốn xóa yêu cầu:<br><strong>"${title}"</strong>?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="fas fa-trash me-1"></i>Đồng ý xóa',
+            cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                $.ajax({
+                    url: '/MaintenanceRequest/' + id + '/Delete',
+                    type: 'POST',
+                    data: { __RequestVerificationToken: token },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi', res.message, 'error');
                         }
-                    });
-                }
-            });
-        }
-    </script>
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi', 'Không thể xóa yêu cầu này.', 'error');
+                    }
+                });
+            }
+        });
+    }
+</script>
 }

@@ -17,6 +17,7 @@ namespace DormitoryManagement.Controllers
         private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
         [HttpGet("")]
+        [HttpGet("Index")]
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
@@ -206,5 +207,65 @@ namespace DormitoryManagement.Controllers
             TempData["Success"] = "Xóa loại phòng thành công!";
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("RecycleBin")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
+        {
+            Logger.LogInformation("Đang tải thùng rác loại phòng, trang {Page}, tìm kiếm: '{Search}'", page, search);
+            int pageSize = PageSize;
+
+            var result = await _roomTypeRepository.GetPagedAsync(
+                pageIndex: page,
+                pageSize: pageSize,
+                predicate: x => (string.IsNullOrEmpty(search) || x.TypeName.Contains(search)) && x.IsDeleted,
+                orderBy: x => x.OrderByDescending(rt => rt.LastModified)
+            );
+
+            ViewBag.Search = search;
+            return View(result);
+        }
+
+        [HttpPost("Restore/{id}")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        public async Task<IActionResult> Restore(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu khôi phục loại phòng ID: {Id}", id);
+            var roomType = await _roomTypeRepository.GetByIdAsync(id);
+            if (roomType == null)
+            {
+                Logger.LogWarning("Không tìm thấy loại phòng ID: {Id} để khôi phục.", id);
+                return Json(new { success = false, message = "Không tìm thấy loại phòng." });
+            }
+
+            roomType.IsDeleted = false;
+            roomType.LastModified = DateTime.Now;
+            await _roomTypeRepository.UpdateAsync(roomType);
+            await _unitOfWork.SaveChangesAsync();
+
+            Logger.LogInformation("Khôi phục loại phòng ID: {Id} thành công.", id);
+            return Json(new { success = true, message = "Khôi phục loại phòng thành công!" });
+        }
+
+        [HttpPost("DeletePermanently/{id}")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeletePermanently(Guid id)
+        {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn loại phòng ID: {Id}", id);
+            var roomType = await _roomTypeRepository.GetByIdAsync(id);
+            if (roomType == null)
+            {
+                Logger.LogWarning("Không tìm thấy loại phòng ID: {Id} để xóa vĩnh viễn.", id);
+                return Json(new { success = false, message = "Không tìm thấy loại phòng." });
+            }
+
+            await _roomTypeRepository.DeleteAsync(roomType, isSoftDelete: false);
+            await _unitOfWork.SaveChangesAsync();
+
+            Logger.LogInformation("Xóa vĩnh viễn loại phòng ID: {Id} thành công.", id);
+            return Json(new { success = true, message = "Đã xóa vĩnh viễn loại phòng khỏi hệ thống." });
+        }
     }
-}
+}

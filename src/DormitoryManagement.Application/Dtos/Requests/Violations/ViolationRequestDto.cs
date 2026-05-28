@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace DormitoryManagement.Application.Dtos.Requests
+namespace DormitoryManagement.Application.Dtos.Requests.Violations
 {
     public class ViolationRequestDto
     {

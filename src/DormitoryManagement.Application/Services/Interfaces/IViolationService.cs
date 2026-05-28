@@ -1,4 +1,5 @@
 using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Violations;
 
 namespace DormitoryManagement.Application.Services.Interfaces
 {
@@ -59,5 +60,20 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// <param name="resolveNote">Ghi chú xử lý (biện pháp, kết quả xử lý)</param>
         /// <returns>True nếu xử lý thành công, ngược lại là False</returns>
         Task<bool> ResolveViolationAsync(Guid id, string resolveNote);
+
+        /// <summary>
+        /// Lấy danh sách vi phạm đã bị xóa phân trang.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<ViolationResponseDto>> GetDeletedViolationsPagedAsync(int page, int pageSize, string search);
+
+        /// <summary>
+        /// Khôi phục vi phạm đã bị xóa mềm.
+        /// </summary>
+        Task<bool> RestoreViolationAsync(Guid id);
+
+        /// <summary>
+        /// Xóa vĩnh viễn vi phạm khỏi database.
+        /// </summary>
+        Task<bool> DeletePermanentlyAsync(Guid id);
     }
 }

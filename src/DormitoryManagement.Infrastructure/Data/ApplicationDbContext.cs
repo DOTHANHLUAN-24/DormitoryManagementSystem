@@ -187,5 +187,6 @@ namespace DormitoryManagement.Infrastructure.Data
         public DbSet<Asset> Assets { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
         public DbSet<VisitorLog> VisitorLogs { get; set; } = null!;
+        public DbSet<UtilityServiceRequest> UtilityServiceRequests { get; set; } = null!;
     }
 }
