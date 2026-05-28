@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 # BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
@@ -364,50 +364,55 @@ Ngoài các nghiệp vụ chính, hệ thống còn hỗ trợ:
 ## 1.7. Trạng thái hệ thống
 
 ### 1.7.1. Trạng thái người dùng (User Status)
+
 * **Active:** Tài khoản đang hoạt động bình thường.
 * **Inactive:** Tài khoản đã bị vô hiệu hóa.
 * **Locked:** Tài khoản bị khóa (do vi phạm nội quy hoặc bảo mật).
 
 ### 1.7.2. Trạng thái hạ tầng (Infrastructure Status)
+
 * **Phòng (Rooms):**
-    * **Available:** Còn chỗ trống, có thể tiếp nhận sinh viên.
-    * **Full:** Đã hết chỗ.
-    * **Maintenance:** Đang sửa chữa, không thể sử dụng.
+  * **Available:** Còn chỗ trống, có thể tiếp nhận sinh viên.
+  * **Full:** Đã hết chỗ.
+  * **Maintenance:** Đang sửa chữa, không thể sử dụng.
 * **Giường (Beds):**
-    * **Available:** Giường trống.
-    * **Occupied:** Giường đã có sinh viên ở.
-    * **Maintenance:** Giường hỏng, đang bảo trì.
+  * **Available:** Giường trống.
+  * **Occupied:** Giường đã có sinh viên ở.
+  * **Maintenance:** Giường hỏng, đang bảo trì.
 
 ### 1.7.3. Trạng thái Đăng ký & Hợp đồng (Leasing Status)
+
 * **Đăng ký (Registrations):**
-    * **Pending:** Đang chờ duyệt.
-    * **Approved:** Đã duyệt, chờ phân giường/tạo hợp đồng.
-    * **Rejected:** Đã từ chối.
+  * **Pending:** Đang chờ duyệt.
+  * **Approved:** Đã duyệt, chờ phân giường/tạo hợp đồng.
+  * **Rejected:** Đã từ chối.
 * **Hợp đồng (Contracts):**
-    * **Active:** Hợp đồng đang có hiệu lực.
-    * **Expired:** Hợp đồng đã hết hạn.
-    * **Terminated:** Hợp đồng bị chấm dứt trước thời hạn.
+  * **Active:** Hợp đồng đang có hiệu lực.
+  * **Expired:** Hợp đồng đã hết hạn.
+  * **Terminated:** Hợp đồng bị chấm dứt trước thời hạn.
 
 ### 1.7.4. Trạng thái tài chính (Financial Status)
+
 * **Hóa đơn (Invoices):**
-    * **Unpaid:** Chưa thanh toán.
-    * **Paid:** Đã thanh toán đầy đủ.
-    * **Overdue:** Quá hạn thanh toán.
-    * **Cancelled:** Hóa đơn bị hủy do sai sót.
+  * **Unpaid:** Chưa thanh toán.
+  * **Paid:** Đã thanh toán đầy đủ.
+  * **Overdue:** Quá hạn thanh toán.
+  * **Cancelled:** Hóa đơn bị hủy do sai sót.
 * **Thanh toán (Payments):**
-    * **Success:** Giao dịch thành công.
-    * **Failed:** Giao dịch thất bại.
-    * **Pending:** Đang chờ xác nhận từ ngân hàng/cổng thanh toán.
+  * **Success:** Giao dịch thành công.
+  * **Failed:** Giao dịch thất bại.
+  * **Pending:** Đang chờ xác nhận từ ngân hàng/cổng thanh toán.
 
 ### 1.7.5. Trạng thái vận hành (Operational Status)
+
 * **Bảo trì (Maintenance Requests):**
-    * **Pending:** Yêu cầu mới, chờ tiếp nhận.
-    * **InProgress:** Đang trong quá trình sửa chữa.
-    * **Resolved:** Đã xử lý xong.
-    * **Cancelled:** Yêu cầu bị hủy.
+  * **Pending:** Yêu cầu mới, chờ tiếp nhận.
+  * **InProgress:** Đang trong quá trình sửa chữa.
+  * **Resolved:** Đã xử lý xong.
+  * **Cancelled:** Yêu cầu bị hủy.
 * **Khách thăm (Visitor Logs):**
-    * **CheckedIn:** Khách đang ở trong ký túc xá.
-    * **CheckedOut:** Khách đã rời đi.
+  * **CheckedIn:** Khách đang ở trong ký túc xá.
+  * **CheckedOut:** Khách đã rời đi.
 
 ---
 
@@ -806,7 +811,7 @@ Việc áp dụng UML giúp:
 | **Sinh viên (Student)**             | Là người sử dụng dịch vụ ký túc xá và tương tác với hệ thống.                                                                        | - Đăng ký nội trú<br>- Xem thông tin phòng<br>- Xem và thanh toán hóa đơn<br>- Gửi yêu cầu sửa chữa<br>- Nhận thông báo                          |
 | **Nhân viên kỹ thuật (Technician)** | Là người phụ trách xử lý các sự cố kỹ thuật và bảo trì trong ký túc xá.                                                              | - Tiếp nhận yêu cầu sửa chữa<br>- Xử lý và cập nhật trạng thái sự cố<br>- Kiểm tra và bảo trì tài sản                                            |
 
-<b>Table 3.1 – Bảng mô tả các tác nhân trong hệ thống</b>
+<b>Bảng 3.3 – Bảng mô tả các tác nhân trong hệ thống</b>
 
 </center>
 
@@ -825,12 +830,11 @@ Việc áp dụng UML giúp:
 
 #### 1. UC10 – TẠO HỢP ĐỒNG
 
-
-##### 1.1. Use case diagram 
+##### 1.1. Use case diagram
 
 ![UC10 - TẠO HỢP ĐỒNG](./images/UC10_TaoHopDong.png)
 
-##### 1.2. Đặc tả Use case 
+##### 1.2. Đặc tả Use case
 
 | Thuộc tính         | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
 | :----------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -847,6 +851,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Sinh viên chưa có giường**<br/>1. Tại bước 2 hệ thống kiểm tra dữ liệu<br/>2. Điều kiện: sinh viên chưa được phân giường<br/>3. Hiển thị “Sinh viên chưa được phân giường!”<br/>4. Dừng<br/><br/>**4A. Thiếu thông tin**<br/>1. Tại bước 4 nhập thiếu dữ liệu<br/>2. Bước 5 kiểm tra phát hiện lỗi<br/>3. Làm nổi bật các trường thiếu<br/>4. Hiển thị “Vui lòng nhập đầy đủ thông tin!”<br/>5. Quay lại bước 4<br/><br/>**5A. Dữ liệu không hợp lệ**<br/>1. Sai định dạng (ngày, giá...)<br/>2. Hệ thống chặn thao tác<br/>3. Hiển thị lỗi chi tiết<br/>4. Quay lại bước 4<br/><br/>**9A. Đã có hợp đồng còn hiệu lực**<br/>1. Hệ thống kiểm tra đã tồn tại hợp đồng còn hiệu lực<br/>2. Từ chối tạo mới<br/>3. Trả lỗi<br/>4. Hiển thị “Sinh viên đã có hợp đồng!”<br/>5. Kết thúc<br/><br/>**11A. Lỗi cơ sở dữ liệu**<br/>1. Lỗi khi lưu dữ liệu<br/>2. Khôi phục trạng thái trước đó (nếu có)<br/>3. Trả lỗi hệ thống<br/>4. Hiển thị “Có lỗi xảy ra, vui lòng thử lại sau”<br/>5. Ghi nhật ký lỗi |
 | Quy tắc nghiệp vụ  | BR01: Mỗi sinh viên chỉ có 1 hợp đồng còn hiệu lực<br/>BR02: Chỉ tạo hợp đồng khi đã được phân giường<br/>BR03: Tạo hợp đồng phải cập nhật trạng thái giường                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
+<center><b>Đặc tả Use Case UC10 – Tạo hợp đồng</b></center>
+
 ##### 1.3. Activity Diagram - AD04
 
 ![AD04 - TẠO HỢP ĐỒNG](./images/AD04_TaoHopDong.png)
@@ -857,8 +863,7 @@ Việc áp dụng UML giúp:
 
 #### 2. UC11 – GHI NHẬN DỊCH VỤ
 
-
-##### 2.1. Use Case Diagram 
+##### 2.1. Use Case Diagram
 
 ![UC11 - GHI NHẬN DỊCH VỤ](./images/UC11_GhiNhanDichVu.png)
 
@@ -879,6 +884,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Không tìm thấy phòng**<br/>1. Hệ thống không tìm thấy dữ liệu<br/>2. Hiển thị lỗi<br/>3. Dừng<br/><br/>**4A. Thiếu thông tin**<br/>1. Nhập thiếu dữ liệu<br/>2. Kiểm tra phát hiện lỗi<br/>3. Hiển thị “Vui lòng nhập đầy đủ thông tin!”<br/>4. Quay lại bước 4<br/><br/>**5A. Sai định dạng**<br/>1. Dữ liệu không hợp lệ (số âm, ký tự...)<br/>2. Chặn thao tác<br/>3. Hiển thị lỗi<br/>4. Quay lại bước 4<br/><br/>**8A. Dữ liệu bất thường**<br/>1. Hệ thống phát hiện chỉ số giảm bất hợp lý<br/>2. Hiển thị cảnh báo<br/>3. Không lưu dữ liệu<br/>4. Yêu cầu nhập lại<br/><br/>**10A. Lỗi cơ sở dữ liệu**<br/>1. Lỗi khi lưu dữ liệu<br/>2. Khôi phục trạng thái trước đó<br/>3. Trả lỗi hệ thống<br/>4. Hiển thị lỗi |
 | Quy tắc nghiệp vụ  | BR01: Chỉ số mới phải lớn hơn hoặc bằng chỉ số cũ<br/>BR02: Mỗi kỳ chỉ ghi nhận một lần<br/>BR03: Chi phí = chỉ số sử dụng × đơn giá                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
+<center><b>Đặc tả Use Case UC11 – Ghi nhận dịch vụ</b></center>
+
 ##### 2.3. Activity Diagram - AD05
 
 ![AD05 - GHI NHẬN DỊCH VỤ](./images/AD05_GhiNhanDichVu.png)
@@ -889,12 +896,11 @@ Việc áp dụng UML giúp:
 
 #### 3. UC12 – TẠO HÓA ĐƠN
 
-
 ##### 3.1. Use Case Diagram
 
 ![UC12 - TẠO HÓA ĐƠN](./images/UC12_TaoHoaDon.png)
 
-##### 3.2. Đặc tả Use Case 
+##### 3.2. Đặc tả Use Case
 
 | Thuộc tính         | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -911,6 +917,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **3A. Không có hợp đồng**<br/>1. Không tìm thấy hợp đồng<br/>2. Hiển thị “Chưa có hợp đồng!”<br/>3. Dừng<br/><br/>**4A. Không có dữ liệu dịch vụ**<br/>1. Không có dữ liệu<br/>2. Hiển thị lỗi<br/>3. Dừng<br/><br/>**5A. Lỗi tính toán**<br/>1. Dữ liệu sai gây lỗi<br/>2. Dừng xử lý<br/>3. Hiển thị lỗi<br/><br/>**7A. Nhân viên hủy thao tác**<br/>1. Không xác nhận<br/>2. Hệ thống hủy thao tác<br/><br/>**10A. Lỗi cơ sở dữ liệu**<br/>1. Lỗi khi lưu hóa đơn<br/>2. Khôi phục trạng thái trước đó<br/>3. Hiển thị lỗi hệ thống |
 | Quy tắc nghiệp vụ  | BR01: Hóa đơn = tiền phòng + tiền dịch vụ<br/>BR02: Không tạo nếu thiếu dữ liệu<br/>BR03: Không được chỉnh sửa sau khi tạo                                                                                                                                                                                                                                                                                                                                                                                                             |
 
+<center><b>Đặc tả Use Case UC12 – Tạo hóa đơn</b></center>
+
 ##### 3.3. Activity Diagram
 
 ![AD06 - TẠO HÓA ĐƠN](./images/AD06_TaoHoaDon.png)
@@ -920,7 +928,6 @@ Việc áp dụng UML giúp:
 ![SD06 - TẠO HÓA ĐƠN](./images/SD06_TaoHoaDon.png)
 
 #### 4. UC14: GHI NHẬN VI PHẠM
-
 
 ##### 4.1. Sơ đồ Use Case
 
@@ -943,6 +950,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **3A. Mã sinh viên không tồn tại**<br/>1. Tại bước 3 hệ thống truy vấn không tìm thấy<br/>2. Hiển thị: "Không tìm thấy sinh viên có mã này."<br/>3. Xóa nội dung ô nhập liệu<br/>4. Quay lại bước 2<br/><br/>**3B. Sinh viên đã rời KTX**<br/>1. Tại bước 3 phát hiện trạng thái = Đã rời đi<br/>2. Hiển thị: "Sinh viên này đã rời khỏi KTX."<br/>3. Vô hiệu hóa nút "Lưu"<br/>4. Kết thúc<br/><br/>**7A. Chưa chọn Loại vi phạm**<br/>1. Tại bước 7 phát hiện chưa chọn loại vi phạm<br/>2. Tô viền đỏ danh sách thả xuống<br/>3. Hiển thị: "Vui lòng chọn Loại vi phạm."<br/>4. Quay lại bước 4<br/><br/>**7B. Chưa nhập Mô tả**<br/>1. Tại bước 7 phát hiện trường Mô tả rỗng<br/>2. Tô viền đỏ vùng nhập<br/>3. Hiển thị: "Vui lòng nhập mô tả chi tiết."<br/>4. Quay lại bước 5<br/><br/>**7C. Mức phạt vượt giới hạn**<br/>1. Tại bước 7 phát hiện Mức phạt > Mức tối đa<br/>2. Tô viền đỏ ô nhập<br/>3. Hiển thị: "Mức phạt vượt quá giới hạn."<br/>4. Quay lại bước 5<br/><br/>**10A. Lỗi Cơ sở dữ liệu**<br/>1. Tại bước 10 xảy ra lỗi khi ghi<br/>2. Hoàn tác giao dịch<br/>3. Hiển thị: "Lỗi hệ thống, vui lòng thử lại."<br/>4. Giữ nguyên dữ liệu biểu mẫu<br/>5. Ghi nhật ký ngoại lệ<br/>6. Quay lại bước 5 |
 | Quy tắc nghiệp vụ  | QL01: Không thể ghi nhận vi phạm cho sinh viên đã rời KTX<br/>QL02: Mức phạt không vượt quá Mức tối đa quy định<br/>QL03: Chỉ được sửa/xóa trong vòng 24 giờ                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
+<center><b>Đặc tả Use Case UC14 – Ghi nhận vi phạm</b></center>
+
 ##### 4.3. Sơ đồ hoạt động - AD14
 
 ![AD14 - Ghi nhận vi phạm](./images/AD14_GhiNhanViPham.jpg)
@@ -952,7 +961,6 @@ Việc áp dụng UML giúp:
 ![SD14 - Ghi nhận vi phạm](./images/SD14_GhiNhanViPham.jpg)
 
 #### 5. UC15: QUẢN LÝ KHÁCH THĂM
-
 
 ##### 5.1. Sơ đồ Use Case
 
@@ -975,6 +983,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **3A. CCCD sai định dạng**<br/>1. Tại bước 3 phát hiện sai định dạng<br/>2. Tô viền đỏ ô nhập<br/>3. Hiển thị: "Số CCCD không hợp lệ."<br/>4. Quay lại bước 2<br/><br/>**3B. CCCD hết hạn**<br/>1. Tại bước 3 phát hiện CCCD hết hạn<br/>2. Hiển thị: "CCCD đã hết hạn."<br/>3. Vô hiệu hóa nút tiếp tục<br/>4. Kết thúc<br/><br/>**3C. Khách trong Danh sách đen**<br/>1. Tại bước 3 phát hiện khách bị cấm<br/>2. Hiển thị cảnh báo đỏ: "CẢNH BÁO: Khách nằm trong danh sách cấm!"<br/>3. Vô hiệu hóa form<br/>4. Gửi thông báo cho Quản lý<br/>5. Kết thúc<br/><br/>**6A. Mã SV không tồn tại**<br/>1. Tại bước 6 không tìm thấy sinh viên<br/>2. Hiển thị: "Không tìm thấy sinh viên."<br/>3. Xóa ô nhập<br/>4. Quay lại bước 5<br/><br/>**6B. Sinh viên đã rời KTX**<br/>1. Tại bước 6 phát hiện trạng thái = Đã rời đi<br/>2. Hiển thị: "Sinh viên không còn cư trú tại KTX."<br/>3. Đặt lại form<br/>4. Quay lại bước 5<br/><br/>**6C. Số phòng không tồn tại**<br/>1. Tại bước 6 không tìm thấy phòng<br/>2. Hiển thị: "Số phòng không tồn tại."<br/>3. Xóa ô nhập<br/>4. Quay lại bước 5<br/><br/>**7A. Phòng đầy khách (≥ 3)**<br/>1. Tại bước 7 phát hiện số khách >= 3<br/>2. Hiển thị: "Phòng đã đầy khách, vui lòng chờ."<br/>3. Từ chối nhận khách<br/>4. Làm mới form<br/>5. Kết thúc<br/><br/>**8A. Ngoài giờ thăm**<br/>1. Tại bước 8 phát hiện ngoài giờ<br/>2. Hiển thị: "Đã hết giờ thăm."<br/>3. Vô hiệu hóa nút<br/>4. Kết thúc<br/><br/>**9A. Lỗi Cơ sở dữ liệu khi lưu**<br/>1. Tại bước 9 xảy ra lỗi<br/>2. Hoàn tác giao dịch<br/>3. Hiển thị: "Lỗi hệ thống, vui lòng thử lại."<br/>4. Ghi nhật ký ngoại lệ<br/>5. Quay lại bước 5<br/><br/>**14A. Không tìm thấy bản ghi khi Khách ra**<br/>1. Tại bước 14 không tìm thấy bản ghi Đã vào<br/>2. Hiển thị: "Không tìm thấy phiếu thăm đang hoạt động."<br/>3. Kết thúc<br/><br/>**14B. Lỗi Cơ sở dữ liệu khi cập nhật Khách ra**<br/>1. Tại bước 14 mất kết nối Cơ sở dữ liệu<br/>2. Hoàn tác giao dịch<br/>3. Hiển thị: "Lỗi hệ thống, vui lòng thử lại."<br/>4. Ghi nhật ký ngoại lệ<br/>5. Quay lại bước 13 |
 | Quy tắc nghiệp vụ  | QL01: Mỗi phòng tối đa 3 khách cùng lúc<br/>QL02: Khung giờ thăm: 07:00 - 22:30<br/>QL03: Tự động cho khách ra lúc 23:00<br/>QL04: Một khách chỉ thăm 1 phòng tại một thời điểm                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
+<center><b>Đặc tả Use Case UC15 – Quản lý khách thăm</b></center>
+
 ##### 5.3. Sơ đồ hoạt động - AD15
 
 ![AD15 - Quản lý khách thăm](./images/AD15_QuanLyKhachTham.jpg)
@@ -984,7 +994,6 @@ Việc áp dụng UML giúp:
 ![SD15 - Quản lý khách thăm (Nhận khách)](./images/SD15_QuanLyKhachTham_CheckIn.jpg)
 
 #### 6. UC16: QUẢN LÝ CƠ SỞ VẬT CHẤT
-
 
 ##### 6.1. Use Case Diagram
 
@@ -1007,6 +1016,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **4A. Mã tài sản đã tồn tại (khi thêm)**<br/>1. Hệ thống kiểm tra thấy mã tài sản đã có trong database<br/>2. Hệ thống hiển thị thông báo: "Mã tài sản đã tồn tại trong hệ thống"<br/>3. Hệ thống tô viền đỏ trường Mã tài sản<br/>4. Giữ nguyên form, quay lại bước nhập<br/><br/>**4B. Phòng không tồn tại**<br/>1. Nhân viên quản lý nhập mã phòng không hợp lệ<br/>2. Hệ thống hiển thị thông báo: "Phòng không tồn tại trong hệ thống"<br/>3. Quay lại bước nhập<br/><br/>**6A. Không thể xóa do tài sản đang được sử dụng**<br/>1. Hệ thống kiểm tra thấy tài sản đang có mặt tại phòng có sinh viên ở<br/>2. Hệ thống hiển thị thông báo: "Không thể xóa tài sản đang được sử dụng"<br/>3. Hủy thao tác xóa, giữ nguyên danh sách<br/>4. Kết thúc<br/><br/>**7A. Kiểm kê phát sinh chênh lệch**<br/>1. Số lượng thực tế khác số lượng trong hệ thống<br/>2. Hệ thống hiển thị báo cáo chênh lệch<br/>3. Yêu cầu Nhân viên quản lý nhập lý do chênh lệch (mất, hỏng, chuyển phòng...)<br/>4. Nhân viên quản lý xác nhận lý do<br/>5. Hệ thống cập nhật lại số lượng thực tế và ghi log kiểm kê<br/>6. Kết thúc<br/><br/>**8A. Tài sản đã có yêu cầu sửa chữa đang xử lý**<br/>1. Nhân viên quản lý chọn báo hỏng nhưng tài sản đã có yêu cầu sửa chữa trước đó chưa hoàn thành<br/>2. Hệ thống hiển thị thông báo: "Tài sản đang có yêu cầu sửa chữa, không thể báo hỏng lại"<br/>3. Hủy thao tác, giữ nguyên form<br/>4. Kết thúc<br/><br/>**DB1. Lỗi kết nối Database**<br/>1. Hệ thống không thể kết nối đến Database<br/>2. Hệ thống hiển thị thông báo: "Lỗi hệ thống, vui lòng thử lại sau"<br/>3. Ghi exception log để IT kiểm tra<br/>4. Kết thúc |
 | Quy tắc nghiệp vụ  | BR01: Mỗi tài sản có mã duy nhất trong toàn hệ thống<br/>BR02: Không thể xóa tài sản đang được sử dụng tại phòng có sinh viên đang ở<br/>BR03: Kiểm kê bắt buộc phải có lý do khi phát sinh chênh lệch<br/>BR04: Báo hỏng tự động tạo yêu cầu sửa chữa với trạng thái "Chờ tiếp nhận"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
+<center><b>Đặc tả Use Case UC16 – Quản lý cơ sở vật chất</b></center>
+
 ##### 6.3. Activity Diagram - AD16
 
 ![AD16 - Quản lý cơ sở vật chất](./images/AD16_QuanLyCoSoVatChat.jpg)
@@ -1016,7 +1027,6 @@ Việc áp dụng UML giúp:
 ![SD16 - Quản lý cơ sở vật chất](./images/SD16_QuanLyCoSoVatChat.jpg)
 
 #### 7. UC21: THANH TOÁN HÓA ĐƠN
-
 
 ##### 7.1. Sơ đồ Use Case
 
@@ -1039,6 +1049,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Không có hóa đơn Chưa thanh toán**<br/>1. Tại bước 2 hệ thống kiểm tra danh sách hóa đơn<br/>2. Điều kiện: danh sách hóa đơn Chưa thanh toán rỗng<br/>3. Hệ thống dừng luồng xử lý<br/>4. Hiển thị thông báo: "Bạn không có hóa đơn nào cần thanh toán."<br/>5. Hệ thống ẩn nút "Thanh toán"<br/>6. Kết thúc<br/><br/>**6A. Hóa đơn đã được thanh toán (Trùng giao dịch)**<br/>1. Tại bước 6 sinh viên nhấn "Xác nhận thanh toán"<br/>2. Sang bước 7 hệ thống kiểm tra lại trạng thái hóa đơn<br/>3. Điều kiện: hóa đơn đã chuyển sang Đã thanh toán hoặc Đang xử lý<br/>4. Hệ thống dừng luồng xử lý<br/>5. Hiển thị thông báo: "Hóa đơn này đã được thanh toán hoặc đang được xử lý."<br/>6. Hệ thống tự động làm mới danh sách hóa đơn<br/>7. Quay lại bước 3<br/><br/>**9A. Số dư không đủ**<br/>1. Tại bước 9 cổng thanh toán xử lý giao dịch<br/>2. Điều kiện: số dư tài khoản không đủ<br/>3. Cổng thanh toán trả về mã lỗi KHÔNG_ĐỦ_TIỀN<br/>4. Hệ thống nhận phản hồi và dừng quá trình thanh toán<br/>5. Hiển thị thông báo: "Thanh toán thất bại: Số dư tài khoản không đủ."<br/>6. Ghi nhật ký lỗi<br/>7. Quay lại bước 5<br/><br/>**9B. Thẻ bị từ chối / Hết hạn**<br/>1. Tại bước 9 cổng thanh toán xử lý giao dịch<br/>2. Điều kiện: thẻ bị từ chối hoặc đã hết hạn<br/>3. Cổng thanh toán trả về mã lỗi THẺ_BỊ_TỪ_CHỐI hoặc THẺ_HẾT_HẠN<br/>4. Hệ thống nhận phản hồi và dừng quá trình thanh toán<br/>5. Hiển thị thông báo: "Thanh toán thất bại: Thẻ bị từ chối hoặc đã hết hạn."<br/>6. Ghi nhật ký lỗi<br/>7. Quay lại bước 5<br/><br/>**9C. Hết thời gian chờ**<br/>1. Tại bước 9 sau 30 giây không nhận được phản hồi<br/>2. Hệ thống dừng yêu cầu và coi giao dịch đang treo<br/>3. Cập nhật trạng thái hóa đơn thành Chờ đối soát<br/>4. Hiển thị thông báo: "Giao dịch đang chờ xử lý. Vui lòng kiểm tra lại sau 5 phút."<br/>5. Ghi nhật ký cảnh báo<br/>6. Gửi email thông báo cho Nhân viên<br/>7. Kết thúc<br/><br/>**11A. Lỗi Cơ sở dữ liệu khi cập nhật**<br/>1. Tại bước 11 hệ thống cập nhật trạng thái hóa đơn<br/>2. Điều kiện: không thể kết nối Cơ sở dữ liệu<br/>3. Hệ thống hoàn tác giao dịch (nếu có)<br/>4. Ghi nhật ký LỖI NGHIÊM TRỌNG<br/>5. Hiển thị thông báo: "Hệ thống đang gặp sự cố. Vui lòng liên hệ quản lý để xác nhận."<br/>6. Gửi cảnh báo đến Nhân viên<br/>7. Kết thúc |
 | Quy tắc nghiệp vụ  | QL01: Mỗi hóa đơn chỉ được thanh toán 1 lần<br/>QL02: Số tiền thanh toán phải khớp chính xác với Tổng tiền của hóa đơn<br/>QL03: Thanh toán sau Hạn thanh toán sẽ bị tính thêm phí phạt                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
+<center><b>Đặc tả Use Case UC21 – Thanh toán hóa đơn</b></center>
+
 ##### 7.3. Sơ đồ hoạt động - AD07
 
 ![AD07 - Thanh toán hóa đơn](./images/AD07_ThanhToanHoaDon.jpg)
@@ -1048,7 +1060,6 @@ Việc áp dụng UML giúp:
 ![SD07 - Xử lý thanh toán hóa đơn](./images/SD07_ThanhToanHoaDon.jpg)
 
 #### 8. UC22: TẠO YÊU CẦU SỬA CHỮA
-
 
 ##### 8.1. Use Case Diagram
 
@@ -1071,6 +1082,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Thiếu thông tin bắt buộc**<br/>1. Hệ thống phát hiện để trống mô tả lỗi hoặc loại tài sản<br/>2. Hệ thống tô viền đỏ các trường thiếu<br/>3. Hệ thống hiển thị thông báo: "Vui lòng nhập đầy đủ thông tin!"<br/>4. Giữ nguyên form, quay lại bước 4<br/><br/>**3A. Sinh viên không có hợp đồng hiệu lực**<br/>1. Hệ thống truy vấn hợp đồng của Sinh viên nhưng không tìm thấy hợp đồng nào có status = 'ACTIVE'<br/>2. Hệ thống hiển thị thông báo: "Bạn chưa có hợp đồng thuê phòng hiệu lực. Vui lòng liên hệ Nhân viên quản lý để được hỗ trợ."<br/>3. Hệ thống vô hiệu hóa nút "Gửi yêu cầu"<br/>4. Kết thúc<br/><br/>**5A. Tài sản không thuộc phòng của Sinh viên**<br/>1. Sinh viên chọn tài sản cụ thể nhưng tài sản đó không nằm trong danh sách tài sản của phòng Sinh viên<br/>2. Hệ thống hiển thị thông báo: "Tài sản không tồn tại trong phòng của bạn!"<br/>3. Giữ nguyên form, quay lại bước 4<br/><br/>**5B. Phòng chưa có danh sách tài sản**<br/>1. Phòng của Sinh viên chưa được Nhân viên quản lý khởi tạo danh sách tài sản<br/>2. Hệ thống hiển thị thông báo: "Phòng của bạn chưa có danh sách tài sản, vui lòng liên hệ Nhân viên quản lý"<br/>3. Hệ thống vẫn cho phép tạo yêu cầu dạng chung (không chọn tài sản cụ thể)<br/>4. Tiếp tục lưu yêu cầu với asset_id = NULL<br/><br/>**6A. Lỗi kết nối Database khi lưu**<br/>1. Dữ liệu hợp lệ nhưng không thể INSERT vào database<br/>2. Hệ thống hiển thị thông báo: "Lỗi hệ thống, không thể tạo yêu cầu. Vui lòng thử lại sau."<br/>3. Ghi exception log để IT kiểm tra<br/>4. Giữ nguyên form, quay lại bước 4 |
 | Quy tắc nghiệp vụ  | BR01: Mỗi yêu cầu sửa chữa được gán một mã duy nhất (REQ-YYYYMMDD-XXXX)<br/>BR02: Sinh viên chỉ có thể tạo yêu cầu cho tài sản thuộc phòng mình đang ở<br/>BR03: Yêu cầu sửa chữa khi tạo có trạng thái mặc định là "Chờ tiếp nhận"<br/>BR04: Sinh viên có thể gửi kèm tối đa 3 ảnh minh họa cho mỗi yêu cầu                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
+<center><b>Đặc tả Use Case UC22 – Tạo yêu cầu sửa chữa</b></center>
+
 ##### 8.3. Activity Diagram - AD08
 
 ![AD08 - Tạo yêu cầu sửa chữa](./images/AD08_TaoYeuCauSuaChua.png)
@@ -1080,7 +1093,6 @@ Việc áp dụng UML giúp:
 ![SD08 - Tạo yêu cầu sửa chữa](./images/SD08_TaoYeuCauSuaChua.jpg)
 
 #### 9. UC24: TIẾP NHẬN YÊU CẦU SỬA CHỮA
-
 
 ##### 9.1. Use Case Diagram
 
@@ -1103,8 +1115,9 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **3A. Không có yêu cầu nào**<br/>1. Hệ thống truy vấn danh sách yêu cầu "Chờ tiếp nhận" và nhận được mảng rỗng<br/>2. Hệ thống hiển thị thông báo: "Hiện tại không có yêu cầu sửa chữa nào cần xử lý."<br/>3. Hệ thống vô hiệu hóa nút "Tiếp nhận"<br/>4. Kết thúc<br/><br/>**7A. Yêu cầu đã được tiếp nhận (Race Condition)**<br/>1. Nhân viên kỹ thuật A và Nhân viên kỹ thuật B cùng lúc chọn tiếp nhận cùng một yêu cầu<br/>2. Hệ thống sử dụng pessimistic lock để xử lý đồng thời<br/>3. Nhân viên kỹ thuật B nhận được lỗi: "Yêu cầu đã được tiếp nhận bởi Nhân viên kỹ thuật khác"<br/>4. Hệ thống tự động tải lại danh sách cho Nhân viên kỹ thuật B<br/>5. Kết thúc đối với Nhân viên kỹ thuật B<br/><br/>**7B. Yêu cầu đã bị hủy bởi Nhân viên quản lý**<br/>1. Nhân viên kỹ thuật chọn yêu cầu nhưng trạng thái đã bị Nhân viên quản lý cập nhật thành "Đã hủy"<br/>2. Hệ thống hiển thị thông báo: "Yêu cầu này đã bị hủy. Không thể tiếp nhận."<br/>3. Tự động tải lại danh sách<br/>4. Kết thúc<br/><br/>**DB1. Lỗi kết nối Database**<br/>1. Hệ thống không thể kết nối đến Database khi cập nhật trạng thái<br/>2. Hệ thống hiển thị thông báo: "Lỗi hệ thống, không thể tiếp nhận yêu cầu. Vui lòng thử lại sau."<br/>3. Ghi exception log<br/>4. Kết thúc |
 | Quy tắc nghiệp vụ  | BR01: Mỗi yêu cầu chỉ được tiếp nhận bởi đúng một Nhân viên kỹ thuật<br/>BR02: Nhân viên kỹ thuật không thể tiếp nhận quá 5 yêu cầu đang xử lý cùng lúc<br/>BR03: Sau khi tiếp nhận, Nhân viên kỹ thuật có tối đa 30 phút để bắt đầu xử lý, nếu không hệ thống tự động trả yêu cầu về trạng thái "Chờ tiếp nhận"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
-#### 10. UC25: XỬ LÝ SỰ CỐ KỸ THUẬT
+<center><b>Đặc tả Use Case UC24 – Tiếp nhận yêu cầu sửa chữa</b></center>
 
+#### 10. UC25: XỬ LÝ SỰ CỐ KỸ THUẬT
 
 ##### 10.1. Use Case Diagram
 
@@ -1127,6 +1140,8 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Thiếu phụ tùng thay thế**<br/>1. Nhân viên kỹ thuật phát hiện cần phụ tùng nhưng không có sẵn trong kho<br/>2. Nhân viên kỹ thuật chọn "Báo thiếu phụ tùng"<br/>3. Hệ thống hiển thị form yêu cầu phụ tùng<br/>4. Nhân viên kỹ thuật nhập thông tin: tên phụ tùng, số lượng, lý do<br/>5. Hệ thống tạo phiếu yêu cầu phụ tùng, gửi cho Nhân viên quản lý kho<br/>6. Hệ thống cập nhật trạng thái yêu cầu thành "Chờ phụ tùng"<br/>7. Chờ cấp phát phụ tùng (có thể thông báo qua hệ thống)<br/>8. Sau khi có phụ tùng, Nhân viên kỹ thuật chọn "Tiếp tục xử lý"<br/>9. Quay lại bước 3<br/><br/>**2B. Sự cố vượt quá khả năng xử lý**<br/>1. Nhân viên kỹ thuật ghi nhận sự cố quá phức tạp, cần chuyên gia hoặc đơn vị ngoài<br/>2. Nhân viên kỹ thuật chọn "Yêu cầu hỗ trợ"<br/>3. Hệ thống tạo ticket nâng cấp (escalation)<br/>4. Hệ thống gửi thông báo cho trưởng bộ phận kỹ thuật<br/>5. Hệ thống cập nhật trạng thái yêu cầu thành "Chờ hỗ trợ"<br/>6. Chờ phân công hỗ trợ<br/>7. Sau khi có hỗ trợ, Nhân viên kỹ thuật tiếp tục xử lý<br/>8. Quay lại bước 3<br/><br/>**8A. Checklist chưa hoàn thành khi báo cáo**<br/>1. Nhân viên kỹ thuật chọn "Hoàn tất xử lý" nhưng checklist còn bước chưa tick<br/>2. Hệ thống hiển thị thông báo: "Chưa hoàn thành các bước: [danh sách bước còn thiếu]"<br/>3. Hệ thống tô màu đỏ các bước chưa hoàn thành<br/>4. Yêu cầu Nhân viên kỹ thuật hoàn thành các bước còn thiếu<br/>5. Quay lại bước 3<br/><br/>**9A. Lỗi kết nối Database khi lưu tiến độ**<br/>1. Nhân viên kỹ thuật cập nhật tiến độ nhưng không thể lưu vào database<br/>2. Hệ thống hiển thị thông báo: "Lỗi hệ thống, không thể lưu tiến độ. Vui lòng thử lại."<br/>3. Ghi exception log<br/>4. Giữ nguyên dữ liệu trên form, cho phép Nhân viên kỹ thuật thử lại |
 | Quy tắc nghiệp vụ  | BR01: Mỗi loại tài sản có một checklist sửa chữa riêng do Admin cấu hình<br/>BR02: Nhân viên kỹ thuật chỉ có thể hoàn tất xử lý khi tất cả các bước trong checklist đã được tick hoàn thành<br/>BR03: Mọi thay đổi trạng thái đều được ghi vào bảng repair_logs                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 
+<center><b>Đặc tả Use Case UC25 – Xử lý sự cố kỹ thuật</b></center>
+
 ##### 10.3. Activity Diagram - AD09
 
 ![AD09 - Xử lý sự cố kỹ thuật](./images/AD09_XuLySuCoKyThuat.png)
@@ -1136,7 +1151,6 @@ Việc áp dụng UML giúp:
 ![SD09 - Xử lý sự cố kỹ thuật](./images/SD09_XuLySuCoKyThuat.jpg)
 
 #### 11. UC26: CẬP NHẬT TRẠNG THÁI SỬA CHỮA
-
 
 ##### 11.1. Use Case Diagram
 
@@ -1161,9 +1175,11 @@ Việc áp dụng UML giúp:
 #### 12. UC17 – ĐĂNG KÝ NỘI TRÚ
 
 ##### 12.1. Use case diagram
+
 ![UC17 - ĐĂNG KÝ NỘI TRÚ](./images/UC17_DangKyNoiTru.png)
 
 ##### 12.2. Đặc tả Use case
+
 | Thuộc tính         | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tên Usecase        | Đăng ký nội trú                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -1179,18 +1195,26 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Đã có nội trú**: 1. Hệ thống kiểm tra thấy sinh viên đã có phòng đang hoạt động; 2. Dừng luồng xử lý; 3. Hiển thị thông báo lỗi; 4. Kết thúc.<br/>**8A. Trùng yêu cầu**: 1. Hệ thống phát hiện đã tồn tại request Pending; 2. Từ chối tạo mới; 3. Hiển thị "Bạn đã có yêu cầu đang chờ xử lý!"; 4. Kết thúc.<br/>**10A. Lỗi DB**: 1. Lỗi khi ghi DB; 2. Rollback; 3. Hiển thị "Có lỗi xảy ra, vui lòng thử lại sau"; 4. Kết thúc.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | Quy tắc nghiệp vụ  | BR01: Mỗi sinh viên chỉ có 1 request Pending<br/>BR02: Không cho phép đăng ký khi đang có hợp đồng Active                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 
+<center><b>Đặc tả Use Case UC17 – Đăng ký nội trú</b></center>
+
+<center><b>Đặc tả Use Case UC26 – Cập nhật trạng thái sửa chữa</b></center>
+
 ##### 12.3. Activity Diagram - AD01
+
 ![AD01 - ĐĂNG KÝ NỘI TRÚ](./images/AD01_DangKyNoiTru.png)
 
 ##### 12.4. Sequence Diagram - SD01
+
 ![SD01 - ĐĂNG KÝ NỘI TRÚ](./images/SD01_DangKyNoiTru.png)
 
 #### 13. UC08 – XÉT DUYỆT ĐĂNG KÝ
 
 ##### 13.1. Use case diagram
+
 ![UC08 - XÉT DUYỆT ĐĂNG KÝ](./images/UC08_XetDuyetDangKi.jpg)
 
 ##### 13.2. Đặc tả Use case
+
 | Thuộc tính         | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | :----------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tên Usecase        | Xét duyệt đăng ký                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -1206,18 +1230,24 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **2A. Không có dữ liệu**: Hiển thị “Không có dữ liệu Pending”; 2. Kết thúc.<br/>**7A. Đã xử lý**: 1. Request không còn Pending (do nhân viên khác xử lý trước); 2. Từ chối xử lý; 3. Hiển thị thông báo lỗi; 4. Quay lại bước 2.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | Quy tắc nghiệp vụ  | BR01: Chỉ xử lý request ở trạng thái Pending<br/>BR02: Sau khi Duyệt, yêu cầu chuyển sang trạng thái Approved để chờ phân giường                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
+<center><b>Đặc tả Use Case UC08 – Xét duyệt đăng ký</b></center>
+
 ##### 13.3. Activity Diagram - AD02
+
 ![AD02 - XÉT DUYỆT ĐĂNG KÝ](./images/AD08_XetDuyetDangKi.jpg)
 
 ##### 13.4. Sequence Diagram - SD02
+
 ![SD02 - XÉT DUYỆT ĐĂNG KÝ](./images/SD08_XetDuyetDangKi.jpg)
 
 #### 14. UC09 – PHÂN GIƯỜNG
 
 ##### 14.1. Use case diagram
+
 ![UC09 - PHÂN GIƯỜNG](./images/UC09_PhanGiuong.png)
 
 ##### 14.2. Đặc tả Use case
+
 | Thuộc tính         | Nội dung                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | :----------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Tên Usecase        | Phân giường                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
@@ -1233,20 +1263,25 @@ Việc áp dụng UML giúp:
 | Luồng ngoại lệ     | **3A. Không còn giường trống**: 1. Hệ thống báo không còn giường phù hợp; 2. Dừng thao tác.<br/>**7A. Giường đã bị chiếm**: 1. Giường được gán bởi nhân viên khác ngay trước đó; 2. Hệ thống báo lỗi; 3. Yêu cầu chọn giường khác.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | Quy tắc nghiệp vụ  | BR01: Chỉ phân giường cho sinh viên có trạng thái yêu cầu Approved<br/>BR02: Giường được chọn phải thuộc loại phòng sinh viên đã đăng ký                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
+<center><b>Đặc tả Use Case UC09 – Phân giường</b></center>
+
 ##### 14.3. Activity Diagram - AD03
+
 ![AD03 - PHÂN GIƯỜNG](./images/AD03_PhanGiuong.png)
 
 ##### 14.4. Sequence Diagram - SD03
-![SD03 - PHÂN GIƯỜNG](./images/SD03_PhanGiuong.png)
 
+![SD03 - PHÂN GIƯỜNG](./images/SD03_PhanGiuong.png)
 
 ## 3.5. Sơ đồ lớp (Class Diagram)
 
-
-
 ## 3.6. Sơ đồ ERD (Entity-Relationship Diagram)
 
+<center>
+
 ![Sơ đồ ERD](./images/erd.png)
+
+</center>
 
 <center><b>Hình 3.1 – Sơ đồ ERD</b></center>
 <center>
@@ -1350,6 +1385,8 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 **1. Bảng Users (Người dùng)**
 *Lưu trữ thông tin tài khoản và thông tin cá nhân của người dùng hệ thống (Admin, Staff, Student).*
 
+<center>
+
 | Tên trường   | Kiểu dữ liệu     | Ràng buộc        | Mô tả                               |
 | :----------- | :--------------- | :--------------- | :---------------------------------- |
 | Id           | UNIQUEIDENTIFIER | PK               | Khóa chính, mã người dùng định danh |
@@ -1364,8 +1401,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | IdentityCard | VARCHAR(20)      | UNIQUE, NOT NULL | Số Căn cước công dân                |
 | Status       | TINYINT          | NOT NULL         | Trạng thái (1: Active, 0: Inactive) |
 
+<b>Bảng 3.4 – Bảng Users (Người dùng)</b>
+</center>
+
 **2. Bảng Rooms (Phòng ký túc xá)**
 *Lưu trữ thông tin các phòng trong ký túc xá.*
+
+<center>
 
 | Tên trường | Kiểu dữ liệu     | Ràng buộc | Mô tả                                     |
 | :--------- | :--------------- | :-------- | :---------------------------------------- |
@@ -1376,8 +1418,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Floor      | INT              | NOT NULL  | Tầng số mấy                               |
 | Status     | TINYINT          | NOT NULL  | Trạng thái (Available, Full, Maintenance) |
 
+<b>Bảng 3.5 – Bảng Rooms (Phòng ký túc xá)</b>
+</center>
+
 **3. Bảng Contracts (Hợp đồng nội trú)**
 *Ghi nhận hợp đồng lưu trú giữa sinh viên và ký túc xá.*
+
+<center>
 
 | Tên trường    | Kiểu dữ liệu     | Ràng buộc | Mô tả                                    |
 | :------------ | :--------------- | :-------- | :--------------------------------------- |
@@ -1390,8 +1437,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | DepositAmount | DECIMAL(18,2)    |           | Tiền cọc                                 |
 | Status        | TINYINT          | NOT NULL  | Trạng thái (Active, Expired, Terminated) |
 
+<b>Bảng 3.6 – Bảng Contracts (Hợp đồng nội trú)</b>
+</center>
+
 **4. Bảng Invoices (Hóa đơn)**
 *Lưu trữ thông tin hóa đơn thanh toán hàng tháng/kỳ của sinh viên.*
+
+<center>
 
 | Tên trường    | Kiểu dữ liệu     | Ràng buộc | Mô tả                              |
 | :------------ | :--------------- | :-------- | :--------------------------------- |
@@ -1404,8 +1456,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | TotalAmount   | DECIMAL(18,2)    | NOT NULL  | Tổng tiền phải thanh toán          |
 | Status        | TINYINT          | NOT NULL  | Trạng thái (Unpaid, Paid, Overdue) |
 
+<b>Bảng 3.7 – Bảng Invoices (Hóa đơn)</b>
+</center>
+
 **5. Bảng MaintenanceRequests (Yêu cầu bảo trì)**
 *Lưu trữ các yêu cầu sửa chữa cơ sở vật chất từ sinh viên.*
+
+<center>
 
 | Tên trường        | Kiểu dữ liệu     | Ràng buộc | Mô tả                                      |
 | :---------------- | :--------------- | :-------- | :----------------------------------------- |
@@ -1417,8 +1474,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Status            | TINYINT          | NOT NULL  | Trạng thái (Pending, InProgress, Resolved) |
 | ResolutionDetails | NVARCHAR(500)    |           | Chi tiết cách giải quyết/phản hồi          |
 
+<b>Bảng 3.8 – Bảng MaintenanceRequests (Yêu cầu bảo trì)</b>
+</center>
+
 **6. Bảng Blocks (Tòa nhà/Khu)**
 *Lưu trữ thông tin các khu/tòa nhà trong ký túc xá.*
+
+<center>
 
 | Tên trường  | Kiểu dữ liệu     | Ràng buộc | Mô tả                              |
 | :---------- | :--------------- | :-------- | :--------------------------------- |
@@ -1427,8 +1489,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | TotalFloors | INT              | NOT NULL  | Tổng số tầng                       |
 | Description | NVARCHAR(MAX)    |           | Mô tả thêm                         |
 
+<b>Bảng 3.9 – Bảng Blocks (Tòa nhà/Khu)</b>
+</center>
+
 **7. Bảng RoomTypes (Loại phòng)**
 *Lưu trữ danh mục phân loại phòng và giá cơ bản.*
+
+<center>
 
 | Tên trường   | Kiểu dữ liệu     | Ràng buộc | Mô tả                         |
 | :----------- | :--------------- | :-------- | :---------------------------- |
@@ -1438,8 +1505,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | MaxOccupants | INT              | NOT NULL  | Sức chứa tối đa (từ 1 đến 20) |
 | Description  | NVARCHAR(MAX)    |           | Mô tả thêm                    |
 
+<b>Bảng 3.10 – Bảng RoomTypes (Loại phòng)</b>
+</center>
+
 **8. Bảng Beds (Giường)**
 *Quản lý chi tiết từng giường trong phòng.*
+
+<center>
 
 | Tên trường | Kiểu dữ liệu     | Ràng buộc | Mô tả                                         |
 | :--------- | :--------------- | :-------- | :-------------------------------------------- |
@@ -1448,8 +1520,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Status     | TINYINT          | NOT NULL  | Trạng thái (Available, Occupied, Maintenance) |
 | RoomId     | UNIQUEIDENTIFIER | FK        | Thuộc phòng nào                               |
 
+<b>Bảng 3.11 – Bảng Beds (Giường)</b>
+</center>
+
 **9. Bảng Utilities (Dịch vụ)**
 *Lưu trữ thông tin các loại dịch vụ tiện ích như Điện, Nước.*
+
+<center>
 
 | Tên trường  | Kiểu dữ liệu     | Ràng buộc | Mô tả                       |
 | :---------- | :--------------- | :-------- | :-------------------------- |
@@ -1458,8 +1535,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | UnitPrice   | DECIMAL(18,2)    | NOT NULL  | Đơn giá                     |
 | Unit        | NVARCHAR(50)     | NOT NULL  | Đơn vị tính                 |
 
+<b>Bảng 3.12 – Bảng Utilities (Dịch vụ)</b>
+</center>
+
 **10. Bảng UtilityUsages (Chỉ số dịch vụ)**
 *Ghi nhận chỉ số và số lượng sử dụng dịch vụ của phòng theo tháng.*
+
+<center>
 
 | Tên trường    | Kiểu dữ liệu     | Ràng buộc | Mô tả                  |
 | :------------ | :--------------- | :-------- | :--------------------- |
@@ -1474,8 +1556,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | UtilityId     | UNIQUEIDENTIFIER | FK        | Loại dịch vụ           |
 | InvoiceId     | UNIQUEIDENTIFIER | FK, NULL  | Tham chiếu hóa đơn     |
 
+<b>Bảng 3.13 – Bảng UtilityUsages (Chỉ số dịch vụ)</b>
+</center>
+
 **11. Bảng Payments (Thanh toán)**
 *Lưu trữ các giao dịch thanh toán hóa đơn của sinh viên.*
+
+<center>
 
 | Tên trường      | Kiểu dữ liệu     | Ràng buộc | Mô tả                           |
 | :-------------- | :--------------- | :-------- | :------------------------------ |
@@ -1487,8 +1574,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Note            | NVARCHAR(MAX)    |           | Ghi chú                         |
 | InvoiceId       | UNIQUEIDENTIFIER | FK        | Tham chiếu hóa đơn              |
 
+<b>Bảng 3.14 – Bảng Payments (Thanh toán)</b>
+</center>
+
 **12. Bảng Surcharges (Phụ phí)**
 *Lưu trữ các khoản phụ phí phát sinh thêm trong hóa đơn.*
+
+<center>
 
 | Tên trường    | Kiểu dữ liệu     | Ràng buộc | Mô tả                           |
 | :------------ | :--------------- | :-------- | :------------------------------ |
@@ -1497,8 +1589,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Amount        | DECIMAL(18,2)    | NOT NULL  | Số tiền                         |
 | InvoiceId     | UNIQUEIDENTIFIER | FK        | Tham chiếu hóa đơn              |
 
+<b>Bảng 3.15 – Bảng Surcharges (Phụ phí)</b>
+</center>
+
 **13. Bảng Violations (Vi phạm)**
 *Ghi nhận các lỗi vi phạm của sinh viên.*
+
+<center>
 
 | Tên trường    | Kiểu dữ liệu     | Ràng buộc | Mô tả                             |
 | :------------ | :--------------- | :-------- | :-------------------------------- |
@@ -1510,8 +1607,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | EvidenceImage | NVARCHAR(MAX)    |           | Hình ảnh bằng chứng               |
 | ContractId    | UNIQUEIDENTIFIER | FK        | Tham chiếu hợp đồng của sinh viên |
 
+<b>Bảng 3.16 – Bảng Violations (Vi phạm)</b>
+</center>
+
 **14. Bảng Assets (Tài sản)**
 *Quản lý tài sản, trang thiết bị trong ký túc xá.*
+
+<center>
 
 | Tên trường      | Kiểu dữ liệu     | Ràng buộc | Mô tả                        |
 | :-------------- | :--------------- | :-------- | :--------------------------- |
@@ -1523,8 +1625,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | ReplacementCost | DECIMAL(18,2)    | NOT NULL  | Chi phí thay thế             |
 | RoomId          | UNIQUEIDENTIFIER | FK        | Vị trí tài sản ở phòng nào   |
 
+<b>Bảng 3.17 – Bảng Assets (Tài sản)</b>
+</center>
+
 **15. Bảng VisitorLogs (Khách ra vào)**
 *Theo dõi thông tin khách đến thăm.*
+
+<center>
 
 | Tên trường   | Kiểu dữ liệu     | Ràng buộc | Mô tả                     |
 | :----------- | :--------------- | :-------- | :------------------------ |
@@ -1540,8 +1647,13 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | Purpose      | NVARCHAR(MAX)    | NOT NULL  | Mục đích                  |
 | HostId       | UNIQUEIDENTIFIER | FK        | Sinh viên được thăm       |
 
+<b>Bảng 3.18 – Bảng VisitorLogs (Khách ra vào)</b>
+</center>
+
 **16. Bảng Vehicles (Phương tiện)**
 *Quản lý xe cộ của sinh viên.*
+
+<center>
 
 | Tên trường   | Kiểu dữ liệu     | Ràng buộc | Mô tả                      |
 | :----------- | :--------------- | :-------- | :------------------------- |
@@ -1549,6 +1661,9 @@ Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt
 | VehicleType  | NVARCHAR(50)     | NOT NULL  | Loại phương tiện           |
 | LicensePlate | NVARCHAR(20)     | NOT NULL  | Biển số                    |
 | OwnerId      | UNIQUEIDENTIFIER | FK        | Chủ sở hữu                 |
+
+<b>Bảng 3.19 – Bảng Vehicles (Phương tiện)</b>
+</center>
 
 ## 3.10. Kết luận chương
 
@@ -1618,26 +1733,29 @@ Chương 4 đã trình bày thiết kế kiến trúc tổng thể, chỉ ra mô
 ## 5.1. Mục tiêu và chiến lược kiểm thử
 
 ### 5.1.1. Mục tiêu kiểm thử
+
 <div style="text-indent: 2em;">
 
 Kiểm thử hệ thống là một giai đoạn bắt buộc và đóng vai trò quyết định đến chất lượng của sản phẩm phần mềm trước khi bàn giao. Đối với "Hệ thống Quản lý Ký túc xá", mục tiêu kiểm thử bao gồm:
 
 </div>
 
-*   **Xác minh tính đúng đắn của nghiệp vụ:** Đảm bảo toàn bộ các chức năng được lập trình vận hành chính xác theo đúng các quy tắc nghiệp vụ (Business Rules) đã định nghĩa trong Chương 3.
-*   **Độ tin cậy và xử lý ngoại lệ:** Xác tiến khả năng hệ thống chặn đứng các thao tác lỗi từ người dùng (nhập sai định dạng, dữ liệu bất thường) và đưa ra phản hồi thân thiện, thay vì phát sinh lỗi sập hệ thống (Crash).
-*   **Đảm bảo tính toàn vẹn và an toàn:** Kiểm tra cơ chế phân quyền (RBAC), tính toàn vẹn dữ liệu khi ghi vào SQL Server và độ bảo mật của các phiên làm việc.
+* **Xác minh tính đúng đắn của nghiệp vụ:** Đảm bảo toàn bộ các chức năng được lập trình vận hành chính xác theo đúng các quy tắc nghiệp vụ (Business Rules) đã định nghĩa trong Chương 3.
+* **Độ tin cậy và xử lý ngoại lệ:** Xác tiến khả năng hệ thống chặn đứng các thao tác lỗi từ người dùng (nhập sai định dạng, dữ liệu bất thường) và đưa ra phản hồi thân thiện, thay vì phát sinh lỗi sập hệ thống (Crash).
+* **Đảm bảo tính toàn vẹn và an toàn:** Kiểm tra cơ chế phân quyền (RBAC), tính toàn vẹn dữ liệu khi ghi vào SQL Server và độ bảo mật của các phiên làm việc.
 
 ### 5.1.2. Chiến lược kiểm thử
+
 <div style="text-indent: 2em;">
 
-Nhóm thực hiện tập trung áp dụng chiến lược **Kiểm thử hộp đen (Black-box Testing)** trên môi trường kiểm thử (Staging). Phương pháp này tập trung hoàn toàn vào việc kiểm tra các chức năng dựa trên các kịch bản sử dụng (Use Case) cụ thể của tác nhân mà không cần quan tâm đến cấu trúc mã nguồn bên trong của ASP.NET Core. 
+Nhóm thực hiện tập trung áp dụng chiến lược **Kiểm thử hộp đen (Black-box Testing)** trên môi trường kiểm thử (Staging). Phương pháp này tập trung hoàn toàn vào việc kiểm tra các chức năng dựa trên các kịch bản sử dụng (Use Case) cụ thể của tác nhân mà không cần quan tâm đến cấu trúc mã nguồn bên trong của ASP.NET Core.
 
 </div>
 
 Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn cốt lõi:
-1.  **Kiểm thử chức năng (Functional Testing):** Thử nghiệm từng ca kiểm thử (Test Case) riêng lẻ dựa trên luồng chính (Happy Path) và luồng ngoại lệ (Alternative/Exception Path) của các Use Case từ UC10 đến UC21.
-2.  **Kiểm thử phi chức năng (Non-Functional Testing):** Đánh giá các tiêu chí kỹ thuật về hiệu năng, khả năng tương thích giao diện (Responsive) trên các thiết bị.
+
+1. **Kiểm thử chức năng (Functional Testing):** Thử nghiệm từng ca kiểm thử (Test Case) riêng lẻ dựa trên luồng chính (Happy Path) và luồng ngoại lệ (Alternative/Exception Path) của các Use Case từ UC10 đến UC21.
+2. **Kiểm thử phi chức năng (Non-Functional Testing):** Đánh giá các tiêu chí kỹ thuật về hiệu năng, khả năng tương thích giao diện (Responsive) trên các thiết bị.
 
 ---
 
@@ -1646,6 +1764,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 Để đảm bảo tính nhất quán của tập hồ sơ thiết kế, các ca kiểm thử chức năng dưới đây được xây dựng đối chiếu trực tiếp với danh mục yêu cầu chức năng (FR) và kịch bản đặc tả Use Case chi tiết tại Chương 3.
 
 ### 5.2.1. Ca kiểm thử cho UC10 – Tạo hợp đồng thuê (Đáp ứng FR6, FR7, FR9)
+
 * **Tiền điều kiện:** Tài khoản Nhân viên đã đăng nhập hệ thống thành công.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi (Khớp thiết kế Chương 3) | Trạng thái |
@@ -1656,6 +1775,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC10_04** | Chặn khi SV đã có hợp đồng còn hiệu lực *(Ngoại lệ 9A)* | 1. Chọn một SV hiện đang ở KTX và đã có hợp đồng đang active.<br>2. Cố tình thiết lập thông số tạo tiếp hợp đồng mới. | - SV: Lê Văn C (Đã có HĐ Active từ tháng 01/2026). | Hệ thống từ chối tạo mới, hiển thị thông báo lỗi: **"Sinh viên đã có hợp đồng!"** (Tuân thủ luật BR01). | **Pass** |
 
 ### 5.2.2. Ca kiểm thử cho UC11 – Ghi nhận sử dụng dịch vụ (Đáp ứng FR13)
+
 * **Tiền điều kiện:** Phòng chọn kiểm thử hiện đang tồn tại sinh viên nội trú.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi (Khớp thiết kế Chương 3) | Trạng thái |
@@ -1664,6 +1784,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC11_02** | Chặn nhập số liệu giảm bất thường *(Ngoại lệ 8A)* | 1. Chọn phòng cần nhập.<br>2. Nhập số điện mới nhỏ hơn số điện tháng trước.<br>3. Nhấn "Lưu". | - Phòng: P.202.<br>- Số điện cũ: 1200, Số mới: 1150. | Hệ thống áp dụng quy tắc BR01, chặn không cho lưu và hiển thị cảnh báo: **"Dữ liệu bất thường! Chỉ số mới phải lớn hơn hoặc bằng chỉ số cũ"**. | **Pass** |
 
 ### 5.2.3. Ca kiểm thử cho UC12 – Tạo hóa đơn (Đáp ứng FR14)
+
 * **Tiền điều kiện:** Sinh viên đã có bản ghi hợp đồng phòng và bản ghi chỉ số dịch vụ tháng cần lập.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi (Khớp thiết kế Chương 3) | Trạng thái |
@@ -1695,6 +1816,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC16_02** | Chặn trùng mã tài sản định danh *(Ngoại lệ 4A)* | 1. Nhập thông tin thiết bị.<br>2. Cố tình điền mã TS trùng với một thiết bị đã có từ trước. | - Mã TS: TS_ĐH_092 (Đã tồn tại trong hệ thống). | Hệ thống chặn không ghi đè, báo lỗi: **"Mã tài sản đã tồn tại trong hệ thống"** (Tuân thủ BR01). | **Pass** |
 
 ### 5.2.7. Ca kiểm thử cho UC21 – Thanh toán hóa đơn (Đáp ứng FR14)
+
 * **Tiền điều kiện:** Sinh viên đã đăng nhập thành công bằng tài khoản cá nhân, đang ở trang hóa đơn công nợ.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi (Khớp thiết kế Chương 3) | Trạng thái |
@@ -1703,6 +1825,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC21_02** | Chặn lỗi trùng lặp giao dịch đồng thời *(Ngoại lệ 6A)* | 1. Mở hóa đơn trên 2 tab trình duyệt.<br>2. Nhấn nút xác nhận thanh toán liên tiếp ở cả 2 tab. | - Thao tác đồng thời trên 1 mã hóa đơn. | Tab xử lý sau bị hệ thống chặn lại và cảnh báo: **"Hóa đơn này đã được thanh toán hoặc đang được xử lý."** nhằm tránh trừ tiền hai lần. | **Pass** |
 
 ### 5.2.8. Ca kiểm thử cho UC17 – Đăng ký nội trú (Đáp ứng FR5)
+
 * **Tiền điều kiện:** Sinh viên đã đăng nhập tài khoản.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1711,6 +1834,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC17_02** | Chặn đăng ký khi đã có phòng *(Ngoại lệ 2A)* | 1. Đăng nhập tài khoản sinh viên đang ở KTX.<br>2. Truy cập chức năng Đăng ký. | - SV: Nguyễn Văn A (Đang có hợp đồng Active). | Hệ thống chặn truy cập và báo lỗi: **"Bạn đã có phòng, không thể đăng ký mới"** (BR02). | **Pass** |
 
 ### 5.2.9. Ca kiểm thử cho UC08 – Xét duyệt đăng ký (Đáp ứng FR6)
+
 * **Tiền điều kiện:** Có yêu cầu đăng ký ở trạng thái Pending.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1719,6 +1843,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC08_02** | Chặn xử lý yêu cầu đã duyệt bởi người khác *(Ngoại lệ 7A)* | 1. Nhân viên A và B cùng mở 1 yêu cầu.<br>2. A duyệt trước.<br>3. B nhấn "Duyệt" sau đó. | - Thao tác đồng thời trên REQ_002. | Hệ thống báo lỗi cho nhân viên B: **"Yêu cầu đã được xử lý"** và làm mới danh sách. | **Pass** |
 
 ### 5.2.10. Ca kiểm thử cho UC09 – Phân giường (Đáp ứng FR7)
+
 * **Tiền điều kiện:** Sinh viên có yêu cầu trạng thái Approved.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1727,6 +1852,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC09_02** | Chặn gán giường đã bị chiếm *(Ngoại lệ 7A)* | 1. Chọn giường vừa bị nhân viên khác gán.<br>2. Nhấn xác nhận. | - Giường: P105_G01 (Vừa có người ở). | Hệ thống báo lỗi: **"Giường đã được sử dụng"** và yêu cầu chọn giường khác. | **Pass** |
 
 ### 5.2.11. Ca kiểm thử cho UC22 – Tạo yêu cầu sửa chữa (Đáp ứng FR15)
+
 * **Tiền điều kiện:** Sinh viên đang cư trú (có hợp đồng Active).
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1735,6 +1861,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC22_02** | Chặn yêu cầu khi thiếu thông tin *(Ngoại lệ 2A)* | 1. Để trống mô tả.<br>2. Nhấn gửi. | - Mô tả: [Rỗng]. | Hệ thống tô đỏ trường thiếu và báo: **"Vui lòng nhập đầy đủ thông tin!"**. | **Pass** |
 
 ### 5.2.12. Ca kiểm thử cho UC24 – Tiếp nhận yêu cầu sửa chữa (Đáp ứng FR15)
+
 * **Tiền điều kiện:** Tài khoản Kỹ thuật viên đã đăng nhập.
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1742,6 +1869,7 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 | **TC_UC24_01** | Tiếp nhận yêu cầu thành công *(Luồng chính)* | 1. Chọn yêu cầu "Chờ tiếp nhận".<br>2. Nhấn "Tiếp nhận". | - Mã yêu cầu: REQ_FIX_001. | - Gán ID kỹ thuật viên vào yêu cầu.<br>- Trạng thái chuyển thành: **"Đang xử lý"**. | **Pass** |
 
 ### 5.2.13. Ca kiểm thử cho UC25 – Xử lý sự cố kỹ thuật (Đáp ứng FR15)
+
 * **Tiền điều kiện:** Yêu cầu đang ở trạng thái "Đang xử lý".
 
 | Mã TC | Tên ca kiểm thử | Các bước thực hiện | Dữ liệu đầu vào | Kết quả mong đợi | Trạng thái |
@@ -1763,8 +1891,9 @@ Quá trình kiểm thử được phân tách rõ ràng thành hai giai đoạn 
 Bên cạnh việc xác thử tính đúng đắn về mặt chức năng, nhóm phát triển đã tiến hành đo đạc các chỉ số phi chức năng cốt lõi (NFR) được quy định tại mục 3.2.2.
 
 ### 5.3.1. Kiểm thử hiệu năng và khả năng chịu tải (Khớp NFR1, NFR2)
-*   **Phương pháp:** Sử dụng công cụ Apache JMeter để giả lập các vòng truy cập đồng thời nhằm gửi yêu cầu đến các API hệ thống (Đăng nhập, Tra cứu phòng, Đăng ký nội trú).
-*   **Kết quả đo đạc thực tế:**
+
+* **Phương pháp:** Sử dụng công cụ Apache JMeter để giả lập các vòng truy cập đồng thời nhằm gửi yêu cầu đến các API hệ thống (Đăng nhập, Tra cứu phòng, Đăng ký nội trú).
+* **Kết quả đo đạc thực tế:**
 
 | Chỉ số kiểm thử | Mức quy định ở Chương 3 | Kết quả đạt được thực tế | Đánh giá |
 |:---|:---:|:---:|:---:|
@@ -1772,10 +1901,11 @@ Bên cạnh việc xác thử tính đúng đắn về mặt chức năng, nhóm
 | **Số lượng người dùng đồng thời** | Tối thiểu 100 truy cập cùng lúc | **150 truy cập đồng thời** (Tỷ lệ lỗi Error Rate = 0%) | Đạt (NFR2) |
 
 ### 5.3.2. Kiểm thử tính tương thích giao diện Responsive (Khớp NFR10)
-*   **Phương pháp:** Sử dụng công cụ Chrome DevTools thiết lập kiểm tra hiển thị giao diện phần mềm trên nhiều độ phân giải màn hình khác nhau đại diện cho: Desktop (1920x1080), Tablet (iPad Air), và Smartphone (iPhone 14 Pro Max).
-*   **Kết quả:** 
-    *   Hệ thống lưới (Grid System) của Bootstrap 5 co giãn chính xác.
-    *   Các bảng danh bạ dữ liệu lớn (như danh sách hóa đơn, sơ đồ giường phòng) tự động chuyển đổi sang dạng thanh cuộn ngang (Scrollable) hoặc dạng thẻ (Cards Layout) gọn gàng trên thiết bị di động, không xảy ra hiện tượng vỡ khung hình hay tràn chữ gây mất thẩm mỹ.
+
+* **Phương pháp:** Sử dụng công cụ Chrome DevTools thiết lập kiểm tra hiển thị giao diện phần mềm trên nhiều độ phân giải màn hình khác nhau đại diện cho: Desktop (1920x1080), Tablet (iPad Air), và Smartphone (iPhone 14 Pro Max).
+* **Kết quả:**
+  * Hệ thống lưới (Grid System) của Bootstrap 5 co giãn chính xác.
+  * Các bảng danh bạ dữ liệu lớn (như danh sách hóa đơn, sơ đồ giường phòng) tự động chuyển đổi sang dạng thanh cuộn ngang (Scrollable) hoặc dạng thẻ (Cards Layout) gọn gàng trên thiết bị di động, không xảy ra hiện tượng vỡ khung hình hay tràn chữ gây mất thẩm mỹ.
 
 ---
 
@@ -1787,9 +1917,9 @@ Thông qua kết quả thu thập được từ toàn bộ các cấu trúc kị
 
 </div>
 
-1.  **Về độ bao phủ chức năng:** Phần mềm đã hiện thực hóa trọn vẹn 100% các chức năng đề ra trong danh mục yêu cầu chức năng (từ FR1 đến FR17). Các module nghiệp vụ lõi như xếp phòng, quản lý chỉ số dịch vụ và lập biên bản hoạt động hoàn toàn ổn định.
-2.  **Về khả năng kiểm soát an toàn dữ liệu:** Các quy tắc nghiệp vụ nghiêm ngặt (BR) và các kịch bản luồng ngoại lệ phức tạp (chặn nhập số điện nước lùi, chặn khách cấm, khóa trùng lặp giao dịch thanh toán) đều được hệ thống backend ASP.NET Core kiểm tra và xử lý triệt để ở tầng Server, đảm bảo dữ liệu lưu trữ vào SQL Server không bị sai lệch cấu trúc hay xảy ra hiện tượng xung đột dữ liệu (Race Condition).
-3.  **Hướng cải tiến kỹ thuật:** Dù hệ thống vận hành rất tốt trên môi trường giả lập, trong tương lai khi đưa vào vận hành thực tế phục vụ hàng ngàn sinh viên vào mùa cao điểm nhập học, hệ thống cần bổ sung thêm cơ chế bộ nhớ đệm (Caching với Redis) ở tầng truy vấn danh mục phòng để tối ưu hóa thời gian phản hồi xuống thấp hơn nữa.
+1. **Về độ bao phủ chức năng:** Phần mềm đã hiện thực hóa trọn vẹn 100% các chức năng đề ra trong danh mục yêu cầu chức năng (từ FR1 đến FR17). Các module nghiệp vụ lõi như xếp phòng, quản lý chỉ số dịch vụ và lập biên bản hoạt động hoàn toàn ổn định.
+2. **Về khả năng kiểm soát an toàn dữ liệu:** Các quy tắc nghiệp vụ nghiêm ngặt (BR) và các kịch bản luồng ngoại lệ phức tạp (chặn nhập số điện nước lùi, chặn khách cấm, khóa trùng lặp giao dịch thanh toán) đều được hệ thống backend ASP.NET Core kiểm tra và xử lý triệt để ở tầng Server, đảm bảo dữ liệu lưu trữ vào SQL Server không bị sai lệch cấu trúc hay xảy ra hiện tượng xung đột dữ liệu (Race Condition).
+3. **Hướng cải tiến kỹ thuật:** Dù hệ thống vận hành rất tốt trên môi trường giả lập, trong tương lai khi đưa vào vận hành thực tế phục vụ hàng ngàn sinh viên vào mùa cao điểm nhập học, hệ thống cần bổ sung thêm cơ chế bộ nhớ đệm (Caching với Redis) ở tầng truy vấn danh mục phòng để tối ưu hóa thời gian phản hồi xuống thấp hơn nữa.
 
 ---
 
@@ -1800,7 +1930,8 @@ Thông qua kết quả thu thập được từ toàn bộ các cấu trúc kị
 
 </center>
 
-## 6.1. Giao diện thực tế của hệ thống 
+## 6.1. Giao diện thực tế của hệ thống
+
 <div style="text-indent: 2em;">
 
 Sau quá trình thiết kế, lập trình trên nền tảng ASP.NET Core MVC kết hợp với hệ quản trị cơ sở dữ liệu SQL Server và trải qua các vòng kiểm thử nghiêm ngặt, hệ thống Quản lý Ký túc xá đã được triển khai thực tế. Dưới đây là hình ảnh chụp màn hình các giao diện chức năng chính, thể hiện kết quả minh chứng của sản phẩm:
@@ -1808,41 +1939,47 @@ Sau quá trình thiết kế, lập trình trên nền tảng ASP.NET Core MVC k
 </div>
 
 ### 6.1.1. Giao diện Trang chủ và Thống kê tổng quan (Dashboard)
+
 * **Mô tả:** Giao diện dành cho tác nhân Quản trị viên (Admin) và Nhân viên (Staff) ngay sau khi đăng nhập thành công. Trang này tích hợp các thẻ biểu đồ trực quan (nhờ thư viện Chart.js), tổng hợp theo thời gian thực các chỉ số quan trọng của toàn bộ ký túc xá.
 * **Các thành phần hiển thị:** Tổng số sinh viên đang lưu trú nội trú.
-    * Tỷ lệ lấp đầy phòng ốc (Biểu đồ tròn thể hiện số giường trống và số giường đã có người ở).
-    * Biểu đồ cột biểu diễn doanh thu hóa đơn theo từng tháng.
-    * Danh sách các thiết bị cơ sở vật chất đang ở trạng thái "Báo hỏng" cần kỹ thuật viên xử lý gấp.
+  * Tỷ lệ lấp đầy phòng ốc (Biểu đồ tròn thể hiện số giường trống và số giường đã có người ở).
+  * Biểu đồ cột biểu diễn doanh thu hóa đơn theo từng tháng.
+  * Danh sách các thiết bị cơ sở vật chất đang ở trạng thái "Báo hỏng" cần kỹ thuật viên xử lý gấp.
 
 ### 6.1.2. Giao diện Module Quản lý Hợp đồng và Xếp phòng (UC10)
+
 * **Mô tả:** Màn hình làm việc của Nhân viên khi thực hiện duyệt hồ sơ và gán giường ở cho sinh viên.
 * **Các thành phần hiển thị:** * Bộ lọc tìm kiếm thông minh theo Mã SV, Tên SV hoặc Số CCCD.
-    * Sơ đồ trực quan theo dạng lưới (Grid View) mô phỏng cấu trúc Tòa nhà -> Tầng -> Phòng -> Giường. Các giường trống hiển thị màu xanh kèm nút "Xếp phòng nhanh", các giường đã có người ở hiển thị màu đỏ kèm tên sinh viên đang lưu trú.
-    * Form tạo mới hợp đồng tích hợp bộ chọn ngày (Datepicker) và tự động tính số tháng thuê, đơn giá phòng tương ứng theo cấu hình.
+  * Sơ đồ trực quan theo dạng lưới (Grid View) mô phỏng cấu trúc Tòa nhà -> Tầng -> Phòng -> Giường. Các giường trống hiển thị màu xanh kèm nút "Xếp phòng nhanh", các giường đã có người ở hiển thị màu đỏ kèm tên sinh viên đang lưu trú.
+  * Form tạo mới hợp đồng tích hợp bộ chọn ngày (Datepicker) và tự động tính số tháng thuê, đơn giá phòng tương ứng theo cấu hình.
 
 ### 6.1.3. Giao diện Module Ghi nhận Dịch vụ và Lập hóa đơn (UC11 & UC12)
+
 * **Mô tả:** Giao diện cho phép nhân viên chốt số điện, số nước tiêu thụ của từng phòng vào ngày cuối tháng.
 * **Các thành phần hiển thị:**
-    * Danh sách các phòng kèm ô nhập dữ liệu "Chỉ số điện mới" và "Chỉ số nước mới". Bên cạnh hiển thị mờ chỉ số cũ của tháng trước để nhân viên dễ đối chiếu.
-    * Nút "Kết xuất và Tạo hóa đơn loạt": Khi kích hoạt, hệ thống sẽ chạy tiến trình ngầm (Background Task) để tự động cộng dồn tiền phòng cố định, tiền điện nước tiêu thụ để tạo ra hàng loạt hóa đơn công nợ chỉ với một cú click chuột.
+  * Danh sách các phòng kèm ô nhập dữ liệu "Chỉ số điện mới" và "Chỉ số nước mới". Bên cạnh hiển thị mờ chỉ số cũ của tháng trước để nhân viên dễ đối chiếu.
+  * Nút "Kết xuất và Tạo hóa đơn loạt": Khi kích hoạt, hệ thống sẽ chạy tiến trình ngầm (Background Task) để tự động cộng dồn tiền phòng cố định, tiền điện nước tiêu thụ để tạo ra hàng loạt hóa đơn công nợ chỉ với một cú click chuột.
 
 ### 6.1.4. Giao diện Quản lý Khách thăm và Kiểm soát Vi phạm (UC14 & UC15)
+
 * **Mô tả:** Màn hình trực tại cổng bảo vệ/phòng ban quản lý dùng để kiểm soát người ngoài ra vào và ghi nhận kỷ luật.
 * **Các thành phần hiển thị:**
-    * Form nhập thông tin khách thăm tích hợp nút gọi camera quét mã QR/CCND.
-    * Bảng danh sách khách đang ở trong khuôn viên KTX (`CheckedIn`). Khi khách ra về, nhân viên chỉ cần nhấn nút "Check-out", hệ thống tự động tính thời gian lưu trú để cảnh báo nếu quá giờ quy định.
-    * Form lập biên bản vi phạm dành cho sinh viên nội trú với các danh mục lỗi thả xuống (Dropdown) và ô nhập mức phạt tiền.
+  * Form nhập thông tin khách thăm tích hợp nút gọi camera quét mã QR/CCND.
+  * Bảng danh sách khách đang ở trong khuôn viên KTX (`CheckedIn`). Khi khách ra về, nhân viên chỉ cần nhấn nút "Check-out", hệ thống tự động tính thời gian lưu trú để cảnh báo nếu quá giờ quy định.
+  * Form lập biên bản vi phạm dành cho sinh viên nội trú với các danh mục lỗi thả xuống (Dropdown) và ô nhập mức phạt tiền.
 
 ### 6.1.5. Giao diện Cổng thông tin Sinh viên (Student Portal)
+
 * **Mô tả:** Giao diện Responsive hiển thị tối ưu trên cả máy tính và điện thoại di động, giúp sinh viên tự quản lý thông tin nội trú của mình.
 * **Các thành phần hiển thị:**
-    * Tab "Thông tin phòng ở": Hiển thị số phòng, danh sách các bạn cùng phòng và các tài sản được bàn giao.
-    * Tab "Hóa đơn & Thanh toán": Liệt kê các hóa đơn kèm trạng thái (Đã thanh toán - Màu xanh / Chưa thanh toán - Màu đỏ). Tích hợp nút "Thanh toán trực tuyến" dẫn đến luồng giả lập quét mã QR ngân hàng.
-    * Tab "Khảo sát & Báo hỏng": Cho phép sinh viên gửi phiếu yêu cầu sửa chữa thiết bị trong phòng trực tiếp đến ban quản lý.
+  * Tab "Thông tin phòng ở": Hiển thị số phòng, danh sách các bạn cùng phòng và các tài sản được bàn giao.
+  * Tab "Hóa đơn & Thanh toán": Liệt kê các hóa đơn kèm trạng thái (Đã thanh toán - Màu xanh / Chưa thanh toán - Màu đỏ). Tích hợp nút "Thanh toán trực tuyến" dẫn đến luồng giả lập quét mã QR ngân hàng.
+  * Tab "Khảo sát & Báo hỏng": Cho phép sinh viên gửi phiếu yêu cầu sửa chữa thiết bị trong phòng trực tiếp đến ban quản lý.
 
 ---
 
 ## 6.2. Đánh giá ưu điểm kỹ thuật của hệ thống
+
 <div style="text-indent: 2em;">
 
 Sau thời gian vận hành thử nghiệm và nghiệm thu kết quả, hệ thống Quản lý Ký túc xá đã chứng minh được tính thực tiễn cao thông qua các ưu điểm nổi bật về cả mặt công nghệ lẫn quy trình nghiệp vụ:
@@ -1857,6 +1994,7 @@ Sau thời gian vận hành thử nghiệm và nghiệm thu kết quả, hệ th
 ---
 
 ## 6.3. Những hạn chế kỹ thuật hiện tại
+
 <div style="text-indent: 2em;">
 
 Mặc dù đạt được những kết quả rất tích cực và đáp ứng đầy đủ các yêu cầu đặt ra trong phạm vi đồ án, hệ thống vẫn tồn tại một số điểm hạn chế kỹ thuật cần được nhìn nhận một cách khách quan:
@@ -1871,6 +2009,7 @@ Mặc dù đạt được những kết quả rất tích cực và đáp ứng 
 ---
 
 ## 6.4. Hướng phát triển và nâng cấp công nghệ trong tương lai
+
 <div style="text-indent: 2em;">
 
 Để khắc phục các hạn chế nêu trên và đưa ứng dụng tiến gần hơn tới một sản phẩm phần mềm thương mại hoàn chỉnh, có khả năng áp dụng rộng rãi tại các trường Đại học quy mô lớn, các hướng phát triển tiếp theo của đề tài được xác định như sau:
@@ -1878,20 +2017,24 @@ Mặc dù đạt được những kết quả rất tích cực và đáp ứng 
 </div>
 
 ### 6.4.1. Tối ưu hóa hiệu năng bằng cơ chế Bộ nhớ đệm phân tán (Distributed Caching)
+
 * **Giải pháp:** Tích hợp **Redis Cache** vào tầng Service của ứng dụng ASP.NET Core.
 * **Mục tiêu:** Các dữ liệu có tần suất truy cập cực cao nhưng ít khi thay đổi (như: danh mục tòa nhà, danh sách loại phòng, đơn giá định mức điện nước, thông tin cấu hình nội quy) sẽ được lưu trữ trực tiếp trên RAM của Redis Server. Hệ thống chỉ truy vấn xuống SQL Server khi dữ liệu trong Cache bị hết hạn (Expired) hoặc có lệnh cập nhật mới (`Invaliating`). Giải pháp này giúp giảm tới $70\%$ tải cho Database Server và đưa tốc độ phản hồi trang đạt mức dưới $500$ ms.
 
 ### 6.4.2. Ứng dụng công nghệ Truyền thông thời gian thực (Real-time Communication)
+
 * **Giải pháp:** Triển khai thư viện **SignalR** (một công nghệ thế mạnh của hệ sinh thái .NET).
 * **Mục tiêu:** Thiết lập kết nối song công bền vững (WebSockets Hub) giữa Client và Server. Khi nhân viên vừa nhấn nút duyệt biên bản vi phạm hoặc xuất hóa đơn, một thông báo nổi (Toast Notification) kèm âm thanh sẽ lập tức xuất hiện trên màn hình điện thoại/máy tính của sinh viên ngay trong tích tắc mà không yêu cầu hành vi F5 tải lại trang.
 
 ### 6.4.3. Chuyển đổi kiến trúc và tích hợp cổng thanh toán chính thức
+
 * **Tích hợp API thanh toán:** Đăng ký môi trường Sandbox và cấu hình bộ thư viện SDK của các cổng thanh toán trực tuyến phổ biến (như VNPay hoặc PayOS). Hệ thống sẽ tự động sinh ra mã VietQR động chứa chính xác số tiền và nội dung chuyển khoản định danh cho từng hóa đơn. Khi sinh viên quét mã chuyển khoản thành công, Webhook của cổng thanh toán sẽ tự động gọi về API của hệ thống để gạch nợ hóa đơn ngay lập tức (Automated Payment Reconciliation).
 * **Mở rộng nền tảng di động (Mobile App):** Xây dựng một ứng dụng di động độc lập dành riêng cho Sinh viên và Đội ngũ kỹ thuật viên bằng nền tảng Flutter hoặc MAUI, sử dụng chung hệ thống API Backend hiện tại, nhằm tăng cường tối đa trải nghiệm và tận dụng được các tính năng phần cứng như Camera quét mã QR, định vị GPS khi báo hỏng thiết bị.
 
 ---
 
 ## 6.5. Kết luận chương 6
+
 <div style="text-indent: 2em;">
 
 Chương 6 đã tổng kết lại toàn bộ thành quả lao động của nhóm thực hiện đồ án thông qua các minh chứng cụ thể về mặt giao diện và kết quả vận hành thực tế. Việc nghiêm túc nhìn nhận các ưu điểm cũng như thẳng thắn chỉ ra những điểm hạn chế kỹ thuật hiện tại là tiền đề quan trọng giúp nhóm định hình rõ ràng lộ trình nâng cấp công nghệ trong tương lai. Nhìn chung, sản phẩm đã hoàn thành trọn vẹn mục tiêu ban đầu đề ra, có tính ứng dụng thực tiễn cao và sở hữu một kiến trúc phần mềm vững chắc để sẵn sàng mở rộng, phát triển lâu dài.
@@ -1964,7 +2107,7 @@ ON Invoices (RoomId, InvoicePeriod)
 INCLUDE (Status, TotalAmount);
 ```
 
-2. **Khắc phục lỗi N+1 Query trong Entity Framework Core:**
+1. **Khắc phục lỗi N+1 Query trong Entity Framework Core:**
    Thay vì để EF Core tải dữ liệu theo cơ chế Lazy Loading (gây ra hiện tượng gửi hàng trăm câu lệnh SQL nhỏ xuống DB trong vòng lặp), nhóm đã chuyển hẳn sang cơ chế **Eager Loading** bằng cách sử dụng phương thức `.Include()` và `.ThenInclude()` để gộp dữ liệu và truy vấn duy nhất một lần.
 
 > **Kết quả phân tích định lượng:**
