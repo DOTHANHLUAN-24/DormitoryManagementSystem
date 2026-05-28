@@ -3,7 +3,6 @@ using DormitoryManagement.Application.Dtos.Requests.Vehicles;
 using DormitoryManagement.Application.Dtos.Responses.Vehicles;
 using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Application.Services.Interfaces;
-using DormitoryManagement.Application.Mappings;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
@@ -27,27 +26,29 @@ namespace DormitoryManagement.Application.Services.Implements
             int pageIndex,
             int pageSize,
             string? searchTerm,
+            string? vehicleType = null,
             bool? isActive = null,
             bool? isDeleted = false,
             Guid? ownerId = null)
         {
-            // Note: BaseRepository.GetByStatusPagedAsync mặc định order by CreatedDate desc.
-            // Để search theo LicensePlate/VehicleType, ta đưa predicate vào.
-            var predicate = ownerId.HasValue
-                ? (System.Linq.Expressions.Expression<Func<Vehicle, bool>>)(v =>
-                    (string.IsNullOrEmpty(searchTerm) || v.LicensePlate.Contains(searchTerm) || v.VehicleType.Contains(searchTerm)) &&
-                    v.OwnerId == ownerId.Value)
-                : (System.Linq.Expressions.Expression<Func<Vehicle, bool>>)(v =>
-                    string.IsNullOrEmpty(searchTerm) ||
-                    v.LicensePlate.Contains(searchTerm) ||
-                    v.VehicleType.Contains(searchTerm));
+            var search = searchTerm?.Trim();
+
+            System.Linq.Expressions.Expression<Func<Vehicle, bool>> predicate = v =>
+                (string.IsNullOrEmpty(search) ||
+                 v.LicensePlate.Contains(search) ||
+                 v.VehicleType.Contains(search) ||
+                 v.Owner.FullName.Contains(search) ||
+                 v.Owner.Code.Contains(search)) &&
+                (string.IsNullOrEmpty(vehicleType) || v.VehicleType == vehicleType) &&
+                (!ownerId.HasValue || v.OwnerId == ownerId.Value);
 
             var result = await _vehicleRepository.GetByStatusPagedAsync(
                 pageIndex,
                 pageSize,
                 isActive: isActive,
                 isDeleted: isDeleted,
-                predicate: predicate);
+                predicate: predicate,
+                includeProperties: v => v.Owner);
 
             return result.MapToPagedResult<Vehicle, VehicleResponseDto>(_mapper);
         }

@@ -59,34 +59,29 @@
     </div>
 
     <!-- Bộ lọc tìm kiếm -->
-    <div class="filter-card">
-        <form method="get" asp-action="Catalog">
-            <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0" style="border-radius: 12px 0 0 12px; border: 1px solid #e2e8f0;">
-                            <i class="fas fa-search text-muted"></i>
-                        </span>
-                        <input type="text" name="search" value="@ViewBag.Search" class="input-filter form-control border-start-0"
-                               placeholder="Tìm theo tên tài sản, mã tài sản..."
-                               style="border-radius: 0 12px 12px 0;">
-                    </div>
-                </div>
-                <div class="col-md-4 d-flex gap-2 flex-wrap">
-                    <a href="?search=@ViewBag.Search&statusFilter=" class="filter-tab @(string.IsNullOrEmpty(ViewBag.StatusFilter as string) ? "active" : "")">Tất cả</a>
-                    <a href="?search=@ViewBag.Search&statusFilter=Good" class="filter-tab @(ViewBag.StatusFilter == "Good" ? "active" : "")">✅ Tốt</a>
-                    <a href="?search=@ViewBag.Search&statusFilter=Broken" class="filter-tab @(ViewBag.StatusFilter == "Broken" ? "active" : "")">❌ Hỏng</a>
-                    <a href="?search=@ViewBag.Search&statusFilter=UnderRepair" class="filter-tab @(ViewBag.StatusFilter == "UnderRepair" ? "active" : "")">🔧 Đang sửa</a>
-                    <a href="?search=@ViewBag.Search&statusFilter=Lost" class="filter-tab @(ViewBag.StatusFilter == "Lost" ? "active" : "")">📦 Mất</a>
-                </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn-search-catalog w-100">
-                        <i class="fas fa-filter me-2"></i>Lọc
-                    </button>
+    <form method="get" asp-action="Catalog" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync"
+                           placeholder="Tìm theo tên tài sản, mã tài sản...">
                 </div>
             </div>
-        </form>
-    </div>
+            <div class="col-md-4 d-flex gap-2 flex-wrap align-items-center justify-content-center">
+                <a href="?search=@ViewBag.Search&statusFilter=" class="filter-tab @(string.IsNullOrEmpty(ViewBag.StatusFilter as string) ? "active" : "")">Tất cả</a>
+                <a href="?search=@ViewBag.Search&statusFilter=Good" class="filter-tab @(ViewBag.StatusFilter == "Good" ? "active" : "")">✅ Tốt</a>
+                <a href="?search=@ViewBag.Search&statusFilter=Broken" class="filter-tab @(ViewBag.StatusFilter == "Broken" ? "active" : "")">❌ Hỏng</a>
+                <a href="?search=@ViewBag.Search&statusFilter=UnderRepair" class="filter-tab @(ViewBag.StatusFilter == "UnderRepair" ? "active" : "")">🔧 Đang sửa</a>
+                <a href="?search=@ViewBag.Search&statusFilter=Lost" class="filter-tab @(ViewBag.StatusFilter == "Lost" ? "active" : "")">📦 Mất</a>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-search-sync" style="background: #0ea5e9;">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+            </div>
+        </div>
+    </form>
 
     <!-- Grid thẻ tài sản -->
     @if (Model.Items != null && Model.Items.Any())

@@ -145,7 +145,32 @@ namespace DormitoryManagement.Application.Mappings
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.ViolationDate))
                 .ForMember(dest => dest.Content, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status == DormitoryManagement.Domain.Enums.ViolationStatus.Resolved ? "Đã xử lý" : "Chưa xử lý"))
-                .ForMember(dest => dest.FineAmount, opt => opt.MapFrom(src => src.FineAmount));
+                .ForMember(dest => dest.FineAmount, opt => opt.MapFrom(src => src.FineAmount))
+                .ForMember(dest => dest.ResolveNote, opt => opt.MapFrom(src => src.ResolveNote))
+                .ForMember(dest => dest.ResolvedAt, opt => opt.MapFrom(src => src.ResolvedAt));
+            // === MAINTENANCE REQUEST MAPPINGS ===
+            CreateMap<MaintenanceRequest, DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()))
+                .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => src.Priority.ToString()))
+                .ForMember(dest => dest.RoomNumber, opt => opt.MapFrom(src => src.Room != null ? src.Room.RoomNumber : string.Empty))
+                .ForMember(dest => dest.BlockName, opt => opt.MapFrom(src => src.Room != null && src.Room.Block != null ? src.Room.Block.BlockName : string.Empty))
+                .ForMember(dest => dest.RequesterName, opt => opt.MapFrom(src => src.Requester != null ? src.Requester.FullName : string.Empty))
+                .ForMember(dest => dest.RequesterCode, opt => opt.MapFrom(src => src.Requester != null ? src.Requester.Code : string.Empty))
+                .ForMember(dest => dest.HandlerName, opt => opt.MapFrom(src => src.Handler != null ? src.Handler.FullName : string.Empty));
+
+            CreateMap<DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests.CreateMaintenanceRequestDto, MaintenanceRequest>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
+                .ForMember(dest => dest.LastModified, opt => opt.Ignore())
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(_ => DormitoryManagement.Domain.Enums.MaintenanceStatus.Open))
+                .ForMember(dest => dest.ResolvedAt, opt => opt.Ignore())
+                .ForMember(dest => dest.RequesterId, opt => opt.Ignore())
+                .ForMember(dest => dest.HandlerId, opt => opt.Ignore())
+                .ForMember(dest => dest.Requester, opt => opt.Ignore())
+                .ForMember(dest => dest.Handler, opt => opt.Ignore())
+                .ForMember(dest => dest.Room, opt => opt.Ignore());
         }
     }
 }

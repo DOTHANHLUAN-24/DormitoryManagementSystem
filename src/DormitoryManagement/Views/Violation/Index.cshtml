@@ -33,6 +33,7 @@
         .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; }
         .nut-chi-tiet { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
         .nut-sua { background: #eff6ff; color: #3b82f6; }
+        .nut-resolve { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
         .nut-xoa { background: #fef2f2; color: #ef4444; }
         .nut-hanh-dong:hover { transform: scale(1.1); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
         
@@ -52,24 +53,24 @@
         @if (isAdminOrManager)
         {
             <div class="d-flex gap-2">
-                <a asp-controller="Violation" asp-action="Create" class="btn-custom-header btn-add text-decoration-none">
+                <a asp-controller="Violation" asp-action="Create" class="btn-sync-action btn-sync-add">
                     <i class="fas fa-plus"></i> Lập biên bản mới
                 </a>
             </div>
         }
     </header>
 
-    <form method="get" asp-action="Index" class="thanh-tim-kiem">
+    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
         <div class="row g-2 align-items-center">
             <div class="col-md-10">
-                <div class="khung-tim-kiem">
+                <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
-                    <input type="text" name="search" value="@ViewBag.Search" class="input-custom" placeholder="Tìm theo mã sinh viên (MSSV), phòng ở hoặc nội dung vi phạm...">
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync" placeholder="Tìm theo mã sinh viên (MSSV), phòng ở hoặc nội dung vi phạm...">
                 </div>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn-search">
-                    <i class="fas fa-filter"></i> Tìm kiếm
+                <button type="submit" class="btn-search-sync">
+                    <i class="fas fa-search"></i> Tìm kiếm
                 </button>
             </div>
         </div>
@@ -124,6 +125,14 @@
                                     <td class="text-end pe-4">
                                         <div class="d-flex justify-content-end gap-2">
                                             <a asp-action="Details" asp-route-id="@item.Id" class="nut-hanh-dong nut-chi-tiet text-decoration-none" title="Xem chi tiết"><i class="fas fa-eye"></i></a>
+                                            @if (item.Status != "Đã xử lý")
+                                            {
+                                                <button type="button"
+                                                        onclick="quickResolve('@item.Id', 'VIO-@item.Id.ToString().Substring(0, 5).ToUpper()')"
+                                                        class="nut-hanh-dong nut-resolve" title="Xử lý vi phạm">
+                                                    <i class="fas fa-check-double"></i>
+                                                </button>
+                                            }
                                             <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua text-decoration-none" title="Chỉnh sửa"><i class="fas fa-edit"></i></a>
                                             <button type="button" onclick="deleteViolation('@item.Id', 'VIO-@item.Id.ToString().Substring(0, 5).ToUpper()')" 
                                                     class="nut-hanh-dong nut-xoa" title="Xóa biên bản">
@@ -157,6 +166,55 @@
     <script>
         function getAntiforgeryToken() {
             return $('input[name="__RequestVerificationToken"]').val();
+        }
+
+        function quickResolve(id, code) {
+            Swal.fire({
+                title: 'Xử lý vi phạm ' + code,
+                html: `
+                    <p class="text-muted small mb-3">Nhập ghi chú biện pháp xử lý biên bản này:</p>
+                    <textarea id="swal-resolve-note" class="form-control" rows="4"
+                        placeholder="Mô tả biện pháp và kết quả xử lý vi phạm..."
+                        style="border-radius: 10px; font-size: 14px;"></textarea>
+                    <div class="text-start mt-2">
+                        <small class="text-muted"><i class="fas fa-info-circle me-1"></i>Tối thiểu 10 ký tự</small>
+                    </div>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-check-double me-1"></i> Xác nhận đã xử lý',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true,
+                preConfirm: () => {
+                    const note = document.getElementById('swal-resolve-note').value.trim();
+                    if (!note || note.length < 10) {
+                        Swal.showValidationMessage('Vui lòng nhập ghi chú xử lý (tối thiểu 10 ký tự).');
+                        return false;
+                    }
+                    return note;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                    const formData = new FormData();
+                    formData.append('resolveNote', result.value);
+                    formData.append('__RequestVerificationToken', getAntiforgeryToken());
+
+                    fetch('/Violation/QuickResolve/' + id, { method: 'POST', body: formData })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire({ icon: 'success', title: 'Thành công', text: data.message, timer: 1800, showConfirmButton: false })
+                                    .then(() => location.reload());
+                            } else {
+                                Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message, confirmButtonColor: '#4f46e5' });
+                            }
+                        })
+                        .catch(() => Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối đến máy chủ' }));
+                }
+            });
         }
 
         function deleteViolation(id, code) {

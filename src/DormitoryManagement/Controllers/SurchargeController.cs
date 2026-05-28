@@ -5,23 +5,17 @@ using System.Security.Claims;
 namespace DormitoryManagement.Controllers
 {
     // Giới hạn đăng nhập hệ thống mới được vào phân hệ Phụ phí
-    [Authorize]
-    public class SurchargeController : Controller
+    public class SurchargeController : BaseController
     {
-        private readonly ILogger<SurchargeController> _logger;
-
-        public SurchargeController(ILogger<SurchargeController> logger)
-        {
-            _logger = logger;
-        }
-
         /// <summary>
         /// GET: Surcharge/Index
         /// Hiển thị danh sách phụ phí kèm theo (Mọi user đăng nhập hợp lệ đều xem được)
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         public IActionResult Index()
         {
+            Logger.LogInformation("Đang truy cập trang danh sách phụ phí.");
             // View này sử dụng Mock Data danh sách cụ thể đã được nhúng sẵn ở phía giao diện frontend
             return View();
         }
@@ -30,14 +24,16 @@ namespace DormitoryManagement.Controllers
         /// GET: Surcharge/Create
         /// Giao diện thêm mới phụ phí (Chỉ Admin và các cấp Quản lý có quyền)
         /// </summary>
-        [HttpGet]
+        [HttpGet("Create")]
         public IActionResult Create()
         {
+            Logger.LogInformation("Đang truy cập trang thêm mới phụ phí.");
             if (!User.IsInRole("Admin") && 
                 !User.IsInRole("ManagementStaff") && 
                 !User.IsInRole("ManagerStaff") && 
                 !User.IsInRole("Manager"))
             {
+                Logger.LogWarning("Truy cập trang thêm mới phụ phí bị từ chối do không đủ quyền.");
                 return Forbid(); // Trả về trang 403 nếu cố tình truy cập lậu
             }
 
@@ -48,21 +44,23 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Create
         /// Xử lý tiếp nhận luồng dữ liệu submit từ Form thêm mới gửi lên
         /// </summary>
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(IFormCollection collection)
+        public IActionResult Create(IFormCollection collection)
         {
+            Logger.LogInformation("Đang tiếp nhận dữ liệu submit thêm mới phụ phí.");
             try
             {
                 // TODO: Ánh xạ dữ liệu từ Form (collection) vào DTO/Entity để lưu cơ sở dữ liệu
                 // Ví dụ: var name = collection["Name"];
                 
                 // Sau khi lưu thành công, quay về trang danh sách
+                Logger.LogInformation("Thêm mới phụ phí thành công, chuyển hướng về Index.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Lỗi xảy ra khi thêm mới phụ phí.");
+                Logger.LogError(ex, "Lỗi xảy ra khi thêm mới phụ phí.");
                 ModelState.AddModelError("", "Đã có lỗi xảy ra hệ thống. Vui lòng thử lại.");
                 return View();
             }
@@ -72,19 +70,22 @@ namespace DormitoryManagement.Controllers
         /// GET: Surcharge/Edit/{id}
         /// Giao diện chỉnh sửa phụ phí theo Mã định danh (Chỉ dành cho Admin/Manager)
         /// </summary>
-        [HttpGet]
-        public IActionResult Edit(string id)
+        [HttpGet("Edit/{id}")]
+        public IActionResult Edit(Guid id)
         {
+            Logger.LogInformation("Đang truy cập giao diện chỉnh sửa phụ phí với mã ID: {Id}", id);
             if (!User.IsInRole("Admin") && 
                 !User.IsInRole("ManagementStaff") && 
                 !User.IsInRole("ManagerStaff") && 
                 !User.IsInRole("Manager"))
             {
+                Logger.LogWarning("Truy cập chỉnh sửa bị từ chối cho người dùng hiện tại.");
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(id.ToString()))
             {
+                Logger.LogWarning("Yêu cầu chỉnh sửa phụ phí thất bại do thiếu ID.");
                 return NotFound();
             }
 
@@ -98,19 +99,20 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Edit/{id}
         /// Xử lý cập nhật thông tin phụ phí sau khi chỉnh sửa
         /// </summary>
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, IFormCollection collection)
+        public IActionResult Edit(Guid id, IFormCollection collection)
         {
+            Logger.LogInformation("Đang xử lý yêu cầu cập nhật thông tin phụ phí ID: {Id}", id);
             try
             {
                 // TODO: Xử lý logic cập nhật database tại đây
-                
+                Logger.LogInformation("Cập nhật thông tin phụ phí thành công, chuyển hướng về Index.");
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Lỗi xảy ra khi cập nhật phụ phí mã {id}.");
+                Logger.LogError(ex, "Lỗi xảy ra khi cập nhật phụ phí mã {Id}.", id);
                 ModelState.AddModelError("", "Không thể lưu các thay đổi. Hãy kiểm tra lại.");
                 return View();
             }
@@ -120,25 +122,27 @@ namespace DormitoryManagement.Controllers
         /// POST: Surcharge/Delete/{id}
         /// Xử lý xóa phụ phí thông qua nút xóa trên bảng danh sách
         /// </summary>
-        [HttpPost]
-        public async Task<IActionResult> Delete(string id)
+        [HttpPost("Delete/{id}")]
+        public IActionResult Delete(string id)
         {
+            Logger.LogInformation("Đang xử lý yêu cầu xóa phụ phí ID: {Id}", id);
             if (!User.IsInRole("Admin") && 
                 !User.IsInRole("ManagementStaff") && 
                 !User.IsInRole("ManagerStaff") && 
                 !User.IsInRole("Manager"))
             {
+                Logger.LogWarning("Yêu cầu xóa bị từ chối do không đủ quyền.");
                 return Forbid();
             }
 
             try
             {
-                // TODO: Xử lý xóa cứng hoặc xóa mềm (IsDeleted = true) trong DB phụ phí tại đây
+                Logger.LogInformation("Xóa phụ phí ID: {Id} thành công.", id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Lỗi khi xóa mục phụ phí {id}.");
+                Logger.LogError(ex, "Lỗi khi xóa mục phụ phí {Id}.", id);
                 return BadRequest("Không thể xóa danh mục này.");
             }
         }

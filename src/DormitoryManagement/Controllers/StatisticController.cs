@@ -9,12 +9,13 @@ namespace DormitoryManagement.Controllers
     /// Controller xử lý các logic liên quan đến Báo cáo và Thống kê
     /// </summary>
     [Authorize(Roles = "Admin,ManagementStaff,ManagerStaff,Manager")]
-    [Route("Statistic")]
     public class StatisticController(IStatisticService statisticService) : BaseController
     {
         [HttpGet("")]
+        [HttpGet("Index")]
         public async Task<IActionResult> Index()
         {
+            Logger.LogInformation("Đang tải dữ liệu báo cáo thống kê tổng quan hệ thống.");
             var stats = await statisticService.GetStatisticSummaryAsync();
 
             // Gán dữ liệu cho các thẻ tóm tắt (Summary Cards)
@@ -30,6 +31,15 @@ namespace DormitoryManagement.Controllers
             ViewBag.RevenueLabels = stats.RevenueLabels;
             ViewBag.RevenuePaid = stats.RevenuePaid;
             ViewBag.RevenueUnpaid = stats.RevenueUnpaid;
+
+            // Các dữ liệu Thống kê Mở rộng
+            ViewBag.MaintenanceStats = stats.MaintenanceStats;
+            ViewBag.ContractStats = stats.ContractStats;
+            ViewBag.BedOccupancyStats = stats.BedOccupancyStats;
+
+            // Dữ liệu Biểu đồ Vi phạm (Line Chart)
+            ViewBag.ViolationLabels = stats.ViolationLabels;
+            ViewBag.ViolationData = stats.ViolationData;
 
             return View();
         }

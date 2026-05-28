@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using DormitoryManagement.Application.Dtos.Requests;
+using DormitoryManagement.Application.Dtos.Requests.Violations;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Domain.Entities;
@@ -11,6 +12,7 @@ using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -47,11 +49,11 @@ namespace DormitoryManagement.Application.Services.Implements
             if (!string.IsNullOrEmpty(search))
             {
                 var lowerSearch = search.ToLower();
-                query = query.Where(v => v.Contract.User != null && 
-                                    (v.Contract.User.Code.ToLower().Contains(lowerSearch) 
-                                     || v.Contract.User.FullName.ToLower().Contains(lowerSearch)
-                                     || v.Contract.Bed.Room.RoomNumber.ToLower().Contains(lowerSearch)
-                                     || v.Description.ToLower().Contains(lowerSearch)));
+                query = query.Where(v => v.Contract.User != null &&
+                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)));
             }
 
             var totalCount = await query.CountAsync();
@@ -90,19 +92,13 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             // Tìm sinh viên theo mã số (Code)
             var student = await _userRepository.GetQuery()
-                .FirstOrDefaultAsync(u => u.Code == violationDto.StudentId && !u.IsDeleted);
-            if (student == null)
-            {
-                throw new Exception($"Không tìm thấy sinh viên với mã số '{violationDto.StudentId}' trong hệ thống.");
-            }
+                    .FirstOrDefaultAsync(u => u.Code == violationDto.StudentId && !u.IsDeleted)
+                    ?? throw new Exception($"Không tìm thấy sinh viên với mã số '{violationDto.StudentId}' trong hệ thống.");
 
             // Tìm hợp đồng ở trạng thái Active của sinh viên
             var contract = await _contractRepository.GetQuery()
-                .FirstOrDefaultAsync(c => c.UserId == student.Id && c.Status == ContractStatus.Active && !c.IsDeleted);
-            if (contract == null)
-            {
-                throw new Exception($"Sinh viên {student.FullName} ({violationDto.StudentId}) hiện tại không có hợp đồng thuê phòng ở trạng thái hoạt động.");
-            }
+                .FirstOrDefaultAsync(c => c.UserId == student.Id && c.Status == ContractStatus.Active && !c.IsDeleted)
+                ?? throw new Exception($"Sinh viên {student.FullName} ({violationDto.StudentId}) hiện tại không có hợp đồng thuê phòng ở trạng thái hoạt động.");
 
             // Xác định số tiền phạt dựa trên mức độ vi phạm
             decimal fineAmount = violationDto.Severity switch
@@ -168,6 +164,111 @@ namespace DormitoryManagement.Application.Services.Implements
             if (violation == null) return false;
 
             await _violationRepository.DeleteAsync(violation, isSoftDelete: true);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Lấy toàn bộ vi phạm kỷ luật của một sinh viên theo UserId.
+        /// Dùng ContractId làm cầu nối: lấy tất cả hợp đồng của sinh viên,
+        /// sau đó lấy vi phạm liên quan đến từng hợp đồng đó.
+        /// </summary>
+        public async Task<IEnumerable<ViolationResponseDto>> GetViolationsByUserIdAsync(Guid userId)
+        {
+            // Lấy tất cả hợp đồng của sinh viên (kể cả hết hạn)
+            var contracts = await _contractRepository.GetQuery()
+                .Where(c => c.UserId == userId && !c.IsDeleted)
+                .Select(c => c.Id)
+                .ToListAsync();
+
+            if (contracts.Count is 0)
+                return [];
+
+            // Lấy vi phạm của tất cả hợp đồng, kèm thông tin Contract -> User, Bed -> Room -> Block
+            var violations = await _violationRepository.GetQuery()
+                .Include(v => v.Contract)
+                    .ThenInclude(c => c.User)
+                .Include(v => v.Contract)
+                    .ThenInclude(c => c.Bed)
+                        .ThenInclude(b => b.Room)
+                            .ThenInclude(r => r.Block)
+                .Where(v => !v.IsDeleted && contracts.Contains(v.ContractId))
+                .OrderByDescending(v => v.ViolationDate)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<ViolationResponseDto>>(violations);
+        }
+
+        /// <summary>
+        /// Xử lý (giải quyết) một biên bản vi phạm: chuyển trạng thái sang Resolved,
+        /// ghi nhận ghi chú xử lý và thời gian xử lý xong.
+        /// </summary>
+        public async Task<bool> ResolveViolationAsync(Guid id, string resolveNote)
+        {
+            var violation = await _violationRepository.GetByIdAsync(id);
+            if (violation == null) return false;
+
+            // Cập nhật trạng thái và thông tin xử lý
+            violation.Status = ViolationStatus.Resolved;
+            violation.ResolveNote = resolveNote?.Trim();
+            violation.ResolvedAt = DateTime.Now;
+            violation.LastModified = DateTime.Now;
+
+            await _violationRepository.UpdateAsync(violation);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Lấy danh sách vi phạm đã bị xóa phân trang.
+        /// </summary>
+        public async Task<PagedResult<ViolationResponseDto>> GetDeletedViolationsPagedAsync(int page, int pageSize, string search)
+        {
+            Expression<Func<Violation, bool>>? predicate = null;
+            if (!string.IsNullOrEmpty(search))
+            {
+                var lowerSearch = search.ToLower().Trim();
+                predicate = v => v.Contract.User != null &&
+                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
+                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase));
+            }
+
+            var pagedData = await _violationRepository.GetByStatusPagedAsync(
+                page, pageSize,
+                isActive: null,
+                isDeleted: true,
+                predicate: predicate,
+                v => v.Contract!,
+                v => v.Contract!.User!,
+                v => v.Contract!.Bed!,
+                v => v.Contract!.Bed!.Room!,
+                v => v.Contract!.Bed!.Room!.Block!);
+
+            var dtos = _mapper.Map<List<ViolationResponseDto>>(pagedData.Items);
+            return new PagedResult<ViolationResponseDto>(dtos, pagedData.TotalCount, page, pageSize);
+        }
+
+        /// <summary>
+        /// Khôi phục vi phạm đã bị xóa mềm.
+        /// </summary>
+        public async Task<bool> RestoreViolationAsync(Guid id)
+        {
+            var violation = await _violationRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (violation == null || !violation.IsDeleted) return false;
+
+            await _violationRepository.RestoreAsync(violation);
+            return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Xóa vĩnh viễn vi phạm khỏi database.
+        /// </summary>
+        public async Task<bool> DeletePermanentlyAsync(Guid id)
+        {
+            var violation = await _violationRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
+            if (violation == null) return false;
+
+            await _violationRepository.DeleteAsync(violation, isSoftDelete: false);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
     }

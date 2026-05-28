@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DormitoryManagement.Controllers
@@ -8,6 +7,7 @@ namespace DormitoryManagement.Controllers
         // Đường dẫn sẽ là /Payment hoặc /Payment/Index
         public IActionResult Index()
         {
+            Logger.LogInformation("Đang truy cập trang quản lý thanh toán (Mock Data).");
             // Dữ liệu fake
 
             var mockPayments = new List<dynamic>

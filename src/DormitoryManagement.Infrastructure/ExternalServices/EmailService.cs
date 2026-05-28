@@ -10,25 +10,16 @@ namespace DormitoryManagement.Infrastructure.ExternalServices
     /// <summary>
     /// Lớp triển khai dịch vụ gửi Email thông qua giao thức SMTP (EmailService).
     /// </summary>
-    public class EmailService : IEmailService
+    public class EmailService(IConfiguration config) : IEmailService
     {
-        private readonly MailSettings _mailSettings;
-
-        /// <summary>
-        /// Khởi tạo EmailService và đọc cấu hình từ appsettings.json.
-        /// </summary>
-        /// <param name="config">Cấu hình hệ thống IConfiguration</param>
-        public EmailService(IConfiguration config)
+        private readonly MailSettings _mailSettings = new MailSettings
         {
-            _mailSettings = new MailSettings
-            {
-                Mail = config["MailSettings:Mail"] ?? string.Empty,
-                DisplayName = config["MailSettings:DisplayName"] ?? string.Empty,
-                Password = config["MailSettings:Password"] ?? string.Empty,
-                Host = config["MailSettings:Host"] ?? string.Empty,
-                Port = int.TryParse(config["MailSettings:Port"], out int port) ? port : 587
-            };
-        }
+            Mail = config["MailSettings:Mail"] ?? string.Empty,
+            DisplayName = config["MailSettings:DisplayName"] ?? string.Empty,
+            Password = config["MailSettings:Password"] ?? string.Empty,
+            Host = config["MailSettings:Host"] ?? string.Empty,
+            Port = int.TryParse(config["MailSettings:Port"], out int port) ? port : 587
+        };
 
         /// <summary>
         /// Gửi email không đồng bộ đến địa chỉ người nhận.

@@ -9,6 +9,9 @@ namespace DormitoryManagement.Controllers
     {
         public static int PageSize { get; set; } = 5;
 
+        private ILogger? _logger;
+        protected ILogger Logger => _logger ??= HttpContext.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
+
         protected string? CurrentUserName =>
             User.Identity?.Name;
 

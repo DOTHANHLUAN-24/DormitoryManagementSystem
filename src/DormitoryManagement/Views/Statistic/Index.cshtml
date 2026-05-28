@@ -80,12 +80,6 @@
             <h3 class="fw-extrabold text-dark mb-1" style="letter-spacing: -0.5px;">
                 <i class="fas fa-chart-line me-2 text-primary"></i>Báo cáo Thống kê
             </h3>
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
-                    <li class="breadcrumb-item active text-primary fw-semibold" aria-current="page">Báo cáo thống kê</li>
-                </ol>
-            </nav>
         </div>
         <div class="col-12 col-md-4 text-md-end mt-3 mt-md-0">
             <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm border-0 d-inline-flex align-items-center gap-2" 
@@ -172,6 +166,63 @@
         </div>
     </div>
 
+    <!-- Thống kê mở rộng (Extended Stats) -->
+    <div class="row g-4 mb-4">
+        <!-- Bed Occupancy -->
+        <div class="col-12 col-md-4">
+            <div class="card stat-card-premium" style="background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Tỷ lệ lấp đầy giường</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@ViewBag.BedOccupancyStats.OccupancyRate%</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            @ViewBag.BedOccupancyStats.OccupiedBeds / @ViewBag.BedOccupancyStats.TotalBeds giường đã thuê
+                        </span>
+                    </div>
+                    <i class="fas fa-bed stat-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contract Stats -->
+        <div class="col-12 col-md-4">
+            <div class="card stat-card-premium" style="background: linear-gradient(135deg, #16a34a 0%, #4ade80 100%);">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Hợp đồng hiệu lực</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@ViewBag.ContractStats.ActiveCount</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            @ViewBag.ContractStats.PendingCount chờ duyệt, @ViewBag.ContractStats.ExpiredCount hết hạn
+                        </span>
+                    </div>
+                    <i class="fas fa-file-contract stat-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Maintenance Stats -->
+        <div class="col-12 col-md-4">
+            <div class="card stat-card-premium" style="background: linear-gradient(135deg, #9333ea 0%, #c084fc 100%);">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div>
+                        <span class="text-white-50 text-uppercase small fw-bold tracking-wider">Bảo trì chờ xử lý</span>
+                        <h2 class="mb-1 mt-1 fw-bold fs-1">@(ViewBag.MaintenanceStats.OpenCount + ViewBag.MaintenanceStats.InProgressCount)</h2>
+                    </div>
+                    <div class="d-flex align-items-center mt-3">
+                        <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-2 py-1 small">
+                            @ViewBag.MaintenanceStats.ResolvedCount đã hoàn thành
+                        </span>
+                    </div>
+                    <i class="fas fa-tools stat-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Charts -->
     <div class="row g-4 mb-4">
         <!-- Đồ thị tình trạng phòng -->
@@ -199,6 +250,24 @@
                 </div>
                 <div class="card-body p-4" style="position: relative; min-height: 320px;">
                     <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hàng đồ thị thứ 2 -->
+    <div class="row g-4 mb-4">
+        <!-- Đồ thị xu hướng vi phạm (Line Chart) -->
+        <div class="col-12">
+            <div class="card glass-card h-100">
+                <div class="card-header card-header-premium py-3 d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 fw-bold text-dark fs-6">
+                        <i class="fas fa-exclamation-triangle me-2 text-warning"></i>Xu hướng vi phạm 6 tháng gần nhất
+                    </h5>
+                    <span class="badge bg-light text-muted border px-2.5 py-1.5 rounded text-xs">Đơn vị: Số vụ vi phạm</span>
+                </div>
+                <div class="card-body p-4" style="position: relative; min-height: 320px;">
+                    <canvas id="violationChart"></canvas>
                 </div>
             </div>
         </div>
@@ -349,6 +418,62 @@
                                 callback: function(value) {
                                     return value + ' Tr';
                                 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 3. Biểu đồ Xu hướng Vi phạm (Line Chart)
+            const violCtx = document.getElementById('violationChart').getContext('2d');
+            new Chart(violCtx, {
+                type: 'line',
+                data: {
+                    labels: @Html.Raw(Json.Serialize(ViewBag.ViolationLabels)),
+                    datasets: [{
+                        label: 'Số vụ vi phạm',
+                        data: @Html.Raw(Json.Serialize(ViewBag.ViolationData)),
+                        borderColor: '#eab308', // yellow-500
+                        backgroundColor: 'rgba(234, 179, 8, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ca8a04', // yellow-600
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4 // Làm cong đường đồ thị (smooth)
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(31, 41, 55, 0.9)',
+                            titleFont: { family: 'Outfit, sans-serif', size: 13, weight: 'bold' },
+                            bodyFont: { family: 'Outfit, sans-serif', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { family: 'Outfit, sans-serif', size: 12 } }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.04)',
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                precision: 0, // Chỉ hiển thị số nguyên
+                                font: { family: 'Outfit, sans-serif', size: 12 }
                             }
                         }
                     }

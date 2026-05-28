@@ -28,10 +28,10 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator.Authentication
             // Định nghĩa danh sách mã ngành và số lượng sinh viên cho mỗi ngành
             var majorConfigs = new List<(string Code, int Count)>
             {
-                ("101", 2), 
-                ("102", 2), 
-                ("105", 3), 
-                ("108", 3)  
+                ("101", 10), 
+                ("102", 10), 
+                ("105", 10), 
+                ("108", 10)  
             };
 
             foreach (var config in majorConfigs)

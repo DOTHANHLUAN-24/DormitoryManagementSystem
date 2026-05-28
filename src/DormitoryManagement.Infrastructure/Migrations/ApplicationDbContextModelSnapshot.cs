@@ -597,6 +597,55 @@ namespace DormitoryManagement.Infrastructure.Migrations
                     b.ToTable("Utilities");
                 });
 
+            modelBuilder.Entity("DormitoryManagement.Domain.Entities.UtilityServiceRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RequesterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("UtilityId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RequesterId");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UtilityId");
+
+                    b.ToTable("UtilityServiceRequests");
+                });
+
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.UtilityUsage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -719,6 +768,12 @@ namespace DormitoryManagement.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolveNote")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
@@ -1046,6 +1101,33 @@ namespace DormitoryManagement.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("DormitoryManagement.Domain.Entities.UtilityServiceRequest", b =>
+                {
+                    b.HasOne("DormitoryManagement.Domain.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DormitoryManagement.Domain.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DormitoryManagement.Domain.Entities.Utility", "Utility")
+                        .WithMany()
+                        .HasForeignKey("UtilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Requester");
+
+                    b.Navigation("Room");
+
+                    b.Navigation("Utility");
                 });
 
             modelBuilder.Entity("DormitoryManagement.Domain.Entities.UtilityUsage", b =>

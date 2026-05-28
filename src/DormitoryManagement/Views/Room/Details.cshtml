@@ -8,6 +8,11 @@
     var activeContracts = ViewBag.ActiveContracts as List<Contract> ?? new List<Contract>();
     var studentsWithoutRoom = ViewBag.StudentsWithoutRoom as List<User> ?? new List<User>();
     var occupiedCount = activeContracts.Count;
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Quản lý phòng", Url.Action("Index", "Room") ?? ""),
+        ($"Chi tiết phòng: {Model.RoomNumber}", "")
+    };
 }
 
 @section Styles {
@@ -170,12 +175,6 @@
 <div class="container details-container">
     <!-- Breadcrumb & Header -->
     <div class="page-header-gradient">
-        <nav aria-label="breadcrumb" class="breadcrumb-custom">
-            <ol class="breadcrumb mb-2">
-                <li class="breadcrumb-item"><a asp-action="Index">Danh sách phòng</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Chi tiết phòng @Model.RoomNumber</li>
-            </ol>
-        </nav>
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
             <div>
                 <h1 class="mb-0 fw-extrabold text-white" style="font-size: 2.2rem; letter-spacing: -0.02em;">

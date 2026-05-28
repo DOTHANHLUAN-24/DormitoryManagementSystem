@@ -22,7 +22,7 @@ namespace DormitoryManagement.Controllers
         IUserService userService,
         IConfiguration configuration,
         IEmailService emailService
-    ) : Controller
+    ) : BaseController
     {
         private readonly UserManager<User> _userManager = userManager;
         private readonly IUserService _userService = userService;
@@ -32,8 +32,13 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Register")]
         public IActionResult Register()
         {
+            Logger.LogInformation("Đang truy cập trang đăng ký tài khoản.");
             // Đã đăng nhập rồi thì không cho vào trang đăng ký nữa, chuyển hướng về Home
-            if (User.Identity!.IsAuthenticated) return RedirectToAction("Index", "Home");
+            if (User.Identity!.IsAuthenticated)
+            {
+                Logger.LogInformation("Người dùng đã đăng nhập, chuyển hướng từ trang đăng ký về Home.");
+                return RedirectToAction("Index", "Home");
+            }
             return View(new UserRequestDto());
         }
 
@@ -41,7 +46,12 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(UserRequestDto request)
         {
-            if (!ModelState.IsValid) return View(request);
+            Logger.LogInformation("Đang thực hiện đăng ký tài khoản cho email: {Email}.", request.Email);
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu đăng ký tài khoản không hợp lệ.");
+                return View(request);
+            }
 
             try
             {
@@ -51,33 +61,45 @@ namespace DormitoryManagement.Controllers
                 var result = await _userService.CreateUserAsync(request);
                 if (result)
                 {
+                    Logger.LogInformation("Đăng ký tài khoản thành công cho email: {Email}.", request.Email);
                     TempData["Success"] = "Đăng ký thành công! Mời bạn đăng nhập.";
                     return RedirectToAction("Login");
                 }
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi đăng ký tài khoản cho email: {Email}.", request.Email);
                 ModelState.AddModelError("", ex.Message);
             }
             return View(request);
         }
 
         [HttpGet("Login")]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            Logger.LogInformation("Đang truy cập trang đăng nhập.");
+            return View();
+        }
 
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
-            if (!ModelState.IsValid) return View(request);
+            Logger.LogInformation("Đang thực hiện đăng nhập cho tài khoản: {Username}.", request.Username);
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu đăng nhập không hợp lệ.");
+                return View(request);
+            }
 
             var user = await _userManager.FindByNameAsync(request.Username);
-            if (user == null && request.Username.Contains("@"))
+            if (user == null && request.Username.Contains('@'))
             {
                 user = await _userManager.FindByEmailAsync(request.Username);
             }
 
             if (user == null)
             {
+                Logger.LogWarning("Đăng nhập thất bại: Tài khoản {Username} không tồn tại.", request.Username);
                 ModelState.AddModelError(string.Empty, "Tài khoản không tồn tại!");
                 return View(request);
             }
@@ -85,6 +107,7 @@ namespace DormitoryManagement.Controllers
             var result = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!result)
             {
+                Logger.LogWarning("Đăng nhập thất bại: Mật khẩu sai cho tài khoản {Username}.", request.Username);
                 ModelState.AddModelError(string.Empty, "Mật khẩu sai rồi bạn ơi!");
                 return View(request);
             }
@@ -100,6 +123,7 @@ namespace DormitoryManagement.Controllers
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 
+            Logger.LogInformation("Đăng nhập thành công cho tài khoản {Username}. Token đã được ghi vào Cookie.", request.Username);
             return RedirectToAction("Index", "Home");
         }
 
@@ -138,6 +162,7 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
         {
+            Logger.LogInformation("Người dùng {Username} yêu cầu đăng xuất.", CurrentUserName);
             Response.Cookies.Delete("JWTToken", new CookieOptions
             {
                 Path = "/",
@@ -145,23 +170,34 @@ namespace DormitoryManagement.Controllers
                 Secure = false
             });
 
+            Logger.LogInformation("Đã xóa cookie JWTToken. Đăng xuất thành công.");
             return RedirectToAction("Index", "Home");
         }
 
 
         [HttpGet("ForgotPassword")]
-        public IActionResult ForgotPassword() => View();
+        public IActionResult ForgotPassword()
+        {
+            Logger.LogInformation("Đang truy cập trang quên mật khẩu.");
+            return View();
+        }
 
         [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequest request)
         {
-            if (!ModelState.IsValid) return View(request);
+            Logger.LogInformation("Đang xử lý yêu cầu quên mật khẩu cho email: {Email}.", request.Email);
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Yêu cầu quên mật khẩu có dữ liệu không hợp lệ.");
+                return View(request);
+            }
 
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
                 // MÔI TRƯỜNG DEV: Báo lỗi để biết email không tồn tại trong DB.
                 // LƯU Ý: Khi lên thực tế (Production), bạn nên ẩn thông báo này để bảo mật thông tin người dùng.
+                Logger.LogWarning("Yêu cầu quên mật khẩu thất bại: Không tìm thấy người dùng có email {Email}.", request.Email);
                 ModelState.AddModelError(string.Empty, "Email này không tồn tại trong hệ thống.");
                 return View(request);
             }
@@ -183,9 +219,11 @@ namespace DormitoryManagement.Controllers
             try
             {
                 await _emailService.SendEmailAsync(request.Email, "Khôi phục mật khẩu DMS", content);
+                Logger.LogInformation("Đã gửi email hướng dẫn khôi phục mật khẩu đến {Email}.", request.Email);
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi gửi email khôi phục mật khẩu đến {Email}.", request.Email);
                 ModelState.AddModelError(string.Empty, $"Lỗi gửi Email (Kiểm tra lại cấu hình SMTP): {ex.Message}");
                 return View(request);
             }
@@ -194,15 +232,23 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("ForgotPasswordConfirmation")]
-        public IActionResult ForgotPasswordConfirmation() => View();
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            Logger.LogInformation("Đang truy cập trang xác nhận yêu cầu quên mật khẩu.");
+            return View();
+        }
 
 
         // --- ĐẶT LẠI MẬT KHẨU ---
-
         [HttpGet("ResetPassword")]
         public IActionResult ResetPassword(string token = null!, string email = null!)
         {
-            if (token == null || email == null) return BadRequest("Token hoặc Email không hợp lệ");
+            Logger.LogInformation("Đang truy cập trang đặt lại mật khẩu với email {Email}.", email);
+            if (token == null || email == null)
+            {
+                Logger.LogWarning("Token hoặc Email đặt lại mật khẩu bị thiếu.");
+                return BadRequest("Token hoặc Email không hợp lệ");
+            }
 
             var model = new ResetPasswordRequest { Token = token, Email = email };
             return View(model);
@@ -211,18 +257,29 @@ namespace DormitoryManagement.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
         {
-            if (!ModelState.IsValid) return View(request);
+            Logger.LogInformation("Đang xử lý yêu cầu đặt lại mật khẩu cho email {Email}.", request.Email);
+            if (!ModelState.IsValid)
+            {
+                Logger.LogWarning("Dữ liệu đặt lại mật khẩu không hợp lệ.");
+                return View(request);
+            }
 
             var user = await _userManager.FindByEmailAsync(request.Email);
-            if (user == null) return RedirectToAction("ResetPasswordConfirmation");
+            if (user == null)
+            {
+                Logger.LogWarning("Không tìm thấy người dùng có email {Email} để đặt lại mật khẩu.", request.Email);
+                return RedirectToAction("ResetPasswordConfirmation");
+            }
 
             var result = await _userManager.ResetPasswordAsync(user, request.Token, request.NewPassword);
 
             if (result.Succeeded)
             {
+                Logger.LogInformation("Đặt lại mật khẩu thành công cho email {Email}.", request.Email);
                 return RedirectToAction("ResetPasswordConfirmation");
             }
 
+            Logger.LogWarning("Đặt lại mật khẩu thất bại cho email {Email} do lỗi từ Identity.", request.Email);
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);
@@ -231,11 +288,16 @@ namespace DormitoryManagement.Controllers
         }
 
         [HttpGet("ResetPasswordConfirmation")]
-        public IActionResult ResetPasswordConfirmation() => View();
+        public IActionResult ResetPasswordConfirmation()
+        {
+            Logger.LogInformation("Đang truy cập trang xác nhận đặt lại mật khẩu thành công.");
+            return View();
+        }
 
         [HttpGet("Terms")]
         public IActionResult Terms()
         {
+            Logger.LogInformation("Đang truy cập trang điều khoản điều kiện.");
             return View();
         }
     }

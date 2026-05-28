@@ -30,10 +30,12 @@ namespace DormitoryManagement.Controllers
         /// <summary>
         /// Danh sách tài sản phân trang với tìm kiếm và lọc trạng thái.
         /// </summary>
-        [HttpGet]
+        [HttpGet("")]
+        [HttpGet("Index")]
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Index(int page = 1, string search = "", string statusFilter = "")
         {
+            Logger.LogInformation("Đang tải danh sách tài sản trang {Page}, tìm kiếm: '{Search}', trạng thái: '{StatusFilter}'", page, search, statusFilter);
             int pageSize = PageSize;
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);
@@ -49,6 +51,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
+            Logger.LogInformation("Đang truy cập thùng rác tài sản trang {Page}, tìm kiếm: '{Search}'", page, search);
             int pageSize = PageSize;
             var result = await _assetService.GetDeletedAssetsPagedAsync(page, pageSize, search);
             ViewBag.Search = search;
@@ -62,8 +65,13 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff,TechnicalStaff")]
         public async Task<IActionResult> Details(Guid id)
         {
+            Logger.LogInformation("Đang xem chi tiết tài sản ID: {Id}", id);
             var asset = await _assetService.GetAssetByIdAsync(id);
-            if (asset == null) return NotFound();
+            if (asset == null)
+            {
+                Logger.LogWarning("Không tìm thấy tài sản với ID: {Id}", id);
+                return NotFound();
+            }
             return View(asset);
         }
 
@@ -74,6 +82,7 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Create()
         {
+            Logger.LogInformation("Đang truy cập trang thêm mới tài sản.");
             await LoadRoomsDropdownAsync();
             return View(new CreateAssetRequest());
         }
@@ -86,10 +95,11 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Create(CreateAssetRequest request)
         {
+            Logger.LogInformation("Đang thực hiện thêm mới tài sản: '{AssetName}' cho phòng ID: {RoomId}", request.AssetName, request.RoomId);
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                Console.WriteLine(">>> LỖI TẠI FORM CREATE ASSET: " + string.Join(", ", errors));
+                Logger.LogWarning("Dữ liệu thêm mới tài sản không hợp lệ: {Errors}", string.Join(", ", errors));
                 await LoadRoomsDropdownAsync(request.RoomId);
                 return View(request);
             }
@@ -97,11 +107,13 @@ namespace DormitoryManagement.Controllers
             try
             {
                 await _assetService.CreateAssetAsync(request);
+                Logger.LogInformation("Thêm tài sản '{AssetName}' thành công.", request.AssetName);
                 TempData["Success"] = $"Thêm tài sản '{request.AssetName}' thành công!";
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi thêm tài sản '{AssetName}'.", request.AssetName);
                 ModelState.AddModelError(string.Empty, ex.Message);
                 await LoadRoomsDropdownAsync(request.RoomId);
                 return View(request);
@@ -115,8 +127,13 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Edit(Guid id)
         {
+            Logger.LogInformation("Đang truy cập trang chỉnh sửa tài sản ID: {Id}", id);
             var asset = await _assetService.GetAssetByIdAsync(id);
-            if (asset == null) return NotFound();
+            if (asset == null)
+            {
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} để chỉnh sửa.", id);
+                return NotFound();
+            }
 
             var updateDto = _mapper.Map<UpdateAssetRequest>(asset);
             await LoadRoomsDropdownAsync(updateDto.RoomId);
@@ -131,8 +148,10 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Edit(Guid id, UpdateAssetRequest request)
         {
+            Logger.LogInformation("Đang xử lý yêu cầu cập nhật tài sản ID: {Id}", id);
             if (!ModelState.IsValid)
             {
+                Logger.LogWarning("Dữ liệu cập nhật tài sản ID: {Id} không hợp lệ.", id);
                 await LoadRoomsDropdownAsync(request.RoomId);
                 return View(request);
             }
@@ -143,15 +162,18 @@ namespace DormitoryManagement.Controllers
                 var result = await _assetService.UpdateAssetAsync(id, request);
                 if (result)
                 {
+                    Logger.LogInformation("Cập nhật tài sản ID: {Id} thành công.", id);
                     TempData["Success"] = "Cập nhật tài sản thành công!";
                     return RedirectToAction(nameof(Index));
                 }
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} để cập nhật.", id);
                 ModelState.AddModelError("", "Không tìm thấy tài sản để cập nhật.");
                 await LoadRoomsDropdownAsync(request.RoomId);
                 return View(request);
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi cập nhật tài sản ID: {Id}.", id);
                 ModelState.AddModelError(string.Empty, ex.Message);
                 await LoadRoomsDropdownAsync(request.RoomId);
                 return View(request);
@@ -170,16 +192,26 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> SoftDelete(Guid id)
         {
-            if (id == Guid.Empty) return Json(new { success = false, message = "ID không hợp lệ" });
+            Logger.LogInformation("Đang yêu cầu xóa mềm tài sản ID: {Id}", id);
+            if (id == Guid.Empty)
+            {
+                Logger.LogWarning("Yêu cầu xóa mềm thất bại do ID trống.");
+                return Json(new { success = false, message = "ID không hợp lệ" });
+            }
             try
             {
                 var result = await _assetService.SoftDeleteAssetAsync(id);
-                return result
-                    ? Json(new { success = true, message = "Đã chuyển tài sản vào thùng rác." })
-                    : Json(new { success = false, message = "Không tìm thấy tài sản." });
+                if (result)
+                {
+                    Logger.LogInformation("Đã xóa mềm tài sản ID: {Id} thành công.", id);
+                    return Json(new { success = true, message = "Đã chuyển tài sản vào thùng rác." });
+                }
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} để xóa mềm.", id);
+                return Json(new { success = false, message = "Không tìm thấy tài sản." });
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi xóa mềm tài sản ID: {Id}.", id);
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -192,15 +224,21 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> Restore(Guid id)
         {
+            Logger.LogInformation("Đang yêu cầu khôi phục tài sản ID: {Id}", id);
             try
             {
                 var result = await _assetService.RestoreAssetAsync(id);
-                return result
-                    ? Json(new { success = true, message = "Khôi phục tài sản thành công." })
-                    : Json(new { success = false, message = "Không tìm thấy tài sản trong thùng rác." });
+                if (result)
+                {
+                    Logger.LogInformation("Đã khôi phục tài sản ID: {Id} thành công.", id);
+                    return Json(new { success = true, message = "Khôi phục tài sản thành công." });
+                }
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} trong thùng rác.", id);
+                return Json(new { success = false, message = "Không tìm thấy tài sản trong thùng rác." });
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi khôi phục tài sản ID: {Id}.", id);
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -213,15 +251,21 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeletePermanently(Guid id)
         {
+            Logger.LogInformation("Đang yêu cầu xóa vĩnh viễn tài sản ID: {Id}", id);
             try
             {
                 var result = await _assetService.DeletePermanentlyAsync(id);
-                return result
-                    ? Json(new { success = true, message = "Đã xóa vĩnh viễn tài sản." })
-                    : Json(new { success = false, message = "Không tìm thấy tài sản." });
+                if (result)
+                {
+                    Logger.LogInformation("Đã xóa vĩnh viễn tài sản ID: {Id} thành công.", id);
+                    return Json(new { success = true, message = "Đã xóa vĩnh viễn tài sản." });
+                }
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} để xóa vĩnh viễn.", id);
+                return Json(new { success = false, message = "Không tìm thấy tài sản." });
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi xóa vĩnh viễn tài sản ID: {Id}.", id);
                 var msg = ex.InnerException?.Message ?? ex.Message;
                 return Json(new { success = false, message = "Lỗi hệ thống: " + msg });
             }
@@ -235,15 +279,21 @@ namespace DormitoryManagement.Controllers
         [Authorize(Roles = "Admin,ManagementStaff")]
         public async Task<IActionResult> ToggleStatus(Guid id)
         {
+            Logger.LogInformation("Đang yêu cầu thay đổi trạng thái hoạt động tài sản ID: {Id}", id);
             try
             {
                 var result = await _assetService.ToggleAssetStatusAsync(id);
-                return result
-                    ? Json(new { success = true, message = "Đã thay đổi trạng thái tài sản." })
-                    : Json(new { success = false, message = "Không tìm thấy tài sản." });
+                if (result)
+                {
+                    Logger.LogInformation("Thay đổi trạng thái tài sản ID: {Id} thành công.", id);
+                    return Json(new { success = true, message = "Đã thay đổi trạng thái tài sản." });
+                }
+                Logger.LogWarning("Không tìm thấy tài sản ID: {Id} để thay đổi trạng thái.", id);
+                return Json(new { success = false, message = "Không tìm thấy tài sản." });
             }
             catch (Exception ex)
             {
+                Logger.LogError(ex, "Lỗi xảy ra khi thay đổi trạng thái tài sản ID: {Id}.", id);
                 return Json(new { success = false, message = ex.Message });
             }
         }
@@ -259,6 +309,7 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Catalog(int page = 1, string search = "", string statusFilter = "")
         {
+            Logger.LogInformation("Đang truy cập danh mục tài sản công khai trang {Page}, tìm kiếm: '{Search}', trạng thái: '{StatusFilter}'", page, search, statusFilter);
             int pageSize = 8;
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);

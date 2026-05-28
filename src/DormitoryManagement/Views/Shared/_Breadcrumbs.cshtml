@@ -1,0 +1,251 @@
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // 1. Kiểm tra nếu là trang chủ Index của Home thì không hiển thị Breadcrumb
+    bool isHomeIndex = string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase) && 
+                       string.Equals(action, "Index", StringComparison.OrdinalIgnoreCase);
+
+    if (isHomeIndex)
+    {
+        return;
+    }
+
+    // 2. Khai báo danh sách các phần tử Breadcrumb
+    var breadcrumbItems = new List<(string Name, string Url, string Icon)>();
+
+    // Luôn bắt đầu bằng Trang chủ
+    breadcrumbItems.Add(("Trang chủ", Url.Action("Index", "Home") ?? "/", "fas fa-home"));
+
+    // Kiểm tra xem có cấu hình Custom Breadcrumbs từ ViewData hay không
+    var customBreadcrumbs = ViewData["Breadcrumbs"] as IEnumerable<(string Name, string Url)>;
+
+    if (customBreadcrumbs != null)
+    {
+        foreach (var item in customBreadcrumbs)
+        {
+            breadcrumbItems.Add((item.Name, item.Url, ""));
+        }
+    }
+    else
+    {
+        // 3. Tự động sinh dựa trên Controller và Action hiện tại
+        var controllerMap = new Dictionary<string, (string Name, string Icon, string Action)>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Home", ("Trang chủ", "fas fa-home", "Index") },
+            { "Statistic", ("Báo cáo thống kê", "fas fa-chart-line", "Index") },
+            { "User", ("Quản lý người dùng", "fas fa-users", "Index") },
+            { "Contract", ("Quản lý hợp đồng", "fas fa-file-contract", "Index") },
+            { "Visitor", ("Khách đến thăm", "fas fa-address-book", "Index") },
+            { "Block", ("Quản lý tòa nhà", "fas fa-building", "Index") },
+            { "Room", ("Quản lý phòng", "fas fa-door-open", "Index") },
+            { "RoomType", ("Loại phòng & Giá cả", "fas fa-tags", "Index") },
+            { "Asset", ("Vật tư & Thiết bị", "fas fa-box", "Index") },
+            { "Utility", ("Dịch vụ KTX", "fas fa-plug", "Index") },
+            { "UtilityServiceRequest", ("Yêu cầu dịch vụ", "fas fa-clipboard-list", "Index") },
+            { "Surcharge", ("Phụ phí kèm theo", "fas fa-coins", "Index") },
+            { "Violation", ("Danh sách vi phạm", "fas fa-exclamation-triangle", "Index") },
+            { "Vehicle", ("Quản lý phương tiện", "fas fa-motorcycle", "Index") },
+            { "MaintenanceRequest", ("Bảo trì & Sửa chữa", "fas fa-toolbox", "Index") },
+            { "Payment", ("Hóa đơn & Thanh toán", "fas fa-file-invoice-dollar", "Index") },
+            { "Invoice", ("Hóa đơn dịch vụ", "fas fa-file-invoice-dollar", "Index") },
+            { "Account", ("Tài khoản", "fas fa-user-circle", "Login") },
+            { "Regulation", ("Nội quy KTX", "fas fa-book-open", "Index") },
+            { "Regulations", ("Nội quy KTX", "fas fa-book-open", "Index") }
+        };
+
+        var actionMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            { "Index", "Danh sách" },
+            { "Create", "Thêm mới" },
+            { "CreateRequest", "Tạo yêu cầu" },
+            { "Edit", "Chỉnh sửa" },
+            { "Details", "Chi tiết" },
+            { "Delete", "Xóa" },
+            { "RecycleBin", "Thùng rác" },
+            { "BannedList", "Danh sách bị khóa" },
+            { "Pending", "Chờ duyệt" },
+            { "MyContracts", "Hợp đồng của tôi" },
+            { "Request", "Đăng ký khách thăm" },
+            { "MyRequests", "Yêu cầu sửa chữa/Dịch vụ" },
+            { "Rooms", "Xem phòng KTX" },
+            { "RoomDetails", "Chi tiết phòng" },
+            { "List", "Danh sách loại phòng" },
+            { "Catalog", "Danh mục thiết bị" },
+            { "Guide", "Hướng dẫn sử dụng" },
+            { "Services", "Dịch vụ cá nhân" },
+            { "SuspendedList", "Tạm ngưng" },
+            { "Trash", "Thùng rác" },
+            { "Requests", "Duyệt đăng ký dịch vụ" },
+            { "Profile", "Hồ sơ cá nhân" },
+            { "Login", "Đăng nhập" },
+            { "Register", "Đăng ký" }
+        };
+
+        if (controllerMap.TryGetValue(controller, out var cInfo))
+        {
+            // Nếu không phải là HomeController (đã thêm Trang chủ ở đầu)
+            if (!string.Equals(controller, "Home", StringComparison.OrdinalIgnoreCase))
+            {
+                var controllerUrl = Url.Action(cInfo.Action, controller) ?? "#";
+                breadcrumbItems.Add((cInfo.Name, controllerUrl, cInfo.Icon));
+            }
+
+            // Thêm phần tử Action
+            if (actionMap.TryGetValue(action, out var actionName))
+            {
+                breadcrumbItems.Add((actionName, "", ""));
+            }
+            else
+            {
+                // Dự phòng nếu Action chưa được định nghĩa
+                breadcrumbItems.Add((action, "", ""));
+            }
+        }
+        else
+        {
+            // Dự phòng nếu Controller lạ
+            breadcrumbItems.Add((controller, Url.Action("Index", controller) ?? "#", ""));
+            breadcrumbItems.Add((action, "", ""));
+        }
+    }
+}
+
+<!-- BREADCRUMB COMPONENT -->
+<nav aria-label="breadcrumb" id="global-breadcrumb">
+    <div class="breadcrumb-container">
+        <ul class="breadcrumb-custom">
+            @for (int i = 0; i < breadcrumbItems.Count; i++)
+            {
+                var item = breadcrumbItems[i];
+                var isLast = (i == breadcrumbItems.Count - 1);
+
+                <li class="breadcrumb-item-custom @(isLast ? "active" : "")">
+                    @if (isLast)
+                    {
+                        <a href="@Context.Request.Path@Context.Request.QueryString" class="breadcrumb-pill active">
+                            @if (!string.IsNullOrEmpty(item.Icon))
+                            {
+                                <i class="@item.Icon me-1"></i>
+                            }
+                            <span>@item.Name</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="@item.Url" class="breadcrumb-pill">
+                            @if (!string.IsNullOrEmpty(item.Icon))
+                            {
+                                <i class="@item.Icon me-1"></i>
+                            }
+                            <span>@item.Name</span>
+                        </a>
+                        <span class="breadcrumb-separator">/</span>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+</nav>
+
+<style>
+    /* Inline CSS styles for Breadcrumbs to prevent vertical stacking and bullets caused by browser caching */
+    #global-breadcrumb {
+        display: block !important;
+        width: 100% !important;
+        margin-top: 6px !important;
+        margin-bottom: 20px !important;
+    }
+
+    #global-breadcrumb .breadcrumb-container {
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(15, 107, 109, 0.15) !important;
+        border-radius: 12px !important;
+        padding: 10px 18px !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        transition: all 0.25s ease !important;
+    }
+
+    #global-breadcrumb .breadcrumb-custom {
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        list-style: none !important;
+        list-style-type: none !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    #global-breadcrumb .breadcrumb-item-custom {
+        display: flex !important;
+        align-items: center !important;
+        list-style: none !important;
+        list-style-type: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    #global-breadcrumb .breadcrumb-item-custom::before {
+        display: none !important;
+        content: none !important;
+    }
+
+    #global-breadcrumb .breadcrumb-pill {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        background: rgba(15, 107, 109, 0.05) !important;
+        border: 1px solid rgba(15, 107, 109, 0.12) !important;
+        border-radius: 8px !important;
+        padding: 6px 12px !important;
+        color: #475569 !important;
+        text-decoration: none !important;
+        font-size: 0.775rem !important;
+        font-weight: 500 !important;
+        transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        cursor: pointer !important;
+    }
+
+    #global-breadcrumb .breadcrumb-pill:hover {
+        background: rgba(15, 107, 109, 0.12) !important;
+        border-color: rgba(15, 107, 109, 0.25) !important;
+        color: #0f6b6d !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 10px rgba(15, 107, 109, 0.1) !important;
+    }
+
+    #global-breadcrumb .breadcrumb-pill:active {
+        transform: translateY(1px) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    #global-breadcrumb .breadcrumb-pill.active {
+        background: rgba(15, 107, 109, 0.12) !important;
+        border-color: rgba(15, 107, 109, 0.3) !important;
+        color: #0f6b6d !important;
+        font-weight: 600 !important;
+    }
+
+    #global-breadcrumb .breadcrumb-pill.active:hover {
+        background: rgba(15, 107, 109, 0.16) !important;
+        border-color: rgba(15, 107, 109, 0.4) !important;
+    }
+
+    #global-breadcrumb .breadcrumb-separator {
+        color: #cbd5e1 !important;
+        font-size: 0.8rem !important;
+        margin: 0 4px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        user-select: none !important;
+    }
+</style>
+

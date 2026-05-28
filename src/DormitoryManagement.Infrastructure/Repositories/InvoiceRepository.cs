@@ -8,15 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin hóa đơn (Invoice).
     /// </summary>
-    public class InvoiceRepository : BaseRepository<Invoice>, IInvoiceRepository
+    public class InvoiceRepository(ApplicationDbContext db) : BaseRepository<Invoice>(db), IInvoiceRepository
     {
-        /// <summary>
-        /// Khởi tạo InvoiceRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public InvoiceRepository(ApplicationDbContext db) : base(db)
-        {
-        }
 
         /// <summary>
         /// Tìm hóa đơn theo mã hóa đơn (InvoiceCode).

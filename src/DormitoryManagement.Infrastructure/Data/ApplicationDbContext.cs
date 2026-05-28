@@ -1,5 +1,6 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Entities;
+using DormitoryManagement.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 namespace DormitoryManagement.Infrastructure.Data
 {
     // Cấu hình chuẩn cho Identity dùng Guid
-    public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User, IdentityRole<Guid>, Guid>(options)
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -59,14 +59,91 @@ namespace DormitoryManagement.Infrastructure.Data
         }
 
         /// <summary>
-        /// Ghi đè phương thức lưu thay đổi để tự động cập nhật các trường thông tin Audit:
-        /// CreatedDate, LastModified, IsActive, IsDeleted.
+        /// Ghi đè phương thức lưu thay đổi để tự động đồng bộ trạng thái phòng (RoomStatus)
+        /// khi trạng thái giường (BedStatus) thay đổi, và tự động cập nhật các trường Audit.
         /// </summary>
-        /// <param name="cancellationToken">Token hủy bỏ tác vụ.</param>
-        /// <returns>Số lượng bản ghi bị ảnh hưởng.</returns>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            // Lấy các thực thể IAuditableEntity đang ở trạng thái Thêm hoặc Sửa
+            // 1. Tự động đồng bộ trạng thái phòng khi giường thay đổi hoặc phòng thay đổi
+            var affectedRoomIdsFromBeds = ChangeTracker.Entries<Bed>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified || e.State == EntityState.Deleted)
+                .Select(e => e.Entity.RoomId);
+
+            var affectedRoomIdsFromRooms = ChangeTracker.Entries<Room>()
+                .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+                .Select(e => e.Entity.Id);
+
+            var affectedRoomIds = affectedRoomIdsFromBeds
+                .Concat(affectedRoomIdsFromRooms)
+                .Distinct()
+                .ToList();
+
+            if (affectedRoomIds.Count > 0)
+            {
+                foreach (var roomId in affectedRoomIds)
+                {
+                    // Lấy tất cả giường của phòng này từ DB (chưa bị xóa mềm trong DB)
+                    var bedsInRoom = await Beds
+                        .Where(b => b.RoomId == roomId && !b.IsDeleted)
+                        .ToListAsync(cancellationToken);
+
+                    // Đồng bộ với các giường đang được thay đổi trong ChangeTracker (kể cả xóa)
+                    var trackedBeds = ChangeTracker.Entries<Bed>()
+                        .Where(e => e.Entity.RoomId == roomId)
+                        .ToList();
+
+                    foreach (var entry in trackedBeds)
+                    {
+                        var bed = entry.Entity;
+                        var isDeleted = entry.State == EntityState.Deleted || bed.IsDeleted;
+
+                        var match = bedsInRoom.FirstOrDefault(b => b.Id == bed.Id);
+                        if (isDeleted)
+                        {
+                            if (match != null)
+                            {
+                                bedsInRoom.Remove(match);
+                            }
+                        }
+                        else
+                        {
+                            if (match != null)
+                            {
+                                match.Status = bed.Status;
+                            }
+                            else
+                            {
+                                bedsInRoom.Add(bed);
+                            }
+                        }
+                    }
+
+                    // Ưu tiên tìm trong local change tracker trước để tránh bị null khi seeding/adding mới
+                    var room = Rooms.Local.FirstOrDefault(r => r.Id == roomId)
+                               ?? await Rooms.FirstOrDefaultAsync(r => r.Id == roomId, cancellationToken);
+
+                    if (room != null && room.Status != RoomStatus.Maintenance)
+                    {
+                        // Kiểm tra xem tất cả giường có đều bị chiếm chỗ (Occupied) không
+                        bool allOccupied = bedsInRoom.Count > 0 && bedsInRoom.All(b => b.Status == BedStatus.Occupied);
+
+                        if (allOccupied)
+                        {
+                            room.Status = RoomStatus.Full;
+                        }
+                        else
+                        {
+                            // Nếu phòng đang đầy nhưng giờ có giường trống, chuyển về Available
+                            if (room.Status == RoomStatus.Full)
+                            {
+                                room.Status = RoomStatus.Available;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Lấy các thực thể IAuditableEntity đang ở trạng thái Thêm hoặc Sửa để cập nhật thông tin Audit
             var entries = ChangeTracker.Entries()
                 .Where(e => e.Entity is IAuditableEntity &&
                            (e.State == EntityState.Added || e.State == EntityState.Modified));
@@ -110,5 +187,6 @@ namespace DormitoryManagement.Infrastructure.Data
         public DbSet<Asset> Assets { get; set; } = null!;
         public DbSet<Vehicle> Vehicles { get; set; } = null!;
         public DbSet<VisitorLog> VisitorLogs { get; set; } = null!;
+        public DbSet<UtilityServiceRequest> UtilityServiceRequests { get; set; } = null!;
     }
 }

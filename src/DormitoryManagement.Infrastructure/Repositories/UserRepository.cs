@@ -8,13 +8,8 @@ namespace DormitoryManagement.Infrastructure.Repositories
     /// <summary>
     /// Lớp triển khai Repository quản lý thông tin người dùng (User).
     /// </summary>
-    public class UserRepository : BaseRepository<User>, IUserRepository
+    public class UserRepository(ApplicationDbContext db) : BaseRepository<User>(db), IUserRepository
     {
-        /// <summary>
-        /// Khởi tạo UserRepository.
-        /// </summary>
-        /// <param name="db">ApplicationDbContext kết nối database</param>
-        public UserRepository(ApplicationDbContext db) : base(db) { }
 
         /// <summary>
         /// Lấy thông tin người dùng theo tên tài khoản (Username).
