@@ -42,6 +42,9 @@ namespace DormitoryManagement.Infrastructure
             services.AddScoped<IVisitorLogRepository, VisitorLogRepository>();
             services.AddScoped<IMaintenanceRequestRepository, MaintenanceRequestRepository>();
 
+            // Surcharge
+            services.AddScoped<ISurchargeRepository, SurchargeRepository>();
+
             // External Services (Email, JWT, etc.)
             services.AddScoped<IEmailService, EmailService>();
 
