@@ -1207,15 +1207,15 @@ Việc áp dụng UML giúp:
 | Quy tắc nghiệp vụ | BR01: Chỉ xử lý request ở trạng thái Pending<br/>BR02: Sau khi Duyệt, yêu cầu chuyển sang trạng thái Approved để chờ phân giường |
 
 ##### 13.3. Activity Diagram - AD02
-![AD02 - XÉT DUYỆT ĐĂNG KÝ](./images/AD02_XetDuyetDangKy.png)
+![AD02 - XÉT DUYỆT ĐĂNG KÝ](./images/AD08_XetDuyetDangKi.jpg)
 
 ##### 13.4. Sequence Diagram - SD02
-![SD02 - XÉT DUYỆT ĐĂNG KÝ](./images/SD02_XetDuyetDangKy.png)
+![SD02 - XÉT DUYỆT ĐĂNG KÝ](./images/SD08_XetDuyetDangKi.jpg)
 
 #### 14. UC09 – PHÂN GIƯỜNG
 
 ##### 14.1. Use case diagram
-![UC09 - PHÂN GIƯỜNG](./images/UC09_PhanGiuong.png)
+![UC09 - PHÂN GIƯỜNG](./images/UC08_XetDuyetDangKi.jpg)
 
 ##### 14.2. Đặc tả Use case
 | Thuộc tính | Nội dung |
