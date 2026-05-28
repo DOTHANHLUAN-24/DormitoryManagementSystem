@@ -93,27 +93,27 @@ Các tác vụ chính của hệ thống:
 
 # DANH MỤC CÁC BẢNG BIỂU
 
-|  STT  | Tên bảng                                               |  Trang  |
-| :---: | :----------------------------------------------------- | :-----: |
-|   1   | Danh mục những từ viết tắt                             |    3    |
-|   2   | Bảng 3.1 – Các yêu cầu chức năng                       |   15    |
-|   3   | Bảng 3.2 – Các yêu cầu phi chức năng                   |   16    |
-|   4   | Bảng 3.3 – Bảng mô tả các tác nhân trong hệ thống      |   17    |
-|   5   | Đặc tả Use Case UC10 – Tạo hợp đồng                    |   19    |
-|   6   | Đặc tả Use Case UC11 – Ghi nhận dịch vụ                |   21    |
-|   7   | Đặc tả Use Case UC12 – Tạo hóa đơn                     |   23    |
-|   8   | Đặc tả Use Case UC14 – Ghi nhận vi phạm                |   25    |
-|   9   | Đặc tả Use Case UC15 – Quản lý khách thăm              |   27    |
-|  10   | Đặc tả Use Case UC16 – Quản lý cơ sở vật chất          |   30    |
-|  11   | Đặc tả Use Case UC21 – Thanh toán hóa đơn              |   32    |
-|  12   | Đặc tả Use Case UC22 – Tạo yêu cầu sửa chữa            |   35    |
-|  13   | Đặc tả Use Case UC24 – Tiếp nhận yêu cầu sửa chữa      |   37    |
-|  14   | Đặc tả Use Case UC25 – Xử lý sự cố kỹ thuật            |   39    |
-|  15   | Đặc tả Use Case UC26 – Cập nhật trạng thái sửa chữa    |   41    |
-|  16   | Đặc tả Use Case UC17 – Đăng ký nội trú                 |   43    |
-|  17   | Đặc tả Use Case UC08 – Xét duyệt đăng ký               |   46    |
-|  18   | Đặc tả Use Case UC09 – Phân giường                     |   49    |
-|  19   | Thiết kế chi tiết các bảng từ 1 đến 16 (Cơ sở dữ liệu) | 52 - 63 |
+|  STT  | Tên bảng                                               | Liên kết |
+| :---: | :----------------------------------------------------- | :------: |
+|   1   | Danh mục những từ viết tắt                             | [Xem](#danh-muc-tu-viet-tat) |
+|   2   | Bảng 3.1 – Các yêu cầu chức năng                       | [Xem](#bang-3.1) |
+|   3   | Bảng 3.2 – Các yêu cầu phi chức năng                   | [Xem](#bang-3.2) |
+|   4   | Bảng 3.3 – Bảng mô tả các tác nhân trong hệ thống      | [Xem](#bang-3.3) |
+|   5   | Đặc tả Use Case UC01 – Đăng ký nội trú                 | [Xem](#table-uc01) |
+|   6   | Đặc tả Use Case UC02 – Xét duyệt đăng ký               | [Xem](#table-uc02) |
+|   7   | Đặc tả Use Case UC03 – Phân giường                     | [Xem](#table-uc03) |
+|   8   | Đặc tả Use Case UC04 – Tạo hợp đồng                    | [Xem](#table-uc04) |
+|   9   | Đặc tả Use Case UC05 – Ghi nhận dịch vụ                | [Xem](#table-uc05) |
+|  10   | Đặc tả Use Case UC06 – Tạo hóa đơn                     | [Xem](#table-uc06) |
+|  11   | Đặc tả Use Case UC07 – Thanh toán hóa đơn              | [Xem](#table-uc07) |
+|  12   | Đặc tả Use Case UC08 – Tạo yêu cầu sửa chữa            | [Xem](#table-uc08) |
+|  13   | Đặc tả Use Case UC09 – Tiếp nhận yêu cầu sửa chữa      | [Xem](#table-uc09) |
+|  14   | Đặc tả Use Case UC10 – Xử lý sự cố kỹ thuật            | [Xem](#table-uc10) |
+|  15   | Đặc tả Use Case UC11 – Cập nhật trạng thái sửa chữa    | [Xem](#table-uc11) |
+|  16   | Đặc tả Use Case UC12 – Ghi nhận vi phạm                | [Xem](#table-uc12) |
+|  17   | Đặc tả Use Case UC13 – Quản lý khách thăm              | [Xem](#table-uc13) |
+|  18   | Đặc tả Use Case UC14 – Quản lý cơ sở vật chất          | [Xem](#table-uc14) |
+|  19   | Thiết kế chi tiết các bảng từ 1 đến 16 (Cơ sở dữ liệu) | [Xem](#bang-csdl) |
 
 </center>
 
@@ -121,16 +121,17 @@ Các tác vụ chính của hệ thống:
 
 <center>
 
+<a id="danh-muc-tu-viet-tat"></a>
+
 # DANH MỤC NHỮNG TỪ VIẾT TẮT
 
 |  STT  | Từ viết tắt | Từ tiếng anh | Từ và nghĩa tiếng việt |
-| :---: ||||
+| :---: |:-|:-|:-|
 |1|CSDL||Cơ sở dữ liệu|
 |2|DB|Database|Cơ sở dữ liệu|
 |3|ORM|Object-Realational Mapping|Kỹ thuật ánh xạ giữa đối tượng trong chương trình và bảng trong cơ sở dữ liệu quan hệ.|
 |4|RBAC|Role-Based Access Control|Kiểm soát truy cập dựa trên vai trò|
 |5|UML|Unified Modeling Language|Ngôn ngữ mô hình hóa thống nhất|
-|6||||
 
 </center>
 
@@ -740,6 +741,8 @@ Hệ thống quản lý ký túc xá bao gồm các nhóm nghiệp vụ chính s
 
 ### 3.2.1. Yêu cầu chức năng (Functional Requirements)
 
+<a id="bang-3.1"></a>
+
 | Mã   | Tên chức năng                | Mô tả chi tiết                                                                   | Tác nhân                    |
 | ---- | ---------------------------- | -------------------------------------------------------------------------------- | --------------------------- |
 | FR1  | Xác thực người dùng          | Cho phép người dùng đăng nhập, đăng xuất và duy trì phiên làm việc an toàn.      | Admin, Nhân viên, Sinh viên |
@@ -765,6 +768,8 @@ Hệ thống quản lý ký túc xá bao gồm các nhóm nghiệp vụ chính s
 ---
 
 ### 3.2.2. Yêu cầu phi chức năng (Non-Functional Requirements)
+
+<a id="bang-3.2"></a>
 
 | Mã    | Tên yêu cầu                            | Mô tả chi tiết                                                                        | Áp dụng cho        |
 | ----- | -------------------------------------- | ------------------------------------------------------------------------------------- | ------------------ |
@@ -803,6 +808,8 @@ Việc áp dụng UML giúp:
 ### 3.3.2. Bảng mô tả các tác nhân trong hệ thống
 
 <center>
+
+<a id="bang-3.3"></a>
 
 | Tác nhân chính                      | Mô tả                                                                                                                                | Vai trò chính                                                                                                                                    |
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -1274,6 +1281,13 @@ Việc áp dụng UML giúp:
 ![SD03 - PHÂN GIƯỜNG](./images/SD03_PhanGiuong.png)
 
 ## 3.5. Sơ đồ lớp (Class Diagram)
+
+<center>
+
+![ClassDiagram](./images/classDiagram.png)
+
+<b>Hình 3.3 – Sơ đồ lớp</b>
+</center>
 
 ## 3.6. Sơ đồ ERD (Entity-Relationship Diagram)
 
