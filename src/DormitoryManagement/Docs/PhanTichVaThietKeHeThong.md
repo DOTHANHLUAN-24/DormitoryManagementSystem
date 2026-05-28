@@ -93,6 +93,28 @@ Các tác vụ chính của hệ thống:
 
 # DANH MỤC CÁC BẢNG BIỂU
 
+| STT | Tên bảng | Trang |
+|:---:|:---|:---:|
+| 1 | Danh mục những từ viết tắt | 3 |
+| 2 | Bảng 3.1 – Các yêu cầu chức năng | 15 |
+| 3 | Bảng 3.2 – Các yêu cầu phi chức năng | 16 |
+| 4 | Bảng 3.3 – Bảng mô tả các tác nhân trong hệ thống | 17 |
+| 5 | Đặc tả Use Case UC10 – Tạo hợp đồng | 19 |
+| 6 | Đặc tả Use Case UC11 – Ghi nhận dịch vụ | 21 |
+| 7 | Đặc tả Use Case UC12 – Tạo hóa đơn | 23 |
+| 8 | Đặc tả Use Case UC14 – Ghi nhận vi phạm | 25 |
+| 9 | Đặc tả Use Case UC15 – Quản lý khách thăm | 27 |
+| 10 | Đặc tả Use Case UC16 – Quản lý cơ sở vật chất | 30 |
+| 11 | Đặc tả Use Case UC21 – Thanh toán hóa đơn | 32 |
+| 12 | Đặc tả Use Case UC22 – Tạo yêu cầu sửa chữa | 35 |
+| 13 | Đặc tả Use Case UC24 – Tiếp nhận yêu cầu sửa chữa | 37 |
+| 14 | Đặc tả Use Case UC25 – Xử lý sự cố kỹ thuật | 39 |
+| 15 | Đặc tả Use Case UC26 – Cập nhật trạng thái sửa chữa | 41 |
+| 16 | Đặc tả Use Case UC17 – Đăng ký nội trú | 43 |
+| 17 | Đặc tả Use Case UC08 – Xét duyệt đăng ký | 46 |
+| 18 | Đặc tả Use Case UC09 – Phân giường | 49 |
+| 19 | Thiết kế chi tiết các bảng từ 1 đến 16 (Cơ sở dữ liệu) | 52 - 63 |
+
 </center>
 
 ---
@@ -341,17 +363,51 @@ Ngoài các nghiệp vụ chính, hệ thống còn hỗ trợ:
 
 ## 1.7. Trạng thái hệ thống
 
-### 1.7.1. Trạng thái phòng
+### 1.7.1. Trạng thái người dùng (User Status)
+* **Active:** Tài khoản đang hoạt động bình thường.
+* **Inactive:** Tài khoản đã bị vô hiệu hóa.
+* **Locked:** Tài khoản bị khóa (do vi phạm nội quy hoặc bảo mật).
 
-* Available
-* Full
-* Maintenance
+### 1.7.2. Trạng thái hạ tầng (Infrastructure Status)
+* **Phòng (Rooms):**
+    * **Available:** Còn chỗ trống, có thể tiếp nhận sinh viên.
+    * **Full:** Đã hết chỗ.
+    * **Maintenance:** Đang sửa chữa, không thể sử dụng.
+* **Giường (Beds):**
+    * **Available:** Giường trống.
+    * **Occupied:** Giường đã có sinh viên ở.
+    * **Maintenance:** Giường hỏng, đang bảo trì.
 
-### 1.7.2. Trạng thái hợp đồng
+### 1.7.3. Trạng thái Đăng ký & Hợp đồng (Leasing Status)
+* **Đăng ký (Registrations):**
+    * **Pending:** Đang chờ duyệt.
+    * **Approved:** Đã duyệt, chờ phân giường/tạo hợp đồng.
+    * **Rejected:** Đã từ chối.
+* **Hợp đồng (Contracts):**
+    * **Active:** Hợp đồng đang có hiệu lực.
+    * **Expired:** Hợp đồng đã hết hạn.
+    * **Terminated:** Hợp đồng bị chấm dứt trước thời hạn.
 
-* Active
-* Expired
-* Terminated
+### 1.7.4. Trạng thái tài chính (Financial Status)
+* **Hóa đơn (Invoices):**
+    * **Unpaid:** Chưa thanh toán.
+    * **Paid:** Đã thanh toán đầy đủ.
+    * **Overdue:** Quá hạn thanh toán.
+    * **Cancelled:** Hóa đơn bị hủy do sai sót.
+* **Thanh toán (Payments):**
+    * **Success:** Giao dịch thành công.
+    * **Failed:** Giao dịch thất bại.
+    * **Pending:** Đang chờ xác nhận từ ngân hàng/cổng thanh toán.
+
+### 1.7.5. Trạng thái vận hành (Operational Status)
+* **Bảo trì (Maintenance Requests):**
+    * **Pending:** Yêu cầu mới, chờ tiếp nhận.
+    * **InProgress:** Đang trong quá trình sửa chữa.
+    * **Resolved:** Đã xử lý xong.
+    * **Cancelled:** Yêu cầu bị hủy.
+* **Khách thăm (Visitor Logs):**
+    * **CheckedIn:** Khách đang ở trong ký túc xá.
+    * **CheckedOut:** Khách đã rời đi.
 
 ---
 
@@ -1101,6 +1157,88 @@ Việc áp dụng UML giúp:
 | Đảm bảo thành công | Trạng thái yêu cầu được cập nhật chính xác, đúng luồng |
 | Luồng chính | 1. Nhân viên kỹ thuật chọn yêu cầu đang xử lý<br/>2. Hệ thống hiển thị trạng thái hiện tại và lịch sử trạng thái<br/>3. Nhân viên kỹ thuật chọn nút "Cập nhật trạng thái"<br/>4. Hệ thống hiển thị danh sách trạng thái cho phép (dựa trên ma trận chuyển)<br/>5. Nhân viên kỹ thuật chọn trạng thái mới từ dropdown<br/>6. Nhân viên kỹ thuật nhập ghi chú/lý do thay đổi (bắt buộc nếu chuyển sang "Từ chối" hoặc "Đã hủy")<br/>7. Hệ thống kiểm tra tính hợp lệ của chuyển trạng thái<br/>8. Hệ thống cập nhật trạng thái mới vào database<br/>9. Hệ thống ghi log: thời gian, người thực hiện, trạng thái cũ → mới, ghi chú<br/>10. Nếu trạng thái là "Hoàn thành", hệ thống tự động gửi thông báo cho Sinh viên<br/>11. Hệ thống thông báo thành công<br/>12. Kết thúc |
 | Luồng ngoại lệ | **4A. Danh sách trạng thái cho phép rỗng**<br/>1. Hệ thống tính toán danh sách trạng thái có thể chuyển từ trạng thái hiện tại<br/>2. Nếu không có trạng thái nào (ví dụ đang ở trạng thái cuối "Hoàn thành")<br/>3. Hệ thống vô hiệu hóa nút "Cập nhật trạng thái"<br/>4. Hiển thị tooltip: "Không thể cập nhật trạng thái từ trạng thái hiện tại"<br/>5. Kết thúc<br/><br/>**5A. Chuyển trạng thái không hợp lệ**<br/>1. Nhân viên kỹ thuật chọn trạng thái không nằm trong danh sách cho phép<br/>2. Hệ thống kiểm tra và phát hiện chuyển trạng thái vi phạm ma trận<br/>3. Ví dụ: "Chờ tiếp nhận" → "Hoàn thành" (bỏ qua bước "Đang xử lý")<br/>4. Hệ thống hiển thị thông báo: "Không thể chuyển từ [trạng thái cũ] sang [trạng thái mới]"<br/>5. Giữ nguyên trạng thái cũ, không cập nhật<br/>6. Kết thúc<br/><br/>**6A. Thiếu lý do bắt buộc**<br/>1. Nhân viên kỹ thuật chọn trạng thái "Từ chối" hoặc "Đã hủy" nhưng chưa nhập lý do<br/>2. Hệ thống phát hiện trường ghi chú đang để trống<br/>3. Hệ thống hiển thị thông báo: "Vui lòng nhập lý do từ chối/hủy yêu cầu"<br/>4. Hệ thống tô viền đỏ ô nhập ghi chú<br/>5. Quay lại bước 6<br/><br/>**7A. Yêu cầu đã bị hủy bởi Staff/Admin**<br/>1. Nhân viên kỹ thuật cố gắng cập nhật trạng thái nhưng yêu cầu đã bị Staff hủy từ trước<br/>2. Hệ thống kiểm tra thấy status hiện tại = "Đã hủy"<br/>3. Hệ thống hiển thị thông báo: "Yêu cầu đã bị hủy, không thể cập nhật trạng thái"<br/>4. Kết thúc<br/><br/>**DB1. Lỗi kết nối Database**<br/>1. Hệ thống không thể cập nhật trạng thái do mất kết nối database<br/>2. Hệ thống hiển thị thông báo: "Lỗi hệ thống, không thể cập nhật trạng thái. Vui lòng thử lại sau."<br/>3. Ghi exception log<br/>4. Kết thúc |
+
+#### 12. UC17 – ĐĂNG KÝ NỘI TRÚ
+
+##### 12.1. Use case diagram
+![UC17 - ĐĂNG KÝ NỘI TRÚ](./images/UC17_DangKyNoiTru.png)
+
+##### 12.2. Đặc tả Use case
+| Thuộc tính | Nội dung |
+|:---|:---|
+| Tên Usecase | Đăng ký nội trú |
+| Mức | Mức người dùng |
+| Tác nhân chính | Sinh viên |
+| Các bên liên quan | Nhân viên quản lý, Hệ thống |
+| Mục tiêu | Sinh viên gửi yêu cầu đăng ký ở ký túc xá |
+| Tiền điều kiện | Sinh viên đã đăng nhập vào hệ thống tài khoản của trường/ký túc xá |
+| Kích hoạt | Sinh viên chọn chức năng "Đăng ký nội trú" từ menu chính |
+| Đảm bảo tối thiểu | Yêu cầu không được tạo nếu dữ liệu không hợp lệ, hệ thống hiển thị thông báo lỗi rõ ràng |
+| Đảm bảo thành công | Yêu cầu đăng ký được tạo với trạng thái "Pending", chờ nhân viên xét duyệt |
+| Luồng chính | 1. Hệ thống tiếp nhận yêu cầu truy cập chức năng đăng ký của Sinh viên. <br> 2. Hệ thống kiểm tra trạng thái nội trú hiện tại của Sinh viên. <br> 3. Hệ thống hiển thị form đăng ký nội trú. <br> 4. Sinh viên nhập các thông tin cần thiết (Thời gian lưu trú, loại phòng mong muốn, ghi chú...). <br> 5. Hệ thống thực hiện validate dữ liệu phía Client (kiểm tra định dạng, các trường bắt buộc). <br> 6. Sinh viên nhấn nút “Gửi đăng ký”. <br> 7. Hệ thống gửi request chứa thông tin đăng ký lên server. <br> 8. Server thực hiện validate dữ liệu nhận được. <br> 9. Server kiểm tra các điều kiện ràng buộc trước khi ghi DB (chưa có request Pending nào khác, chưa có phòng đang hoạt động). <br> 10. Hệ thống tạo bản ghi đăng ký mới với trạng thái ban đầu là "Pending". <br> 11. Hệ thống thực hiện lưu dữ liệu vào Database. <br> 12. Hệ thống ghi log lịch sử thao tác. <br> 13. Server trả về response thành công cho Client. <br> 14. Hệ thống hiển thị thông báo "Đăng ký nội trú thành công" cho Sinh viên. |
+| Luồng ngoại lệ | **2A. Đã có nội trú**: 1. Hệ thống kiểm tra thấy sinh viên đã có phòng đang hoạt động; 2. Dừng luồng xử lý; 3. Hiển thị thông báo lỗi; 4. Kết thúc.<br/>**8A. Trùng yêu cầu**: 1. Hệ thống phát hiện đã tồn tại request Pending; 2. Từ chối tạo mới; 3. Hiển thị "Bạn đã có yêu cầu đang chờ xử lý!"; 4. Kết thúc.<br/>**10A. Lỗi DB**: 1. Lỗi khi ghi DB; 2. Rollback; 3. Hiển thị "Có lỗi xảy ra, vui lòng thử lại sau"; 4. Kết thúc. |
+| Quy tắc nghiệp vụ | BR01: Mỗi sinh viên chỉ có 1 request Pending<br/>BR02: Không cho phép đăng ký khi đang có hợp đồng Active |
+
+##### 12.3. Activity Diagram - AD01
+![AD01 - ĐĂNG KÝ NỘI TRÚ](./images/AD01_DangKyNoiTru.png)
+
+##### 12.4. Sequence Diagram - SD01
+![SD01 - ĐĂNG KÝ NỘI TRÚ](./images/SD01_DangKyNoiTru.png)
+
+#### 13. UC08 – XÉT DUYỆT ĐĂNG KÝ
+
+##### 13.1. Use case diagram
+![UC08 - XÉT DUYỆT ĐĂNG KÝ](./images/UC08_XetDuyetDangKy.png)
+
+##### 13.2. Đặc tả Use case
+| Thuộc tính | Nội dung |
+|:---|:---|
+| Tên Usecase | Xét duyệt đăng ký |
+| Mức | Mức người dùng |
+| Tác nhân chính | Nhân viên |
+| Các bên liên quan | Nhân viên quản lý, Hệ thống, Sinh viên |
+| Mục tiêu | Duyệt hoặc Từ chối yêu cầu đăng ký của sinh viên |
+| Tiền điều kiện | Nhân viên đã đăng nhập thành công, có quyền xét duyệt đăng ký |
+| Kích hoạt | Nhân viên chọn chức năng "Xét duyệt đăng ký" từ menu quản lý |
+| Đảm bảo tối thiểu | Yêu cầu chỉ được xử lý nếu ở trạng thái Pending, hệ thống hiển thị thông báo lỗi nếu có vấn đề |
+| Đảm bảo thành công | Yêu cầu được cập nhật trạng thái Approved hoặc Rejected, sinh viên nhận được thông báo kết quả |
+| Luồng chính | 1. Nhân viên mở màn hình danh sách đăng ký nội trú. <br> 2. Hệ thống tự động tải và hiển thị danh sách các yêu cầu đang ở trạng thái "Pending". <br> 3. Nhân viên chọn 1 yêu cầu cụ thể từ danh sách. <br> 4. Hệ thống hiển thị chi tiết thông tin yêu cầu của sinh viên. <br> 5. Nhân viên xem xét thông tin và chọn nút "Duyệt" hoặc "Từ chối". <br> 6. Hệ thống gửi request cập nhật lên server. <br> 7. Server kiểm tra lại trạng thái hiện tại của yêu cầu trong DB để đảm bảo tính đồng nhất. <br> 8. Hệ thống cập nhật trạng thái mới cho yêu cầu (Chuyển sang "Approved" nếu duyệt, hoặc "Rejected" nếu từ chối). <br> 9. Hệ thống thực hiện lưu thay đổi vào Database. <br> 10. Hệ thống ghi log thông tin người duyệt và thời gian duyệt. <br> 11. Server trả về response thành công cho Client. <br> 12. Hệ thống hiển thị thông báo "Xử lý yêu cầu thành công" và cập nhật lại danh sách. |
+| Luồng ngoại lệ | **2A. Không có dữ liệu**: Hiển thị “Không có dữ liệu Pending”; 2. Kết thúc.<br/>**7A. Đã xử lý**: 1. Request không còn Pending (do nhân viên khác xử lý trước); 2. Từ chối xử lý; 3. Hiển thị thông báo lỗi; 4. Quay lại bước 2. |
+| Quy tắc nghiệp vụ | BR01: Chỉ xử lý request ở trạng thái Pending<br/>BR02: Sau khi Duyệt, yêu cầu chuyển sang trạng thái Approved để chờ phân giường |
+
+##### 13.3. Activity Diagram - AD02
+![AD02 - XÉT DUYỆT ĐĂNG KÝ](./images/AD02_XetDuyetDangKy.png)
+
+##### 13.4. Sequence Diagram - SD02
+![SD02 - XÉT DUYỆT ĐĂNG KÝ](./images/SD02_XetDuyetDangKy.png)
+
+#### 14. UC09 – PHÂN GIƯỜNG
+
+##### 14.1. Use case diagram
+![UC09 - PHÂN GIƯỜNG](./images/UC09_PhanGiuong.png)
+
+##### 14.2. Đặc tả Use case
+| Thuộc tính | Nội dung |
+|:---|:---|
+| Tên Usecase | Phân giường |
+| Mức | Mức người dùng |
+| Tác nhân chính | Nhân viên |
+| Các bên liên quan | Nhân viên quản lý, Hệ thống, Sinh viên |
+| Mục tiêu | Gán giường cụ thể cho sinh viên đã được phê duyệt đăng ký |
+| Tiền điều kiện | Nhân viên đã đăng nhập thành công, có quyền phân giường; Sinh viên đã có yêu cầu đăng ký được duyệt (Approved) |
+| Kích hoạt | Nhân viên chọn chức năng "Phân giường" từ menu quản lý |
+| Đảm bảo tối thiểu | Yêu cầu chỉ được phân giường nếu ở trạng thái Approved, hệ thống hiển thị thông báo lỗi nếu có vấn đề |
+| Đảm bảo thành công | Sinh viên được gán giường cụ thể, trạng thái giường được cập nhật, thông tin lưu vào database |
+| Luồng chính | 1. Nhân viên mở danh sách các sinh viên đã được duyệt đăng ký (Trạng thái yêu cầu: Approved). <br> 2. Nhân viên chọn một sinh viên cụ thể từ danh sách. <br> 3. Hệ thống lọc và hiển thị danh sách các phòng và giường còn trống dựa theo đúng "Loại phòng" mà sinh viên đã đăng ký. <br> 4. Nhân viên chọn một giường cụ thể trên sơ đồ/danh sách. <br> 5. Nhân viên nhấn nút "Xác nhận phân giường". <br> 6. Hệ thống thực hiện kiểm tra các điều kiện ràng buộc cuối cùng. <br> 7. Hệ thống tiến hành gán mã giường cho sinh viên. <br> 8. Hệ thống cập nhật trạng thái của giường vừa chọn thành "Occupied" (Đã có người). <br> 9. Hệ thống lưu toàn bộ thông tin thay đổi vào Database (Cập nhật trạng thái yêu cầu đăng ký thành hoàn tất, tạo bản ghi phòng ở). <br> 10. Hệ thống hiển thị thông báo "Phân giường thành công cho sinh viên". |
+| Luồng ngoại lệ | **3A. Không còn giường trống**: 1. Hệ thống báo không còn giường phù hợp; 2. Dừng thao tác.<br/>**7A. Giường đã bị chiếm**: 1. Giường được gán bởi nhân viên khác ngay trước đó; 2. Hệ thống báo lỗi; 3. Yêu cầu chọn giường khác. |
+| Quy tắc nghiệp vụ | BR01: Chỉ phân giường cho sinh viên có trạng thái yêu cầu Approved<br/>BR02: Giường được chọn phải thuộc loại phòng sinh viên đã đăng ký |
+
+##### 14.3. Activity Diagram - AD03
+![AD03 - PHÂN GIƯỜNG](./images/AD03_PhanGiuong.png)
+
+##### 14.4. Sequence Diagram - SD03
+![SD03 - PHÂN GIƯỜNG](./images/SD03_PhanGiuong.png)
+
 
 ## 3.5. Sơ đồ lớp (Class Diagram)
 
