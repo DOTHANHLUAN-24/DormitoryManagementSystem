@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 # BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
@@ -1242,11 +1242,9 @@ Việc áp dụng UML giúp:
 
 ## 3.5. Sơ đồ lớp (Class Diagram)
 
-## 3.6. Sơ đồ hoạt động (Activity Diagram)
 
-## 3.7. Sơ đồ trình tự (Sequence Diagram)
 
-## 3.8. Sơ đồ ERD (Entity-Relationship Diagram)
+## 3.6. Sơ đồ ERD (Entity-Relationship Diagram)
 
 ![Sơ đồ ERD](./images/erdInDb.png)
 
@@ -1259,9 +1257,9 @@ Việc áp dụng UML giúp:
 
 </center>
 
-## 3.9. Thiết kế cơ sở dữ liệu
+## 3.7. Thiết kế cơ sở dữ liệu
 
-### 3.9.1. Mục tiêu thiết kế
+### 3.7.1. Mục tiêu thiết kế
 
 <div style="text-indent: 2em;">
 
@@ -1293,7 +1291,7 @@ Cho phép dễ dàng bổ sung các chức năng mới (như tích hợp thanh t
 
 Kết hợp với hệ thống xác thực (ASP.NET Identity) để kiểm soát quyền truy cập dữ liệu theo từng vai trò người dùng.
 
-### 3.9.2. Mô hình dữ liệu
+### 3.7.2. Mô hình dữ liệu
 
 <div style="text-indent: 2em;">
 
@@ -1345,7 +1343,7 @@ Cụ thể:
 
 Việc thiết kế các mối quan hệ này giúp hệ thống đảm bảo tính nhất quán, hạn chế dư thừa dữ liệu và hỗ trợ hiệu quả cho các chức năng nghiệp vụ như quản lý nội trú, tính phí, thanh toán và giám sát hoạt động ký túc xá.
 
-### 3.9.3. Thiết kế chi tiết các bảng
+### 3.7.3. Thiết kế chi tiết các bảng
 
 Dưới đây là thiết kế chi tiết một số bảng (thực thể) cốt lõi trong hệ thống:
 
