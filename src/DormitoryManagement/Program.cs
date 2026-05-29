@@ -104,7 +104,7 @@ internal class Program
         var app = builder.Build();
 
         // Load global PageSize config into BaseController
-        DormitoryManagement.Controllers.BaseController.PageSize = app.Configuration.GetValue<int>("Pagination:PageSize", 5);
+        DormitoryManagement.Controllers.BaseController.DefaultPageSize = app.Configuration.GetValue<int>("Pagination:PageSize", 5);
 
         if (!app.Environment.IsDevelopment())
         {

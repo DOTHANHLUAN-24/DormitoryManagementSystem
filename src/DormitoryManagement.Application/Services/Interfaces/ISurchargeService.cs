@@ -36,5 +36,15 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// Khôi phục phụ phí đã bị xóa mềm.
         /// </summary>
         Task<bool> RestoreSurchargeAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách phụ phí phân trang kèm theo bộ lọc tìm kiếm.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Surcharge>> GetPagedSurchargesAsync(int pageIndex, int pageSize, string? searchString, bool? isActive = null, bool? isDeleted = false);
+
+        /// <summary>
+        /// Lấy danh sách phụ phí phân trang của sinh viên theo UserId.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Surcharge>> GetPagedSurchargesByUserIdAsync(Guid userId, int pageIndex, int pageSize, string? searchString, bool? isActive = null);
     }
 }
