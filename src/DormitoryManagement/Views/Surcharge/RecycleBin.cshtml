@@ -1,11 +1,7 @@
 @model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Domain.Entities.Surcharge>
 @{
-    ViewData["Title"] = "Danh sách phụ phí";
+    ViewData["Title"] = "Thùng rác phụ phí";
     Layout = "_Layout";
-
-    var isAdmin = User.IsInRole("Admin");
-    var isManager = User.IsInRole("ManagementStaff") || User.IsInRole("ManagerStaff") || User.IsInRole("Manager");
-    var isAdminOrManager = isAdmin || isManager;
 }
 
 @section Styles {
@@ -13,7 +9,7 @@
         .tieu-de-trang {
             font-size: 26px;
             font-weight: 700;
-            background: linear-gradient(135deg, #0f6b6d, #14b8a6);
+            background: linear-gradient(135deg, #ef4444, #f87171);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -38,8 +34,8 @@
         }
 
         .input-sync:focus {
-            border-color: #0f6b6d !important;
-            box-shadow: 0 0 0 4px rgba(15, 107, 109, 0.1) !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
             outline: none;
         }
 
@@ -57,8 +53,7 @@
             z-index: 10;
         }
 
-        .khung-tim-kiem-sync input,
-        .khung-tim-kiem-sync select {
+        .khung-tim-kiem-sync input {
             padding-left: 40px;
         }
 
@@ -101,27 +96,6 @@
             transform: translateY(-1px);
         }
 
-        .trang-thai {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: inline-block;
-        }
-
-        .trang-thai.dang-ap-dung {
-            background: #ecfdf5;
-            color: #10b981;
-            border: 1px solid #a7f3d0;
-        }
-
-        .trang-thai.tam-ngung {
-            background: #fef2f2;
-            color: #ef4444;
-            border: 1px solid #fecaca;
-        }
-
         .ma-yeu-cau-badge {
             background: #f8fafc;
             color: #475569;
@@ -142,17 +116,12 @@
             justify-content: center;
             border: none;
             transition: all 0.2s;
-            text-decoration: none;
+            cursor: pointer;
         }
 
-        .nut-sua {
-            background: #fff5e6;
-            color: #f59e0b;
-        }
-
-        .nut-xoa {
-            background: #fef2f2;
-            color: #ef4444;
+        .nut-khoi-phuc {
+            background: #ecfdf5;
+            color: #10b981;
         }
 
         .nut-hanh-dong:hover {
@@ -168,28 +137,15 @@
             gap: 8px;
             border: none;
             transition: all 0.3s;
-            box-shadow: 0 4px 10px rgba(15, 107, 109, 0.2);
+            box-shadow: 0 4px 10px rgba(100, 116, 139, 0.2);
             text-decoration: none;
             color: white;
+            background: linear-gradient(135deg, #64748b, #94a3b8);
         }
 
-        .btn-sync-purple {
-            background: linear-gradient(135deg, #0f6b6d, #14b8a6);
-        }
-
-        .btn-sync-purple:hover {
+        .btn-sync-action:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(15, 107, 109, 0.3);
-            color: white;
-        }
-
-        .btn-sync-danger {
-            background: linear-gradient(135deg, #ef4444, #f87171);
-        }
-
-        .btn-sync-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(239, 68, 68, 0.3);
+            box-shadow: 0 6px 14px rgba(100, 116, 139, 0.3);
             color: white;
         }
     </style>
@@ -201,77 +157,36 @@
     <!-- Header -->
     <header class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="tieu-de-trang mb-1"><i class="fas fa-coins me-2"></i>Phụ phí kèm theo</h1>
-            <p class="text-muted small mb-0">Quản lý các khoản phụ thu phát sinh, đền bù vật tư và các chế tài tài chính đính kèm theo hóa đơn phòng.</p>
+            <h1 class="tieu-de-trang mb-1"><i class="fas fa-trash-alt me-2"></i>Thùng rác phụ phí</h1>
+            <p class="text-muted small mb-0">Khôi phục các khoản phụ phí đã bị xóa mềm trước đó về hóa đơn tương ứng.</p>
         </div>
-        
-        @if (isAdminOrManager)
-        {
-            <div class="d-flex gap-2">
-                <a asp-action="RecycleBin" class="btn-sync-action btn-sync-danger text-decoration-none">
-                    <i class="fas fa-trash-alt"></i> Thùng rác
-                </a>
-                <a asp-action="Create" class="btn-sync-action btn-sync-purple text-decoration-none">
-                    <i class="fas fa-plus-circle"></i> Thêm phụ phí mới
-                </a>
-            </div>
-        }
+        <a asp-action="Index" class="btn-sync-action text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
     </header>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show border-0 rounded-4 mb-4 shadow-sm" role="alert" style="background-color: #ecfdf5; color: #047857;">
-            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
-
     <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
-    <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">
+    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync">
         <div class="row g-3 align-items-center">
-            <div class="col-md-5 col-lg-6">
+            <div class="col-md-9 col-lg-10">
                 <div class="khung-tim-kiem-sync">
                     <i class="fas fa-search"></i>
                     <input type="text" name="search" value="@ViewBag.Search" class="input-sync"
-                        placeholder="Tìm tên phụ phí, mã hóa đơn, tên sinh viên...">
+                        placeholder="Tìm theo tên phụ phí, mã hóa đơn, tên sinh viên...">
                 </div>
             </div>
-            <div class="col-md-4 col-lg-3">
-                <div class="khung-tim-kiem-sync">
-                    <i class="fas fa-info-circle"></i>
-                    <select name="isActive" class="input-sync">
-                        <option value="">-- Tất cả trạng thái --</option>
-                        @if (ViewBag.IsActive == "true")
-                        {
-                            <option value="true" selected>Đang áp dụng</option>
-                        }
-                        else
-                        {
-                            <option value="true">Đang áp dụng</option>
-                        }
-                        @if (ViewBag.IsActive == "false")
-                        {
-                            <option value="false" selected>Tạm ngưng</option>
-                        }
-                        else
-                        {
-                            <option value="false">Tạm ngưng</option>
-                        }
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-3 col-lg-3 d-flex gap-2 justify-content-end">
-                <button type="submit" class="btn-search-sync" style="background: #0f6b6d;" title="Tìm kiếm">
-                    <i class="fas fa-filter"></i> Lọc
+            <div class="col-md-3 col-lg-2 d-flex gap-2 justify-content-end">
+                <button type="submit" class="btn-search-sync" style="background: #ef4444;" title="Tìm kiếm">
+                    <i class="fas fa-search"></i> Tìm
                 </button>
-                <a asp-action="Index" class="btn-refresh-sync" title="Làm mới">
+                <a asp-action="RecycleBin" class="btn-refresh-sync" title="Làm mới">
                     <i class="fas fa-redo"></i>
                 </a>
             </div>
         </div>
     </form>
 
-    <!-- Bảng danh sách phụ phí -->
+    <!-- Bảng danh sách phụ phí đã xóa -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -283,11 +198,7 @@
                         <th>Đối tượng / Phòng áp dụng</th>
                         <th class="text-end">Mức giá thu</th>
                         <th>Ngày tạo</th>
-                        <th>Trạng thái</th>
-                        @if (isAdminOrManager)
-                        {
-                            <th class="text-end pe-4" style="width: 120px;">Thao tác</th>
-                        }
+                        <th class="text-end pe-4" style="width: 120px;">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -322,47 +233,29 @@
                                         <span class="text-muted small">Không xác định</span>
                                     }
                                 </td>
-                                <td class="text-end fw-bold text-primary">
+                                <td class="text-end fw-bold text-danger">
                                     @item.Amount.ToString("N0") đ
                                 </td>
                                 <td>
                                     <div>@item.CreatedDate.ToString("dd/MM/yyyy")</div>
                                     <div class="small text-muted">@item.CreatedDate.ToString("HH:mm")</div>
                                 </td>
-                                <td>
-                                    @if (item.IsActive)
-                                    {
-                                        <span class="trang-thai dang-ap-dung"><i class="fas fa-check-circle me-1"></i> Đang áp dụng</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="trang-thai tam-ngung"><i class="fas fa-minus-circle me-1"></i> Tạm ngưng</span>
-                                    }
+                                <td class="text-end pe-4">
+                                    <button type="button" class="nut-hanh-dong nut-khoi-phuc"
+                                        onclick="restoreSurcharge('@item.Id', '@item.SurchargeName', '@item.Amount.ToString("N0")')"
+                                        title="Khôi phục phụ phí">
+                                        <i class="fas fa-undo"></i>
+                                    </button>
                                 </td>
-                                @if (isAdminOrManager)
-                                {
-                                    <td class="text-end pe-4">
-                                        <div class="d-flex justify-content-end gap-2">
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="nut-hanh-dong nut-sua" title="Chỉnh sửa">
-                                                <i class="fas fa-pencil-alt"></i>
-                                            </a>
-                                            <button type="button" class="nut-hanh-dong nut-xoa"
-                                                onclick="deleteSurcharge('@item.Id', '@item.SurchargeName', '@item.Amount.ToString("N0")')"
-                                                title="Xóa phụ phí">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                }
                             </tr>
                         }
                     }
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">
-                                <i class="fas fa-coins fa-3x mb-3 text-secondary"></i>
-                                <p class="mb-0">Không tìm thấy khoản phụ phí nào</p>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-trash-alt fa-3x mb-3 text-secondary" style="opacity: 0.3;"></i>
+                                <p class="mb-0">Thùng rác trống</p>
                             </td>
                         </tr>
                     }
@@ -375,15 +268,15 @@
 
 @section Scripts {
     <script>
-        function deleteSurcharge(id, name, amount) {
+        function restoreSurcharge(id, name, amount) {
             Swal.fire({
-                title: 'Xóa khoản phụ phí này?',
-                text: `Bạn có chắc muốn xóa phụ phí "${name}" (${amount} đ) khỏi hóa đơn liên kết? Số tiền hóa đơn sẽ tự động giảm đi tương ứng.`,
-                icon: 'warning',
+                title: 'Khôi phục phụ phí?',
+                text: `Bạn có chắc muốn khôi phục phụ phí "${name}" (${amount} đ) về hóa đơn liên kết? Số tiền hóa đơn sẽ tự động cộng thêm tương ứng.`,
+                icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#ef4444',
+                confirmButtonColor: '#10b981',
                 cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Đồng ý xóa',
+                confirmButtonText: '<i class="fas fa-undo me-1"></i> Đồng ý khôi phục',
                 cancelButtonText: 'Hủy bỏ',
                 reverseButtons: true
             }).then((result) => {
@@ -395,7 +288,7 @@
                     });
 
                     $.ajax({
-                        url: `/Surcharge/Delete/${id}`,
+                        url: `/Surcharge/Restore/${id}`,
                         type: 'POST',
                         data: {
                             __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
@@ -404,7 +297,7 @@
                             if (res.success) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Đã xóa!',
+                                    title: 'Đã khôi phục!',
                                     text: res.message,
                                     timer: 1500,
                                     showConfirmButton: false
@@ -415,7 +308,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Lỗi!',
-                                    text: res.message || 'Xóa phụ phí thất bại.',
+                                    text: res.message || 'Khôi phục thất bại.',
                                     confirmButtonColor: '#ef4444'
                                 });
                             }

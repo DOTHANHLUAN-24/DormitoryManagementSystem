@@ -154,8 +154,11 @@
             <i class="fa-solid fa-file-invoice me-2"></i>Danh Sách Hóa Đơn
         </h1>
         <div class="d-flex gap-2">
-            <a asp-controller="Home" asp-action="Index" class="btn-sync-action btn-sync-secondary">
+            <a asp-controller="Home" asp-action="Index" class="btn-sync-action btn-sync-secondary text-decoration-none">
                 <i class="fa-solid fa-house"></i> Trang chủ
+            </a>
+            <a asp-action="RecycleBin" class="btn-sync-action btn-sync-secondary text-decoration-none">
+                <i class="fa-solid fa-trash-can"></i> Thùng rác
             </a>
             <a asp-action="Create" class="btn-sync-action btn-sync-add">
                 <i class="fa-solid fa-plus"></i> Tạo hóa đơn

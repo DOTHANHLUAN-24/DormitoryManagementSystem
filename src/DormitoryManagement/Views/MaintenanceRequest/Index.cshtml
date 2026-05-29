@@ -77,6 +77,17 @@
         <h1 class="page-title mb-0">
             <i class="fas fa-toolbox me-2" style="font-size:1.3rem;"></i>Quản lý Yêu cầu Bảo trì
         </h1>
+        <div class="d-flex gap-2">
+            @if (isAdminOrManager)
+            {
+                <a asp-action="RecycleBin" class="btn btn-outline-danger d-inline-flex align-items-center gap-2 text-decoration-none" style="border-radius:12px;padding:9px 20px;font-weight:600;font-size:14px;border: 1px solid #e2e8f0;background-color:#fff;color:#64748b;">
+                    <i class="fas fa-trash-alt"></i> Thùng rác
+                </a>
+            }
+            <a asp-action="Create" class="btn btn-primary d-inline-flex align-items-center gap-2" style="border-radius:12px;padding:9px 20px;font-weight:600;font-size:14px;box-shadow: 0 4px 12px rgba(79,70,229,.25);">
+                <i class="fas fa-plus"></i> Tạo yêu cầu mới
+            </a>
+        </div>
     </header>
 
     <!-- Stats row -->
@@ -133,6 +144,30 @@
             </div>
         </div>
     }
+
+    <!-- Quick filter tabs -->
+    <div class="d-flex flex-wrap gap-2 mb-4 bg-light p-2 rounded-3" style="border: 1px solid #e8edf5;">
+        <a href="@Url.Action("Index", new { SearchTerm = filter.SearchTerm, Priority = filter.Priority })" 
+           class="btn btn-sm px-3 py-2 fw-semibold @(filter.Status == null ? "btn-primary active text-white" : "btn-light text-secondary")" style="border-radius: 8px;">
+            <i class="fas fa-list me-1"></i> Tất cả yêu cầu
+        </a>
+        <a href="@Url.Action("Index", new { Status = "Open", SearchTerm = filter.SearchTerm, Priority = filter.Priority })" 
+           class="btn btn-sm px-3 py-2 fw-semibold @(filter.Status == MaintenanceStatus.Open ? "btn-info active text-white" : "btn-light text-secondary")" style="border-radius: 8px;">
+            <i class="fas fa-envelope-open me-1"></i> Mới tiếp nhận (Chờ duyệt)
+        </a>
+        <a href="@Url.Action("Index", new { Status = "InProgress", SearchTerm = filter.SearchTerm, Priority = filter.Priority })" 
+           class="btn btn-sm px-3 py-2 fw-semibold @(filter.Status == MaintenanceStatus.InProgress ? "btn-warning active text-dark" : "btn-light text-secondary")" style="border-radius: 8px;">
+            <i class="fas fa-spinner me-1"></i> Đang xử lý
+        </a>
+        <a href="@Url.Action("Index", new { Status = "Resolved", SearchTerm = filter.SearchTerm, Priority = filter.Priority })" 
+           class="btn btn-sm px-3 py-2 fw-semibold @(filter.Status == MaintenanceStatus.Resolved ? "btn-success active text-white" : "btn-light text-secondary")" style="border-radius: 8px;">
+            <i class="fas fa-check-circle me-1"></i> Đã giải quyết
+        </a>
+        <a href="@Url.Action("Index", new { Status = "Closed", SearchTerm = filter.SearchTerm, Priority = filter.Priority })" 
+           class="btn btn-sm px-3 py-2 fw-semibold @(filter.Status == MaintenanceStatus.Closed ? "btn-secondary active text-white" : "btn-light text-secondary")" style="border-radius: 8px;">
+            <i class="fas fa-times-circle me-1"></i> Đã đóng
+        </a>
+    </div>
 
     <!-- Filter bar -->
     <form method="get" asp-action="Index" class="thanh-tim-kiem-sync">

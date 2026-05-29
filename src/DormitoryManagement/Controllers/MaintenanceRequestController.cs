@@ -12,10 +12,12 @@ namespace DormitoryManagement.Controllers
     [Authorize]
     public class MaintenanceRequestController(
         IMaintenanceRequestService service,
-        IContractRepository contractRepository) : BaseController
+        IContractRepository contractRepository,
+        IRoomRepository roomRepository) : BaseController
     {
         private readonly IMaintenanceRequestService _service = service;
         private readonly IContractRepository _contractRepository = contractRepository;
+        private readonly IRoomRepository _roomRepository = roomRepository;
 
         // =====================================================================
         // MVC VIEWS — ADMIN / MANAGER / TECHNICAL STAFF
@@ -44,6 +46,20 @@ namespace DormitoryManagement.Controllers
             return View(result);
         }
 
+        /// <summary>
+        /// Danh sách yêu cầu bảo trì chờ duyệt (chỉ lấy trạng thái Open).
+        /// </summary>
+        [HttpGet("Pending")]
+        [Authorize(Roles = "Admin, ManagementStaff")]
+        public async Task<IActionResult> Pending(int page = 1, string search = "")
+        {
+            page = page > 0 ? page : 1;
+            Logger.LogInformation("Đang truy cập danh sách yêu cầu bảo trì chờ duyệt trang {Page}, tìm kiếm: '{Search}'", page, search);
+            var result = await _service.GetAllPagedAsync(page, PageSize, search, MaintenanceStatus.Open);
+            ViewBag.Search = search;
+            return View(result);
+        }
+
         // =====================================================================
         // MVC VIEWS — STUDENT
         // =====================================================================
@@ -68,10 +84,10 @@ namespace DormitoryManagement.Controllers
         }
 
         /// <summary>
-        /// Form tạo yêu cầu bảo trì mới (GET – Student).
+        /// Form tạo yêu cầu bảo trì mới (GET – Student/Admin/Staff).
         /// </summary>
         [HttpGet("Create")]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Admin, ManagementStaff, Student")]
         public async Task<IActionResult> Create()
         {
             var userId = GetCurrentUserId();
@@ -81,23 +97,39 @@ namespace DormitoryManagement.Controllers
                 return Unauthorized();
             }
 
-            var room = await GetActiveRoomForUserAsync(userId.Value);
-            if (room == null)
-            {
-                Logger.LogWarning("Sinh viên {UserId} chưa có phòng hoạt động.", userId);
-                TempData["Error"] = "Bạn chưa được xếp phòng hoặc không có hợp đồng hợp lệ để báo sửa chữa.";
-                return RedirectToAction(nameof(MyRequests));
-            }
+            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+            ViewBag.IsAdminOrStaff = isAdminOrStaff;
 
-            ViewBag.RoomNumber = room.Value.roomNumber;
-            return View(new CreateMaintenanceRequestDto { RoomId = room.Value.roomId });
+            if (isAdminOrStaff)
+            {
+                var rooms = await _roomRepository.GetQuery()
+                    .Include(r => r.Block)
+                    .Where(r => !r.IsDeleted)
+                    .OrderBy(r => r.RoomNumber)
+                    .ToListAsync();
+                ViewBag.Rooms = rooms;
+                return View(new CreateMaintenanceRequestDto());
+            }
+            else
+            {
+                var room = await GetActiveRoomForUserAsync(userId.Value);
+                if (room == null)
+                {
+                    Logger.LogWarning("Sinh viên {UserId} chưa có phòng hoạt động.", userId);
+                    TempData["Error"] = "Bạn chưa được xếp phòng hoặc không có hợp đồng hợp lệ để báo sửa chữa.";
+                    return RedirectToAction(nameof(MyRequests));
+                }
+
+                ViewBag.RoomNumber = room.Value.roomNumber;
+                return View(new CreateMaintenanceRequestDto { RoomId = room.Value.roomId });
+            }
         }
 
         /// <summary>
-        /// Xử lý gửi yêu cầu bảo trì mới (POST – Student).
+        /// Xử lý gửi yêu cầu bảo trì mới (POST – Student/Admin/Staff).
         /// </summary>
         [HttpPost("Create")]
-        [Authorize(Roles = "Student")]
+        [Authorize(Roles = "Admin, ManagementStaff, Student")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateMaintenanceRequestDto dto)
         {
@@ -108,25 +140,58 @@ namespace DormitoryManagement.Controllers
                 return Unauthorized();
             }
 
+            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+            ViewBag.IsAdminOrStaff = isAdminOrStaff;
+
             if (!ModelState.IsValid)
             {
                 Logger.LogWarning("Dữ liệu yêu cầu sửa chữa không hợp lệ.");
-                var room = await GetActiveRoomForUserAsync(userId.Value);
-                if (room != null) ViewBag.RoomNumber = room.Value.roomNumber;
+                if (isAdminOrStaff)
+                {
+                    var rooms = await _roomRepository.GetQuery()
+                        .Include(r => r.Block)
+                        .Where(r => !r.IsDeleted)
+                        .OrderBy(r => r.RoomNumber)
+                        .ToListAsync();
+                    ViewBag.Rooms = rooms;
+                }
+                else
+                {
+                    var room = await GetActiveRoomForUserAsync(userId.Value);
+                    if (room != null) ViewBag.RoomNumber = room.Value.roomNumber;
+                }
                 return View(dto);
             }
 
             try
             {
                 await _service.CreateAsync(dto, userId.Value);
-                Logger.LogInformation("Sinh viên {UserId} tạo yêu cầu sửa chữa thành công.", userId);
-                TempData["Success"] = "Gửi yêu cầu bảo trì thành công! Kỹ thuật viên sẽ liên hệ với bạn sớm.";
+                Logger.LogInformation("Người dùng {UserId} tạo yêu cầu sửa chữa thành công.", userId);
+                TempData["Success"] = "Gửi yêu cầu bảo trì thành công!";
+                if (isAdminOrStaff)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
                 return RedirectToAction(nameof(MyRequests));
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Lỗi khi sinh viên {UserId} tạo yêu cầu sửa chữa.", userId);
+                Logger.LogError(ex, "Lỗi khi người dùng {UserId} tạo yêu cầu sửa chữa.", userId);
                 TempData["Error"] = "Đã xảy ra lỗi hệ thống. Vui lòng thử lại.";
+                if (isAdminOrStaff)
+                {
+                    var rooms = await _roomRepository.GetQuery()
+                        .Include(r => r.Block)
+                        .Where(r => !r.IsDeleted)
+                        .OrderBy(r => r.RoomNumber)
+                        .ToListAsync();
+                    ViewBag.Rooms = rooms;
+                }
+                else
+                {
+                    var room = await GetActiveRoomForUserAsync(userId.Value);
+                    if (room != null) ViewBag.RoomNumber = room.Value.roomNumber;
+                }
                 return View(dto);
             }
         }

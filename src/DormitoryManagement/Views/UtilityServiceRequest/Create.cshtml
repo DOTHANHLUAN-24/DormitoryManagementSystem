@@ -1,0 +1,293 @@
+@model DormitoryManagement.Application.Dtos.Requests.Utilities.RegisterUtilityServiceRequestDto
+@{
+    ViewData["Title"] = "Đăng ký dịch vụ";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #0f6b6d; 
+            box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #0f6b6d 0%, #14b8a6 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .disabled-look { 
+            background: #f8fafc; 
+            color: #64748b; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            font-size: 14px; 
+        }
+
+        .calc-preview {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 12px;
+            padding: 16px;
+            color: #0369a1;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Đăng ký dịch vụ tiện ích
+        </h1>
+        <a asp-action="MyRequests" class="nut-quay-lai text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại lịch sử
+        </a>
+    </header>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken();
+
+                    <div class="row g-4 mb-4">
+                        <!-- Thông tin phòng (readonly) -->
+                        <div class="col-md-12">
+                            <label class="form-label">Phòng đăng ký</label>
+                            <div class="disabled-look d-flex align-items-center gap-2">
+                                <i class="fas fa-door-closed text-primary opacity-60"></i>
+                                <span class="fw-semibold">Phòng @ViewBag.RoomNumber</span>
+                                <span class="text-muted small">(@ViewBag.BlockName)</span>
+                            </div>
+                        </div>
+
+                        <!-- Chọn dịch vụ -->
+                        <div class="col-md-12">
+                            <label asp-for="UtilityId" class="form-label">Chọn dịch vụ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-concierge-bell"></i></span>
+                                <select asp-for="UtilityId" class="form-select" id="utilitySelect" required>
+                                    <option value="" data-price="0" data-unit="">-- Chọn dịch vụ cần đăng ký --</option>
+                                    @if (ViewBag.Utilities != null)
+                                    {
+                                        foreach (var util in ViewBag.Utilities)
+                                        {
+                                            <option value="@util.Id" data-price="@util.UnitPrice" data-unit="@util.Unit">
+                                                @util.UtilityName (@util.UnitPrice.ToString("N0") đ / @util.Unit)
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <span asp-validation-for="UtilityId" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Số lượng -->
+                        <div class="col-md-12">
+                            <label asp-for="Quantity" class="form-label">Số lượng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-sort-numeric-up"></i></span>
+                                <input asp-for="Quantity" type="number" class="form-control" id="quantityInput" min="1" max="100" required />
+                            </div>
+                            <span asp-validation-for="Quantity" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Bảng tính nháp -->
+                        <div class="col-md-12 d-none" id="calcPreviewBox">
+                            <div class="calc-preview">
+                                <h6 class="fw-bold mb-2"><i class="fas fa-calculator me-1"></i> Ước tính chi phí thanh toán</h6>
+                                <div class="d-flex justify-content-between mb-1 small">
+                                    <span>Giá dịch vụ:</span>
+                                    <span class="fw-semibold" id="previewPriceText">0 đ</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-1 small">
+                                    <span>Số lượng đăng ký:</span>
+                                    <span class="fw-semibold" id="previewQtyText">1</span>
+                                </div>
+                                <hr class="my-2 bg-sky-200" style="opacity: 0.2;" />
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>Thành tiền mỗi kỳ:</span>
+                                    <span class="text-danger fs-5" id="previewTotalText">0 đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="col-md-12">
+                            <label asp-for="Notes" class="form-label">Ghi chú (nếu có)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="4" placeholder="Nhập thêm yêu cầu hoặc ghi chú cho Ban quản lý (Ví dụ: Đăng ký vé xe máy SH, Biển số 29X1-23456...)" maxlength="500"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger small mt-1 d-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="text-danger small mb-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="MyRequests" class="nut-huy">Hủy bỏ</a>
+                        <button type="submit" class="nut-luu" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Gửi đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Quy định dịch vụ</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Các dịch vụ đăng ký theo kỳ:</strong> Như giữ xe máy/xe đạp điện, wifi phòng, vệ sinh phòng... sẽ bắt đầu tính phí sau khi Ban quản lý phê duyệt.</li>
+                    <li><strong>Gia hạn tự động:</strong> Dịch vụ đăng ký sẽ được tự động cộng vào hóa đơn phòng hàng tháng trừ khi sinh viên gửi đơn hủy đăng ký.</li>
+                    <li><strong>Dịch vụ chỉ số tự động:</strong> Các chỉ số Điện & Nước được ghi nhận hàng tháng bằng công tơ điện và đồng hồ nước của phòng. Sinh viên không cần đăng ký các dịch vụ này thủ công.</li>
+                    <li><strong>Thời gian duyệt:</strong> Các yêu cầu đăng ký dịch vụ thông thường sẽ được duyệt trong vòng 24 giờ kể từ khi gửi đơn.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            function updateCalculator() {
+                const selectedOpt = $('#utilitySelect option:selected');
+                const price = parseFloat(selectedOpt.data('price')) || 0;
+                const unit = selectedOpt.data('unit') || '';
+                const qty = parseInt($('#quantityInput').val()) || 1;
+
+                if (price > 0) {
+                    $('#calcPreviewBox').removeClass('d-none');
+                    $('#previewPriceText').text(price.toLocaleString('vi-VN') + ' đ / ' + unit);
+                    $('#previewQtyText').text(qty + ' (' + unit + ')');
+                    const total = price * qty;
+                    $('#previewTotalText').text(total.toLocaleString('vi-VN') + ' đ');
+                } else {
+                    $('#calcPreviewBox').addClass('d-none');
+                }
+            }
+
+            $('#utilitySelect, #quantityInput').on('change input', updateCalculator);
+
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi đăng ký...';
+                }
+            });
+        });
+    </script>
+}

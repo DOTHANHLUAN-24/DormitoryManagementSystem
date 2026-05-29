@@ -53,6 +53,9 @@
         @if (isAdminOrManager)
         {
             <div class="d-flex gap-2">
+                <a asp-action="RecycleBin" class="btn-custom-header btn-trash text-decoration-none">
+                    <i class="fas fa-trash-alt"></i> Thùng rác
+                </a>
                 <a asp-controller="Violation" asp-action="Create" class="btn-sync-action btn-sync-add">
                     <i class="fas fa-plus"></i> Lập biên bản mới
                 </a>

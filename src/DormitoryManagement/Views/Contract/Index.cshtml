@@ -195,10 +195,13 @@
         <div class="d-flex gap-2">
             @if (pendingCount > 0)
             {
-                <a asp-action="Pending" class="btn-sync-action btn-sync-warning-light">
+                <a asp-action="Pending" class="btn-sync-action btn-sync-warning-light text-decoration-none">
                     <i class="fas fa-clock"></i> Chờ duyệt (@pendingCount)
                 </a>
             }
+            <a asp-action="RecycleBin" class="btn-sync-action btn-sync-secondary text-decoration-none">
+                <i class="fas fa-trash-alt"></i> Thùng rác
+            </a>
             <a asp-action="Create" class="btn-sync-action btn-sync-add">
                 <i class="fas fa-plus"></i> Tạo hợp đồng
             </a>

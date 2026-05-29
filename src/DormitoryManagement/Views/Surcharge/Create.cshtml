@@ -1,87 +1,235 @@
 @{
     ViewData["Title"] = "Thêm phụ phí mới";
+    Layout = "_Layout";
 }
 
-<div class="container py-5">
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #0f6b6d; 
+            box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #0f6b6d 0%, #14b8a6 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Thêm Phụ Phí Mới
+        </h1>
+        <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </header>
+
     <div class="row">
-        <div class="col-12 col-md-9 col-lg-6 mx-auto">
-            
-            <div class="mb-3">
-                <a asp-action="Index" class="text-decoration-none small text-muted">
-                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách phụ phí
-                </a>
-            </div>
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
 
-            <div class="card card-form-custom border-0 shadow-sm">
-                <div class="card-header-custom py-4 px-4 text-center text-md-start">
-                    <h3 class="fw-bold text-dark-navy mb-1">
-                        <i class="fas fa-plus-circle me-2" style="color: #5c51d6;"></i>Thêm Phụ Phí Mới
-                    </h3>
-                    <p class="text-muted small mb-0">Cấu hình các khoản phí phát sinh, phí dịch vụ bổ sung hoặc chế tài phạt áp dụng trong KTX.</p>
-                </div>
-                
-                <div class="card-body p-4 border-top border-light-subtle">
-                    <form asp-action="Create" method="post">
-                        
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark-navy">Tên khoản phụ thu / chi phí <span class="text-danger">*</span></label>
-                            <div class="input-group input-group-custom">
-                                <span class="input-group-text bg-white border-end-0 text-muted">
-                                    <i class="fas fa-coins" style="font-size:0.85rem;"></i>
-                                </span>
-                                <input type="text" class="form-control border-start-0" placeholder="Ví dụ: Phí cấp lại chìa khóa phòng, Phí phạt..." required />
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-6 mb-3">
-                                <label class="form-label fw-semibold small text-dark-navy">Phân loại chi phí</label>
-                                <select class="form-select input-custom">
-                                    <option>Phạt vi phạm</option>
-                                    <option>Dịch vụ phát sinh</option>
-                                    <option>Tiêu thụ điện thêm</option>
-                                    <option>Đền bù tài sản</option>
+                    <div class="row g-4 mb-4">
+                        <!-- Chọn Hóa đơn -->
+                        <div class="col-md-12">
+                            <label class="form-label">Chọn Hóa đơn áp dụng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-invoice"></i></span>
+                                <select name="invoiceId" class="form-select" required>
+                                    <option value="">-- Chọn hóa đơn (Mã HD - Kỳ hóa đơn - Sinh viên) --</option>
+                                    @if (ViewBag.Invoices != null)
+                                    {
+                                        foreach (var inv in ViewBag.Invoices)
+                                        {
+                                            <option value="@inv.Id">
+                                                @inv.InvoiceCode - Tháng @inv.BillingMonth/@inv.BillingYear - @(inv.Contract?.User?.FullName ?? "N/A") (Phòng @(inv.Contract?.Bed?.Room?.RoomNumber ?? "Chưa xếp"))
+                                            </option>
+                                        }
+                                    }
                                 </select>
                             </div>
-                            <div class="col-6 mb-3">
-                                <label class="form-label fw-semibold small text-dark-navy">Mức giá thu (đ) <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control input-custom fw-bold text-primary-custom" placeholder="Ví dụ: 50,000" required />
+                        </div>
+
+                        <!-- Tên khoản phụ thu -->
+                        <div class="col-md-12">
+                            <label class="form-label">Tên khoản phụ thu / chi phí <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                                <input name="surchargeName" type="text" class="form-control" 
+                                       placeholder="Ví dụ: Đền bù hỏng bóng đèn, Phí gửi xe tháng thêm..." required />
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold small text-dark-navy">Phạm vi áp dụng <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control input-custom" placeholder="Ví dụ: Tất cả các tòa, Toàn bộ khu nam, Sinh viên vi phạm..." required />
+                        <!-- Số tiền -->
+                        <div class="col-md-12">
+                            <label class="form-label">Mức giá thu (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                <input name="amount" type="number" class="form-control" min="1" 
+                                       placeholder="Ví dụ: 50000" required />
+                            </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold small text-dark-navy">Mô tả / Ghi chú quy định thu</label>
-                            <textarea class="form-control input-custom" rows="3" placeholder="Ghi chú rõ căn cứ thu hoặc quy trình bồi hoàn vật tư (nếu có)..."></textarea>
+                        <!-- Trạng thái áp dụng -->
+                        <div class="col-md-12">
+                            <div class="form-check form-switch mt-2">
+                                <input name="isActive" class="form-check-input" type="checkbox" id="isActiveSwitch" value="true" checked>
+                                <label class="form-check-label fw-semibold" for="isActiveSwitch" style="color: #1e293b; font-size: 14px;">Kích hoạt phụ phí ngay lập tức</label>
+                            </div>
                         </div>
+                    </div>
 
-                        <div class="d-flex gap-2 justify-content-end">
-                            <a asp-action="Index" class="btn btn-refresh-light px-4">Hủy bỏ</a>
-                            <button type="submit" class="btn btn-purple-gradient px-4">Tạo phụ phí</button>
-                        </div>
-                    </form>
-                </div>
+                    <div class="text-danger small mb-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">Hủy bỏ</a>
+                        <button type="submit" class="nut-luu" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Tạo phụ phí
+                        </button>
+                    </div>
+                </form>
             </div>
+        </div>
 
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Quy định phụ phí</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Liên kết hóa đơn:</strong> Mọi khoản phụ thu bắt buộc phải được gắn trực tiếp vào mã hóa đơn của một sinh viên cụ thể.</li>
+                    <li><strong>Tự động tính tổng tiền:</strong> Khi lưu thành công, hệ thống sẽ tự động cập nhật tổng tiền (`TotalAmount`) của hóa đơn đó tăng lên bằng với số tiền phụ thu mới.</li>
+                    <li><strong>Quản lý minh bạch:</strong> Vui lòng đặt tên khoản thu rõ ràng (ví dụ: "Phí đền bù hư hỏng tủ lạnh giường B02") để sinh viên nắm bắt được chi tiết khi thanh toán hóa đơn.</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 
-<style>
-    body { background-color: #f4f7f6; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .text-dark-navy { color: #3b3f5c; }
-    .text-primary-custom { color: #4361ee; }
-    .card-form-custom { border-radius: 16px; background: white; box-shadow: 0 4px 25px rgba(0,0,0,0.04)!important; }
-    .input-custom, .input-group-custom .form-control { border: 1px solid #e0e6ed; padding: 10px 14px; font-size: 14px; background-color: #f9fbfd; border-radius: 10px; }
-    .input-group-custom .form-control { border-top-left-radius: 0!important; border-bottom-left-radius: 0!important; }
-    .input-group-custom .input-group-text { border: 1px solid #e0e6ed; background-color: #f9fbfd; border-top-left-radius: 10px; border-bottom-left-radius: 10px; }
-    .form-select.input-custom { padding-right: 36px; background-color: #f9fbfd; }
-    .input-custom:focus, .input-group-custom .form-control:focus { border-color: #5c51d6; box-shadow: none; background-color: #fff; }
-    .btn-purple-gradient { background: linear-gradient(135deg, #5c51d6, #4a3ec7); color: white; border: none; font-weight: 500; padding: 10px 24px; border-radius: 10px; font-size: 0.9rem; }
-    .btn-refresh-light { background-color: #ebedf2; color: #3b3f5c; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 500; font-size: 0.9rem; }
-    .btn-refresh-light:hover { background-color: #e0e4ec; }
-</style>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+                }
+            });
+        });
+    </script>
+}

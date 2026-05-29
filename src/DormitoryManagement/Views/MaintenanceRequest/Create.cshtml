@@ -2,205 +2,374 @@
 @model DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests.CreateMaintenanceRequestDto
 
 @{
-    ViewData["Title"] = "Gửi yêu cầu sửa chữa";
+    ViewData["Title"] = "Báo cáo sự cố sửa chữa";
 }
 
 @section Styles {
-<style>
-    .form-wrap { max-width: 680px; margin: 0 auto; }
-
-    .form-header-icon { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg, #4f46e5, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; margin: 0 auto 16px; box-shadow: 0 8px 20px rgba(79,70,229,.3); }
-    .form-title { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-
-    .form-card { background: #fff; border-radius: 20px; border: 1px solid #e8edf5; box-shadow: 0 4px 24px rgba(0,0,0,.07); padding: 36px; }
-
-    .form-label { font-weight: 600; font-size: 13px; color: #374151; margin-bottom: 6px; }
-    .form-ctrl { border-radius: 12px; padding: 12px 16px; border: 1px solid #e2e8f0; font-size: 14px; transition: all .2s; }
-    .form-ctrl:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
-    .form-ctrl:disabled, .form-ctrl.disabled-look { background: #f8fafc; color: #94a3b8; }
-
-    .priority-option { border: 2px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; cursor: pointer; transition: all .2s; display: flex; align-items: center; gap: 10px; }
-    .priority-option:hover { border-color: #c7d2fe; background: #f5f3ff; }
-    .priority-option input[type=radio] { display: none; }
-    .priority-option.selected { border-color: #4f46e5; background: #eef2ff; }
-    .priority-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-    .dot-low { background: #22c55e; }
-    .dot-medium { background: #f59e0b; }
-    .dot-high { background: #f97316; }
-    .dot-urgent { background: #ef4444; }
-
-    .btn-submit { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; border: none; padding: 13px 28px; border-radius: 12px; font-weight: 700; font-size: 15px; width: 100%; transition: all .2s; box-shadow: 0 4px 14px rgba(79,70,229,.3); }
-    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(79,70,229,.4); color:#fff; }
-    .btn-submit:active { transform: translateY(0); }
-
-    .btn-back { border-radius: 12px; padding: 13px 20px; font-weight: 600; color: #64748b; border: 1px solid #e2e8f0; background: #fff; transition: all .2s; }
-    .btn-back:hover { background: #f8fafc; color: #374151; }
-
-    .info-box { background: #fef9c3; border: 1px solid #fde68a; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #92400e; display: flex; align-items: flex-start; gap: 10px; }
-
-    .char-count { font-size: 11px; color: #94a3b8; text-align: right; }
-</style>
-}
-
-<div class="container-fluid">
-    <div class="form-wrap">
-
-        <div class="text-center mb-4">
-            <div class="form-header-icon"><i class="fas fa-wrench"></i></div>
-            <h1 class="form-title">Báo cáo sự cố sửa chữa</h1>
-            <p class="text-muted small">Điền đầy đủ thông tin để kỹ thuật viên đến hỗ trợ bạn kịp thời.</p>
-        </div>
-
-        @if (TempData["Error"] != null)
-        {
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert" style="border-radius:12px;border:none;">
-                <i class="fas fa-exclamation-circle text-danger"></i>
-                <span>@TempData["Error"]</span>
-            </div>
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #1e293b, #4f46e5); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #4f46e5; 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            background: #4338ca; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
         }
 
-        <div class="form-card">
-            <form asp-action="Create" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="RoomId" />
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
 
-                <!-- Phòng hiện tại -->
-                <div class="mb-4">
-                    <label class="form-label">
-                        <i class="fas fa-door-open me-1 text-primary"></i>Phòng hiện tại của bạn
-                    </label>
-                    <div class="form-ctrl disabled-look d-flex align-items-center gap-2">
-                        <i class="fas fa-map-marker-alt text-primary opacity-60"></i>
-                        <span class="fw-semibold">@ViewBag.RoomNumber</span>
-                        <span class="text-muted small">(phòng được gán theo hợp đồng của bạn)</span>
-                    </div>
-                    <div class="info-box mt-2">
-                        <i class="fas fa-info-circle mt-1" style="flex-shrink:0;"></i>
-                        <span>Nếu đây không phải phòng của bạn, vui lòng liên hệ <strong>Ban quản lý</strong> để kiểm tra hợp đồng.</span>
-                    </div>
-                </div>
+        .priority-option { 
+            border: 2px solid #e2e8f0; 
+            border-radius: 10px; 
+            padding: 10px 14px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        .priority-option:hover { 
+            border-color: #c7d2fe; 
+            background: #f5f3ff; 
+        }
+        .priority-option.selected { 
+            border-color: #4f46e5; 
+            background: #eef2ff; 
+        }
+        .priority-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            flex-shrink: 0; 
+        }
+        .dot-low { background: #22c55e; }
+        .dot-medium { background: #f59e0b; }
+        .dot-high { background: #f97316; }
+        .dot-urgent { background: #ef4444; }
 
-                <!-- Tiêu đề -->
-                <div class="mb-4">
-                    <label asp-for="Title" class="form-label">
-                        <i class="fas fa-heading me-1 text-primary"></i>Tiêu đề sự cố <span class="text-danger">*</span>
-                    </label>
-                    <input asp-for="Title" class="form-control form-ctrl"
-                           placeholder="Vd: Đèn tuýp hỏng, Điều hòa chảy nước, Ổ điện bị hỏng..."
-                           maxlength="200" id="titleInput" />
-                    <div class="d-flex justify-content-between mt-1">
-                        <span asp-validation-for="Title" class="text-danger small"></span>
-                        <span class="char-count" id="titleCount">0/200</span>
-                    </div>
-                </div>
+        .char-count { font-size: 11px; color: #94a3b8; text-align: right; }
+        .info-box { background: #fef9c3; border: 1px solid #fde68a; border-radius: 10px; padding: 10px 14px; font-size: 13px; color: #92400e; display: flex; align-items: flex-start; gap: 8px; }
+        .disabled-look { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 14px; }
+    </style>
+}
 
-                <!-- Mức độ ưu tiên -->
-                <div class="mb-4">
-                    <label class="form-label">
-                        <i class="fas fa-signal me-1 text-primary"></i>Mức độ ưu tiên <span class="text-danger">*</span>
-                    </label>
-                    <input type="hidden" asp-for="Priority" id="priorityValue" />
-                    <div class="row g-2">
-                        <div class="col-6 col-md-3">
-                            <label class="priority-option w-100" id="opt-Low" onclick="selectPriority('Low')">
-                                <span class="priority-dot dot-low"></span>
-                                <div>
-                                    <div class="fw-semibold" style="font-size:13px;">Thấp</div>
-                                    <div class="text-muted" style="font-size:11px;">Có thể chờ</div>
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Báo cáo sự cố sửa chữa
+        </h1>
+        <div class="d-flex gap-2">
+            @if (ViewBag.IsAdminOrStaff == true)
+            {
+                <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                </a>
+            }
+            else
+            {
+                <a asp-action="MyRequests" class="nut-quay-lai text-decoration-none">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách
+                </a>
+            }
+        </div>
+    </header>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-4 mb-4">
+                        <!-- Chọn phòng (Admin/Staff) hoặc hiển thị phòng hiện tại (Student) -->
+                        <div class="col-md-12">
+                            @if (ViewBag.IsAdminOrStaff == true)
+                            {
+                                <label asp-for="RoomId" class="form-label">Chọn phòng phát sinh sự cố <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-door-open"></i></span>
+                                    <select asp-for="RoomId" class="form-select" required>
+                                        <option value="">-- Chọn phòng --</option>
+                                        @if (ViewBag.Rooms != null)
+                                        {
+                                            foreach (var room in ViewBag.Rooms)
+                                            {
+                                                <option value="@room.Id">@room.RoomNumber (@(room.Block?.BlockName ?? "N/A"))</option>
+                                            }
+                                        }
+                                    </select>
                                 </div>
-                            </label>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="priority-option w-100 selected" id="opt-Medium" onclick="selectPriority('Medium')">
-                                <span class="priority-dot dot-medium"></span>
-                                <div>
-                                    <div class="fw-semibold" style="font-size:13px;">Trung bình</div>
-                                    <div class="text-muted" style="font-size:11px;">Nên sửa sớm</div>
+                                <span asp-validation-for="RoomId" class="text-danger small mt-1 d-block"></span>
+                            }
+                            else
+                            {
+                                <input type="hidden" asp-for="RoomId" />
+                                <label class="form-label">Phòng hiện tại của bạn</label>
+                                <div class="disabled-look d-flex align-items-center gap-2">
+                                    <i class="fas fa-map-marker-alt text-primary opacity-60"></i>
+                                    <span class="fw-semibold">@ViewBag.RoomNumber</span>
+                                    <span class="text-muted small">(hợp đồng hiện tại của bạn)</span>
                                 </div>
-                            </label>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <label class="priority-option w-100" id="opt-High" onclick="selectPriority('High')">
-                                <span class="priority-dot dot-high"></span>
-                                <div>
-                                    <div class="fw-semibold" style="font-size:13px;">Cao</div>
-                                    <div class="text-muted" style="font-size:11px;">Ảnh hưởng sinh hoạt</div>
+                                <div class="info-box mt-2">
+                                    <i class="fas fa-info-circle mt-1" style="flex-shrink:0;"></i>
+                                    <span>Nếu đây không phải phòng của bạn, vui lòng liên hệ <strong>Ban quản lý</strong> để kiểm tra hợp đồng.</span>
                                 </div>
-                            </label>
+                            }
                         </div>
-                        <div class="col-6 col-md-3">
-                            <label class="priority-option w-100" id="opt-Urgent" onclick="selectPriority('Urgent')">
-                                <span class="priority-dot dot-urgent"></span>
-                                <div>
-                                    <div class="fw-semibold" style="font-size:13px;">Khẩn cấp</div>
-                                    <div class="text-muted" style="font-size:11px;">Nguy hiểm, cháy nổ...</div>
+
+                        <!-- Tiêu đề sự cố -->
+                        <div class="col-md-12">
+                            <label asp-for="Title" class="form-label">Tiêu đề sự cố <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                <input asp-for="Title" class="form-control" 
+                                       placeholder="Ví dụ: Đèn nhấp nháy, điều hòa chảy nước, mất nước..."
+                                       maxlength="200" id="titleInput" required />
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span asp-validation-for="Title" class="text-danger small"></span>
+                                <span class="char-count" id="titleCount">0/200</span>
+                            </div>
+                        </div>
+
+                        <!-- Mức độ ưu tiên -->
+                        <div class="col-md-12">
+                            <label class="form-label">Mức độ ưu tiên <span class="text-danger">*</span></label>
+                            <input type="hidden" asp-for="Priority" id="priorityValue" />
+                            <div class="row g-2">
+                                <div class="col-6 col-md-3">
+                                    <label class="priority-option w-100" id="opt-Low" onclick="selectPriority('Low')">
+                                        <span class="priority-dot dot-low"></span>
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:13px;">Thấp</div>
+                                            <div class="text-muted" style="font-size:10px;">Có thể chờ</div>
+                                        </div>
+                                    </label>
                                 </div>
-                            </label>
+                                <div class="col-6 col-md-3">
+                                    <label class="priority-option w-100 selected" id="opt-Medium" onclick="selectPriority('Medium')">
+                                        <span class="priority-dot dot-medium"></span>
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:13px;">Trung bình</div>
+                                            <div class="text-muted" style="font-size:10px;">Nên sửa sớm</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="priority-option w-100" id="opt-High" onclick="selectPriority('High')">
+                                        <span class="priority-dot dot-high"></span>
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:13px;">Cao</div>
+                                            <div class="text-muted" style="font-size:10px;">Ảnh hưởng sinh hoạt</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <label class="priority-option w-100" id="opt-Urgent" onclick="selectPriority('Urgent')">
+                                        <span class="priority-dot dot-urgent"></span>
+                                        <div>
+                                            <div class="fw-semibold" style="font-size:13px;">Khẩn cấp</div>
+                                            <div class="text-muted" style="font-size:10px;">Nguy hiểm, cháy nổ...</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Priority" class="text-danger small mt-1 d-block"></span>
+                        </div>
+
+                        <!-- Mô tả chi tiết -->
+                        <div class="col-md-12">
+                            <label asp-for="Description" class="form-label">Mô tả chi tiết sự cố <span class="text-danger">*</span></label>
+                            <textarea asp-for="Description" class="form-control" rows="5"
+                                      maxlength="2000" id="descInput" required
+                                      placeholder="Hãy mô tả rõ vị trí sự cố, biểu hiện lỗi, thời điểm xảy ra..."></textarea>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span asp-validation-for="Description" class="text-danger small"></span>
+                                <span class="char-count" id="descCount">0/2000</span>
+                            </div>
                         </div>
                     </div>
-                    <span asp-validation-for="Priority" class="text-danger small"></span>
-                </div>
 
-                <!-- Mô tả chi tiết -->
-                <div class="mb-4">
-                    <label asp-for="Description" class="form-label">
-                        <i class="fas fa-align-left me-1 text-primary"></i>Mô tả chi tiết <span class="text-danger">*</span>
-                    </label>
-                    <textarea asp-for="Description" class="form-control form-ctrl" rows="4"
-                              maxlength="2000" id="descInput"
-                              placeholder="Mô tả rõ vị trí sự cố, biểu hiện cụ thể, thời điểm phát sinh... để kỹ thuật viên chuẩn bị dụng cụ phù hợp."></textarea>
-                    <div class="d-flex justify-content-between mt-1">
-                        <span asp-validation-for="Description" class="text-danger small"></span>
-                        <span class="char-count" id="descCount">0/2000</span>
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        @if (ViewBag.IsAdminOrStaff == true)
+                        {
+                            <a asp-action="Index" class="nut-huy">Hủy bỏ</a>
+                        }
+                        else
+                        {
+                            <a asp-action="MyRequests" class="nut-huy">Hủy bỏ</a>
+                        }
+                        <button type="submit" class="nut-luu" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> Gửi yêu cầu
+                        </button>
                     </div>
-                </div>
+                </form>
+            </div>
+        </div>
 
-                <!-- Buttons -->
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-submit" id="submitBtn">
-                        <i class="fas fa-paper-plane me-2"></i>Gửi yêu cầu sửa chữa
-                    </button>
-                    <a asp-action="MyRequests" class="btn btn-back text-center">
-                        <i class="fas fa-arrow-left me-1"></i>Quay lại danh sách
-                    </a>
-                </div>
-            </form>
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Hướng dẫn gửi yêu cầu</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Mô tả chi tiết:</strong> Hãy mô tả chi tiết tình trạng lỗi (ví dụ: mất điện cả phòng, chỉ hỏng một ổ điện cạnh giường A...) để kỹ thuật viên chuẩn bị sẵn linh kiện thay thế.</li>
+                    <li><strong>Mức độ ưu tiên:</strong> 
+                        <ul>
+                            <li><em>Thấp:</em> Các lỗi nhỏ không ảnh hưởng lớn (xước tường, cửa tủ lỏng...).</li>
+                            <li><em>Trung bình / Cao:</em> Đèn hỏng, quạt không quay, mất mạng internet...</li>
+                            <li><em>Khẩn cấp:</em> Rò rỉ điện, chập cháy, vỡ ống nước lớn ngập phòng...</li>
+                        </ul>
+                    </li>
+                    <li><strong>Thời gian xử lý:</strong> Ban quản lý sẽ tiếp nhận và giao kỹ thuật viên liên hệ kiểm tra trong vòng 24h.</li>
+                </ul>
+            </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-@{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-<script>
-    // Priority selector
-    var currentPriority = 'Medium';
-    document.getElementById('priorityValue').value = currentPriority;
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Priority selector
+        var currentPriority = 'Medium';
+        document.getElementById('priorityValue').value = currentPriority;
 
-    function selectPriority(val) {
-        ['Low','Medium','High','Urgent'].forEach(p => {
-            document.getElementById('opt-' + p)?.classList.remove('selected');
+        function selectPriority(val) {
+            ['Low','Medium','High','Urgent'].forEach(p => {
+                document.getElementById('opt-' + p)?.classList.remove('selected');
+            });
+            document.getElementById('opt-' + val)?.classList.add('selected');
+            document.getElementById('priorityValue').value = val;
+            currentPriority = val;
+        }
+
+        // Char counters
+        function updateCount(inputId, countId) {
+            var el = document.getElementById(inputId);
+            var ct = document.getElementById(countId);
+            if (!el || !ct) return;
+            el.addEventListener('input', () => { ct.textContent = el.value.length + '/' + (el.maxLength || ''); });
+            ct.textContent = el.value.length + '/' + (el.maxLength || '');
+        }
+        updateCount('titleInput', 'titleCount');
+        updateCount('descInput', 'descCount');
+
+        // Loading spinner and disable submit on click
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi yêu cầu...';
+                }
+            });
         });
-        document.getElementById('opt-' + val)?.classList.add('selected');
-        document.getElementById('priorityValue').value = val;
-        currentPriority = val;
-    }
-
-    // Char counters
-    function updateCount(inputId, countId) {
-        var el = document.getElementById(inputId);
-        var ct = document.getElementById(countId);
-        if (!el || !ct) return;
-        el.addEventListener('input', () => { ct.textContent = el.value.length + '/' + (el.maxLength || ''); });
-        ct.textContent = el.value.length + '/' + (el.maxLength || '');
-    }
-    updateCount('titleInput', 'titleCount');
-    updateCount('descInput', 'descCount');
-
-    // Prevent double-submit
-    document.querySelector('form').addEventListener('submit', function() {
-        var btn = document.getElementById('submitBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
-    });
-</script>
+    </script>
 }

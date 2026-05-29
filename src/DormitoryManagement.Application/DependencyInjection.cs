@@ -20,6 +20,7 @@ namespace DormitoryManagement.Application
             services.AddScoped<IRoomTypeService, RoomTypeService>();
             services.AddScoped<IAssetService, AssetService>();
             services.AddScoped<IUtilityService, UtilityService>();
+            services.AddScoped<IUtilityServiceRequestService, UtilityServiceRequestService>();
             services.AddScoped<IVehicleService, VehicleService>();
             services.AddScoped<IStatisticService, StatisticService>();
             services.AddScoped<IInvoiceService, InvoiceService>();

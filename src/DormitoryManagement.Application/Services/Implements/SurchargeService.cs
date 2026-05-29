@@ -1,7 +1,13 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Application.Services.Interfaces;
+using DormitoryManagement.Domain.Common;
 
 namespace DormitoryManagement.Application.Services.Implements
 {
@@ -52,6 +58,11 @@ namespace DormitoryManagement.Application.Services.Implements
             };
 
             await _surchargeRepository.AddAsync(surcharge);
+
+            // Cập nhật TotalAmount của hóa đơn tương ứng
+            invoice.TotalAmount += amount;
+            await _invoiceRepository.UpdateAsync(invoice);
+
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
@@ -64,12 +75,23 @@ namespace DormitoryManagement.Application.Services.Implements
             var surcharge = await _surchargeRepository.GetByIdAsync(id);
             if (surcharge == null || surcharge.IsDeleted) return false;
 
+            var oldAmount = surcharge.Amount;
+
             surcharge.SurchargeName = surchargeName.Trim();
             surcharge.Amount = amount;
             surcharge.IsActive = isActive;
             surcharge.LastModified = DateTime.Now;
 
             await _surchargeRepository.UpdateAsync(surcharge);
+
+            // Cập nhật TotalAmount của hóa đơn tương ứng
+            var invoice = await _invoiceRepository.GetByIdAsync(surcharge.InvoiceId);
+            if (invoice != null)
+            {
+                invoice.TotalAmount = invoice.TotalAmount - oldAmount + amount;
+                await _invoiceRepository.UpdateAsync(invoice);
+            }
+
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
@@ -81,6 +103,15 @@ namespace DormitoryManagement.Application.Services.Implements
             if (surcharge == null || surcharge.IsDeleted) return false;
 
             await _surchargeRepository.DeleteAsync(surcharge, isSoftDelete: true);
+
+            // Cập nhật TotalAmount của hóa đơn tương ứng
+            var invoice = await _invoiceRepository.GetByIdAsync(surcharge.InvoiceId);
+            if (invoice != null)
+            {
+                invoice.TotalAmount -= surcharge.Amount;
+                await _invoiceRepository.UpdateAsync(invoice);
+            }
+
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 
@@ -88,11 +119,85 @@ namespace DormitoryManagement.Application.Services.Implements
         {
             if (id == Guid.Empty) return false;
 
-            var surcharge = await _surchargeRepository.GetByIdAsync(id);
+            var surcharge = await _surchargeRepository.GetQuery().FirstOrDefaultAsync(s => s.Id == id);
             if (surcharge == null || !surcharge.IsDeleted) return false;
 
             await _surchargeRepository.RestoreAsync(surcharge);
+
+            // Cập nhật TotalAmount của hóa đơn tương ứng
+            var invoice = await _invoiceRepository.GetByIdAsync(surcharge.InvoiceId);
+            if (invoice != null)
+            {
+                invoice.TotalAmount += surcharge.Amount;
+                await _invoiceRepository.UpdateAsync(invoice);
+            }
+
             return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        public async Task<PagedResult<Surcharge>> GetPagedSurchargesAsync(int pageIndex, int pageSize, string? searchString, bool? isActive = null, bool? isDeleted = false)
+        {
+            var query = _surchargeRepository.GetQuery()
+                .Include(s => s.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.User)
+                .Include(s => s.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.Bed)
+                            .ThenInclude(b => b.Room)
+                .Where(s => s.IsDeleted == (isDeleted ?? false));
+
+            if (isActive.HasValue)
+            {
+                query = query.Where(s => s.IsActive == isActive.Value);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(s => s.SurchargeName.Contains(searchString) || 
+                                         (s.Invoice != null && s.Invoice.InvoiceCode.Contains(searchString)) || 
+                                         (s.Invoice != null && s.Invoice.Contract != null && s.Invoice.Contract.User != null && s.Invoice.Contract.User.FullName.Contains(searchString)));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query.OrderByDescending(s => s.CreatedDate)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Surcharge>(items, totalCount, pageIndex, pageSize);
+        }
+
+        public async Task<PagedResult<Surcharge>> GetPagedSurchargesByUserIdAsync(Guid userId, int pageIndex, int pageSize, string? searchString, bool? isActive = null)
+        {
+            var query = _surchargeRepository.GetQuery()
+                .Include(s => s.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.User)
+                .Include(s => s.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.Bed)
+                            .ThenInclude(b => b.Room)
+                .Where(s => !s.IsDeleted && s.Invoice.Contract.UserId == userId);
+
+            if (isActive.HasValue)
+            {
+                query = query.Where(s => s.IsActive == isActive.Value);
+            }
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(s => s.SurchargeName.Contains(searchString) || 
+                                         (s.Invoice != null && s.Invoice.InvoiceCode.Contains(searchString)));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query.OrderByDescending(s => s.CreatedDate)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Surcharge>(items, totalCount, pageIndex, pageSize);
         }
     }
 }
