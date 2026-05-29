@@ -29,6 +29,7 @@ namespace DormitoryManagement.Application
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
             services.AddScoped<IMaintenanceRequestService, MaintenanceRequestService>();
+            services.AddScoped<IUtilityUsageService, UtilityUsageService>();
 
             return services;
         }
