@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using DormitoryManagement.Domain.Common;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Enums;
@@ -30,6 +36,49 @@ namespace DormitoryManagement.Application.Services.Implements
         public Task<IEnumerable<Payment>> GetByInvoiceIdAsync(Guid invoiceId)
         {
             return _paymentRepository.GetByInvoiceIdAsync(invoiceId);
+        }
+
+        public async Task<PagedResult<Payment>> GetPagedPaymentsAsync(
+            int pageIndex,
+            int pageSize,
+            string? searchString = null,
+            Guid? userId = null)
+        {
+            var query = _paymentRepository.GetQuery()
+                .Include(p => p.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.User)
+                .Include(p => p.Invoice)
+                    .ThenInclude(i => i.Contract)
+                        .ThenInclude(c => c.Bed)
+                            .ThenInclude(b => b.Room)
+                                .ThenInclude(r => r.Block)
+                .Where(p => p.IsActive && !p.IsDeleted)
+                .AsQueryable();
+
+            if (userId.HasValue)
+            {
+                query = query.Where(p => p.Invoice.Contract.UserId == userId.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchString))
+            {
+                var search = searchString.Trim().ToLower();
+                query = query.Where(p => p.TransactionCode.ToLower().Contains(search)
+                    || p.Invoice.InvoiceCode.ToLower().Contains(search)
+                    || p.Invoice.Contract.User.FullName.ToLower().Contains(search)
+                    || p.Invoice.Contract.User.Code.ToLower().Contains(search)
+                    || p.Invoice.Contract.Bed.Room.RoomNumber.ToLower().Contains(search));
+            }
+
+            var totalCount = await query.CountAsync();
+            var items = await query
+                .OrderByDescending(p => p.PaymentDate)
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<Payment>(items, totalCount, pageIndex, pageSize);
         }
 
         public async Task<bool> CreatePaymentAsync(

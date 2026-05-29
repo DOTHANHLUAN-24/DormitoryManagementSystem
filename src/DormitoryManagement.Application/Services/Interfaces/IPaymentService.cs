@@ -33,5 +33,14 @@ namespace DormitoryManagement.Application.Services.Interfaces
         /// Xóa (soft delete) thanh toán theo Id.
         /// </summary>
         Task<bool> DeletePaymentAsync(Guid id);
+
+        /// <summary>
+        /// Lấy danh sách thanh toán phân trang và tìm kiếm.
+        /// </summary>
+        Task<DormitoryManagement.Domain.Common.PagedResult<Payment>> GetPagedPaymentsAsync(
+            int pageIndex,
+            int pageSize,
+            string? searchString = null,
+            Guid? userId = null);
     }
 }
