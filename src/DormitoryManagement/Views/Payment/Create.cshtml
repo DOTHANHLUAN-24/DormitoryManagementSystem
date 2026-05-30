@@ -1,0 +1,386 @@
+@using DormitoryManagement.Domain.Enums
+@{
+    ViewData["Title"] = "Ghi nhận đóng tiền";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #0f6b6d; 
+            box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #0f6b6d 0%, #14b8a6 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+        
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .balance-panel {
+            background-color: #f0fdf4;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px dashed #86efac;
+            margin-bottom: 24px;
+        }
+
+        .balance-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .balance-item:last-child {
+            margin-bottom: 0;
+            border-top: 1px solid #bbf7d0;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Ghi nhận giao dịch đóng tiền
+        </h1>
+        <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </header>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post" id="paymentForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-4 mb-4">
+                        <!-- Chọn Hóa đơn cần đóng tiền -->
+                        <div class="col-md-12">
+                            <label class="form-label">Chọn Hóa đơn cần đóng tiền <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-file-invoice-dollar"></i></span>
+                                <select name="invoiceId" id="invoiceId" class="form-select" required>
+                                    <option value="">-- Chọn hóa đơn (Mã HĐ - Kỳ HĐ - Sinh viên - Phòng) --</option>
+                                    @if (ViewBag.Invoices != null)
+                                    {
+                                        foreach (var inv in ViewBag.Invoices)
+                                        {
+                                            var roomNo = inv.Contract?.Bed?.Room?.RoomNumber ?? "Chưa xếp";
+                                            var blockName = inv.Contract?.Bed?.Room?.Block?.BlockName ?? "";
+                                            <option value="@inv.Id">
+                                                @inv.InvoiceCode - Kỳ tháng @inv.BillingMonth/@inv.BillingYear - @(inv.Contract?.User?.FullName ?? "N/A") (Phòng @roomNo @blockName)
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Panel thông tin số dư nợ hóa đơn -->
+                        <div class="col-md-12 d-none" id="balancePanelContainer">
+                            <div class="balance-panel">
+                                <h6 class="fw-bold text-success mb-3"><i class="fas fa-info-circle me-1"></i> Tình trạng dư nợ của hóa đơn:</h6>
+                                <div class="balance-item">
+                                    <span class="text-muted">Tổng số tiền hóa đơn:</span>
+                                    <span class="fw-bold text-dark" id="invoiceTotalAmount">0 đ</span>
+                                </div>
+                                <div class="balance-item">
+                                    <span class="text-muted">Đã thanh toán trước đó:</span>
+                                    <span class="fw-bold text-dark" id="invoicePaidAmount">0 đ</span>
+                                </div>
+                                <div class="balance-item">
+                                    <span class="text-muted" style="font-size: 15px;">Số tiền còn lại cần đóng:</span>
+                                    <span class="fw-bold text-primary" style="font-size: 16px;" id="invoiceRemainingAmount">0 đ</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Số tiền thanh toán kỳ này -->
+                        <div class="col-md-6">
+                            <label class="form-label">Số tiền đóng kỳ này (VNĐ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-coins"></i></span>
+                                <input name="amountPaid" id="amountPaid" type="number" min="1" step="1000" class="form-control" 
+                                       placeholder="Ví dụ: 1500000" required disabled />
+                            </div>
+                            <span class="text-muted small" id="amountPaidStatus">Chọn hóa đơn để nhập số tiền.</span>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="col-md-6">
+                            <label class="form-label">Phương thức thanh toán <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-wallet"></i></span>
+                                <select name="method" id="method" class="form-select" required>
+                                    <option value="Cash">Tiền mặt (Cash)</option>
+                                    <option value="BankTransfer" selected>Chuyển khoản (BankTransfer)</option>
+                                    <option value="CreditCard">Thẻ tín dụng (CreditCard)</option>
+                                    <option value="EWallet">Ví điện tử (EWallet)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Mã giao dịch/đối soát (Transaction Code) -->
+                        <div class="col-md-12">
+                            <label class="form-label">Mã giao dịch / Số hóa đơn ngân hàng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+                                <input name="transactionCode" id="transactionCode" type="text" class="form-control" 
+                                       placeholder="Ví dụ: FT261234509, CASH-REC-1002..." required />
+                            </div>
+                            <span class="text-muted small">Dùng để đối soát với sao kê ngân hàng hoặc biên lai nộp tiền mặt.</span>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="col-md-12">
+                            <label class="form-label">Ghi chú giao dịch</label>
+                            <textarea name="note" class="form-control" rows="3" placeholder="Nhập ghi chú đóng tiền (nếu có)..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-danger small mb-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">Hủy bỏ</a>
+                        <button type="submit" class="nut-luu" id="submitBtn" disabled>
+                            <i class="fas fa-paper-plane"></i> Ghi nhận giao dịch
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Quy định thanh toán</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Thanh toán nhiều lần:</strong> Hệ thống cho phép sinh viên trả tiền hóa đơn thành nhiều đợt. Mỗi đợt sẽ ghi nhận một giao dịch riêng.</li>
+                    <li><strong>Số tiền hợp lệ:</strong> Số tiền nộp kỳ này không được vượt quá số tiền nợ còn lại của hóa đơn đó.</li>
+                    <li><strong>Mã giao dịch duy nhất:</strong> Mã giao dịch đối soát không được phép trùng lặp để tránh ghi nhận khống giao dịch.</li>
+                    <li><strong>Tự cập nhật trạng thái hóa đơn:</strong> Khi giao dịch được ghi nhận, trạng thái hóa đơn tự động chuyển sang `Paid` (nếu trả đủ), `PartiallyPaid` (nếu trả một phần) hoặc giữ `Overdue`/`Unpaid` (nếu số tiền đóng bằng 0).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            var invoiceRemaining = 0;
+
+            // Khi thay đổi hóa đơn đóng tiền
+            $('#invoiceId').change(function () {
+                var invoiceId = $(this).val();
+                if (!invoiceId) {
+                    resetInvoiceDetails();
+                    return;
+                }
+
+                // Show loading
+                $('#amountPaidStatus').text('Đang tải chi tiết hóa đơn...').addClass('text-warning').removeClass('text-success text-danger');
+                $('#submitBtn').prop('disabled', true);
+
+                $.ajax({
+                    url: `/Payment/GetInvoiceDetails`,
+                    type: 'GET',
+                    data: { invoiceId: invoiceId },
+                    success: function (res) {
+                        if (res.success) {
+                            invoiceRemaining = parseFloat(res.remainingAmount) || 0;
+                            
+                            // Cập nhật thông tin nợ
+                            $('#invoiceTotalAmount').text((res.totalAmount).toLocaleString('vi-VN') + ' đ');
+                            $('#invoicePaidAmount').text((res.paidAmount).toLocaleString('vi-VN') + ' đ');
+                            $('#invoiceRemainingAmount').text(invoiceRemaining.toLocaleString('vi-VN') + ' đ');
+                            
+                            // Show panel số dư
+                            $('#balancePanelContainer').removeClass('d-none');
+                            
+                            // Mở khóa input số tiền đóng
+                            $('#amountPaid').prop('disabled', false).attr('max', invoiceRemaining).val(invoiceRemaining);
+                            $('#amountPaidStatus').text('Nhập số tiền nộp (mặc định đã điền toàn bộ số nợ).').addClass('text-success').removeClass('text-warning text-danger');
+                            
+                            $('#submitBtn').prop('disabled', false);
+                            validateAmountPaid();
+                        } else {
+                            resetInvoiceDetails();
+                            $('#amountPaidStatus').text('Không tải được thông tin hóa đơn.').addClass('text-danger').removeClass('text-warning text-success');
+                        }
+                    },
+                    error: function () {
+                        resetInvoiceDetails();
+                        $('#amountPaidStatus').text('Lỗi kết nối máy chủ khi tải hóa đơn.').addClass('text-danger').removeClass('text-warning text-success');
+                    }
+                });
+            });
+
+            // Lắng nghe sự kiện thay đổi của số tiền đóng
+            $('#amountPaid').on('input change', function () {
+                validateAmountPaid();
+            });
+
+            function resetInvoiceDetails() {
+                invoiceRemaining = 0;
+                $('#balancePanelContainer').addClass('d-none');
+                $('#amountPaid').prop('disabled', true).val('').removeAttr('max');
+                $('#amountPaidStatus').text('Chọn hóa đơn để nhập số tiền.').removeClass('text-success text-warning text-danger');
+                $('#submitBtn').prop('disabled', true);
+            }
+
+            function validateAmountPaid() {
+                var typed = parseFloat($('#amountPaid').val()) || 0;
+                if (typed <= 0) {
+                    $('#amountPaidStatus').text('Số tiền đóng phải lớn hơn 0!').addClass('text-danger').removeClass('text-success');
+                    $('#submitBtn').prop('disabled', true);
+                    return;
+                }
+
+                if (typed > invoiceRemaining) {
+                    $('#amountPaidStatus').text(`Lỗi: Số tiền nộp vượt quá số nợ còn lại (${invoiceRemaining.toLocaleString('vi-VN')} đ)!`).addClass('text-danger').removeClass('text-success');
+                    $('#submitBtn').prop('disabled', true);
+                    return;
+                }
+
+                var balanceAfter = invoiceRemaining - typed;
+                $('#amountPaidStatus').html(`Hợp lệ. Số nợ còn lại sau giao dịch: <strong>${balanceAfter.toLocaleString('vi-VN')} đ</strong>`).addClass('text-success').removeClass('text-danger');
+                $('#submitBtn').prop('disabled', false);
+            }
+
+            // Spinner khi submit form
+            $('#paymentForm').submit(function (e) {
+                var typed = parseFloat($('#amountPaid').val()) || 0;
+                if (typed <= 0 || typed > invoiceRemaining) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Số tiền không hợp lệ',
+                        text: 'Vui lòng kiểm tra lại số tiền đóng so với số nợ còn lại.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return false;
+                }
+
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu...';
+                }
+            });
+        });
+    </script>
+}

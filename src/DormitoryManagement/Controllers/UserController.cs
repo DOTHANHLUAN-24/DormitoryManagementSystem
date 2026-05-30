@@ -16,7 +16,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Index(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách người dùng hoạt động trang {Page}, tìm kiếm: '{Search}'", page, search);
-            int pageSize = BaseController.PageSize;
+            int pageSize = PageSize;
             // result trả về kiểu PagedResult<UserResponseDto>
             var result = await _userService.GetActiveUsersPagedAsync(page, pageSize, search);
 
@@ -28,7 +28,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> BannedList(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách tài khoản bị khóa trang {Page}, tìm kiếm: '{Search}'", page, search);
-            int pageSize = BaseController.PageSize;
+            int pageSize = PageSize;
             var result = await _userService.GetBannedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;
@@ -39,7 +39,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> RecycleBin(int page = 1, string search = "")
         {
             Logger.LogInformation("Đang tải danh sách người dùng đã bị xóa trang {Page}, tìm kiếm: '{Search}'", page, search);
-            int pageSize = BaseController.PageSize;
+            int pageSize = PageSize;
             var result = await _userService.GetDeletedUsersPagedAsync(page, pageSize, search);
 
             ViewBag.Search = search;

@@ -1,0 +1,191 @@
+@model IEnumerable<DormitoryManagement.Domain.Entities.UtilityServiceRequest>
+@{
+    ViewData["Title"] = "Đăng ký dịch vụ cá nhân";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-register-new {
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6);
+            color: white;
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(15, 107, 109, 0.2);
+            text-decoration: none;
+        }
+
+        .btn-register-new:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(15, 107, 109, 0.3);
+            color: white;
+        }
+
+        .trang-thai {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .trang-thai.cho-duyet {
+            background: #fffbeb;
+            color: #d97706;
+            border: 1px solid #fde68a;
+        }
+
+        .trang-thai.da-duyet {
+            background: #ecfdf5;
+            color: #10b981;
+            border: 1px solid #a7f3d0;
+        }
+
+        .trang-thai.tu-choi {
+            background: #fef2f2;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .ma-yeu-cau-badge {
+            background: #f8fafc;
+            color: #475569;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-concierge-bell me-2"></i>Dịch Vụ Đã Đăng Ký</h1>
+        <a asp-action="Create" class="btn-register-new text-decoration-none">
+            <i class="fas fa-plus-circle"></i> Đăng ký dịch vụ mới
+        </a>
+    </header>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 rounded-4 mb-4 shadow-sm" role="alert" style="background-color: #ecfdf5; color: #047857;">
+            <i class="fas fa-check-circle me-2"></i> @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show border-0 rounded-4 mb-4 shadow-sm" role="alert" style="background-color: #fef2f2; color: #b91c1c;">
+            <i class="fas fa-exclamation-circle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Danh sách đăng ký -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Mã yêu cầu</th>
+                        <th>Dịch vụ đăng ký</th>
+                        <th class="text-end">Đơn giá</th>
+                        <th class="text-center">Số lượng</th>
+                        <th class="text-end">Thành tiền / kỳ</th>
+                        <th>Ngày yêu cầu</th>
+                        <th>Trạng thái</th>
+                        <th class="pe-4">Ghi chú</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="ma-yeu-cau-badge">#YCDV-@item.Id.ToString().Substring(0, 8).ToUpper()</span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@(item.Utility?.UtilityName ?? "N/A")</div>
+                                    <div class="small text-muted">Đơn vị tính: @(item.Utility?.Unit ?? "N/A")</div>
+                                </td>
+                                <td class="text-end fw-semibold">
+                                    @(item.Utility?.UnitPrice.ToString("N0") ?? "0") đ
+                                </td>
+                                <td class="text-center fw-bold text-secondary">
+                                    @item.Quantity
+                                </td>
+                                <td class="text-end fw-bold text-primary">
+                                    @if (item.Utility != null)
+                                    {
+                                        @((item.Utility.UnitPrice * item.Quantity).ToString("N0") + " đ")
+                                    }
+                                    else
+                                    {
+                                        @("0 đ")
+                                    }
+                                </td>
+                                <td>
+                                    <div>@item.CreatedDate.ToString("dd/MM/yyyy")</div>
+                                    <div class="small text-muted">@item.CreatedDate.ToString("HH:mm")</div>
+                                </td>
+                                <td>
+                                    @if (item.Status == "Pending")
+                                    {
+                                        <span class="trang-thai cho-duyet"><i class="fas fa-clock me-1"></i> Chờ duyệt</span>
+                                    }
+                                    else if (item.Status == "Approved")
+                                    {
+                                        <span class="trang-thai da-duyet"><i class="fas fa-check-circle me-1"></i> Đang sử dụng</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="trang-thai tu-choi"><i class="fas fa-times-circle me-1"></i> Bị từ chối</span>
+                                    }
+                                </td>
+                                <td class="pe-4 text-muted small" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="@item.Notes">
+                                    @(string.IsNullOrEmpty(item.Notes) ? "-" : item.Notes)
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <div class="mb-3">
+                                    <i class="fas fa-concierge-bell fa-3x opacity-30 text-secondary"></i>
+                                </div>
+                                <h5>Chưa có đăng ký dịch vụ nào</h5>
+                                <p class="small text-muted mb-3">Bạn có thể tự đăng ký các dịch vụ bổ sung như Giữ xe máy, Wifi phòng, Vệ sinh phòng...</p>
+                                <a asp-action="Create" class="btn-register-new btn-sm text-decoration-none">
+                                    <i class="fas fa-plus-circle"></i> Đăng ký dịch vụ ngay
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,361 @@
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Domain.Entities.UtilityUsage>
+@{
+    ViewData["Title"] = "Thùng rác chỉ số điện nước";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang {
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ef4444, #f87171);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .thanh-tim-kiem-sync {
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f1f5f9;
+        }
+
+        .input-sync {
+            height: 46px;
+            border-radius: 12px !important;
+            border: 1px solid #e2e8f0 !important;
+            font-size: 14px;
+            color: #1e293b;
+            width: 100%;
+            padding: 10px 16px;
+        }
+
+        .input-sync:focus {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1) !important;
+            outline: none;
+        }
+
+        .khung-tim-kiem-sync {
+            position: relative;
+            width: 100%;
+        }
+
+        .khung-tim-kiem-sync i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            z-index: 10;
+        }
+
+        .khung-tim-kiem-sync input {
+            padding-left: 40px;
+        }
+
+        .btn-search-sync {
+            height: 46px;
+            padding: 0 20px;
+            border-radius: 12px;
+            border: none;
+            color: white;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-search-sync:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn-refresh-sync {
+            height: 46px;
+            width: 46px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #64748b;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-refresh-sync:hover {
+            background: #f8fafc;
+            color: #1e293b;
+            transform: translateY(-1px);
+        }
+
+        .ma-yeu-cau-badge {
+            background: #f8fafc;
+            color: #475569;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid #e2e8f0;
+        }
+
+        .nut-hanh-dong {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            transition: all 0.2s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nut-khoi-phuc {
+            background: #ecfdf5;
+            color: #10b981;
+        }
+
+        .nut-hanh-dong:hover {
+            transform: scale(1.1);
+        }
+
+        .btn-sync-action {
+            font-weight: 600;
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+            color: #64748b;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-sync-action:hover {
+            transform: translateY(-2px);
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #cbd5e1;
+        }
+
+        .utility-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-right: 8px;
+        }
+
+        .utility-icon.dien {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .utility-icon.nuoc {
+            background: #ecfeff;
+            color: #0891b2;
+        }
+    </style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="tieu-de-trang mb-1"><i class="fas fa-trash-alt me-2"></i>Thùng rác chỉ số điện nước</h1>
+            <p class="text-muted small mb-0">Xem và khôi phục các bản ghi ghi nhận số điện, nước đã bị xóa mềm khỏi hệ thống.</p>
+        </div>
+        
+        <a asp-action="Index" class="btn-sync-action text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </header>
+
+    <!-- THANH TÌM KIẾM HIỆN ĐẠI -->
+    <form method="get" asp-action="RecycleBin" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
+            <div class="col-md-9">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@ViewBag.Search" class="input-sync"
+                        placeholder="Tìm theo số phòng, mã hóa đơn...">
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2 justify-content-end">
+                <button type="submit" class="btn-search-sync" style="background: #ef4444;" title="Tìm kiếm">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+                <a asp-action="RecycleBin" class="btn-refresh-sync" title="Làm mới">
+                    <i class="fas fa-redo"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Bảng danh sách đã xóa -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Mã ghi nhận</th>
+                        <th>Phòng</th>
+                        <th>Dịch vụ</th>
+                        <th>Kỳ ghi nhận</th>
+                        <th class="text-center">Chỉ số cũ -> mới</th>
+                        <th class="text-end">Tiêu thụ</th>
+                        <th class="text-end">Thành tiền</th>
+                        <th>Ngày xóa</th>
+                        <th class="text-end pe-4" style="width: 100px;">Khôi phục</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            var isDien = item.Utility?.UtilityName.ToLower().Contains("điện") ?? false;
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="ma-yeu-cau-badge">#UTI-@item.Id.ToString().Substring(0, 8).ToUpper()</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark"><i class="fas fa-door-closed text-muted me-1"></i>
+                                        @(item.Room?.RoomNumber ?? "N/A")</span>
+                                    <div class="small text-muted">@(item.Room?.Block?.BlockName ?? "N/A")</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="utility-icon @(isDien ? "dien" : "nuoc")">
+                                            <i class="fas @(isDien ? "fa-bolt" : "fa-tint")"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark">@(item.Utility?.UtilityName ?? "N/A")</div>
+                                            <div class="small text-muted">Đơn giá: @(item.Utility?.UnitPrice.ToString("N0") ?? "0")đ/@(item.Utility?.Unit ?? "")</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">Tháng @item.Month/@item.Year</div>
+                                    <div class="small text-muted">Ghi ngày @item.CreatedDate.ToString("dd/MM/yyyy")</div>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary px-2 py-1">@item.PreviousIndex</span>
+                                    <i class="fas fa-long-arrow-alt-right mx-2 text-muted"></i>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">@item.CurrentIndex</span>
+                                </td>
+                                <td class="text-end fw-bold text-dark">
+                                    @item.UsageQuantity.ToString("N1") @(item.Utility?.Unit ?? "")
+                                </td>
+                                <td class="text-end fw-bold text-primary">
+                                    @item.TotalAmount.ToString("N0") đ
+                                </td>
+                                <td>
+                                    <div>@item.LastModified?.ToString("dd/MM/yyyy")</div>
+                                    <div class="small text-muted">@item.LastModified?.ToString("HH:mm")</div>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <button type="button" class="nut-hanh-dong nut-khoi-phuc"
+                                        onclick="restoreUsage('@item.Id', '@(item.Room?.RoomNumber ?? "N/A")', '@(item.Utility?.UtilityName ?? "Dịch vụ")', 'Tháng @item.Month/@item.Year')"
+                                        title="Khôi phục bản ghi">
+                                        <i class="fas fa-trash-restore"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center py-5 text-muted">
+                                <i class="fas fa-trash-alt fa-3x mb-3 text-secondary"></i>
+                                <p class="mb-0">Thùng rác rỗng</p>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function restoreUsage(id, roomNo, utilityName, period) {
+            Swal.fire({
+                title: 'Khôi phục chỉ số này?',
+                text: `Bạn có chắc chắn muốn khôi phục lại ghi nhận chỉ số ${utilityName} của phòng ${roomNo} (${period})?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="fas fa-trash-restore me-1"></i> Khôi phục ngay',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Đang khôi phục...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    $.ajax({
+                        url: `/UtilityUsage/Restore/${id}`,
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Đã khôi phục!',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Thất bại!',
+                                    text: res.message || 'Khôi phục chỉ số thất bại.',
+                                    confirmButtonColor: '#ef4444'
+                                });
+                            }
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi kết nối',
+                                text: 'Không thể kết nối đến máy chủ.'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

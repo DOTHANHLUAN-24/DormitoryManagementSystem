@@ -1,0 +1,455 @@
+@{
+    ViewData["Title"] = "Ghi nhận chỉ số mới";
+    Layout = "_Layout";
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #0f6b6d; 
+            box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #0f6b6d 0%, #14b8a6 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+        
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .calc-panel {
+            background-color: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px dashed #cbd5e1;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-plus-circle me-2 text-primary"></i> Ghi nhận số điện & nước mới
+        </h1>
+        <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </header>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Create" method="post" id="createForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="row g-4 mb-4">
+                        <!-- Chọn Tòa nhà -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chọn Tòa nhà <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                <select id="blockId" class="form-select" required>
+                                    <option value="">-- Chọn tòa nhà --</option>
+                                    @if (ViewBag.Blocks != null)
+                                    {
+                                        foreach (var block in ViewBag.Blocks)
+                                        {
+                                            <option value="@block.Id">@block.BlockName</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Chọn Phòng -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chọn Phòng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-door-closed"></i></span>
+                                <select name="roomId" id="roomId" class="form-select" required disabled>
+                                    <option value="">-- Chọn phòng --</option>
+                                    @if (ViewBag.Rooms != null)
+                                    {
+                                        foreach (var room in ViewBag.Rooms)
+                                        {
+                                            <option value="@room.Id" data-block-id="@room.BlockId">@room.RoomNumber</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Chọn Tiện ích (Điện/Nước) -->
+                        <div class="col-md-12">
+                            <label class="form-label">Chọn dịch vụ <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-plug"></i></span>
+                                <select name="utilityId" id="utilityId" class="form-select" required>
+                                    <option value="">-- Chọn điện hoặc nước --</option>
+                                    @if (ViewBag.Utilities != null)
+                                    {
+                                        foreach (var util in ViewBag.Utilities)
+                                        {
+                                            <option value="@util.Id" data-unit-price="@util.UnitPrice" data-unit="@util.Unit">
+                                                @util.UtilityName (Đơn giá: @util.UnitPrice.ToString("N0")đ/@util.Unit)
+                                            </option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Kỳ Ghi nhận (Tháng / Năm) -->
+                        <div class="col-md-6">
+                            <label class="form-label">Tháng ghi nhận <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <select name="month" class="form-select" required>
+                                    @for (int m = 1; m <= 12; m++)
+                                    {
+                                        <option value="@m" selected="@(ViewBag.Month == m)">Tháng @m</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Năm ghi nhận <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                                <select name="year" class="form-select" required>
+                                    @for (int y = DateTime.Now.Year - 2; y <= DateTime.Now.Year + 1; y++)
+                                    {
+                                        <option value="@y" selected="@(ViewBag.Year == y)">Năm @y</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Chỉ số cũ (PreviousIndex) -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chỉ số đầu kỳ (Chỉ số cũ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-history"></i></span>
+                                <input name="previousIndex" id="previousIndex" type="number" step="0.1" class="form-control bg-light" 
+                                       placeholder="Tự động tải chỉ số cũ..." readonly required />
+                            </div>
+                            <span class="text-muted small" id="prevIndexStatus">Chọn phòng và dịch vụ để tải chỉ số cũ.</span>
+                        </div>
+
+                        <!-- Chỉ số mới (CurrentIndex) -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chỉ số cuối kỳ (Chỉ số mới) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+                                <input name="currentIndex" id="currentIndex" type="number" step="0.1" class="form-control" 
+                                       placeholder="Nhập số đo mới..." required disabled />
+                            </div>
+                            <span class="text-muted small" id="currentIndexStatus"></span>
+                        </div>
+
+                        <!-- Bảng tính nháp lượng tiêu thụ & Tiền thành toán -->
+                        <div class="col-md-12">
+                            <div class="calc-panel d-none" id="calcPanel">
+                                <h6 class="fw-bold text-dark mb-2"><i class="fas fa-calculator me-1"></i> Tính toán lượng tiêu thụ dự kiến:</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="small text-muted">Lượng tiêu thụ:</div>
+                                        <div class="fw-bold text-dark" id="previewQuantity">0</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="small text-muted">Thành tiền (Tạm tính):</div>
+                                        <div class="fw-bold text-primary" id="previewAmount">0 đ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kích hoạt -->
+                        <div class="col-md-12">
+                            <div class="form-check form-switch mt-2">
+                                <input name="isActive" class="form-check-input" type="checkbox" id="isActiveSwitch" value="true" checked>
+                                <label class="form-check-label fw-semibold" for="isActiveSwitch" style="color: #1e293b; font-size: 14px;">Kích hoạt ghi nhận chỉ số này</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-danger small mb-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">Hủy bỏ</a>
+                        <button type="submit" class="nut-luu" id="submitBtn" disabled>
+                            <i class="fas fa-paper-plane"></i> Lưu chỉ số
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Hướng dẫn ghi số</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Chọn Tòa nhà trước:</strong> Danh sách phòng sẽ tự động lọc tương ứng với tòa nhà được chọn.</li>
+                    <li><strong>Tự động tải chỉ số cũ:</strong> Khi bạn chọn Phòng và Dịch vụ (Điện/Nước), hệ thống sẽ truy vấn chỉ số ghi nhận cuối cùng của phòng đó để điền vào "Chỉ số đầu kỳ" bằng AJAX.</li>
+                    <li><strong>Điều kiện chỉ số mới:</strong> Chỉ số cuối kỳ (mới) phải lớn hơn hoặc bằng chỉ số đầu kỳ (cũ).</li>
+                    <li><strong>Hóa đơn điện nước:</strong> Chỉ số sau khi lưu sẽ được dùng để tự động tính tiền khi phòng này được xuất hóa đơn hàng tháng.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // Lọc phòng theo tòa nhà
+            $('#blockId').change(function () {
+                var selectedBlockId = $(this).val();
+                if (selectedBlockId) {
+                    $('#roomId').prop('disabled', false);
+                    $('#roomId option').each(function () {
+                        var roomBlockId = $(this).data('block-id');
+                        if (!roomBlockId || roomBlockId == selectedBlockId) {
+                            $(this).show();
+                        } else {
+                            $(this).hide();
+                        }
+                    });
+                } else {
+                    $('#roomId').prop('disabled', true).val('');
+                }
+                
+                $('#roomId').val('');
+                resetPreviousIndex();
+            });
+
+            // Tự động load chỉ số cũ bằng AJAX
+            $('#roomId, #utilityId').change(function () {
+                loadPreviousIndex();
+            });
+
+            // Lắng nghe thay đổi của chỉ số mới để cập nhật tính toán nháp
+            $('#currentIndex').on('input change', function () {
+                calculatePreview();
+            });
+
+            function resetPreviousIndex() {
+                $('#previousIndex').val('');
+                $('#prevIndexStatus').text('Chọn phòng và dịch vụ để tải chỉ số cũ.').removeClass('text-success text-danger');
+                $('#currentIndex').prop('disabled', true).val('');
+                $('#submitBtn').prop('disabled', true);
+                $('#calcPanel').addClass('d-none');
+            }
+
+            function loadPreviousIndex() {
+                var roomId = $('#roomId').val();
+                var utilityId = $('#utilityId').val();
+
+                if (!roomId || !utilityId) {
+                    resetPreviousIndex();
+                    return;
+                }
+
+                $('#prevIndexStatus').text('Đang tải chỉ số cũ từ máy chủ...').addClass('text-warning').removeClass('text-success text-danger');
+                $('#submitBtn').prop('disabled', true);
+
+                $.ajax({
+                    url: `/UtilityUsage/GetPreviousIndex`,
+                    type: 'GET',
+                    data: { roomId: roomId, utilityId: utilityId },
+                    success: function (res) {
+                        if (res.success !== false) {
+                            var prevIdx = parseFloat(res.previousIndex) || 0.0;
+                            $('#previousIndex').val(prevIdx);
+                            $('#prevIndexStatus').text('Đã tải chỉ số đầu kỳ thành công.').addClass('text-success').removeClass('text-warning text-danger');
+                            
+                            // Mở khóa cho phép nhập chỉ số mới
+                            $('#currentIndex').prop('disabled', false);
+                            $('#submitBtn').prop('disabled', false);
+                            
+                            // Nếu đã nhập chỉ số mới trước đó thì tính toán lại
+                            calculatePreview();
+                        } else {
+                            $('#previousIndex').val('0.0');
+                            $('#prevIndexStatus').text('Không tải được chỉ số cũ, mặc định là 0.0.').addClass('text-danger').removeClass('text-warning text-success');
+                            $('#currentIndex').prop('disabled', false);
+                            $('#submitBtn').prop('disabled', false);
+                        }
+                    },
+                    error: function () {
+                        $('#previousIndex').val('0.0');
+                        $('#prevIndexStatus').text('Lỗi kết nối máy chủ. Mặc định chỉ số cũ là 0.0.').addClass('text-danger').removeClass('text-warning text-success');
+                        $('#currentIndex').prop('disabled', false);
+                        $('#submitBtn').prop('disabled', false);
+                    }
+                });
+            }
+
+            function calculatePreview() {
+                var prevIdx = parseFloat($('#previousIndex').val()) || 0.0;
+                var currIdx = parseFloat($('#currentIndex').val());
+                var utilityOpt = $('#utilityId option:selected');
+                var unitPrice = parseFloat(utilityOpt.data('unit-price')) || 0;
+                var unitName = utilityOpt.data('unit') || '';
+
+                if (isNaN(currIdx)) {
+                    $('#calcPanel').addClass('d-none');
+                    $('#submitBtn').prop('disabled', true);
+                    $('#currentIndexStatus').text('').removeClass('text-danger text-success');
+                    return;
+                }
+
+                if (currIdx < prevIdx) {
+                    $('#currentIndexStatus').text('Chỉ số mới không được nhỏ hơn chỉ số cũ!').addClass('text-danger').removeClass('text-success');
+                    $('#submitBtn').prop('disabled', true);
+                    $('#calcPanel').addClass('d-none');
+                    return;
+                }
+
+                $('#currentIndexStatus').text('Hợp lệ.').addClass('text-success').removeClass('text-danger');
+                $('#submitBtn').prop('disabled', false);
+
+                var usage = currIdx - prevIdx;
+                var cost = usage * unitPrice;
+
+                $('#previewQuantity').text(usage.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + unitName);
+                $('#previewAmount').text(cost.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                $('#calcPanel').removeClass('d-none');
+            }
+
+            // Spinner khi gửi form
+            $('#createForm').submit(function (e) {
+                var prevIdx = parseFloat($('#previousIndex').val()) || 0.0;
+                var currIdx = parseFloat($('#currentIndex').val()) || 0.0;
+                
+                if (currIdx < prevIdx) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Dữ liệu không hợp lệ',
+                        text: 'Chỉ số cuối kỳ không thể nhỏ hơn chỉ số đầu kỳ.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return false;
+                }
+
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu...';
+                }
+            });
+        });
+    </script>
+}

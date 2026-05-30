@@ -1,0 +1,329 @@
+@model DormitoryManagement.Domain.Entities.UtilityUsage
+@{
+    ViewData["Title"] = "Chỉnh sửa chỉ số tiêu thụ";
+    Layout = "_Layout";
+    var isDien = Model.Utility?.UtilityName.ToLower().Contains("điện") ?? false;
+}
+
+@section Styles {
+    <style>
+        .tieu-de-trang { 
+            font-size: 28px; 
+            font-weight: 700; 
+            background: linear-gradient(135deg, #0f6b6d, #14b8a6); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 0; 
+        }
+        
+        .form-card { 
+            background: #fff; 
+            border-radius: 20px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); 
+            padding: 30px; 
+            border: none; 
+        }
+        
+        .form-control, .form-select { 
+            border-radius: 10px; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            font-size: 14px; 
+            transition: all 0.3s; 
+        }
+        .form-control:focus, .form-select:focus { 
+            border-color: #0f6b6d; 
+            box-shadow: 0 0 0 3px rgba(15, 107, 109, 0.1); 
+        }
+        
+        .input-group-text { 
+            border-radius: 10px 0 0 10px; 
+            border: 1px solid #e2e8f0; 
+            border-right: none; 
+            background-color: #f8fafc; 
+            color: #64748b; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 46px;
+        }
+        .input-group .form-control, .input-group .form-select { 
+            border-radius: 0 10px 10px 0; 
+        }
+        
+        .form-label { 
+            font-weight: 600; 
+            color: #1e293b; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
+        }
+        
+        .nut-luu { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            background: linear-gradient(135deg, #0f6b6d 0%, #14b8a6 100%); 
+            color: #fff !important; 
+            border: none; 
+            box-shadow: 0 4px 12px rgba(15, 107, 109, 0.2); 
+            cursor: pointer;
+        }
+        .nut-luu:hover { 
+            opacity: 0.9; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 15px rgba(15, 107, 109, 0.3); 
+        }
+        
+        .nut-huy { 
+            padding: 12px 24px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 15px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-huy:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+        
+        .nut-quay-lai { 
+            padding: 10px 20px; 
+            border-radius: 10px; 
+            font-weight: 600; 
+            transition: all 0.3s ease; 
+            font-size: 14px; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            text-decoration: none; 
+            background: #fff; 
+            color: #64748b !important; 
+            border: 1px solid #e2e8f0; 
+        }
+        .nut-quay-lai:hover { 
+            background: #f8fafc; 
+            color: #1e293b !important; 
+            border-color: #cbd5e1; 
+            transform: translateY(-1px); 
+        }
+
+        .calc-panel {
+            background-color: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px dashed #cbd5e1;
+        }
+
+        .thong-tin-tinh {
+            background-color: #f1f5f9;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #334155;
+            font-weight: 600;
+        }
+    </style>
+}
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang">
+            <i class="fas fa-edit me-2 text-warning"></i> Sửa ghi nhận chỉ số điện nước
+        </h1>
+        <a asp-action="Index" class="nut-quay-lai text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Quay lại danh sách
+        </a>
+    </header>
+
+    <div class="row">
+        <!-- Form Column -->
+        <div class="col-lg-8">
+            <div class="form-card">
+                <form asp-action="Edit" method="post" id="editForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <!-- Thông tin cố định của bản ghi chỉ hiển thị dạng text/nhãn để tránh sai lệch quan hệ dữ liệu -->
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Phòng & Tòa nhà</label>
+                            <div class="thong-tin-tinh">
+                                <i class="fas fa-door-closed me-2 text-muted"></i>
+                                Phòng @Model.Room?.RoomNumber (@Model.Room?.Block?.BlockName)
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small">Loại dịch vụ tiện ích</label>
+                            <div class="thong-tin-tinh">
+                                <i class="fas @(isDien ? "fa-bolt text-warning" : "fa-tint text-info") me-2"></i>
+                                @Model.Utility?.UtilityName (@(Model.Utility?.UnitPrice.ToString("N0") ?? "0")đ/@Model.Utility?.Unit)
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small">Kỳ ghi nhận chỉ số</label>
+                            <div class="thong-tin-tinh">
+                                <i class="fas fa-calendar-alt me-2 text-muted"></i>
+                                Tháng @Model.Month Năm @Model.Year
+                            </div>
+                        </div>
+
+                        <!-- Chỉ số đầu kỳ (PreviousIndex) -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chỉ số đầu kỳ (Chỉ số cũ) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-history"></i></span>
+                                <input name="previousIndex" id="previousIndex" type="number" step="0.1" class="form-control" 
+                                       value="@Model.PreviousIndex" required />
+                            </div>
+                        </div>
+
+                        <!-- Chỉ số cuối kỳ (CurrentIndex) -->
+                        <div class="col-md-6">
+                            <label class="form-label">Chỉ số cuối kỳ (Chỉ số mới) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+                                <input name="currentIndex" id="currentIndex" type="number" step="0.1" class="form-control" 
+                                       value="@Model.CurrentIndex" required />
+                            </div>
+                            <span class="text-muted small" id="currentIndexStatus"></span>
+                        </div>
+
+                        <!-- Bảng tính nháp lượng tiêu thụ & Tiền thanh toán -->
+                        <div class="col-md-12">
+                            <div class="calc-panel" id="calcPanel">
+                                <h6 class="fw-bold text-dark mb-2"><i class="fas fa-calculator me-1"></i> Tính toán lượng tiêu thụ dự kiến:</h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="small text-muted">Lượng tiêu thụ:</div>
+                                        <div class="fw-bold text-dark" id="previewQuantity">@Model.UsageQuantity.ToString("N1") @Model.Utility?.Unit</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="small text-muted">Thành tiền:</div>
+                                        <div class="fw-bold text-primary" id="previewAmount">@Model.TotalAmount.ToString("N0") đ</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kích hoạt -->
+                        <div class="col-md-12">
+                            <div class="form-check form-switch mt-2">
+                                <input name="isActive" class="form-check-input" type="checkbox" id="isActiveSwitch" value="true" @(Model.IsActive ? "checked" : "")>
+                                <label class="form-check-label fw-semibold" for="isActiveSwitch" style="color: #1e293b; font-size: 14px;">Kích hoạt ghi nhận chỉ số này</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-danger small mb-3">
+                        <div asp-validation-summary="ModelOnly"></div>
+                    </div>
+
+                    <hr class="my-4 text-muted" style="opacity: 0.1;" />
+
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a asp-action="Index" class="nut-huy">Hủy bỏ</a>
+                        <button type="submit" class="nut-luu" id="submitBtn">
+                            <i class="fas fa-save"></i> Cập nhật chỉ số
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Info Column -->
+        <div class="col-lg-4 d-none d-lg-block">
+            <div class="card border-0 shadow-sm rounded-4 bg-primary bg-opacity-10 p-4 h-100">
+                <h5 class="fw-bold mb-3 text-primary"><i class="fas fa-info-circle me-2"></i> Lưu ý khi chỉnh sửa</h5>
+                <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8; list-style-type: decimal;">
+                    <li><strong>Dữ liệu liên quan:</strong> Việc sửa đổi chỉ số cũ/mới sẽ tự động cập nhật lại trường `UsageQuantity` và `TotalAmount` trong cơ sở dữ liệu.</li>
+                    <li><strong>Liên kết hóa đơn:</strong> Nếu chỉ số này đã được liên kết với một hóa đơn đã lập, thay đổi tại đây có thể ảnh hưởng đến dữ liệu thanh toán. Vui lòng kiểm tra kỹ trạng thái hóa đơn trước khi cập nhật.</li>
+                    <li><strong>Điều kiện:</strong> Chỉ số cuối kỳ (mới) phải lớn hơn hoặc bằng chỉ số đầu kỳ (cũ).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            var unitPrice = parseFloat('@Model.Utility?.UnitPrice') || 0;
+            var unitName = '@Model.Utility?.Unit';
+
+            // Lắng nghe thay đổi chỉ số đầu kỳ và cuối kỳ
+            $('#previousIndex, #currentIndex').on('input change', function () {
+                calculatePreview();
+            });
+
+            function calculatePreview() {
+                var prevIdx = parseFloat($('#previousIndex').val());
+                var currIdx = parseFloat($('#currentIndex').val());
+
+                if (isNaN(prevIdx) || isNaN(currIdx)) {
+                    $('#calcPanel').addClass('d-none');
+                    $('#submitBtn').prop('disabled', true);
+                    $('#currentIndexStatus').text('').removeClass('text-danger text-success');
+                    return;
+                }
+
+                if (currIdx < prevIdx) {
+                    $('#currentIndexStatus').text('Chỉ số mới không được nhỏ hơn chỉ số cũ!').addClass('text-danger').removeClass('text-success');
+                    $('#submitBtn').prop('disabled', true);
+                    $('#calcPanel').addClass('d-none');
+                    return;
+                }
+
+                $('#currentIndexStatus').text('Hợp lệ.').addClass('text-success').removeClass('text-danger');
+                $('#submitBtn').prop('disabled', false);
+
+                var usage = currIdx - prevIdx;
+                var cost = usage * unitPrice;
+
+                $('#previewQuantity').text(usage.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' ' + unitName);
+                $('#previewAmount').text(cost.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }));
+                $('#calcPanel').removeClass('d-none');
+            }
+
+            // Spinner khi gửi form
+            $('#editForm').submit(function (e) {
+                var prevIdx = parseFloat($('#previousIndex').val()) || 0.0;
+                var currIdx = parseFloat($('#currentIndex').val()) || 0.0;
+                
+                if (currIdx < prevIdx) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Dữ liệu không hợp lệ',
+                        text: 'Chỉ số cuối kỳ không thể nhỏ hơn chỉ số đầu kỳ.',
+                        confirmButtonColor: '#ef4444'
+                    });
+                    return false;
+                }
+
+                if ($(this).valid()) { 
+                    var btn = document.getElementById('submitBtn');
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu...';
+                }
+            });
+        });
+    </script>
+}

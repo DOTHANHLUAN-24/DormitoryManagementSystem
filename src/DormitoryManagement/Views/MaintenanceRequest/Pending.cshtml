@@ -1,0 +1,227 @@
+@using DormitoryManagement.Domain.Enums
+@model DormitoryManagement.Domain.Common.PagedResult<DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests.MaintenanceRequestResponseDto>
+
+@{
+    ViewData["Title"] = "Duyệt yêu cầu sửa chữa";
+    var search = ViewBag.Search as string ?? "";
+    var isAdminOrManager = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+}
+
+@section Styles {
+<style>
+    .tieu-de-trang { font-size: 26px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    
+    .btn-custom-header { padding: 8px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s; text-decoration: none; }
+    .btn-back { background: white; color: #64748b !important; border: 1px solid #e2e8f0; }
+    .btn-custom-header:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+
+    .thanh-tim-kiem { background: #fff; border-radius: 16px; padding: 16px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); border: 1px solid #f1f5f9; }
+    .input-custom { height: 46px; border-radius: 12px !important; border: 1px solid #e2e8f0 !important; font-size: 14px; color: #1e293b; }
+    .input-custom:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1) !important; }
+
+    .priority-urgent { color: #dc2626; font-weight: 700; }
+    .priority-high { color: #ea580c; font-weight: 700; }
+    .priority-medium { color: #d97706; font-weight: 600; }
+    .priority-low { color: #16a34a; }
+
+    .nut-hanh-dong { width: 34px; height: 34px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; border: none; transition: all 0.2s; text-decoration: none; cursor: pointer; }
+    .nut-duyet { background: #ecfdf5; color: #10b981; }
+    .nut-tu-choi { background: #fef2f2; color: #ef4444; }
+    .nut-hanh-dong:hover { transform: scale(1.1); }
+
+    .card-custom { background: #ffffff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); overflow: hidden; }
+</style>
+}
+
+@Html.AntiForgeryToken()
+
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <header class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="tieu-de-trang mb-0"><i class="fas fa-clipboard-check me-2"></i>Duyệt yêu cầu sửa chữa</h1>
+        <a asp-action="Index" class="btn-custom-header btn-back text-decoration-none">
+            <i class="fas fa-arrow-left"></i> Danh sách chung
+        </a>
+    </header>
+
+    <!-- Bộ lọc tìm kiếm -->
+    <form method="get" asp-action="Pending" class="thanh-tim-kiem-sync">
+        <div class="row g-3 align-items-center">
+            <div class="col-lg-10 col-md-9">
+                <div class="khung-tim-kiem-sync">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="search" value="@search" class="input-sync" placeholder="Tìm theo tiêu đề, mô tả...">
+                </div>
+            </div>
+            <div class="col-lg-2 col-md-3 d-flex gap-2">
+                <button type="submit" class="btn-search-sync" style="background: #4f46e5;" title="Tìm kiếm">
+                    <i class="fas fa-filter"></i> Lọc
+                </button>
+                <a asp-action="Pending" class="btn-refresh-sync" title="Làm mới">
+                    <i class="fas fa-sync-alt"></i>
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Table Card -->
+    <div class="card-custom">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Tiêu đề</th>
+                        <th>Phòng</th>
+                        <th>Người yêu cầu</th>
+                        <th>Mức độ</th>
+                        <th class="text-center">Ngày tạo</th>
+                        <th class="text-center pe-4" style="width: 120px;">Duyệt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Items != null && Model.Items.Any())
+                    {
+                        int stt = (Model.PageNumber - 1) * Model.PageSize + 1;
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td class="ps-4 text-muted small">@stt</td>
+                                <td style="max-width:250px;">
+                                    <div class="fw-bold text-dark text-truncate">@item.Title</div>
+                                    <div class="small text-muted text-truncate">@item.Description</div>
+                                </td>
+                                <td>
+                                    <div class="fw-semibold text-primary" style="font-size:13px;">@item.RoomNumber</div>
+                                    <div class="small text-muted">@item.BlockName</div>
+                                </td>
+                                <td>
+                                    <div style="font-size:13px;">@item.RequesterName</div>
+                                    <div class="small text-muted">@item.RequesterCode</div>
+                                </td>
+                                <td>
+                                    @switch (item.Priority)
+                                    {
+                                        case "Urgent": <span class="priority-urgent"><i class="fas fa-fire me-1"></i>Khẩn cấp</span> break;
+                                        case "High":   <span class="priority-high"><i class="fas fa-exclamation-triangle me-1"></i>Cao</span> break;
+                                        case "Medium": <span class="priority-medium">Trung bình</span> break;
+                                        default:       <span class="priority-low">Thấp</span> break;
+                                    }
+                                </td>
+                                <td class="text-center text-muted small">
+                                    @item.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+                                <td class="text-center pe-4">
+                                    <div class="d-flex justify-content-center gap-2">
+                                        <button type="button" class="nut-hanh-dong nut-duyet" onclick="approveRequest('@item.Id', '@item.Title')" title="Phê duyệt (Đang xử lý)">
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                        <button type="button" class="nut-hanh-dong nut-tu-choi" onclick="rejectRequest('@item.Id', '@item.Title')" title="Từ chối / Đóng yêu cầu">
+                                            <i class="fas fa-times-circle"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            stt++;
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center py-5 text-muted">
+                                <i class="fas fa-check-double fa-2x mb-3 d-block text-success"></i>
+                                Tuyệt vời! Không có yêu cầu sửa chữa nào đang chờ duyệt.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang -->
+        @await Html.PartialAsync("_Pagination", Model)
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function approveRequest(id, title) {
+            Swal.fire({
+                title: 'Phê duyệt yêu cầu?',
+                html: `Bạn có chắc muốn phê duyệt và chuyển yêu cầu <strong>"${title}"</strong> sang trạng thái <strong>Đang xử lý</strong>?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đồng ý phê duyệt',
+                cancelButtonText: 'Đóng'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    executeChangeStatus(id, 'InProgress');
+                }
+            });
+        }
+
+        function rejectRequest(id, title) {
+            Swal.fire({
+                title: 'Từ chối / Đóng yêu cầu?',
+                html: `Bạn muốn từ chối hoặc đóng yêu cầu <strong>"${title}"</strong>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đồng ý đóng',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    executeChangeStatus(id, 'Closed');
+                }
+            });
+        }
+
+        function executeChangeStatus(id, status) {
+            Swal.fire({
+                title: 'Đang xử lý...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            $.ajax({
+                url: '/MaintenanceRequest/' + id + '/UpdateStatus',
+                type: 'POST',
+                data: { status: status, __RequestVerificationToken: token },
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire({
+                            title: 'Thành công!',
+                            text: res.message,
+                            icon: 'success',
+                            confirmButtonColor: '#4f46e5',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Thất bại!',
+                            text: res.message,
+                            icon: 'error',
+                            confirmButtonColor: '#4f46e5'
+                        });
+                    }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: 'Lỗi hệ thống!',
+                        text: 'Không thể cập nhật trạng thái yêu cầu. Vui lòng thử lại.',
+                        icon: 'error',
+                        confirmButtonColor: '#4f46e5'
+                    });
+                }
+            });
+        }
+    </script>
+}

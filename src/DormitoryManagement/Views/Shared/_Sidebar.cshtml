@@ -6,7 +6,7 @@
 
     // ── ROLES ──────────────────────────────────────────────────────────────
     var isAdmin        = User.IsInRole("Admin");
-    var isManager      = User.IsInRole("ManagementStaff");
+    var isManager      = User.IsInRole("ManagementStaff") || User.IsInRole("ManagerStaff") || User.IsInRole("Manager");
     var isStaff        = User.IsInRole("TechnicalStaff");
     var isStudent      = User.IsInRole("Student");
     var isAdminOrManager  = isAdmin || isManager;
@@ -88,6 +88,11 @@
            class="@(currentController == "UtilityServiceRequest" ? "active" : "")">
             <i class="fas fa-plug"></i>
             <span class="text">Đăng ký dịch vụ</span>
+        </a>
+        <a asp-controller="UtilityUsage" asp-action="MyUsages"
+           class="@(currentController == "UtilityUsage" && currentAction == "MyUsages" ? "active" : "")">
+            <i class="fas fa-bolt"></i>
+            <span class="text">Chỉ số điện nước phòng</span>
         </a>
     }
 
@@ -364,7 +369,7 @@
         </div>
 
         @* ── Dịch vụ KTX ── *@
-        var isServiceGroup = currentController == "Utility" || currentController == "UtilityServiceRequest";
+        var isServiceGroup = currentController == "Utility" || currentController == "UtilityServiceRequest" || currentController == "UtilityUsage";
         <a data-bs-toggle="collapse" href="#serviceMenu" class="menu-toggle @(isServiceGroup ? "active" : "collapsed")">
             <i class="fas fa-plug"></i>
             <span class="text">Dịch vụ KTX</span>
@@ -383,13 +388,17 @@
                class="@(currentController == "Utility" && currentAction == "Trash" ? "active" : "")">
                 <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác dịch vụ
             </a>
-            <a asp-controller="Utility" asp-action="Requests"
-               class="@(currentController == "Utility" && currentAction == "Requests" ? "active" : "")">
-                <i class="fas fa-clipboard-check me-2"></i> Duyệt đăng ký dịch vụ
-            </a>
             <a asp-controller="UtilityServiceRequest" asp-action="Index"
                class="@(currentController == "UtilityServiceRequest" && currentAction == "Index" ? "active" : "")">
-                <i class="fas fa-clipboard-list me-2"></i> Tất cả yêu cầu dịch vụ
+                <i class="fas fa-clipboard-check me-2"></i> Duyệt đăng ký dịch vụ
+            </a>
+            <a asp-controller="UtilityUsage" asp-action="Index"
+               class="@(currentController == "UtilityUsage" && currentAction == "Index" ? "active" : "")">
+                <i class="fas fa-bolt me-2"></i> Ghi nhận điện nước
+            </a>
+            <a asp-controller="UtilityUsage" asp-action="RecycleBin"
+               class="@(currentController == "UtilityUsage" && currentAction == "RecycleBin" ? "active" : "")">
+                <i class="fas fa-trash-restore me-2"></i> Thùng rác điện nước
             </a>
         </div>
 
@@ -408,6 +417,10 @@
             <a asp-controller="Surcharge" asp-action="Create"
                class="@(isSurchargeGroup && currentAction == "Create" ? "active" : "")">
                 <i class="fas fa-plus me-2"></i> Thêm phụ phí mới
+            </a>
+            <a asp-controller="Surcharge" asp-action="RecycleBin"
+               class="@(isSurchargeGroup && currentAction == "RecycleBin" ? "active" : "")">
+                <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác phụ phí
             </a>
             @if (isSurchargeGroup && currentAction == "Edit")
             {
@@ -494,6 +507,10 @@
             <a asp-controller="MaintenanceRequest" asp-action="Index"
                class="@(isMaintenanceGroup && currentAction == "Index" ? "active" : "")">
                 <i class="fas fa-list me-2"></i> Danh sách yêu cầu
+            </a>
+            <a asp-controller="MaintenanceRequest" asp-action="Pending"
+               class="@(isMaintenanceGroup && currentAction == "Pending" ? "active" : "")">
+                <i class="fas fa-clipboard-check me-2"></i> Duyệt yêu cầu
             </a>
             <a asp-controller="MaintenanceRequest" asp-action="Create"
                class="@(isMaintenanceGroup && currentAction == "Create" ? "active" : "")">

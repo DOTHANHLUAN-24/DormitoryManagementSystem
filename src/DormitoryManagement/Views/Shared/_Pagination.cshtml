@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Routing
 @model BasePagedResult
 
-@if (Model != null && Model.TotalPages > 1)
+@if (Model != null && Model.TotalCount > 0)
 {
     var action = ViewContext.RouteData.Values["action"]?.ToString();
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
@@ -48,10 +48,29 @@
         };
     }
 
-    <div class="card-footer bg-white border-top py-3 d-flex justify-content-between align-items-center" style="border-top: 1px solid #f1f5f9 !important;">
-        <span class="text-muted small">
-            Hiển thị trang <strong>@Model.PageNumber</strong> / <strong>@Model.TotalPages</strong> (Tổng cộng <strong>@Model.TotalCount</strong> @entityName)
-        </span>
+    <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center custom-pagination-container"
+         style="border-bottom: 1px solid #f1f5f9 !important; border-top: none !important;">
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-muted small">
+                Hiển thị trang <strong>@Model.PageNumber</strong> / <strong>@Model.TotalPages</strong> (Tổng cộng <strong>@Model.TotalCount</strong> @entityName)
+            </span>
+            <div class="d-flex align-items-center ms-2">
+                <span class="text-muted small me-2 text-nowrap">Hiển thị:</span>
+                <select onchange="changePageSize(this.value)" class="form-select form-select-sm border border-light-subtle bg-light text-secondary shadow-none ps-2 py-1" style="width: auto; border-radius: 8px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease; font-weight: 600; padding-right: 1.75rem !important;">
+                    @foreach (var size in new[] { 5, 10, 20, 50, 100 })
+                    {
+                        if (Model.PageSize == size)
+                        {
+                            <option value="@size" selected>@size dòng</option>
+                        }
+                        else
+                        {
+                            <option value="@size">@size dòng</option>
+                        }
+                    }
+                </select>
+            </div>
+        </div>
         <nav aria-label="Page navigation">
             <ul class="pagination pagination-sm mb-0">
                 <li class="page-item @(Model.HasPreviousPage ? "" : "disabled")">
@@ -60,11 +79,54 @@
                     </a>
                 </li>
                 
-                @for (int i = 1; i <= Model.TotalPages; i++)
+                @if (Model.TotalPages <= 5)
                 {
-                    <li class="page-item @(Model.PageNumber == i ? "active" : "")">
-                        <a class="page-link shadow-none" href="@GetPageUrl(i)">@i</a>
-                    </li>
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link shadow-none" href="@GetPageUrl(i)">@i</a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    var pagesToShow = new List<int>();
+                    pagesToShow.Add(1);
+
+                    int start = Math.Max(2, Model.PageNumber - 1);
+                    int end = Math.Min(Model.TotalPages - 1, Model.PageNumber + 1);
+
+                    if (Model.PageNumber <= 2)
+                    {
+                        end = Math.Min(Model.TotalPages - 1, 3);
+                    }
+                    else if (Model.PageNumber >= Model.TotalPages - 1)
+                    {
+                        start = Math.Max(2, Model.TotalPages - 2);
+                    }
+
+                    for (int i = start; i <= end; i++)
+                    {
+                        pagesToShow.Add(i);
+                    }
+
+                    if (!pagesToShow.Contains(Model.TotalPages))
+                    {
+                        pagesToShow.Add(Model.TotalPages);
+                    }
+
+                    for (int idx = 0; idx < pagesToShow.Count; idx++)
+                    {
+                        var pageNum = pagesToShow[idx];
+                        if (idx > 0 && pageNum - pagesToShow[idx - 1] > 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link border-0 bg-transparent text-muted">...</span></li>
+                        }
+
+                        <li class="page-item @(Model.PageNumber == pageNum ? "active" : "")">
+                            <a class="page-link shadow-none" href="@GetPageUrl(pageNum)">@pageNum</a>
+                        </li>
+                    }
                 }
 
                 <li class="page-item @(Model.HasNextPage ? "" : "disabled")">
@@ -75,4 +137,27 @@
             </ul>
         </nav>
     </div>
-}
+
+    <script>
+        if (typeof changePageSize !== 'function') {
+            function changePageSize(size) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("pageSize", size);
+                url.searchParams.set("page", "1");
+                url.searchParams.set("PageNumber", "1");
+                window.location.href = url.toString();
+            }
+        }
+
+        // Tự động di chuyển khối phân trang lên đầu thẻ chứa (đầu bảng)
+        (function() {
+            var paginations = document.querySelectorAll(".custom-pagination-container");
+            paginations.forEach(function(p) {
+                var parent = p.parentNode;
+                if (parent && parent.firstChild !== p) {
+                    parent.insertBefore(p, parent.firstChild);
+                }
+            });
+        })();
+    </script>
+}
