@@ -48,12 +48,12 @@ namespace DormitoryManagement.Application.Services.Implements
 
             if (!string.IsNullOrEmpty(search))
             {
-                var lowerSearch = search.ToLower();
+                var lowerSearch = search.ToLower().Trim();
                 query = query.Where(v => v.Contract.User != null &&
-                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)));
+                        (v.Contract.User.Code.ToLower().Contains(lowerSearch)
+                         || v.Contract.User.FullName.ToLower().Contains(lowerSearch)
+                         || v.Contract.Bed.Room.RoomNumber.ToLower().Contains(lowerSearch)
+                         || v.Description.ToLower().Contains(lowerSearch)));
             }
 
             var totalCount = await query.CountAsync();
@@ -227,10 +227,10 @@ namespace DormitoryManagement.Application.Services.Implements
             {
                 var lowerSearch = search.ToLower().Trim();
                 predicate = v => v.Contract.User != null &&
-                        (v.Contract.User.Code.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Contract.User.FullName.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Contract.Bed.Room.RoomNumber.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase)
-                         || v.Description.Contains(lowerSearch, StringComparison.OrdinalIgnoreCase));
+                        (v.Contract.User.Code.ToLower().Contains(lowerSearch)
+                         || v.Contract.User.FullName.ToLower().Contains(lowerSearch)
+                         || v.Contract.Bed.Room.RoomNumber.ToLower().Contains(lowerSearch)
+                         || v.Description.ToLower().Contains(lowerSearch));
             }
 
             var pagedData = await _violationRepository.GetByStatusPagedAsync(
