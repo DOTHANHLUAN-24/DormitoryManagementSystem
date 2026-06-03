@@ -47,6 +47,12 @@ Hệ thống được thiết kế tối ưu hóa trải nghiệm cho từng nh�
 - Quản lý tài khoản người dùng, phân vai trò chi tiết (RBAC).
 - Cấu hình các tham số hệ thống, khóa/mở khóa tài khoản người dùng.
 
+### 📱 Giao Diện Responsive & Trải Nghiệm Di Động (Responsive UI)
+
+- **Thiết kế Thích ứng (Responsive Design):** Bố cục tự động co giãn và tối ưu hóa trên mọi kích thước màn hình từ Desktop, Tablet đến Smartphone (từ 360px trở lên).
+- **Thanh menu kéo trượt (Overlay Drawer):** Trên các thiết bị di động, thanh Sidebar được ẩn gọn gàng và có thể kéo trượt mượt mà bằng nút điều hướng góc trên, kèm theo lớp phủ mờ (`backdrop-filter: blur`) hiện đại.
+- **Bảng dữ liệu & Biểu mẫu thích ứng:** Các bảng dữ liệu được hỗ trợ vuốt cuộn ngang mượt mà. Hệ thống lưới tự động chuyển sang dạng cột dọc cho các biểu mẫu và thanh lọc tìm kiếm trên di động để tăng không gian nhập liệu.
+
 ---
 
 ## 💻 Công Nghệ Và Nền Tảng Sử Dụng
@@ -118,6 +124,8 @@ cd DormitoryManagementSystem/src
 
 **Bước 3:** Cập nhật cơ sở dữ liệu bằng EF Core Tools:
 
+*(Lưu ý: Nếu máy của bạn chưa cài đặt công cụ EF Core CLI, hãy cài đặt bằng lệnh: `dotnet tool install --global dotnet-ef`)*
+
 ```bash
 dotnet ef database update --project DormitoryManagement.Infrastructure --startup-project DormitoryManagement
 ```
@@ -129,6 +137,19 @@ dotnet run --project DormitoryManagement
 ```
 
 *Sau khi chạy, truy cập vào `https://localhost:<port>/` để truy cập giao diện MVC hoặc `https://localhost:<port>/swagger` để thử nghiệm các API.*
+
+### 🐳 3. Khởi chạy dự án bằng Docker (Tùy chọn)
+
+Ứng dụng hỗ trợ đóng gói và chạy dưới dạng container thông qua Dockerfile đa giai đoạn (multi-stage). Bạn có thể xây dựng và khởi chạy ứng dụng bằng cách thực hiện các lệnh sau tại thư mục gốc của dự án:
+
+```bash
+# Xây dựng Docker Image cho hệ thống
+docker build -t dormitory-system -f src/DormitoryManagement/Dockerfile .
+
+# Khởi chạy container từ image vừa build
+docker run -d -p 8080:10000 --name dormitory-app dormitory-system
+```
+*Lưu ý: Khi chạy qua Docker container, ứng dụng sẽ chạy trên cổng `10000` (được ánh xạ ra cổng `8080` ở máy chủ).*
 
 > [!TIP]
 > **Tự động khởi tạo dữ liệu mẫu (Auto-Seeding):**
