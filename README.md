@@ -110,7 +110,11 @@ git clone <repository_url>
 cd DormitoryManagementSystem/src
 ```
 
-**Bước 2:** Cấu hình chuỗi kết nối cơ sở dữ liệu (`ConnectionStrings`) trong file `appsettings.Development.json` (phục vụ môi trường local phát triển) hoặc `appsettings.json` của project `DormitoryManagement`.
+**Bước 2:** Tạo và cấu hình tệp cấu hình `appsettings.json`:
+- Sao chép tệp `appsettings.Example.json` thành một tệp mới tên là `appsettings.json` trong thư mục `src/DormitoryManagement/`.
+- Mở tệp `appsettings.json` vừa tạo và cập nhật các thông số:
+  - **Chuỗi kết nối cơ sở dữ liệu (SQL Server)**: Cập nhật đường dẫn SQL Server tại mục `ConnectionStrings:DefaultConnection`. Ví dụ đối với SQL Server cục bộ: `"Server=.;Database=DormitoryDb;Trusted_Connection=True;TrustServerCertificate=True;"`.
+  - **Cấu hình Mail & JWT**: Thay đổi cấu hình tại `MailSettings` (để kiểm thử dịch vụ gửi email tự động) và `JwtSettings` (để thiết lập mã khóa xác thực token) nếu cần thiết.
 
 **Bước 3:** Cập nhật cơ sở dữ liệu bằng EF Core Tools:
 
