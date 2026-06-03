@@ -93,7 +93,7 @@
                 <table class="table table-hover align-middle mb-0" id="visitorTable">
                     <thead>
                         <tr>
-                            <th class="ps-4" style="width: 100px;">Mã</th>
+                            <th class="ps-4" style="width: 80px;">STT</th>
                             <th>Khách đến thăm</th>
                             <th>CCCD/CMND</th>
                             <th>Mối quan hệ</th>
@@ -114,13 +114,14 @@
                         }
                         else
                         {
-                            @foreach (var item in Model.OrderByDescending(x => x.CreatedDate))
+                            int stt = 1;
+                            foreach (var item in Model.OrderByDescending(x => x.CreatedDate))
                             {
                                 <tr class="visitor-row" 
                                     data-name="@item.VisitorName.ToLower()" 
                                     data-card="@item.IdentityCard" 
                                     data-status="@item.Status">
-                                    <td class="ps-4"><span class="badge-username">@item.Id</span></td>
+                                    <td class="ps-4"><span class="badge-username">@stt</span></td>
                                     <td>
                                         <div class="fw-semibold text-dark">@item.VisitorName</div>
                                         <div class="text-muted small">@item.PhoneNumber</div>
@@ -152,6 +153,7 @@
                                             <span class="badge-status badge-danger-soft"><i class="fas fa-exclamation-triangle"></i>Quá giờ</span>
                                         }
                                     </td>
+                                    @{ stt++; }
                                 </tr>
                             }
                         }
