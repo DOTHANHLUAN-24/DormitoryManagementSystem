@@ -1,7 +1,7 @@
 using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
-using DormitoryManagement.Infrastructure.Data; // Để dùng SaveChangesAsync nếu chưa có UnitOfWork
+// using DormitoryManagement.Infrastructure.Data; // Để dùng SaveChangesAsync nếu chưa có UnitOfWork
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -268,4 +268,4 @@ namespace DormitoryManagement.Controllers
             return Json(new { success = true, message = "Đã xóa vĩnh viễn loại phòng khỏi hệ thống." });
         }
     }
-}
+}
