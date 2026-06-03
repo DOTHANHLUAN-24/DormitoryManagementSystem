@@ -119,12 +119,15 @@ internal class Program
             app.UseHsts();
         }
 
+        // Tự động áp dụng dữ liệu mẫu (Seed Data) cho cả Local lẫn Render
+        await DbSeeder.SeedAsync(app.Services);
+
+        // Chỉ dùng HttpsRedirection ở máy local để tránh lỗi Loop Redirect trên Render
         if (app.Environment.IsDevelopment())
         {
-            await DbSeeder.SeedAsync(app.Services);
+            app.UseHttpsRedirection();
         }
 
-        app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();

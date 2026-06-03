@@ -63,12 +63,12 @@ namespace DormitoryManagement.Application.Services.Implements
 
             if (!string.IsNullOrWhiteSpace(searchString))
             {
-                var search = searchString.Trim().ToLower();
-                query = query.Where(p => p.TransactionCode.ToLower().Contains(search)
-                    || p.Invoice.InvoiceCode.ToLower().Contains(search)
-                    || p.Invoice.Contract.User.FullName.ToLower().Contains(search)
-                    || p.Invoice.Contract.User.Code.ToLower().Contains(search)
-                    || p.Invoice.Contract.Bed.Room.RoomNumber.ToLower().Contains(search));
+                var search = searchString.Trim();
+                query = query.Where(p => p.TransactionCode.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    || p.Invoice.InvoiceCode.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    || p.Invoice.Contract!.User!.FullName.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    || p.Invoice.Contract.User!.Code.Contains(search, StringComparison.OrdinalIgnoreCase)
+                    || p.Invoice.Contract.Bed.Room.RoomNumber.Contains(search, StringComparison.OrdinalIgnoreCase));
             }
 
             var totalCount = await query.CountAsync();
