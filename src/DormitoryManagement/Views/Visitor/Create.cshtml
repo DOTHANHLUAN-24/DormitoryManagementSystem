@@ -99,7 +99,8 @@
 
                                 <div class="mb-4">
                                     <label class="form-label">Sinh viên được thăm <span class="text-danger">*</span></label>
-                                    <input type="text" id="studentName" class="form-control input-custom" required placeholder="Nhập tên sinh viên cần gặp...">
+                                    <input type="text" id="studentName" class="form-control input-custom" required placeholder="Nhập tên sinh viên cần gặp..." list="studentSuggestions" autocomplete="off">
+                                    <datalist id="studentSuggestions"></datalist>
                                 </div>
 
                                 <div class="mb-4">
@@ -163,6 +164,43 @@
             const outMinutes = String(defaultCheckOut.getMinutes()).padStart(2, '0');
             
             document.getElementById("checkOut").value = `${outYear}-${outMonth}-${outDay}T${outHours}:${outMinutes}`;
+
+            // Gợi ý tên sinh viên và tự động điền phòng
+            const studentInput = document.getElementById("studentName");
+            const studentDatalist = document.getElementById("studentSuggestions");
+            let suggestionMap = {};
+
+            studentInput.addEventListener("input", function() {
+                const term = this.value.trim();
+                if (term.length < 2) return;
+
+                $.ajax({
+                    url: '/Visitor/SearchStudents',
+                    type: 'GET',
+                    data: { term: term },
+                    success: function(data) {
+                        studentDatalist.innerHTML = "";
+                        suggestionMap = {};
+                        data.forEach(item => {
+                            const optionText = `${item.fullName} (${item.code})`;
+                            const option = document.createElement("option");
+                            option.value = optionText;
+                            studentDatalist.appendChild(option);
+
+                            suggestionMap[optionText] = { fullName: item.fullName, room: item.room };
+                            suggestionMap[item.fullName] = { fullName: item.fullName, room: item.room };
+                        });
+                    }
+                });
+            });
+
+            studentInput.addEventListener("change", function() {
+                const selectedVal = this.value.trim();
+                if (suggestionMap[selectedVal]) {
+                    document.getElementById("room").value = suggestionMap[selectedVal].room;
+                    this.value = suggestionMap[selectedVal].fullName;
+                }
+            });
         });
 
         function createNewVisitor(event) {

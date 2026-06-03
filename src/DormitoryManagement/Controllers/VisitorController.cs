@@ -413,6 +413,43 @@ namespace DormitoryManagement.Controllers
             return Json(new { success = true });
         }
 
+        [HttpGet("SearchStudents")]
+        [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
+        public async Task<IActionResult> SearchStudents(string term)
+        {
+            Logger.LogInformation("Tìm kiếm gợi ý sinh viên với từ khóa: '{Term}'", term);
+            if (string.IsNullOrEmpty(term))
+            {
+                return Json(new List<object>());
+            }
+
+            var lowerTerm = term.ToLower().Trim();
+            var users = await _userRepository.GetAllAsync();
+            var matchedStudents = users
+                .Where(u => u.Role == UserRole.Student && !u.IsDeleted && u.IsActive &&
+                            (u.FullName.ToLower().Contains(lowerTerm) || u.Code.ToLower().Contains(lowerTerm)))
+                .ToList();
+
+            var result = new List<object>();
+            foreach (var student in matchedStudents)
+            {
+                var contracts = await _contractService.GetByUserIdAsync(student.Id);
+                var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
+                var roomNumber = activeContract?.Bed?.Room?.RoomNumber ?? "Chưa xếp phòng";
+                var blockName = activeContract?.Bed?.Room?.Block?.BlockName ?? "";
+                var room = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
+
+                result.Add(new
+                {
+                    fullName = student.FullName,
+                    code = student.Code,
+                    room = room
+                });
+            }
+
+            return Json(result);
+        }
+
         // --- Student Actions ---
 
         [HttpGet("Request")]
