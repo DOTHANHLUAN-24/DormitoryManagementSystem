@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DormitoryManagement.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialEntity : Migration
+    public partial class InitialSqlServer : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -244,6 +244,37 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VisitorLogs",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    VisitorName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IdNumber = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    Relationship = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    IsCheckedOut = table.Column<bool>(type: "bit", nullable: false),
+                    CheckInTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CheckOutTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Purpose = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VisitorLogs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VisitorLogs_AspNetUsers_HostId",
+                        column: x => x.HostId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Rooms",
                 columns: table => new
                 {
@@ -281,8 +312,10 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     AssetName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    AssetCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AssetCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
+                    ReplacementCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -365,10 +398,48 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "UtilityServiceRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RequesterId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UtilityId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UtilityServiceRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UtilityServiceRequests_AspNetUsers_RequesterId",
+                        column: x => x.RequesterId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UtilityServiceRequests_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UtilityServiceRequests_Utilities_UtilityId",
+                        column: x => x.UtilityId,
+                        principalTable: "Utilities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Contracts",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ContractCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -437,6 +508,8 @@ namespace DormitoryManagement.Infrastructure.Migrations
                     ViolationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     EvidenceImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResolveNote = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ContractId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -652,6 +725,21 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 column: "InvoiceId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UtilityServiceRequests_RequesterId",
+                table: "UtilityServiceRequests",
+                column: "RequesterId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UtilityServiceRequests_RoomId",
+                table: "UtilityServiceRequests",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UtilityServiceRequests_UtilityId",
+                table: "UtilityServiceRequests",
+                column: "UtilityId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UtilityUsages_InvoiceId",
                 table: "UtilityUsages",
                 column: "InvoiceId");
@@ -675,6 +763,11 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 name: "IX_Violations_ContractId",
                 table: "Violations",
                 column: "ContractId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VisitorLogs_HostId",
+                table: "VisitorLogs",
+                column: "HostId");
         }
 
         /// <inheritdoc />
@@ -708,6 +801,9 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 name: "Surcharges");
 
             migrationBuilder.DropTable(
+                name: "UtilityServiceRequests");
+
+            migrationBuilder.DropTable(
                 name: "UtilityUsages");
 
             migrationBuilder.DropTable(
@@ -715,6 +811,9 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Violations");
+
+            migrationBuilder.DropTable(
+                name: "VisitorLogs");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

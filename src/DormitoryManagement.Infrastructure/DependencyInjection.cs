@@ -1,6 +1,7 @@
+
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
-using Microsoft.EntityFrameworkCore;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Domain.Interfaces.UnitOfWork;
 using DormitoryManagement.Application.Services.Interfaces;
@@ -14,16 +15,15 @@ namespace DormitoryManagement.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Database
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString)
             );
 
-            // Unit of Work
+            // 2. Unit of Work
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-            // Repositories
+            // 3. Repositories (Giữ nguyên logic SOLID)
             services.AddScoped<IRoomRepository, RoomRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBedRepository, BedRepository>();
@@ -45,7 +45,7 @@ namespace DormitoryManagement.Infrastructure
             // Surcharge
             services.AddScoped<ISurchargeRepository, SurchargeRepository>();
 
-            // External Services (Email, JWT, etc.)
+            // 4. External Services (Email, JWT, etc.)
             services.AddScoped<IEmailService, EmailService>();
 
             return services;

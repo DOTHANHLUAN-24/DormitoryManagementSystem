@@ -37,7 +37,25 @@
         .btn-cancel:hover { background: #fee2e2; transform: translateY(-2px); }
 
         .border-end-md { border-right: 1px solid #f1f5f9; }
-        @@media (max-width: 767.98px) { .border-end-md { border-right: none; } }
+
+        @@media (max-width: 767.98px) {
+            .tieu-de-trang { font-size: 20px; }
+            .border-end-md { border-right: none; border-bottom: 2px dashed #f1f5f9; padding-bottom: 30px; }
+            .card-body { padding: 20px !important; }
+            .btn-custom-header { width: 100%; justify-content: center; }
+            header.d-flex { flex-direction: column; align-items: stretch !important; gap: 15px; }
+        }
+
+        @@media (max-width: 575.98px) {
+            .mt-5.pt-4.border-top.d-flex {
+                flex-direction: column-reverse;
+                gap: 10px !important;
+            }
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 }
 

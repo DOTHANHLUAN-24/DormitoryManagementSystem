@@ -33,8 +33,7 @@ namespace DormitoryManagement.Infrastructure.Data
             {
                 entity.HasKey(e => e.Id);
 
-                // Sử dụng NEWSEQUENTIALID để tối ưu hiệu năng Index cho Guid trong SQL Server
-                entity.Property(e => e.Id).HasDefaultValueSql("NEWSEQUENTIALID()");
+                // Guid Primary Key (EF Core will generate GUIDs client-side if not set)
 
                 entity.Property(e => e.ContractCode).IsRequired().HasMaxLength(50);
                 entity.HasIndex(e => e.ContractCode).IsUnique(); // Thêm IsUnique để quản lý mã HD tốt hơn

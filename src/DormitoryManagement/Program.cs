@@ -4,6 +4,8 @@ using DormitoryManagement.Application;
 using DormitoryManagement.Infrastructure;
 using DormitoryManagement.Infrastructure.Data;
 using DormitoryManagement.Domain.Entities;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,11 @@ internal class Program
 
         // MVC
         builder.Services.AddControllersWithViews();
+
+        // FluentValidation
+        builder.Services.AddFluentValidationAutoValidation();
+        builder.Services.AddFluentValidationClientsideAdapters();
+        builder.Services.AddValidatorsFromAssembly(typeof(DormitoryManagement.Application.DependencyInjection).Assembly);
 
         // Mail settings
         builder.Services.Configure<dynamic>(builder.Configuration.GetSection("MailSettings"));
@@ -112,12 +119,15 @@ internal class Program
             app.UseHsts();
         }
 
+        // Tự động áp dụng dữ liệu mẫu (Seed Data) cho cả Local lẫn Render
+        await DbSeeder.SeedAsync(app.Services);
+
+        // Chỉ dùng HttpsRedirection ở máy local để tránh lỗi Loop Redirect trên Render
         if (app.Environment.IsDevelopment())
         {
-            await DbSeeder.SeedAsync(app.Services);
+            app.UseHttpsRedirection();
         }
 
-        app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();

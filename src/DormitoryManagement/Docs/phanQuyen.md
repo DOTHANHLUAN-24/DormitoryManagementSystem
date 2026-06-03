@@ -84,3 +84,14 @@ Dữ liệu không bị mất vĩnh viễn	                Tốn dung lượng l
 Có thể khôi phục khi cần	                      Mọi truy vấn đều phải thêm điều kiện is_deleted = 0
 Phục vụ kiểm toán, truy xuất lịch sử	          Quên lọc sẽ lấy cả dữ liệu đã xóa
 Tránh lỗi reference key	                        Cần index trên trường is_deleted
+
+### 5. Nghiệp vụ xóa mềm chi tiết theo từng Controller
+* **Hợp đồng (`ContractController`)**:
+  * Khi xóa mềm một hợp đồng ở trạng thái `Active`/`Pending`, hệ thống tự động cập nhật giường (`Bed`) liên kết thành `Available` để giải phóng chỗ.
+  * Khi khôi phục hợp đồng đã xóa mềm: Nếu hợp đồng có trạng thái `Active`, giường liên kết sẽ tự động chuyển lại thành `Occupied`.
+* **Phương tiện (`VehicleController`)**:
+  * Khi xóa mềm phương tiện, hệ thống sẽ ẩn phương tiện đó và ngừng tự động quét tính phí gửi xe trong hóa đơn tháng của sinh viên.
+* **Biên bản vi phạm (`ViolationController`)**:
+  * Khi bị xóa mềm, số tiền phạt (`FineAmount`) tạm thời được giảm trừ khỏi tổng công nợ chưa thanh toán của sinh viên. Nếu khôi phục, số tiền phạt sẽ được áp dụng trở lại.
+* **Chỉ số tiêu thụ (`UtilityUsageController`)**:
+  * Bản ghi điện nước bị xóa mềm sẽ không được quét để gộp vào hóa đơn tiền phòng hàng tháng, tránh việc tính nhầm tiền cho sinh viên. Khôi phục chỉ số cho phép gộp vào hóa đơn kỳ sau.

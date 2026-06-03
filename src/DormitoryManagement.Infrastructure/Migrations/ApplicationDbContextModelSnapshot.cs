@@ -145,8 +145,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("BedId")
                         .HasColumnType("uniqueidentifier");
@@ -621,7 +620,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("RequesterId")
+                    b.Property<Guid?>("RequesterId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("RoomId")
@@ -1107,9 +1106,7 @@ namespace DormitoryManagement.Infrastructure.Migrations
                 {
                     b.HasOne("DormitoryManagement.Domain.Entities.User", "Requester")
                         .WithMany()
-                        .HasForeignKey("RequesterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RequesterId");
 
                     b.HasOne("DormitoryManagement.Domain.Entities.Room", "Room")
                         .WithMany()

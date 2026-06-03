@@ -298,6 +298,22 @@
             background-color: #f1f5f9;
             color: #334155;
         }
+
+        @@media (max-width: 767.98px) {
+            .tieu-de-trang { font-size: 20px; }
+            .btn-sync-action { width: 100%; justify-content: center; }
+            .d-flex.gap-2 { width: 100%; flex-direction: column; gap: 10px !important; }
+            .d-flex.flex-column.flex-sm-row { flex-direction: column !important; align-items: stretch !important; gap: 15px !important; }
+            #visitorTabs {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+            #visitorTabs .nav-item {
+                white-space: nowrap;
+            }
+            .thanh-tim-kiem-sync { padding: 12px; }
+        }
     </style>
 }
 
@@ -381,7 +397,7 @@
                 <table class="table table-hover align-middle mb-0" id="visitorTable">
                     <thead>
                         <tr>
-                            <th class="ps-4" style="width: 100px;">Mã</th>
+                            <th class="ps-4" style="width: 80px;">STT</th>
                             <th>Khách đến thăm</th>
                             <th>CCCD/CMND</th>
                             <th>Sinh viên tiếp đón</th>
@@ -483,7 +499,7 @@
                 return;
             }
 
-            data.forEach(visitor => {
+            data.forEach((visitor, index) => {
                 let statusBadge = '';
                 if (visitor.status === 'Đã rời đi') {
                     statusBadge = `<span class="badge-status badge-success-soft"><i class="fas fa-check-circle"></i>Đã rời đi</span>`;
@@ -531,7 +547,7 @@
                                             </div>`;
 
                 let row = `<tr>
-                                                <td class="ps-4"><span class="badge-username">${visitor.id}</span></td>
+                                                <td class="ps-4"><span class="badge-username">${index + 1}</span></td>
                                                 <td>
                                                     <div class="fw-semibold text-dark">${visitor.visitorName}</div>
                                                     <div class="text-muted small">${visitor.phoneNumber || "---"} (${visitor.relationship || "Khách"})</div>

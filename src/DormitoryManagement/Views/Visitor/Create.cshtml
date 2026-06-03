@@ -32,6 +32,27 @@
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(79, 70, 229, 0.3); background: #4338ca; }
         .btn-cancel { background: #fff; color: #ef4444 !important; border: 1px solid #fee2e2; background: #fef2f2; text-decoration: none; }
         .btn-cancel:hover { background: #fee2e2; transform: translateY(-2px); }
+
+        .border-end-md { border-right: 1px solid #f1f5f9; }
+
+        @@media (max-width: 767.98px) {
+            .tieu-de-trang { font-size: 20px; }
+            .border-end-md { border-right: none; border-bottom: 2px dashed #f1f5f9; padding-bottom: 30px; }
+            .card-body { padding: 20px !important; }
+            .btn-custom-header { width: 100%; justify-content: center; }
+            header.d-flex { flex-direction: column; align-items: stretch !important; gap: 15px; }
+        }
+
+        @@media (max-width: 575.98px) {
+            .mt-5.pt-4.border-top.d-flex {
+                flex-direction: column-reverse;
+                gap: 10px !important;
+            }
+            .btn-action {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 }
 
@@ -73,6 +94,17 @@
                                     <input type="text" id="identityCard" class="form-control input-custom font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
                                 </div>
 
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input type="tel" id="phoneNumber" class="form-control input-custom" required placeholder="Nhập số điện thoại khách..." pattern="[0-9]{10,11}" title="Vui lòng nhập số điện thoại hợp lệ (10 - 11 chữ số)">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mối quan hệ <span class="text-danger">*</span></label>
+                                        <input type="text" id="relationship" class="form-control input-custom" required placeholder="Bố, mẹ, bạn, khách...">
+                                    </div>
+                                </div>
+
                                 <div class="mb-4">
                                     <label class="form-label">Mục đích thăm</label>
                                     <textarea id="purpose" class="form-control input-custom" rows="2" style="height: auto;" placeholder="Ví dụ: Thăm người thân, đưa đồ..."></textarea>
@@ -88,7 +120,8 @@
 
                                 <div class="mb-4">
                                     <label class="form-label">Sinh viên được thăm <span class="text-danger">*</span></label>
-                                    <input type="text" id="studentName" class="form-control input-custom" required placeholder="Nhập tên sinh viên cần gặp...">
+                                    <input type="text" id="studentName" class="form-control input-custom" required placeholder="Nhập tên sinh viên cần gặp..." list="studentSuggestions" autocomplete="off">
+                                    <datalist id="studentSuggestions"></datalist>
                                 </div>
 
                                 <div class="mb-4">
@@ -152,6 +185,43 @@
             const outMinutes = String(defaultCheckOut.getMinutes()).padStart(2, '0');
             
             document.getElementById("checkOut").value = `${outYear}-${outMonth}-${outDay}T${outHours}:${outMinutes}`;
+
+            // Gợi ý tên sinh viên và tự động điền phòng
+            const studentInput = document.getElementById("studentName");
+            const studentDatalist = document.getElementById("studentSuggestions");
+            let suggestionMap = {};
+
+            studentInput.addEventListener("input", function() {
+                const term = this.value.trim();
+                if (term.length < 2) return;
+
+                $.ajax({
+                    url: '/Visitor/SearchStudents',
+                    type: 'GET',
+                    data: { term: term },
+                    success: function(data) {
+                        studentDatalist.innerHTML = "";
+                        suggestionMap = {};
+                        data.forEach(item => {
+                            const optionText = `${item.fullName} (${item.code})`;
+                            const option = document.createElement("option");
+                            option.value = optionText;
+                            studentDatalist.appendChild(option);
+
+                            suggestionMap[optionText] = { fullName: item.fullName, room: item.room };
+                            suggestionMap[item.fullName] = { fullName: item.fullName, room: item.room };
+                        });
+                    }
+                });
+            });
+
+            studentInput.addEventListener("change", function() {
+                const selectedVal = this.value.trim();
+                if (suggestionMap[selectedVal]) {
+                    document.getElementById("room").value = suggestionMap[selectedVal].room;
+                    this.value = suggestionMap[selectedVal].fullName;
+                }
+            });
         });
 
         function createNewVisitor(event) {
@@ -161,6 +231,8 @@
             const checkInTime = document.getElementById("checkIn").value;
             const checkOutTime = document.getElementById("checkOut").value;
             const identityCard = document.getElementById("identityCard").value;
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            const relationship = document.getElementById("relationship").value;
             const purpose = document.getElementById("purpose").value;
             const studentName = document.getElementById("studentName").value;
             const room = document.getElementById("room").value;
@@ -182,7 +254,8 @@
                 data: {
                     visitorName: name,
                     identityCard: identityCard,
-                    phoneNumber: '',
+                    phoneNumber: phoneNumber,
+                    relationship: relationship,
                     purpose: purpose,
                     studentName: studentName,
                     room: room,
@@ -202,6 +275,8 @@
                         }).then(() => {
                             window.location.href = "/Visitor";
                         });
+                    } else {
+                        Swal.fire('Thất bại!', res.message || 'Có lỗi xảy ra khi đăng ký khách.', 'error');
                     }
                 },
                 error: function() {
