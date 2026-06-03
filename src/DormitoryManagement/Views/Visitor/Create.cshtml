@@ -73,6 +73,17 @@
                                     <input type="text" id="identityCard" class="form-control input-custom font-monospace" required placeholder="Nhập 12 số CCCD..." maxlength="12" pattern="\d{12}" title="Vui lòng nhập đúng 12 chữ số CCCD">
                                 </div>
 
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input type="tel" id="phoneNumber" class="form-control input-custom" required placeholder="Nhập số điện thoại khách..." pattern="[0-9]{10,11}" title="Vui lòng nhập số điện thoại hợp lệ (10 - 11 chữ số)">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mối quan hệ <span class="text-danger">*</span></label>
+                                        <input type="text" id="relationship" class="form-control input-custom" required placeholder="Bố, mẹ, bạn, khách...">
+                                    </div>
+                                </div>
+
                                 <div class="mb-4">
                                     <label class="form-label">Mục đích thăm</label>
                                     <textarea id="purpose" class="form-control input-custom" rows="2" style="height: auto;" placeholder="Ví dụ: Thăm người thân, đưa đồ..."></textarea>
@@ -161,6 +172,8 @@
             const checkInTime = document.getElementById("checkIn").value;
             const checkOutTime = document.getElementById("checkOut").value;
             const identityCard = document.getElementById("identityCard").value;
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            const relationship = document.getElementById("relationship").value;
             const purpose = document.getElementById("purpose").value;
             const studentName = document.getElementById("studentName").value;
             const room = document.getElementById("room").value;
@@ -182,7 +195,8 @@
                 data: {
                     visitorName: name,
                     identityCard: identityCard,
-                    phoneNumber: '',
+                    phoneNumber: phoneNumber,
+                    relationship: relationship,
                     purpose: purpose,
                     studentName: studentName,
                     room: room,
@@ -202,6 +216,8 @@
                         }).then(() => {
                             window.location.href = "/Visitor";
                         });
+                    } else {
+                        Swal.fire('Thất bại!', res.message || 'Có lỗi xảy ra khi đăng ký khách.', 'error');
                     }
                 },
                 error: function() {

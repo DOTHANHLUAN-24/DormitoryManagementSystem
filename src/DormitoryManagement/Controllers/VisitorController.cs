@@ -59,22 +59,30 @@ namespace DormitoryManagement.Controllers
                 hostContracts[hostId] = room;
             }
 
-            var list = visitors.Select(v => new VisitorViewModel
+            var list = visitors.Select(v =>
             {
-                Id = v.Id.ToString(),
-                VisitorName = v.VisitorName,
-                IdentityCard = v.IdNumber,
-                PhoneNumber = v.PhoneNumber,
-                Relationship = v.Relationship,
-                Purpose = v.Purpose,
-                HostId = v.HostId,
-                StudentName = v.Host?.FullName ?? "Sinh viên",
-                Room = hostContracts.GetValueOrDefault(v.HostId, "Chưa xếp phòng"),
-                CheckIn = v.CheckInTime,
-                CheckOut = v.CheckOutTime,
-                IsCheckedOut = v.IsCheckedOut,
-                Status = v.Status,
-                CreatedDate = v.CreatedDate
+                var status = v.Status;
+                if (status == "Đang ở trong" && v.CheckOutTime.HasValue && DateTime.Now > v.CheckOutTime.Value)
+                {
+                    status = "Quá giờ";
+                }
+                return new VisitorViewModel
+                {
+                    Id = v.Id.ToString(),
+                    VisitorName = v.VisitorName,
+                    IdentityCard = v.IdNumber,
+                    PhoneNumber = v.PhoneNumber,
+                    Relationship = v.Relationship,
+                    Purpose = v.Purpose,
+                    HostId = v.HostId,
+                    StudentName = v.Host?.FullName ?? "Sinh viên",
+                    Room = hostContracts.GetValueOrDefault(v.HostId, "Chưa xếp phòng"),
+                    CheckIn = v.CheckInTime,
+                    CheckOut = v.CheckOutTime,
+                    IsCheckedOut = v.IsCheckedOut,
+                    Status = status,
+                    CreatedDate = v.CreatedDate
+                };
             }).ToList();
 
             return Json(list);
@@ -106,6 +114,12 @@ namespace DormitoryManagement.Controllers
             var blockName = activeContract?.Bed?.Room?.Block?.BlockName ?? "";
             var room = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
 
+            var status = v.Status;
+            if (status == "Đang ở trong" && v.CheckOutTime.HasValue && DateTime.Now > v.CheckOutTime.Value)
+            {
+                status = "Quá giờ";
+            }
+
             var model = new VisitorViewModel
             {
                 Id = v.Id.ToString(),
@@ -120,7 +134,7 @@ namespace DormitoryManagement.Controllers
                 CheckIn = v.CheckInTime,
                 CheckOut = v.CheckOutTime,
                 IsCheckedOut = v.IsCheckedOut,
-                Status = v.Status,
+                Status = status,
                 CreatedDate = v.CreatedDate
             };
 
@@ -138,15 +152,47 @@ namespace DormitoryManagement.Controllers
         [HttpPost("Create")]
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string visitorName, string identityCard, string phoneNumber, string purpose, string studentName, string room, DateTime checkIn, DateTime checkOut)
+        public async Task<IActionResult> Create(string visitorName, string identityCard, string phoneNumber, string relationship, string purpose, string studentName, string room, DateTime checkIn, DateTime checkOut)
         {
             Logger.LogInformation("Đang xử lý đăng ký khách ghé thăm mới: '{VisitorName}' cho sinh viên '{StudentName}'", visitorName, studentName);
+            if (checkIn >= checkOut)
+            {
+                Logger.LogWarning("Đăng ký khách ghé thăm thất bại: Thời gian ra dự kiến phải sau thời gian vào.");
+                return Json(new { success = false, message = "Thời gian ra dự kiến phải sau thời gian vào." });
+            }
+
             var users = await _userRepository.GetAllAsync();
-            var host = users.FirstOrDefault(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase));
-            if (host == null)
+            var matchedUsers = users.Where(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (!matchedUsers.Any())
             {
                 Logger.LogWarning("Đăng ký khách ghé thăm thất bại: Không tìm thấy sinh viên có tên '{StudentName}'", studentName);
                 return Json(new { success = false, message = "Không tìm thấy sinh viên tương ứng." });
+            }
+
+            User? host = null;
+            if (matchedUsers.Count == 1)
+            {
+                host = matchedUsers.First();
+            }
+            else
+            {
+                foreach (var user in matchedUsers)
+                {
+                    var contracts = await _contractService.GetByUserIdAsync(user.Id);
+                    var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
+                    if (activeContract != null)
+                    {
+                        var roomNumber = activeContract.Bed?.Room?.RoomNumber ?? "";
+                        var blockName = activeContract.Bed?.Room?.Block?.BlockName ?? "";
+                        var userRoom = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
+                        if (userRoom.Contains(room, StringComparison.OrdinalIgnoreCase) || room.Contains(userRoom, StringComparison.OrdinalIgnoreCase))
+                        {
+                            host = user;
+                            break;
+                        }
+                    }
+                }
+                host ??= matchedUsers.First();
             }
 
             var newLog = new VisitorLog
@@ -154,7 +200,7 @@ namespace DormitoryManagement.Controllers
                 VisitorName = visitorName,
                 IdNumber = identityCard,
                 PhoneNumber = phoneNumber ?? "",
-                Relationship = "Khách",
+                Relationship = relationship ?? "Khách",
                 Purpose = purpose ?? "",
                 HostId = host.Id,
                 CheckInTime = checkIn,
@@ -183,13 +229,19 @@ namespace DormitoryManagement.Controllers
         [HttpPost("Edit/{id}")]
         [Authorize(Roles = "Admin,ManagerStaff,ManagementStaff")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, string visitorName, string identityCard, string phoneNumber, string purpose, string studentName, string room, DateTime checkIn, DateTime? checkOut, string status)
+        public async Task<IActionResult> Edit(string id, string visitorName, string identityCard, string phoneNumber, string relationship, string purpose, string studentName, string room, DateTime checkIn, DateTime? checkOut, string status)
         {
             Logger.LogInformation("Đang xử lý cập nhật thông tin khách ghé thăm ID: {Id}", id);
             if (!Guid.TryParse(id, out var visitorId))
             {
                 Logger.LogWarning("ID khách ghé thăm để cập nhật không hợp lệ: {Id}", id);
                 return BadRequest();
+            }
+
+            if (checkOut.HasValue && checkIn >= checkOut.Value)
+            {
+                Logger.LogWarning("Cập nhật thất bại: Thời gian ra dự kiến phải sau thời gian vào.");
+                return Json(new { success = false, message = "Thời gian ra dự kiến phải sau thời gian vào." });
             }
 
             var visitor = await _visitorLogRepository.GetByIdAsync(visitorId);
@@ -200,15 +252,41 @@ namespace DormitoryManagement.Controllers
             }
 
             var users = await _userRepository.GetAllAsync();
-            var host = users.FirstOrDefault(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase));
-            if (host != null)
+            var matchedUsers = users.Where(u => u.FullName.Contains(studentName, StringComparison.OrdinalIgnoreCase)).ToList();
+            if (matchedUsers.Any())
             {
+                User? host = null;
+                if (matchedUsers.Count == 1)
+                {
+                    host = matchedUsers.First();
+                }
+                else
+                {
+                    foreach (var user in matchedUsers)
+                    {
+                        var contracts = await _contractService.GetByUserIdAsync(user.Id);
+                        var activeContract = contracts.FirstOrDefault(c => c.Status == ContractStatus.Active);
+                        if (activeContract != null)
+                        {
+                            var roomNumber = activeContract.Bed?.Room?.RoomNumber ?? "";
+                            var blockName = activeContract.Bed?.Room?.Block?.BlockName ?? "";
+                            var userRoom = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
+                            if (userRoom.Contains(room, StringComparison.OrdinalIgnoreCase) || room.Contains(userRoom, StringComparison.OrdinalIgnoreCase))
+                            {
+                                host = user;
+                                break;
+                            }
+                        }
+                    }
+                    host ??= matchedUsers.First();
+                }
                 visitor.HostId = host.Id;
             }
 
             visitor.VisitorName = visitorName;
             visitor.IdNumber = identityCard;
             visitor.PhoneNumber = phoneNumber ?? "";
+            visitor.Relationship = relationship ?? "";
             visitor.Purpose = purpose ?? "";
             visitor.CheckInTime = checkIn;
             visitor.CheckOutTime = checkOut;
@@ -361,22 +439,30 @@ namespace DormitoryManagement.Controllers
             var blockName = activeContract?.Bed?.Room?.Block?.BlockName ?? "";
             var room = string.IsNullOrEmpty(blockName) ? roomNumber : $"{roomNumber} - {blockName}";
 
-            var list = visitors.Select(v => new VisitorViewModel
+            var list = visitors.Select(v =>
             {
-                Id = v.Id.ToString(),
-                VisitorName = v.VisitorName,
-                IdentityCard = v.IdNumber,
-                PhoneNumber = v.PhoneNumber,
-                Relationship = v.Relationship,
-                Purpose = v.Purpose,
-                HostId = v.HostId,
-                StudentName = v.Host?.FullName ?? "Sinh viên",
-                Room = room,
-                CheckIn = v.CheckInTime,
-                CheckOut = v.CheckOutTime,
-                IsCheckedOut = v.IsCheckedOut,
-                Status = v.Status,
-                CreatedDate = v.CreatedDate
+                var status = v.Status;
+                if (status == "Đang ở trong" && v.CheckOutTime.HasValue && DateTime.Now > v.CheckOutTime.Value)
+                {
+                    status = "Quá giờ";
+                }
+                return new VisitorViewModel
+                {
+                    Id = v.Id.ToString(),
+                    VisitorName = v.VisitorName,
+                    IdentityCard = v.IdNumber,
+                    PhoneNumber = v.PhoneNumber,
+                    Relationship = v.Relationship,
+                    Purpose = v.Purpose,
+                    HostId = v.HostId,
+                    StudentName = v.Host?.FullName ?? "Sinh viên",
+                    Room = room,
+                    CheckIn = v.CheckInTime,
+                    CheckOut = v.CheckOutTime,
+                    IsCheckedOut = v.IsCheckedOut,
+                    Status = status,
+                    CreatedDate = v.CreatedDate
+                };
             }).ToList();
 
             return View(list);
@@ -465,21 +551,29 @@ namespace DormitoryManagement.Controllers
                                   .Take(pageSize)
                                   .ToListAsync();
 
-            var list = items.Select(v => new VisitorViewModel
+            var list = items.Select(v =>
             {
-                Id = v.Id.ToString(),
-                VisitorName = v.VisitorName,
-                IdentityCard = v.IdNumber,
-                PhoneNumber = v.PhoneNumber,
-                Relationship = v.Relationship,
-                Purpose = v.Purpose,
-                HostId = v.HostId,
-                StudentName = v.Host?.FullName ?? "Sinh viên",
-                CheckIn = v.CheckInTime,
-                CheckOut = v.CheckOutTime,
-                IsCheckedOut = v.IsCheckedOut,
-                Status = v.Status,
-                CreatedDate = v.CreatedDate
+                var status = v.Status;
+                if (status == "Đang ở trong" && v.CheckOutTime.HasValue && DateTime.Now > v.CheckOutTime.Value)
+                {
+                    status = "Quá giờ";
+                }
+                return new VisitorViewModel
+                {
+                    Id = v.Id.ToString(),
+                    VisitorName = v.VisitorName,
+                    IdentityCard = v.IdNumber,
+                    PhoneNumber = v.PhoneNumber,
+                    Relationship = v.Relationship,
+                    Purpose = v.Purpose,
+                    HostId = v.HostId,
+                    StudentName = v.Host?.FullName ?? "Sinh viên",
+                    CheckIn = v.CheckInTime,
+                    CheckOut = v.CheckOutTime,
+                    IsCheckedOut = v.IsCheckedOut,
+                    Status = status,
+                    CreatedDate = v.CreatedDate
+                };
             }).ToList();
 
             var pagedResult = new DormitoryManagement.Domain.Common.PagedResult<VisitorViewModel>(list, totalCount, page, pageSize);

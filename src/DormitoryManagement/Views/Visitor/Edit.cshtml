@@ -78,6 +78,22 @@
                                     <input type="text" id="identityCard" class="form-control input-custom font-monospace" required placeholder="Nhập 12 số CCCD...">
                                 </div>
 
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input type="tel" id="phoneNumber" class="form-control input-custom" required placeholder="Nhập số điện thoại khách..." pattern="[0-9]{10,11}" title="Vui lòng nhập số điện thoại hợp lệ (10 - 11 chữ số)">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mối quan hệ <span class="text-danger">*</span></label>
+                                        <input type="text" id="relationship" class="form-control input-custom" required placeholder="Bố, mẹ, bạn, khách...">
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="form-label">Mục đích thăm <span class="text-danger">*</span></label>
+                                    <textarea id="purpose" class="form-control input-custom" rows="2" style="height: auto;" required placeholder="Mục đích chuyến thăm..."></textarea>
+                                </div>
+
                                 <div class="mb-4">
                                     <label class="form-label">Trạng thái lưu trú</label>
                                     <select id="status" class="form-select input-custom">
@@ -151,6 +167,9 @@
                 success: function(visitor) {
                     document.getElementById("visitorName").value = visitor.visitorName;
                     document.getElementById("identityCard").value = visitor.identityCard;
+                    document.getElementById("phoneNumber").value = visitor.phoneNumber || '';
+                    document.getElementById("relationship").value = visitor.relationship || '';
+                    document.getElementById("purpose").value = visitor.purpose || '';
                     document.getElementById("studentName").value = visitor.studentName;
                     document.getElementById("room").value = visitor.room;
                     
@@ -182,6 +201,9 @@
             const name = document.getElementById("visitorName").value;
             const currentId = document.getElementById("visitorId").value;
             const identityCard = document.getElementById("identityCard").value;
+            const phoneNumber = document.getElementById("phoneNumber").value;
+            const relationship = document.getElementById("relationship").value;
+            const purpose = document.getElementById("purpose").value;
             const studentName = document.getElementById("studentName").value;
             const room = document.getElementById("room").value;
             const checkIn = document.getElementById("checkIn").value;
@@ -189,14 +211,25 @@
             const status = document.getElementById("status").value;
             const token = $('input[name="__RequestVerificationToken"]').val();
 
+            if (new Date(checkIn) >= new Date(checkOut)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lịch trình không hợp lệ!',
+                    text: 'Thời gian ra dự kiến bắt buộc phải sau mốc thời gian khách tiến vào ký túc xá.',
+                    confirmButtonColor: '#ef4444'
+                });
+                return;
+            }
+
             $.ajax({
                 url: '/Visitor/Edit/' + currentId,
                 type: 'POST',
                 data: {
                     visitorName: name,
                     identityCard: identityCard,
-                    phoneNumber: '',
-                    purpose: '',
+                    phoneNumber: phoneNumber,
+                    relationship: relationship,
+                    purpose: purpose,
                     studentName: studentName,
                     room: room,
                     checkIn: checkIn,
@@ -204,17 +237,21 @@
                     status: status,
                     __RequestVerificationToken: token
                 },
-                success: function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cập nhật thành công!',
-                        text: `Thông tin của khách ${name} (Mã: ${currentId}) đã được đồng bộ hóa lên hệ thống KTX.`,
-                        confirmButtonColor: '#4f46e5',
-                        timer: 2500,
-                        timerProgressBar: true
-                    }).then(() => {
-                        window.location.href = "/Visitor";
-                    });
+                success: function(res) {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cập nhật thành công!',
+                            text: `Thông tin của khách ${name} (Mã: ${currentId}) đã được đồng bộ hóa lên hệ thống KTX.`,
+                            confirmButtonColor: '#4f46e5',
+                            timer: 2500,
+                            timerProgressBar: true
+                        }).then(() => {
+                            window.location.href = "/Visitor";
+                        });
+                    } else {
+                        Swal.fire('Thất bại!', res.message || 'Có lỗi xảy ra khi cập nhật thông tin khách.', 'error');
+                    }
                 },
                 error: function() {
                     Swal.fire('Lỗi!', 'Không thể cập nhật thông tin khách thăm.', 'error');
