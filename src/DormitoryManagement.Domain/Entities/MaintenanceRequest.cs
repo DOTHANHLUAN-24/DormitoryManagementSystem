@@ -48,5 +48,8 @@ namespace DormitoryManagement.Domain.Entities
         /// <summary>Navigation property đến phòng phát sinh sự cố.</summary>
         [ForeignKey("RoomId")]
         public virtual Room Room { get; set; } = null!;
+
+        /// <summary>Ghi chú thêm của yêu cầu bảo trì (lưu ý thêm của sinh viên hoặc phản hồi của nhân viên).</summary>
+        public string? Notes { get; set; }
     }
 }

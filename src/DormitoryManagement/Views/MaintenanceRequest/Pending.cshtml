@@ -90,6 +90,12 @@
                                 <td style="max-width:250px;">
                                     <div class="fw-bold text-dark text-truncate">@item.Title</div>
                                     <div class="small text-muted text-truncate">@item.Description</div>
+                                    @if (!string.IsNullOrEmpty(item.Notes))
+                                    {
+                                        <div class="small text-info text-truncate mt-1" title="@item.Notes">
+                                            <i class="fas fa-sticky-note me-1"></i>Ghi chú: @item.Notes
+                                        </div>
+                                    }
                                 </td>
                                 <td>
                                     <div class="fw-semibold text-primary" style="font-size:13px;">@item.RoomNumber</div>

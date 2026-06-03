@@ -242,6 +242,12 @@
                                 <td style="max-width:220px;">
                                     <div class="fw-semibold text-dark text-truncate">@item.Title</div>
                                     <div class="small text-muted text-truncate">@item.Description</div>
+                                    @if (!string.IsNullOrEmpty(item.Notes))
+                                    {
+                                        <div class="small text-info text-truncate mt-1" title="@item.Notes">
+                                            <i class="fas fa-sticky-note me-1"></i>Ghi chú: @item.Notes
+                                        </div>
+                                    }
                                 </td>
                                 <td>
                                     <div class="fw-semibold text-primary" style="font-size:13px;">@item.RoomNumber</div>
@@ -285,9 +291,35 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="d-flex justify-content-end gap-1">
+                                        @if (item.Status == "Open")
+                                        {
+                                            <button type="button" class="action-btn" style="background:#ecfdf5;color:#10b981;"
+                                                    onclick="quickUpdateStatus('@item.Id', 'InProgress', '@item.Title')"
+                                                    title="Duyệt (Bắt đầu xử lý)">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                            <button type="button" class="action-btn" style="background:#fef2f2;color:#ef4444;"
+                                                    onclick="quickUpdateStatus('@item.Id', 'Closed', '@item.Title')"
+                                                    title="Từ chối / Đóng yêu cầu">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
+                                        else if (item.Status == "InProgress")
+                                        {
+                                            <button type="button" class="action-btn" style="background:#ecfdf5;color:#10b981;"
+                                                    onclick="quickUpdateStatus('@item.Id', 'Resolved', '@item.Title')"
+                                                    title="Hoàn thành sửa chữa">
+                                                <i class="fas fa-check-double"></i>
+                                            </button>
+                                            <button type="button" class="action-btn" style="background:#f1f5f9;color:#475569;"
+                                                    onclick="quickUpdateStatus('@item.Id', 'Closed', '@item.Title')"
+                                                    title="Đóng yêu cầu">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        }
                                         <button type="button" class="action-btn btn-edit-status"
                                                 onclick="openStatusModal('@item.Id', '@item.Status', '@item.Title')"
-                                                title="Cập nhật trạng thái">
+                                                title="Cập nhật trạng thái chi tiết">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         @if (canDelete)
@@ -361,6 +393,48 @@
 
 @section Scripts {
 <script>
+    function quickUpdateStatus(id, status, title) {
+        var actionText = status === 'InProgress' ? 'duyệt và chuyển sang Đang xử lý' :
+                         status === 'Resolved' ? 'hoàn thành' : 'từ chối / đóng';
+        var confirmButtonColor = (status === 'InProgress' || status === 'Resolved') ? '#10b981' : '#ef4444';
+        
+        Swal.fire({
+            title: 'Xác nhận thao tác?',
+            html: `Bạn có chắc muốn ${actionText} yêu cầu bảo trì:<br><strong>"${title}"</strong>?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: confirmButtonColor,
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy bỏ'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+                var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                $.ajax({
+                    url: '/MaintenanceRequest/' + id + '/UpdateStatus',
+                    type: 'POST',
+                    data: { status: status, __RequestVerificationToken: token },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({ icon: 'success', title: 'Thành công', text: res.message, timer: 1500, showConfirmButton: false })
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi', 'Không thể cập nhật trạng thái yêu cầu.', 'error');
+                    }
+                });
+            }
+        });
+    }
+
     function openStatusModal(id, currentStatus, title) {
         document.getElementById('requestId').value = id;
         document.getElementById('requestTitle').textContent = title;
