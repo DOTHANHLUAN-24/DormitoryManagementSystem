@@ -16,7 +16,7 @@ namespace DormitoryManagement.Infrastructure.Data
                 .Build();
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-            builder.UseNpgsql(connectionString);
+            builder.UseSqlServer(connectionString);
             return new ApplicationDbContext(builder.Options);
         }
     }

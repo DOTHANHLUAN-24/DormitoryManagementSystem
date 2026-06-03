@@ -15,15 +15,9 @@ namespace DormitoryManagement.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // 1. Cấu hình Database chuyển đổi sang PostgreSQL
             var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-            // Fix lỗi lưu trữ DateTime của PostgreSQL khi chạy môi trường Linux (Render)
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(connectionString, b =>
-                    b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
+                options.UseSqlServer(connectionString)
             );
 
             // 2. Unit of Work
