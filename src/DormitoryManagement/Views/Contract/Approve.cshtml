@@ -45,38 +45,46 @@
             text-decoration: none;
             border: none;
         }
+
         .btn-approve {
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white !important;
             box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
         }
+
         .btn-approve:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
         }
+
         .btn-save-only {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             color: white !important;
             box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
+
         .btn-save-only:hover {
             transform: translateY(-1px);
             box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
         }
+
         .btn-print {
             background: #f8fafc;
             border: 1.5px solid #cbd5e1;
             color: #334155 !important;
         }
+
         .btn-print:hover {
             background: #f1f5f9;
             border-color: #94a3b8;
         }
+
         .btn-back {
             background: #ffffff;
             border: 1.5px solid #e2e8f0;
             color: #64748b !important;
         }
+
         .btn-back:hover {
             background: #f8fafc;
             color: #475569 !important;
@@ -92,7 +100,8 @@
 
         .paper {
             background-color: var(--paper-bg);
-            width: 210mm; /* Chuẩn A4 */
+            width: 210mm;
+            /* Chuẩn A4 */
             min-height: 297mm;
             padding: 25mm 20mm;
             box-sizing: border-box;
@@ -110,28 +119,33 @@
             line-height: 1.3;
             margin-bottom: 25px;
         }
+
         .doc-nation {
             font-weight: bold;
             font-size: 15px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         .doc-motto {
             font-weight: bold;
             font-size: 14px;
             margin-top: 3px;
         }
+
         .doc-divider {
             width: 120px;
             height: 1px;
             background-color: #000000;
             margin: 8px auto 15px auto;
         }
+
         .doc-title {
             text-align: center;
             margin-top: 25px;
             margin-bottom: 25px;
         }
+
         .doc-title h2 {
             font-family: 'Times New Roman', Times, serif;
             font-weight: bold;
@@ -139,6 +153,7 @@
             text-transform: uppercase;
             margin-bottom: 5px;
         }
+
         .doc-title .doc-code {
             font-size: 14px;
             font-style: italic;
@@ -161,7 +176,7 @@
         .info-label {
             min-width: 140px;
         }
-        
+
         .info-label-long {
             min-width: 180px;
         }
@@ -184,14 +199,17 @@
             padding: 0 5px;
             width: 100%;
         }
+
         .paper-input:focus {
             background-color: #eff6ff;
             border-bottom: 1px solid var(--accent);
         }
+
         .paper-input-short {
             width: 120px;
             text-align: center;
         }
+
         .paper-input-medium {
             width: 200px;
             text-align: center;
@@ -204,18 +222,22 @@
             margin-top: 40px;
             page-break-inside: avoid;
         }
+
         .signature-col {
             padding: 10px;
         }
+
         .signature-title {
             font-weight: bold;
         }
+
         .signature-sub {
             font-style: italic;
             font-size: 12px;
             color: #475569;
             margin-bottom: 60px;
         }
+
         .signature-name {
             font-weight: bold;
             margin-top: 50px;
@@ -241,8 +263,8 @@
         }
 
         /* =======================================================
-           CSS ĐỘC QUYỀN CHỈ CHẠY LÚC IN
-           ======================================================= */
+               CSS ĐỘC QUYỀN CHỈ CHẠY LÚC IN
+               ======================================================= */
         @@media print {
             body {
                 margin: 0 !important;
@@ -255,7 +277,8 @@
                 width: 100% !important;
                 max-width: 100% !important;
                 margin: 0 !important;
-                padding: 15mm 20mm !important; /* Lề chuẩn văn bản */
+                padding: 0 !important;
+                /* Để lề của @@page tự kiểm soát */
                 box-shadow: none !important;
                 border: none !important;
             }
@@ -273,10 +296,33 @@
                 color: #000000 !important;
             }
 
-            /* Set chuẩn giấy A4 và xóa dòng link localhost ở mép giấy */
+            /* Ẩn hoàn toàn header/footer mặc định của trình duyệt bằng cách set margin: 0 */
             @@page {
                 size: A4 portrait;
                 margin: 0;
+            }
+
+            /* Định dạng bảng in để tự động tạo lề trên/dưới lặp lại trên mọi trang */
+            .print-table-container {
+                width: 100%;
+                border-collapse: collapse;
+                border: none !important;
+            }
+
+            .print-header-space-td {
+                height: 20mm !important;
+                border: none !important;
+            }
+
+            .print-footer-space-td {
+                height: 20mm !important;
+                border: none !important;
+            }
+
+            .print-content-td {
+                padding-left: 25mm !important;
+                padding-right: 20mm !important;
+                border: none !important;
             }
         }
     </style>
@@ -284,7 +330,7 @@
 
 <!-- Control Bar (Screen only) -->
 <div class="control-bar no-print d-flex justify-content-between align-items-center">
-    <div>
+    <div class="d-flex align-items-center gap-3">
         <a asp-action="@(Model.Status == ContractStatus.Pending ? "Pending" : "Index")" class="btn-control btn-back">
             <i class="fas fa-arrow-left"></i> Quay lại danh sách
         </a>
@@ -294,7 +340,7 @@
         <button type="button" class="btn-control btn-print" onclick="printContractA4()">
             <i class="fas fa-print"></i> In hợp đồng (A4)
         </button>
-        
+
         @if (Model.Status == ContractStatus.Pending)
         {
             <button type="button" class="btn-control btn-approve" onclick="saveContract(true)">
@@ -321,7 +367,8 @@
             ContractStatus.Terminated => "bg-danger text-white",
             _ => "bg-warning text-dark"
         })">
-            @(Model.Status switch {
+            @(Model.Status switch
+            {
                 ContractStatus.Active => "Đang hoạt động",
                 ContractStatus.Pending => "Chờ xét duyệt",
                 ContractStatus.Expired => "Đã hết hạn",
@@ -330,7 +377,16 @@
             })
         </span>
 
-        <!-- Quốc hiệu & Tiêu ngữ -->
+        <table class="print-table-container" style="width: 100%; border-collapse: collapse; border: none;">
+            <thead>
+                <tr>
+                    <td class="print-header-space-td" style="height: 0;"></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="print-content-td" style="padding: 0; border: none;">
+                        <!-- Quốc hiệu & Tiêu ngữ -->
         <div class="doc-header">
             <div class="doc-nation">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</div>
             <div class="doc-motto">Độc lập - Tự do - Hạnh phúc</div>
@@ -348,7 +404,8 @@
             @Html.AntiForgeryToken()
             <input type="hidden" id="contractId" value="@Model.Id" />
 
-            <p>Hôm nay, ngày @DateTime.Now.ToString("dd") tháng @DateTime.Now.ToString("MM") năm @DateTime.Now.ToString("yyyy"), tại văn phòng Ban Quản lý Ký túc xá KTX System, chúng tôi gồm có:</p>
+            <p>Hôm nay, ngày @DateTime.Now.ToString("dd") tháng @DateTime.Now.ToString("MM") năm
+                @DateTime.Now.ToString("yyyy"), tại văn phòng Ban Quản lý Ký túc xá KTX System, chúng tôi gồm có:</p>
 
             <!-- BÊN CHO THUÊ -->
             <div class="section-title">Bên Cho Thuê (Bên A): ban quản lý ký túc xá ktx system</div>
@@ -375,7 +432,7 @@
                 <span class="info-label">- Tài khoản / MSSV:</span>
                 <span class="info-value-dotted font-monospace">@Model.User?.UserName</span>
             </div>
-            
+
             <!-- XỬ LÝ TRƯỜNG CCCD/CMND -->
             <div class="info-row">
                 <span class="info-label">- Số CMND/CCCD:</span>
@@ -386,11 +443,12 @@
                     }
                     else
                     {
-                        <input type="text" class="paper-input" id="identityCard" placeholder="(Nhập số CCCD/CMND sinh viên nếu có)" />
+                        <input type="text" class="paper-input" id="identityCard"
+                            placeholder="(Nhập số CCCD/CMND sinh viên nếu có)" />
                     }
                 </span>
             </div>
-            
+
             <!-- XỬ LÝ TRƯỜNG SỐ ĐIỆN THOẠI -->
             <div class="info-row">
                 <span class="info-label">- Số điện thoại:</span>
@@ -401,11 +459,12 @@
                     }
                     else
                     {
-                        <input type="text" class="paper-input" id="phoneNumber" placeholder="(Nhập số điện thoại sinh viên)" />
+                        <input type="text" class="paper-input" id="phoneNumber"
+                            placeholder="(Nhập số điện thoại sinh viên)" />
                     }
                 </span>
             </div>
-            
+
             <!-- XỬ LÝ TRƯỜNG EMAIL -->
             <div class="info-row">
                 <span class="info-label">- Email:</span>
@@ -421,7 +480,8 @@
                 </span>
             </div>
 
-            <p style="margin-top: 15px;">Hai bên cùng thống nhất ký kết hợp đồng thuê chỗ ở nội trú Ký túc xá với các điều khoản sau:</p>
+            <p style="margin-top: 15px;">Hai bên cùng thống nhất ký kết hợp đồng thuê chỗ ở nội trú Ký túc xá với các
+                điều khoản sau:</p>
 
             <!-- ĐIỀU 1: NỘI DUNG -->
             <div class="section-title">Điều 1: Vị trí chỗ ở và thời hạn thuê</div>
@@ -440,8 +500,11 @@
             <div class="info-row align-items-center" style="margin-top: 8px;">
                 <span class="info-label-long">- Mã Số Hợp Đồng (bắt buộc):</span>
                 <div style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">
-                    <input type="text" class="paper-input fw-bold" id="contractCode" value="@Model.ContractCode" required style="color: #4f46e5;" />
-                    <button type="button" class="btn btn-sm btn-outline-secondary no-print" onclick="regenerateApproveContractCode()" title="Tự động sinh mã mới" style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px 8px; background-color: #f8fafc;">
+                    <input type="text" class="paper-input fw-bold" id="contractCode" value="@Model.ContractCode"
+                        required style="color: #4f46e5;" />
+                    <button type="button" class="btn btn-sm btn-outline-secondary no-print"
+                        onclick="regenerateApproveContractCode()" title="Tự động sinh mã mới"
+                        style="border-radius: 8px; border: 1px solid #cbd5e1; padding: 4px 8px; background-color: #f8fafc;">
                         <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
@@ -449,22 +512,27 @@
             <div class="info-row">
                 <span>- Thời hạn hợp đồng thuê phòng:</span>
                 <span class="ms-2">Từ ngày</span>
-                <input type="date" class="paper-input paper-input-medium ms-1" id="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+                <input type="date" class="paper-input paper-input-medium ms-1" id="startDate"
+                    value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
                 <span class="ms-2">đến ngày</span>
-                <input type="date" class="paper-input paper-input-medium ms-1" id="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
+                <input type="date" class="paper-input paper-input-medium ms-1" id="endDate"
+                    value="@Model.EndDate.ToString("yyyy-MM-dd")" required />
             </div>
 
             <!-- ĐIỀU 2: ĐƠN GIÁ -->
             <div class="section-title">Điều 2: Giá cả và Phương thức thanh toán</div>
             <div class="info-row">
                 <span>- Đơn giá cho thuê chỗ ở:</span>
-                <span class="fw-bold ms-1" style="border-bottom: 1px solid #000;">@((Model.Bed?.Room?.RoomType?.BasePrice ?? 0).ToString("N0")) VNĐ / tháng</span>
+                <span class="fw-bold ms-1"
+                    style="border-bottom: 1px solid #000;">@((Model.Bed?.Room?.RoomType?.BasePrice ?? 0).ToString("N0"))
+                    VNĐ / tháng</span>
                 <span class="ms-2">(Chưa bao gồm chi phí dịch vụ điện, nước, vệ sinh, internet).</span>
             </div>
             <div class="info-row">
                 <span class="info-label-long">- Tiền đặt cọc phòng:</span>
                 <div style="flex-grow: 1; display: flex; align-items: baseline;">
-                    <input type="number" class="paper-input fw-bold" id="depositAmount" value="@((int)Model.DepositAmount)" required style="text-align: left; width: 150px;" />
+                    <input type="number" class="paper-input fw-bold" id="depositAmount"
+                        value="@((int)Model.DepositAmount)" required style="text-align: left; width: 150px;" />
                     <span class="ms-1 fw-bold">VNĐ</span>
                 </div>
             </div>
@@ -475,13 +543,18 @@
 
             <!-- ĐIỀU 3: QUY CHẾ -->
             <div class="section-title">Điều 3: Quyền và nghĩa vụ của Bên B (Sinh viên)</div>
-            <p style="margin-bottom: 5px; text-align: justify;">1. Chấp hành nghiêm chỉnh Quy chế quản lý học sinh, sinh viên nội trú của Bộ Giáo dục và Đào tạo và Nội quy kỷ luật, phòng chống cháy nổ của Ký túc xá.</p>
-            <p style="margin-bottom: 5px; text-align: justify;">2. Đóng tiền thuê chỗ ở và các khoản dịch vụ đúng thời hạn quy định. Tự bảo quản tài sản cá nhân và có trách nhiệm giữ gìn tài sản chung được bàn giao.</p>
-            <p style="margin-bottom: 5px; text-align: justify;">3. Không tự ý cải tạo, thay đổi cấu trúc phòng ở; không chứa chấp người lạ vào phòng ở qua đêm khi chưa được sự đồng ý của Ban Quản lý.</p>
+            <p style="margin-bottom: 5px; text-align: justify;">1. Chấp hành nghiêm chỉnh Quy chế quản lý học sinh, sinh
+                viên nội trú của Bộ Giáo dục và Đào tạo và Nội quy kỷ luật, phòng chống cháy nổ của Ký túc xá.</p>
+            <p style="margin-bottom: 5px; text-align: justify;">2. Đóng tiền thuê chỗ ở và các khoản dịch vụ đúng thời
+                hạn quy định. Tự bảo quản tài sản cá nhân và có trách nhiệm giữ gìn tài sản chung được bàn giao.</p>
+            <p style="margin-bottom: 5px; text-align: justify;">3. Không tự ý cải tạo, thay đổi cấu trúc phòng ở; không
+                chứa chấp người lạ vào phòng ở qua đêm khi chưa được sự đồng ý của Ban Quản lý.</p>
 
             <!-- ĐIỀU 4: ĐIỀU KHOẢN CHUNG -->
             <div class="section-title">Điều 4: Cam kết chung</div>
-            <p style="text-align: justify; margin-bottom: 25px;">Hợp đồng này có hiệu lực kể từ ngày ký. Được lập thành 02 bản có giá trị pháp lý như nhau, Bên A giữ 01 bản để theo dõi quản lý, Bên B giữ 01 bản để thực hiện nghĩa vụ.</p>
+            <p style="text-align: justify; margin-bottom: 25px;">Hợp đồng này có hiệu lực kể từ ngày ký. Được lập thành
+                02 bản có giá trị pháp lý như nhau, Bên A giữ 01 bản để theo dõi quản lý, Bên B giữ 01 bản để thực hiện
+                nghĩa vụ.</p>
 
             <!-- KÝ TÊN -->
             <div class="signatures-grid">
@@ -497,6 +570,15 @@
                 </div>
             </div>
         </form>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="print-footer-space-td" style="height: 0;"></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
 </div>
 
@@ -510,6 +592,10 @@
 
         // HÀM XỬ LÝ CHUYÊN DỤNG CHO VIỆC IN CHÍNH XÁC KHU VỰC GIẤY
         function printContractA4() {
+            // Tạm thời đổi tiêu đề trình duyệt/tài liệu để in ra chuyên nghiệp
+            var originalTitle = document.title;
+            document.title = "Hop_Dong_Thue_Phong_KTX_System";
+
             // Bước 1: Lưu lại giá trị text mà người dùng đang gõ dở trên form để khi in không bị mất
             document.querySelectorAll('.paper-input').forEach(input => {
                 input.setAttribute('value', input.value);
@@ -525,9 +611,12 @@
             // Bước 4: Gọi lệnh in của trình duyệt
             window.print();
 
+            // Khôi phục lại tiêu đề gốc sau khi in
+            document.title = originalTitle;
+
             // Bước 5: Trả lại giao diện trang web như cũ để sử dụng tiếp
             document.body.innerHTML = originalBody;
-            
+
             // Reload lại nhẹ nhàng để các nút bấm (như nút Lưu) hoạt động lại bình thường
             window.location.reload();
         }
@@ -554,7 +643,7 @@
 
                 Swal.fire({
                     title: isApprove ? 'Xác nhận duyệt hợp đồng?' : 'Lưu thay đổi?',
-                    text: isApprove 
+                    text: isApprove
                         ? 'Bạn có chắc chắn muốn duyệt và kích hoạt hợp đồng này? Giường ' + '@(Model.Bed?.BedNumber)' + ' sẽ được chuyển sang trạng thái Đã có sinh viên.'
                         : 'Lưu lại các thông tin chỉnh sửa trên hợp đồng này.',
                     icon: 'question',
