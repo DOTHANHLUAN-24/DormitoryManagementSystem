@@ -76,8 +76,8 @@
                                 <td class="ps-4">
                                     <span class="data-badge text-decoration-line-through">@item.InvoiceCode</span>
                                 </td>
-                                <td>
-                                    <span class="text-decoration-line-through">@item.Title</span>
+                                <td style="max-width: 220px;">
+                                    <div class="text-truncate text-decoration-line-through" title="@item.Title">@item.Title</div>
                                 </td>
                                 <td>
                                     @if (item.Contract != null && item.Contract.User != null)

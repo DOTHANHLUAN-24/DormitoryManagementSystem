@@ -549,29 +549,54 @@
         @if (isAdminOrManager)
         {
             <div class="sidebar-section-title">Tài chính & Thanh toán</div>
-            var isInvoiceGroup = currentController == "Invoice" || currentController == "Payment";
-            <a data-bs-toggle="collapse" href="#financeMenu" class="menu-toggle @(isInvoiceGroup ? "active" : "collapsed")">
+            var isInvoiceGroup = string.Equals(currentController, "Invoice", StringComparison.OrdinalIgnoreCase) || 
+                                 string.Equals(currentController, "Payment", StringComparison.OrdinalIgnoreCase);
+            var isInvoiceSubGroup = string.Equals(currentController, "Invoice", StringComparison.OrdinalIgnoreCase);
+            var isPaymentSubGroup = string.Equals(currentController, "Payment", StringComparison.OrdinalIgnoreCase);
+            
+            <a data-bs-toggle="collapse" href="#financeMenu" data-bs-target="#financeMenu" class="menu-toggle @(isInvoiceGroup ? "active" : "collapsed")">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <span class="text">Tài chính & Hóa đơn</span>
             </a>
 
             <div class="collapse submenu @(isInvoiceGroup ? "show" : "")" id="financeMenu">
-                <a asp-controller="Invoice" asp-action="Index"
-                   class="@(currentController == "Invoice" && currentAction == "Index" ? "active" : "")">
-                    <i class="fas fa-file-invoice me-2"></i> Quản lý hóa đơn
+                @* Cấp 2 – Hóa đơn *@
+                <a data-bs-toggle="collapse" href="#invoiceSubMenu"
+                   class="submenu-toggle-l2 @(isInvoiceSubGroup ? "active" : "collapsed")">
+                    <span><i class="fas fa-file-invoice me-2"></i> Quản lý hóa đơn</span>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
-                <a asp-controller="Invoice" asp-action="Create"
-                   class="@(currentController == "Invoice" && currentAction == "Create" ? "active" : "")">
-                    <i class="fas fa-plus me-2"></i> Tạo hóa đơn mới
+                <div class="collapse submenu-l3 @(isInvoiceSubGroup ? "show" : "")" id="invoiceSubMenu">
+                    <a asp-controller="Invoice" asp-action="Index"
+                       class="@(string.Equals(currentController, "Invoice", StringComparison.OrdinalIgnoreCase) && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <i class="fas fa-list me-2"></i> Danh sách hóa đơn
+                    </a>
+                    <a asp-controller="Invoice" asp-action="Create"
+                       class="@(string.Equals(currentController, "Invoice", StringComparison.OrdinalIgnoreCase) && string.Equals(currentAction, "Create", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <i class="fas fa-plus me-2"></i> Tạo hóa đơn mới
+                    </a>
+                    <a asp-controller="Invoice" asp-action="RecycleBin"
+                       class="@(string.Equals(currentController, "Invoice", StringComparison.OrdinalIgnoreCase) && string.Equals(currentAction, "RecycleBin", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác hóa đơn
+                    </a>
+                </div>
+
+                @* Cấp 2 – Thanh toán *@
+                <a data-bs-toggle="collapse" href="#paymentSubMenu"
+                   class="submenu-toggle-l2 @(isPaymentSubGroup ? "active" : "collapsed")">
+                    <span><i class="fas fa-receipt me-2"></i> Quản lý thanh toán</span>
+                    <i class="fas fa-chevron-down arrow-icon"></i>
                 </a>
-                <a asp-controller="Invoice" asp-action="RecycleBin"
-                   class="@(currentController == "Invoice" && currentAction == "RecycleBin" ? "active" : "")">
-                    <i class="fas fa-trash-alt me-2 text-danger"></i> Thùng rác hóa đơn
-                </a>
-                <a asp-controller="Payment" asp-action="Index"
-                   class="@(currentController == "Payment" ? "active" : "")">
-                    <i class="fas fa-receipt me-2"></i> Lịch sử thanh toán (Mock)
-                </a>
+                <div class="collapse submenu-l3 @(isPaymentSubGroup ? "show" : "")" id="paymentSubMenu">
+                    <a asp-controller="Payment" asp-action="Index"
+                       class="@(string.Equals(currentController, "Payment", StringComparison.OrdinalIgnoreCase) && string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <i class="fas fa-list me-2"></i> Lịch sử thanh toán
+                    </a>
+                    <a asp-controller="Payment" asp-action="Create"
+                       class="@(string.Equals(currentController, "Payment", StringComparison.OrdinalIgnoreCase) && string.Equals(currentAction, "Create", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                        <i class="fas fa-plus me-2"></i> Ghi nhận thanh toán
+                    </a>
+                </div>
             </div>
         }
         else if (isStudent)

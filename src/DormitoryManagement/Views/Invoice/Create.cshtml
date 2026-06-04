@@ -1,3 +1,4 @@
+@model DormitoryManagement.Domain.Entities.Invoice
 @{
     ViewData["Title"] = "Tạo Hóa Đơn Mới";
     Layout = "_Layout";
@@ -15,75 +16,89 @@
                         </div>
                         <h3 class="mb-0 fw-bold text-dark">Tạo Hóa Đơn Mới</h3>
                     </div>
-                    <a asp-controller="Home" asp-action="Index"
+                    <a asp-controller="Invoice" asp-action="Index"
                        class="btn btn-outline-secondary shadow-sm d-flex align-items-center gap-2"
                        style="border-radius: 12px;">
-                        <i class="fa-solid fa-house"></i> <span>Trang chủ</span>
+                        <i class="fa-solid fa-house"></i> <span>Quay lại</span>
                     </a>
                 </div>
                 <div class="card-body p-4">
-                    <form>
+                    <form asp-action="Create" method="post">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">Mã hóa đơn</label>
-                                <input type="text" class="form-control" style="border-radius: 12px; height: 46px;"
-                                       placeholder="Ví dụ: HD202405001" required>
+                                <label asp-for="InvoiceCode" class="form-label fw-bold small text-muted">Mã hóa đơn</label>
+                                <div class="input-group">
+                                    <input type="text" asp-for="InvoiceCode" class="form-control" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;" placeholder="Ví dụ: HD202405001" required id="InvoiceCodeInput">
+                                    <button type="button" class="btn btn-outline-secondary" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" onclick="generateInvoiceCode()">
+                                        <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Tự tạo mã
+                                    </button>
+                                </div>
+                                <span asp-validation-for="InvoiceCode" class="text-danger small"></span>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">Chọn hợp đồng / Sinh viên</label>
-                                <select class="form-select" style="border-radius: 12px; height: 46px;" required>
+                                <label asp-for="ContractId" class="form-label fw-bold small text-muted">Chọn hợp đồng / Sinh viên</label>
+                                <select asp-for="ContractId" class="form-select" style="border-radius: 12px; height: 46px;" required id="ContractSelect" onchange="loadContractDetails()">
                                     <option value="">-- Chọn sinh viên --</option>
-                                    <option>SV001 - Nguyễn Văn A (P.101)</option>
-                                    <option>SV002 - Trần Thị B (P.102)</option>
+                                    @if (ViewBag.Contracts != null)
+                                    {
+                                        foreach (var c in ViewBag.Contracts as IEnumerable<DormitoryManagement.Domain.Entities.Contract>)
+                                        {
+                                            <option value="@c.Id">@c.ContractCode - @(c.User?.FullName) (@(c.Bed?.Room?.RoomNumber) - Giường @(c.Bed?.BedNumber))</option>
+                                        }
+                                    }
                                 </select>
+                                <span asp-validation-for="ContractId" class="text-danger small"></span>
                             </div>
                             <div class="col-12">
-                                <label class="form-label fw-bold small text-muted">Tiêu đề hóa đơn</label>
-                                <input type="text" class="form-control" style="border-radius: 12px; height: 46px;"
-                                       placeholder="Ví dụ: Hóa đơn tiền phòng và điện nước tháng 05/2024">
+                                <label asp-for="Title" class="form-label fw-bold small text-muted">Tiêu đề hóa đơn</label>
+                                <input type="text" asp-for="Title" class="form-control" style="border-radius: 12px; height: 46px;" placeholder="Ví dụ: Hóa đơn tiền phòng và điện nước tháng 05/2024" required>
+                                <span asp-validation-for="Title" class="text-danger small"></span>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-muted">Tháng quyết toán</label>
-                                <select class="form-select" style="border-radius: 12px; height: 46px;">
+                                <label asp-for="BillingMonth" class="form-label fw-bold small text-muted">Tháng quyết toán</label>
+                                <select asp-for="BillingMonth" class="form-select" style="border-radius: 12px; height: 46px;" required>
                                     @for (int i = 1; i <= 12; i++)
                                     {
                                         <option value="@i" selected="@(i == DateTime.Now.Month)">Tháng @i</option>
                                     }
                                 </select>
+                                <span asp-validation-for="BillingMonth" class="text-danger small"></span>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-muted">Năm</label>
-                                <input type="number" class="form-control" style="border-radius: 12px; height: 46px;"
-                                       value="@DateTime.Now.Year">
+                                <label asp-for="BillingYear" class="form-label fw-bold small text-muted">Năm</label>
+                                <input type="number" asp-for="BillingYear" class="form-control" style="border-radius: 12px; height: 46px;" value="@DateTime.Now.Year" required>
+                                <span asp-validation-for="BillingYear" class="text-danger small"></span>
                             </div>
                             <div class="col-md-4">
-                                <label class="form-label fw-bold small text-muted">Hạn thanh toán</label>
-                                <input type="date" class="form-control" style="border-radius: 12px; height: 46px;"
-                                       required>
+                                <label asp-for="DueDate" class="form-label fw-bold small text-muted">Hạn thanh toán</label>
+                                <input type="date" asp-for="DueDate" class="form-control" style="border-radius: 12px; height: 46px;" value="@DateTime.Now.AddDays(15).ToString("yyyy-MM-dd")" required>
+                                <span asp-validation-for="DueDate" class="text-danger small"></span>
                             </div>
 
                             <hr class="my-4 text-muted opacity-25">
-                            <h6 class="fw-bold mb-3">Chi tiết dịch vụ (Mock)</h6>
+                            <h6 class="fw-bold mb-3">Chi tiết tiền dịch vụ & Tính tổng nợ</h6>
 
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">Tiền phòng</label>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Tiền phòng (VNĐ)</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control"
-                                           style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;"
-                                           value="1500000">
-                                    <span class="input-group-text"
-                                          style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;">VNĐ</span>
+                                    <input type="number" class="form-control" id="roomPriceInput" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;" value="0" oninput="calculateTotalAmount()">
+                                    <span class="input-group-text" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;">VNĐ</span>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label fw-bold small text-muted">Tiền điện/nước</label>
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small text-muted">Tiền điện/nước & Dịch vụ khác (VNĐ)</label>
                                 <div class="input-group">
-                                    <input type="number" class="form-control"
-                                           style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;"
-                                           placeholder="0">
-                                    <span class="input-group-text"
-                                          style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;">VNĐ</span>
+                                    <input type="number" class="form-control" id="utilityPriceInput" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;" value="0" placeholder="0" oninput="calculateTotalAmount()">
+                                    <span class="input-group-text" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;">VNĐ</span>
                                 </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="TotalAmount" class="form-label fw-bold small text-muted">Tổng tiền thanh toán (VNĐ)</label>
+                                <div class="input-group">
+                                    <input type="number" asp-for="TotalAmount" class="form-control fw-bold text-primary bg-light" id="totalAmountInput" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px; height: 46px;" readonly required value="0">
+                                    <span class="input-group-text" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;">VNĐ</span>
+                                </div>
+                                <span asp-validation-for="TotalAmount" class="text-danger small"></span>
                             </div>
 
                             <div class="col-12 mt-5 d-flex gap-2">
@@ -103,3 +118,61 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function generateInvoiceCode() {
+            const date = new Date();
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            const rand = Math.floor(1000 + Math.random() * 9000);
+            const code = `HD-${yyyy}${mm}${dd}-${rand}`;
+            document.getElementById('InvoiceCodeInput').value = code;
+        }
+
+        function loadContractDetails() {
+            const contractId = document.getElementById('ContractSelect').value;
+            if (!contractId) {
+                document.getElementById('roomPriceInput').value = 0;
+                calculateTotalAmount();
+                return;
+            }
+
+            $.ajax({
+                url: '/Invoice/GetContractDetails/' + contractId,
+                type: 'GET',
+                success: function (res) {
+                    if (res.success) {
+                        document.getElementById('roomPriceInput').value = res.roomPrice;
+                        // Auto-fill title if empty
+                        const titleInput = document.querySelector('input[name="Title"]');
+                        if (!titleInput.value || titleInput.value.startsWith("Hóa đơn tiền phòng & dịch vụ tháng")) {
+                            const month = document.querySelector('select[name="BillingMonth"]').value;
+                            const year = document.querySelector('input[name="BillingYear"]').value;
+                            titleInput.value = `Hóa đơn tiền phòng & dịch vụ tháng ${month}/${year} - ${res.studentName}`;
+                        }
+                        calculateTotalAmount();
+                    } else {
+                        Swal.fire('Lỗi!', res.message, 'error');
+                    }
+                },
+                error: function () {
+                    console.log('Không thể tải giá phòng từ hợp đồng.');
+                }
+            });
+        }
+
+        function calculateTotalAmount() {
+            const room = parseFloat(document.getElementById('roomPriceInput').value) || 0;
+            const utility = parseFloat(document.getElementById('utilityPriceInput').value) || 0;
+            document.getElementById('totalAmountInput').value = room + utility;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (!document.getElementById('InvoiceCodeInput').value) {
+                generateInvoiceCode();
+            }
+        });
+    </script>
+}

@@ -248,7 +248,9 @@
                         {
                             <tr>
                                 <td class="ps-4"><span class="fw-bold text-dark">@item.InvoiceCode</span></td>
-                                <td>@item.Title</td>
+                                <td style="max-width: 220px;">
+                                    <div class="text-truncate" title="@item.Title">@item.Title</div>
+                                </td>
                                 <td>
                                     @if (item.Contract != null && item.Contract.User != null)
                                     {

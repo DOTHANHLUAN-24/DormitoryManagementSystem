@@ -7,7 +7,7 @@ namespace DormitoryManagement.Controllers
     /// <summary>
     /// Controller xử lý các logic liên quan đến Hóa đơn (Invoice)
     /// </summary>
-    public class InvoiceController(IInvoiceService invoiceService) : BaseController
+    public class InvoiceController(IInvoiceService invoiceService, IContractService contractService) : BaseController
     {
         /// <summary>
         /// Hiển thị danh sách hóa đơn (Trang Index)
@@ -43,9 +43,11 @@ namespace DormitoryManagement.Controllers
         /// GET: Hiển thị form tạo hóa đơn mới
         /// </summary>
         [HttpGet("Create")]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             Logger.LogInformation("Đang truy cập trang tạo mới hóa đơn.");
+            var contracts = await contractService.GetPagedContractsAsync(1, 9999, status: DormitoryManagement.Domain.Enums.ContractStatus.Active);
+            ViewBag.Contracts = contracts.Items;
             return View();
         }
 
@@ -57,9 +59,17 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Create(Invoice invoice)
         {
             Logger.LogInformation("Đang xử lý tạo hóa đơn mới cho hợp đồng ID: {ContractId}", invoice.ContractId);
+            
+            ModelState.Remove(nameof(invoice.Contract));
+            
             if (!ModelState.IsValid)
             {
-                Logger.LogWarning("Dữ liệu tạo hóa đơn không hợp lệ.");
+                var errors = string.Join("; ", ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage));
+                Logger.LogWarning("Dữ liệu tạo hóa đơn không hợp lệ. Lỗi: {Errors}", errors);
+                var contracts = await contractService.GetPagedContractsAsync(1, 9999, status: DormitoryManagement.Domain.Enums.ContractStatus.Active);
+                ViewBag.Contracts = contracts.Items;
                 return View(invoice);
             }
 
@@ -98,9 +108,20 @@ namespace DormitoryManagement.Controllers
                 Logger.LogWarning("Yêu cầu cập nhật hóa đơn không khớp ID: {Id} vs {InvoiceId}", id, invoice.Id);
                 return BadRequest();
             }
+            
+            ModelState.Remove(nameof(invoice.Contract));
+            
             if (!ModelState.IsValid)
             {
-                Logger.LogWarning("Dữ liệu cập nhật hóa đơn ID: {Id} không hợp lệ.", id);
+                var errors = string.Join("; ", ModelState.Values
+                    .SelectMany(x => x.Errors)
+                    .Select(x => x.ErrorMessage));
+                Logger.LogWarning("Dữ liệu cập nhật hóa đơn ID: {Id} không hợp lệ. Lỗi: {Errors}", id, errors);
+                var dbInvoice = await invoiceService.GetByIdAsync(id);
+                if (dbInvoice != null)
+                {
+                    invoice.Contract = dbInvoice.Contract;
+                }
                 return View(invoice);
             }
 
@@ -108,6 +129,29 @@ namespace DormitoryManagement.Controllers
             Logger.LogInformation("Cập nhật hóa đơn ID: {Id} thành công.", id);
             TempData["Success"] = "Cập nhật hóa đơn thành công!";
             return RedirectToAction(nameof(Index));
+        }
+
+        /// <summary>
+        /// AJAX API: Lấy chi tiết thông tin hợp đồng (tên sinh viên, tiền phòng, mã giường phòng)
+        /// </summary>
+        [HttpGet("GetContractDetails/{id}")]
+        public async Task<IActionResult> GetContractDetails(Guid id)
+        {
+            Logger.LogInformation("AJAX lấy chi tiết hợp đồng ID: {Id}", id);
+            var contract = await contractService.GetByIdAsync(id);
+            if (contract == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy hợp đồng hoặc sinh viên." });
+            }
+
+            return Json(new
+            {
+                success = true,
+                studentName = contract.User?.FullName ?? "N/A",
+                roomPrice = contract.Bed?.Room?.RoomType?.BasePrice ?? 0,
+                roomNumber = contract.Bed?.Room?.RoomNumber ?? "N/A",
+                bedNumber = contract.Bed?.BedNumber ?? "N/A"
+            });
         }
 
         /// <summary>
