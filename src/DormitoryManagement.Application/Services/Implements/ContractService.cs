@@ -25,25 +25,28 @@ namespace DormitoryManagement.Application.Services.Implements
         /// <summary>
         /// Lấy hợp đồng theo mã hợp đồng (ContractCode).
         /// </summary>
-        public Task<Contract?> GetByContractCodeAsync(string contractCode)
+        public async Task<Contract?> GetByContractCodeAsync(string contractCode)
         {
-            return _contractRepository.GetByContractCodeAsync(contractCode);
+            await CheckAndUpdateAllExpiredContractsAsync();
+            return await _contractRepository.GetByContractCodeAsync(contractCode);
         }
 
         /// <summary>
         /// Lấy toàn bộ danh sách hợp đồng liên kết với người dùng theo UserId.
         /// </summary>
-        public Task<IEnumerable<Contract>> GetByUserIdAsync(Guid userId)
+        public async Task<IEnumerable<Contract>> GetByUserIdAsync(Guid userId)
         {
-            return _contractRepository.GetByUserIdAsync(userId);
+            await CheckAndUpdateAllExpiredContractsAsync();
+            return await _contractRepository.GetByUserIdAsync(userId);
         }
 
         /// <summary>
         /// Lấy hợp đồng đang hoạt động liên kết với giường theo BedId.
         /// </summary>
-        public Task<Contract> GetByBedIdAsync(Guid bedId)
+        public async Task<Contract> GetByBedIdAsync(Guid bedId)
         {
-            return _contractRepository.GetByBedIdAsync(bedId);
+            await CheckAndUpdateAllExpiredContractsAsync();
+            return await _contractRepository.GetByBedIdAsync(bedId);
         }
 
         /// <summary>
@@ -51,6 +54,7 @@ namespace DormitoryManagement.Application.Services.Implements
         /// </summary>
         public async Task<Contract?> GetByIdAsync(Guid id)
         {
+            await CheckAndUpdateAllExpiredContractsAsync();
             return await _contractRepository.GetQuery()
                 .Include(c => c.User)
                 .Include(c => c.Bed)
@@ -67,6 +71,8 @@ namespace DormitoryManagement.Application.Services.Implements
         /// </summary>
         public async Task<PagedResult<Contract>> GetPagedContractsAsync(int pageIndex, int pageSize, string? searchString = null, ContractStatus? status = null)
         {
+            await CheckAndUpdateAllExpiredContractsAsync();
+
             var query = _contractRepository.GetPagingQuery(searchString ?? "")
                 .Include(c => c.User)
                 .Include(c => c.Bed)
@@ -154,6 +160,8 @@ namespace DormitoryManagement.Application.Services.Implements
                 }
             }
 
+            contract.Status = ContractStatus.Terminated;
+            await _contractRepository.UpdateAsync(contract);
             await _contractRepository.DeleteAsync(contract, isSoftDelete: true);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
@@ -200,11 +208,12 @@ namespace DormitoryManagement.Application.Services.Implements
             var contract = await _contractRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == id);
             if (contract == null || !contract.IsDeleted) return false;
 
+            contract.Status = ContractStatus.Active;
             await _contractRepository.RestoreAsync(contract);
             
             // Tự động cập nhật trạng thái giường tương ứng dựa vào trạng thái hợp đồng
             var bed = await _bedRepository.GetByIdAsync(contract.BedId);
-            if (bed != null && contract.Status == ContractStatus.Active)
+            if (bed != null)
             {
                 bed.Status = BedStatus.Occupied;
                 await _bedRepository.UpdateAsync(bed);
@@ -223,6 +232,34 @@ namespace DormitoryManagement.Application.Services.Implements
 
             await _contractRepository.DeleteAsync(contract, isSoftDelete: false);
             return await _unitOfWork.SaveChangesAsync() > 0;
+        }
+
+        /// <summary>
+        /// Kiểm tra và tự động chuyển các hợp đồng hết hạn sang trạng thái 'Expired' (Hết hạn), đồng thời giải phóng giường.
+        /// </summary>
+        private async Task CheckAndUpdateAllExpiredContractsAsync()
+        {
+            var now = DateTime.Now;
+            var expiredActiveContracts = await _contractRepository.GetQuery()
+                .Where(c => c.Status == ContractStatus.Active && c.EndDate < now)
+                .ToListAsync();
+
+            if (expiredActiveContracts.Any())
+            {
+                foreach (var contract in expiredActiveContracts)
+                {
+                    contract.Status = ContractStatus.Expired;
+                    await _contractRepository.UpdateAsync(contract);
+
+                    var bed = await _bedRepository.GetByIdAsync(contract.BedId);
+                    if (bed != null)
+                    {
+                        bed.Status = BedStatus.Available;
+                        await _bedRepository.UpdateAsync(bed);
+                    }
+                }
+                await _unitOfWork.SaveChangesAsync();
+            }
         }
     }
 }
