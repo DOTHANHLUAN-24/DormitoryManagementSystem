@@ -30,7 +30,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
                 .Include(i => i.Payments)
-                .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode);
+                .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode && !i.IsDeleted);
         }
 
         /// <summary>
@@ -47,6 +47,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
                 .Include(i => i.Payments)
+                .Where(i => !i.IsDeleted)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchString))
@@ -83,7 +84,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.UtilityUsages)
                     .ThenInclude(u => u.Utility)
                 .Include(i => i.Surcharges)
-                .Where(i => i.ContractId == contractId)
+                .Where(i => i.ContractId == contractId && !i.IsDeleted)
                 .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();
         }
@@ -101,7 +102,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                         .ThenInclude(b => b.Room)
                             .ThenInclude(r => r.RoomType)
                 .Include(i => i.Payments)
-                .FirstOrDefaultAsync(i => i.Id == id);
+                .FirstOrDefaultAsync(i => i.Id == id && !i.IsDeleted);
         }
     }
 }

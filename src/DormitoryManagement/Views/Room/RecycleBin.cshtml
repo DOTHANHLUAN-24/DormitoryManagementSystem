@@ -163,45 +163,62 @@
         // 2. Hàm Xóa vĩnh viễn
         function deletePermanently(id, roomNumber) {
             Swal.fire({
-                title: 'Xác nhận xóa vĩnh viễn?',
-                text: "Phòng " + roomNumber + " sẽ bị xóa hoàn toàn. Dữ liệu này không thể khôi phục lại!",
+                title: 'CẢNH BÁO NGUY HIỂM!',
+                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> phòng <b>" + roomNumber + "</b>.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Xóa vĩnh viễn ngay',
+                confirmButtonText: '<i class="fas fa-skull-crossbones me-1"></i> Vẫn xóa vĩnh viễn',
                 cancelButtonText: 'Quay lại',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Hiện loading
                     Swal.fire({
-                        title: 'Đang xử lý...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
-                    });
-
-                    $.ajax({
-                        url: '/Room/DeletePermanently/' + id,
-                        type: 'POST',
-                        data: {
-                            __RequestVerificationToken: getAntiforgeryToken()
-                        },
-                        success: function (res) {
-                            if (res.success) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Đã xóa!',
-                                    text: res.message,
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                }).then(() => location.reload());
-                            } else {
-                                Swal.fire('Lỗi', res.message, 'error');
+                        title: 'Xác nhận lần cuối',
+                        text: "Gõ chữ 'XOA' vào ô bên dưới để xác nhận.",
+                        input: 'text',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Thực thi xóa',
+                        cancelButtonText: 'Hủy',
+                        preConfirm: (inputValue) => {
+                            if (inputValue !== 'XOA') {
+                                Swal.showValidationMessage('Bạn phải gõ đúng chữ XOA');
                             }
-                        },
-                        error: function () {
-                            Swal.fire('Lỗi', 'Có lỗi xảy ra trong quá trình xóa', 'error');
+                        }
+                    }).then((finalResult) => {
+                        if (finalResult.isConfirmed) {
+                            // Hiện loading
+                            Swal.fire({
+                                title: 'Đang xử lý...',
+                                allowOutsideClick: false,
+                                didOpen: () => { Swal.showLoading(); }
+                            });
+
+                            $.ajax({
+                                url: '/Room/DeletePermanently/' + id,
+                                type: 'POST',
+                                data: {
+                                    __RequestVerificationToken: getAntiforgeryToken()
+                                },
+                                success: function (res) {
+                                    if (res.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Đã xóa!',
+                                            text: res.message,
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        }).then(() => location.reload());
+                                    } else {
+                                        Swal.fire('Lỗi', res.message, 'error');
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire('Lỗi', 'Có lỗi xảy ra trong quá trình xóa', 'error');
+                                }
+                            });
                         }
                     });
                 }
