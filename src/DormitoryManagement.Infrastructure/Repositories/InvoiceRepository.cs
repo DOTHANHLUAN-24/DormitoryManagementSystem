@@ -102,7 +102,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                         .ThenInclude(b => b.Room)
                             .ThenInclude(r => r.RoomType)
                 .Include(i => i.Payments)
-                .FirstOrDefaultAsync(i => i.Id == id && !i.IsDeleted);
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
     }
 }

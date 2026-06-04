@@ -219,7 +219,8 @@ namespace DormitoryManagement.Controllers
                 pageIndex: page,
                 pageSize: pageSize,
                 predicate: x => (string.IsNullOrEmpty(search) || x.TypeName.Contains(search)) && x.IsDeleted,
-                orderBy: x => x.OrderByDescending(rt => rt.LastModified)
+                orderBy: x => x.OrderByDescending(rt => rt.LastModified),
+                includeDeleted: true
             );
 
             ViewBag.Search = search;

@@ -23,7 +23,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return await _dbSet
                 .Include(a => a.Room)
                     .ThenInclude(r => r.Block)
-                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>
