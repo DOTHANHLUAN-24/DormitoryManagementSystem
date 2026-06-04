@@ -17,6 +17,10 @@
             background-color: #f1f5f9;
         }
 
+        #global-breadcrumb-wrapper {
+            display: none !important;
+        }
+
         /* Control Panel (Screen only) */
         .control-bar {
             background: #ffffff;
@@ -530,84 +534,88 @@
 
         // Hàm lưu trữ data
         function saveContract(isApprove) {
-            var id = $('#contractId').val();
-            var contractCode = $('#contractCode').val();
-            var startDate = $('#startDate').val();
-            var endDate = $('#endDate').val();
-            var depositAmount = $('#depositAmount').val();
-            var token = $('input[name="__RequestVerificationToken"]').val();
+            try {
+                var id = $('#contractId').val();
+                var contractCode = $('#contractCode').val();
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+                var depositAmount = $('#depositAmount').val();
+                var token = $('input[name="__RequestVerificationToken"]').val();
 
-            if (!contractCode || !startDate || !endDate || !depositAmount) {
-                Swal.fire({
-                    title: 'Thiếu thông tin!',
-                    text: 'Vui lòng nhập đầy đủ các trường thông tin bắt buộc trong hợp đồng.',
-                    icon: 'warning',
-                    confirmButtonColor: '#4f46e5'
-                });
-                return;
-            }
-
-            Swal.fire({
-                title: isApprove ? 'Xác nhận duyệt hợp đồng?' : 'Lưu thay đổi?',
-                text: isApprove 
-                    ? 'Bạn có chắc chắn muốn duyệt và kích hoạt hợp đồng này? Giường ' + '@(Model.Bed?.BedNumber)' + ' sẽ được chuyển sang trạng thái Đã có sinh viên.'
-                    : 'Lưu lại các thông tin chỉnh sửa trên hợp đồng này.',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#10b981',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: isApprove ? 'Có, duyệt ngay!' : 'Lưu lại',
-                cancelButtonText: 'Đóng',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
+                if (!contractCode || !startDate || !endDate || !depositAmount) {
                     Swal.fire({
-                        title: 'Đang lưu dữ liệu...',
-                        allowOutsideClick: false,
-                        didOpen: () => { Swal.showLoading(); }
+                        title: 'Thiếu thông tin!',
+                        text: 'Vui lòng nhập đầy đủ các trường thông tin bắt buộc trong hợp đồng.',
+                        icon: 'warning',
+                        confirmButtonColor: '#4f46e5'
                     });
+                    return;
+                }
 
-                    $.ajax({
-                        url: '/Contract/Approve/' + id,
-                        type: 'POST',
-                        data: {
-                            contractCode: contractCode,
-                            startDate: startDate,
-                            endDate: endDate,
-                            depositAmount: depositAmount,
-                            isApprove: isApprove,
-                            __RequestVerificationToken: token
-                        },
-                        success: function (res) {
-                            if (res.success) {
+                Swal.fire({
+                    title: isApprove ? 'Xác nhận duyệt hợp đồng?' : 'Lưu thay đổi?',
+                    text: isApprove 
+                        ? 'Bạn có chắc chắn muốn duyệt và kích hoạt hợp đồng này? Giường ' + '@(Model.Bed?.BedNumber)' + ' sẽ được chuyển sang trạng thái Đã có sinh viên.'
+                        : 'Lưu lại các thông tin chỉnh sửa trên hợp đồng này.',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#10b981',
+                    cancelButtonColor: '#64748b',
+                    confirmButtonText: isApprove ? 'Có, duyệt ngay!' : 'Lưu lại',
+                    cancelButtonText: 'Đóng',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: 'Đang lưu dữ liệu...',
+                            allowOutsideClick: false,
+                            didOpen: () => { Swal.showLoading(); }
+                        });
+
+                        $.ajax({
+                            url: '/Contract/Approve/' + id,
+                            type: 'POST',
+                            data: {
+                                contractCode: contractCode,
+                                startDate: startDate,
+                                endDate: endDate,
+                                depositAmount: depositAmount,
+                                isApprove: isApprove,
+                                __RequestVerificationToken: token
+                            },
+                            success: function (res) {
+                                if (res.success) {
+                                    Swal.fire({
+                                        title: 'Thành công!',
+                                        text: res.message,
+                                        icon: 'success',
+                                        confirmButtonColor: '#4f46e5'
+                                    }).then(() => {
+                                        window.location.href = '@(Model.Status == ContractStatus.Pending ? "/Contract/Pending" : "/Contract/Index")';
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        title: 'Thất bại!',
+                                        text: res.message,
+                                        icon: 'error',
+                                        confirmButtonColor: '#4f46e5'
+                                    });
+                                }
+                            },
+                            error: function (xhr, status, error) {
                                 Swal.fire({
-                                    title: 'Thành công!',
-                                    text: res.message,
-                                    icon: 'success',
-                                    confirmButtonColor: '#4f46e5'
-                                }).then(() => {
-                                    window.location.href = isApprove ? '/Contract/Index' : window.location.href;
-                                });
-                            } else {
-                                Swal.fire({
-                                    title: 'Thất bại!',
-                                    text: res.message,
+                                    title: 'Lỗi hệ thống!',
+                                    text: 'Đã xảy ra lỗi: ' + error + ' (Status: ' + xhr.status + ')',
                                     icon: 'error',
                                     confirmButtonColor: '#4f46e5'
                                 });
                             }
-                        },
-                        error: function () {
-                            Swal.fire({
-                                title: 'Lỗi hệ thống!',
-                                text: 'Đã xảy ra lỗi trong quá trình kết nối với máy chủ.',
-                                icon: 'error',
-                                confirmButtonColor: '#4f46e5'
-                            });
-                        }
-                    });
-                }
-            });
+                        });
+                    }
+                });
+            } catch (e) {
+                alert("Lỗi JavaScript: " + e.message);
+            }
         }
     </script>
 }
