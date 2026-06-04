@@ -283,13 +283,20 @@
                 border: none !important;
             }
 
+            /* Ẩn các phần tử không dùng để in */
+            .no-print {
+                display: none !important;
+            }
+
             /* Ẩn cục trạng thái khi in ra giấy */
             .screen-status-badge {
                 display: none !important;
             }
 
-            /* Xóa đường viền của các ô nhập liệu, biến thành chữ in chết */
-            .paper-input {
+            /* Xóa đường viền của các ô nhập liệu, phần điền thông tin và ký tự gạch chân, biến thành chữ in chết */
+            .paper-input,
+            .info-value-dotted,
+            [style*="border-bottom"] {
                 border-bottom: none !important;
                 background: transparent !important;
                 font-weight: bold !important;
