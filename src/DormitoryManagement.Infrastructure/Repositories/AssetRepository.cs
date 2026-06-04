@@ -167,7 +167,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             int totalCount = await query.CountAsync();
             var items = await query
-                .OrderByDescending(a => a.LastModified)
+                .OrderByDescending(a => a.CreatedDate)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

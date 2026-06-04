@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 
 namespace DormitoryManagement.Controllers
 {
@@ -19,8 +20,8 @@ namespace DormitoryManagement.Controllers
             Logger.LogInformation("Đang tải danh sách hóa đơn trang {Page}, tìm kiếm: '{Search}', trạng thái: '{Status}'", page, search, status);
             int pageSize = PageSize;
 
-            DormitoryManagement.Domain.Enums.InvoiceStatus? invoiceStatus = null;
-            if (!string.IsNullOrEmpty(status) && Enum.TryParse<DormitoryManagement.Domain.Enums.InvoiceStatus>(status, true, out var parsedStatus))
+            InvoiceStatus? invoiceStatus = null;
+            if (!string.IsNullOrEmpty(status) && Enum.TryParse<InvoiceStatus>(status, true, out var parsedStatus))
             {
                 invoiceStatus = parsedStatus;
             }
@@ -29,9 +30,11 @@ namespace DormitoryManagement.Controllers
 
             // Thống kê nhanh
             var allInvoices = await _invoiceService.GetAllInvoicesAsync();
+            var today = DateTime.Today;
             ViewBag.TotalCount = allInvoices.Count();
-            ViewBag.UnpaidCount = allInvoices.Count(x => x.Status != DormitoryManagement.Domain.Enums.InvoiceStatus.Paid);
-            ViewBag.PaidCount = allInvoices.Count(x => x.Status == DormitoryManagement.Domain.Enums.InvoiceStatus.Paid);
+            ViewBag.UnpaidCount = allInvoices.Count(x => (x.Status == InvoiceStatus.Unpaid || x.Status == InvoiceStatus.PartiallyPaid) && x.DueDate.Date >= today);
+            ViewBag.PaidCount = allInvoices.Count(x => x.Status == InvoiceStatus.Paid);
+            ViewBag.OverdueCount = allInvoices.Count(x => x.Status == InvoiceStatus.Overdue || (x.Status != InvoiceStatus.Paid && x.DueDate.Date < today));
 
             ViewBag.Search = search;
             ViewBag.Status = status;
@@ -46,7 +49,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Create()
         {
             Logger.LogInformation("Đang truy cập trang tạo mới hóa đơn.");
-            var contracts = await _contractService.GetPagedContractsAsync(1, 9999, status: DormitoryManagement.Domain.Enums.ContractStatus.Active);
+            var contracts = await _contractService.GetPagedContractsAsync(1, 9999, status: ContractStatus.Active);
             ViewBag.Contracts = contracts.Items;
             return View();
         }
@@ -68,7 +71,7 @@ namespace DormitoryManagement.Controllers
                     .SelectMany(x => x.Errors)
                     .Select(x => x.ErrorMessage));
                 Logger.LogWarning("Dữ liệu tạo hóa đơn không hợp lệ. Lỗi: {Errors}", errors);
-                var contracts = await _contractService.GetPagedContractsAsync(1, 9999, status: DormitoryManagement.Domain.Enums.ContractStatus.Active);
+                var contracts = await _contractService.GetPagedContractsAsync(1, 9999, status: ContractStatus.Active);
                 ViewBag.Contracts = contracts.Items;
                 return View(invoice);
             }
@@ -110,6 +113,11 @@ namespace DormitoryManagement.Controllers
             }
 
             ModelState.Remove(nameof(invoice.Contract));
+            ModelState.Remove(nameof(invoice.CreatedDate));
+            ModelState.Remove(nameof(invoice.InvoiceCode));
+            ModelState.Remove(nameof(invoice.UtilityUsages));
+            ModelState.Remove(nameof(invoice.Payments));
+            ModelState.Remove(nameof(invoice.Surcharges));
 
             if (!ModelState.IsValid)
             {

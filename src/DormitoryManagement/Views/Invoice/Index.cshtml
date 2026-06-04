@@ -195,6 +195,15 @@
                 <p class="text-muted small mb-0">Đã hoàn tất</p>
             </div>
         </div>
+        <div class="the-thong-ke-item">
+            <div class="icon-thong-ke" style="background: #fef2f2; color: #ef4444;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <div>
+                <h3 class="mb-0 fw-bold" style="color: #ef4444;">@ViewBag.OverdueCount</h3>
+                <p class="text-muted small mb-0">Đã quá hạn</p>
+            </div>
+        </div>
     </div>
 
     <!-- Thanh tìm kiếm & Lọc -->
@@ -270,7 +279,7 @@
                                     {
                                         <span class="badge-status status-paid">Đã trả</span>
                                     }
-                                    else if (item.Status == InvoiceStatus.Overdue)
+                                    else if (item.Status == InvoiceStatus.Overdue || (item.Status != InvoiceStatus.Paid && item.DueDate.Date < DateTime.Now.Date))
                                     {
                                         <span class="badge-status status-overdue">Quá hạn</span>
                                     }

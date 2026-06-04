@@ -1,4 +1,5 @@
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +40,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
         /// <param name="searchString">Từ khóa tìm kiếm (mã hóa đơn hoặc tiêu đề)</param>
         /// <param name="status">Trạng thái hóa đơn cần lọc</param>
         /// <returns>Đối tượng IQueryable chứa danh sách hóa đơn</returns>
-        public IQueryable<Invoice> GetPagingQuery(string searchString, DormitoryManagement.Domain.Enums.InvoiceStatus? status = null)
+        public IQueryable<Invoice> GetPagingQuery(string searchString, InvoiceStatus? status = null)
         {
             var query = _dbSet
                 .Include(i => i.Contract)
@@ -59,7 +60,24 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             if (status.HasValue)
             {
-                query = query.Where(i => i.Status == status.Value);
+                var today = DateTime.Today;
+                if (status.Value == InvoiceStatus.Overdue)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.Overdue
+                        || (i.Status != InvoiceStatus.Paid && i.Status != InvoiceStatus.Overdue && i.DueDate.Date < today));
+                }
+                else if (status.Value == InvoiceStatus.Unpaid)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.Unpaid && i.DueDate.Date >= today);
+                }
+                else if (status.Value == InvoiceStatus.PartiallyPaid)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.PartiallyPaid && i.DueDate.Date >= today);
+                }
+                else
+                {
+                    query = query.Where(i => i.Status == status.Value);
+                }
             }
 
             return query.OrderByDescending(i => i.CreatedDate);
