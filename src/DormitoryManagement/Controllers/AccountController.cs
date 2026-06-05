@@ -104,6 +104,13 @@ namespace DormitoryManagement.Controllers
                 return View(request);
             }
 
+            if (!user.IsActive)
+            {
+                Logger.LogWarning("Đăng nhập thất bại: Tài khoản {Username} đã bị khóa hoặc chưa kích hoạt.", request.Username);
+                ModelState.AddModelError(string.Empty, "Tài khoản của bạn đã bị khóa hoặc chưa kích hoạt!");
+                return View(request);
+            }
+
             var result = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!result)
             {
