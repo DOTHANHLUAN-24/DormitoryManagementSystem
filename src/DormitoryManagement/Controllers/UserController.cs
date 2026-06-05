@@ -239,18 +239,17 @@ namespace DormitoryManagement.Controllers
         [HttpGet("Profile")]
         public async Task<IActionResult> Profile()
         {
-            // Lấy ID của người dùng đang đăng nhập từ Claims trong JWT Token
-            var userIdString = User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
-                            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var userId = CurrentUserId;
 
-            Logger.LogInformation("Người dùng có Token ID: {UserIdString} đang truy cập trang hồ sơ cá nhân.", userIdString);
-            if (string.IsNullOrEmpty(userIdString) || !Guid.TryParse(userIdString, out Guid userId))
+            if (userId == null)
             {
-                Logger.LogWarning("Truy cập hồ sơ cá nhân thất bại do chưa đăng nhập.");
+                Logger.LogWarning("Truy cập hồ sơ cá nhân thất bại do chưa đăng nhập hoặc lỗi Token.");
                 return RedirectToAction("Login", "Account");
             }
 
-            var user = await _userService.GetUserByIdAsync(userId);
+            Logger.LogInformation("Người dùng có Token ID: {UserIdString} đang truy cập trang hồ sơ cá nhân.", userId.Value.ToString());
+
+            var user = await _userService.GetUserByIdAsync(userId.Value);
             if (user == null)
             {
                 Logger.LogWarning("Không tìm thấy người dùng ID: {UserId} để hiển thị hồ sơ.", userId);
