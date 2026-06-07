@@ -182,8 +182,11 @@
                 </h1>
                 <p class="mb-0 text-white-50 mt-1 fw-medium">Tòa nhà: <strong class="text-white">@Model.BlockName</strong> | Tầng: <strong class="text-white">@Model.Floor</strong></p>
             </div>
-            <div>
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-light fw-bold px-4 py-2" style="border-radius: 12px; color: #4f46e5;">
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-outline-light fw-bold px-4 py-2" style="border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.4); text-decoration: none;">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-light fw-bold px-4 py-2" style="border-radius: 12px; color: #4f46e5; text-decoration: none;">
                     <i class="fas fa-edit me-1"></i> Chỉnh sửa phòng
                 </a>
             </div>
