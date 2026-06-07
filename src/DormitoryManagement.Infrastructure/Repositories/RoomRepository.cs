@@ -61,8 +61,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             int totalCount = await query.CountAsync();
             var items = await query
-                .OrderBy(r => r.Block.BlockName)
-                .ThenBy(r => r.RoomNumber)
+                .OrderByDescending(r => r.CreatedDate)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -135,7 +134,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             int totalCount = await query.CountAsync();
             var items = await query
-                .OrderByDescending(r => r.LastModified)
+                .OrderByDescending(r => r.CreatedDate)
                 .Skip((pageIndex - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

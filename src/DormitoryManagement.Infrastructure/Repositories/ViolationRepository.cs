@@ -20,7 +20,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
         public override async Task<Violation?> GetByIdAsync(Guid id)
         {
             return await _dbSet
-                .FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>

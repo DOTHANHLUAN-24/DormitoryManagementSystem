@@ -22,5 +22,10 @@ namespace DormitoryManagement.Domain.Entities
         /// <summary>Navigation property đến người dùng là chủ sở hữu phương tiện.</summary>
         [ForeignKey("OwnerId")]
         public virtual User Owner { get; set; } = null!;
+
+        /// <summary>Trạng thái phê duyệt phương tiện (Pending, Approved, Rejected).</summary>
+        [System.ComponentModel.DataAnnotations.Required]
+        [System.ComponentModel.DataAnnotations.StringLength(50)]
+        public string Status { get; set; } = "Pending";
     }
 }

@@ -34,5 +34,8 @@ namespace DormitoryManagement.Application.Dtos.Responses.MaintenanceRequests
         // Thông tin người xử lý (Kỹ thuật viên)
         public Guid? HandlerId { get; set; }
         public string HandlerName { get; set; } = string.Empty;
+
+        // Ghi chú thêm
+        public string? Notes { get; set; }
     }
 }

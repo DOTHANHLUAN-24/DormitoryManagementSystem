@@ -4,6 +4,11 @@
 
 @{
     ViewData["Title"] = "Thùng rác Tài sản";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Quản lý tài sản", Url.Action("Index", "Asset") ?? ""),
+        ("Thùng rác tài sản", "")
+    };
 }
 
 @section Styles {
@@ -154,31 +159,48 @@
 
         function deleteAssetPermanently(id, assetName) {
             Swal.fire({
-                title: 'Xóa vĩnh viễn?',
-                html: 'Tài sản <b>' + assetName + '</b> sẽ bị xóa hoàn toàn.<br/><span class="text-danger small">Hành động này không thể hoàn tác!</span>',
+                title: 'CẢNH BÁO NGUY HIỂM!',
+                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> tài sản <b>" + assetName + "</b>.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-trash me-1"></i> Xóa vĩnh viễn',
+                confirmButtonText: '<i class="fas fa-skull-crossbones me-1"></i> Vẫn xóa vĩnh viễn',
                 cancelButtonText: 'Hủy',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                    $.ajax({
-                        url: '/Asset/DeletePermanently/' + id,
-                        type: 'POST',
-                        headers: { 'RequestVerificationToken': getAntiforgeryToken() },
-                        success: function (res) {
-                            if (res.success) {
-                                Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
-                                    .then(() => location.reload());
-                            } else {
-                                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message });
+                    Swal.fire({
+                        title: 'Xác nhận lần cuối',
+                        text: "Gõ chữ 'XOA' vào ô bên dưới để xác nhận.",
+                        input: 'text',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Thực thi xóa',
+                        cancelButtonText: 'Hủy',
+                        preConfirm: (inputValue) => {
+                            if (inputValue !== 'XOA') {
+                                Swal.showValidationMessage('Bạn phải gõ đúng chữ XOA');
                             }
-                        },
-                        error: function () { Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối máy chủ.' }); }
+                        }
+                    }).then((finalResult) => {
+                        if (finalResult.isConfirmed) {
+                            Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                            $.ajax({
+                                url: '/Asset/DeletePermanently/' + id,
+                                type: 'POST',
+                                headers: { 'RequestVerificationToken': getAntiforgeryToken() },
+                                success: function (res) {
+                                    if (res.success) {
+                                        Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
+                                            .then(() => location.reload());
+                                    } else {
+                                        Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message });
+                                    }
+                                },
+                                error: function () { Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối máy chủ.' }); }
+                            });
+                        }
                     });
                 }
             });

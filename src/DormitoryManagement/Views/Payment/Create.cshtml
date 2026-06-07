@@ -229,7 +229,7 @@
                         </div>
 
                         <!-- Mã giao dịch/đối soát (Transaction Code) -->
-                        <div class="col-md-12">
+                        <div class="col-md-12" id="transactionCodeContainer">
                             <label class="form-label">Mã giao dịch / Số hóa đơn ngân hàng <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-barcode"></i></span>
@@ -333,6 +333,21 @@
             $('#amountPaid').on('input change', function () {
                 validateAmountPaid();
             });
+
+            // Khi thay đổi phương thức thanh toán
+            $('#method').change(function () {
+                var method = $(this).val();
+                if (method === 'Cash') {
+                    $('#transactionCodeContainer').addClass('d-none');
+                    $('#transactionCode').removeAttr('required').val('');
+                } else {
+                    $('#transactionCodeContainer').removeClass('d-none');
+                    $('#transactionCode').attr('required', 'required');
+                }
+            });
+
+            // Gọi trigger change lần đầu tiên để thiết lập trạng thái ban đầu
+            $('#method').trigger('change');
 
             function resetInvoiceDetails() {
                 invoiceRemaining = 0;

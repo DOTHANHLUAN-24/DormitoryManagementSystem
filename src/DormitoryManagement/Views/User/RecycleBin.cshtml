@@ -139,33 +139,50 @@
         // Xóa vĩnh viễn tài khoản đã bị xóa mềm
         function deletePermanently(id, userName) {
             Swal.fire({
-                title: 'Xóa vĩnh viễn?',
-                html: "Tài khoản <b>" + userName + "</b> sẽ bị xóa hoàn toàn. <br/> <span class='text-danger'>Hành động này không thể hoàn tác!</span>",
+                title: 'CẢNH BÁO NGUY HIỂM!',
+                html: "Bạn đang chuẩn bị <b>XÓA VĨNH VIỄN</b> tài khoản <b>" + userName + "</b>.<br/>Hành động này <b>KHÔNG THỂ</b> hoàn tác!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444', // Màu đỏ đồng bộ UI
                 cancelButtonColor: '#64748b',
-                confirmButtonText: '<i class="fas fa-trash-alt me-1"></i> Xóa vĩnh viễn',
+                confirmButtonText: '<i class="fas fa-skull-crossbones me-1"></i> Vẫn xóa vĩnh viễn',
                 cancelButtonText: 'Hủy',
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-                    $.ajax({
-                        url: '/User/DeletePermanently/' + id,
-                        type: 'POST',
-                        data: { __RequestVerificationToken: getAntiforgeryToken() },
-                        success: function (res) {
-                            if (res.success) {
-                                Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
-                                    .then(() => location.reload());
-                            } else {
-                                Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message, confirmButtonColor: '#4f46e5' });
+                    Swal.fire({
+                        title: 'Xác nhận lần cuối',
+                        text: "Gõ chữ 'XOA' vào ô bên dưới để xác nhận.",
+                        input: 'text',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Thực thi xóa',
+                        cancelButtonText: 'Hủy',
+                        preConfirm: (inputValue) => {
+                            if (inputValue !== 'XOA') {
+                                Swal.showValidationMessage('Bạn phải gõ đúng chữ XOA');
                             }
-                        },
-                        error: function () {
-                            Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối đến máy chủ.' });
+                        }
+                    }).then((finalResult) => {
+                        if (finalResult.isConfirmed) {
+                            Swal.fire({ title: 'Đang xử lý...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                            $.ajax({
+                                url: '/User/DeletePermanently/' + id,
+                                type: 'POST',
+                                data: { __RequestVerificationToken: getAntiforgeryToken() },
+                                success: function (res) {
+                                    if (res.success) {
+                                        Swal.fire({ icon: 'success', title: 'Đã xóa!', text: res.message, timer: 1500, showConfirmButton: false })
+                                            .then(() => location.reload());
+                                    } else {
+                                        Swal.fire({ icon: 'error', title: 'Lỗi', text: res.message, confirmButtonColor: '#4f46e5' });
+                                    }
+                                },
+                                error: function () {
+                                    Swal.fire({ icon: 'error', title: 'Lỗi hệ thống', text: 'Không thể kết nối đến máy chủ.' });
+                                }
+                            });
                         }
                     });
                 }

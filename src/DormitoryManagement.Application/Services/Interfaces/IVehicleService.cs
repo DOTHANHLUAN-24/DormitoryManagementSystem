@@ -20,7 +20,8 @@ namespace DormitoryManagement.Application.Services.Interfaces
             string? vehicleType = null,
             bool? isActive = null,
             bool? isDeleted = false,
-            Guid? ownerId = null);
+            Guid? ownerId = null,
+            string? status = null);
 
         /// <summary>
         /// Lấy danh sách phương tiện đang hoạt động của một chủ sở hữu.

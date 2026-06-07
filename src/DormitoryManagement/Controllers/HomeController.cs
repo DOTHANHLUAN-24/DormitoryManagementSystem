@@ -181,7 +181,19 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Rooms(RoomFilterRequest filter)
         {
             filter.PageNumber = filter.PageNumber > 0 ? filter.PageNumber : 1;
-            filter.PageSize = 6; // 3 cột * 2 hàng
+            
+            if (Request.Query.TryGetValue("pageSize", out var qsPageSize) && int.TryParse(qsPageSize, out int ps) && ps > 0)
+            {
+                filter.PageSize = ps;
+            }
+            else if (Request.Query.TryGetValue("PageSize", out var qsPageSize2) && int.TryParse(qsPageSize2, out int ps2) && ps2 > 0)
+            {
+                filter.PageSize = ps2;
+            }
+            else
+            {
+                filter.PageSize = 6; // Mặc định hiển thị 6 phòng (3 cột * 2 hàng)
+            }
 
             Logger.LogInformation("Đang truy cập danh sách phòng công khai trang {Page}, tìm kiếm: '{Search}', tòa: '{BlockId}', loại: '{RoomTypeId}'", filter.PageNumber, filter.SearchTerm, filter.BlockId, filter.RoomTypeId);
             var pagedRooms = await roomService.GetPagedRoomsAsync(filter);

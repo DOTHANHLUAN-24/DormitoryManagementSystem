@@ -293,6 +293,21 @@
                                 <span class="char-count" id="descCount">0/2000</span>
                             </div>
                         </div>
+
+                        <!-- Ghi chú thêm -->
+                        <div class="col-md-12">
+                            <label asp-for="Notes" class="form-label">Ghi chú thêm (nếu có)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-sticky-note"></i></span>
+                                <textarea asp-for="Notes" class="form-control" rows="3"
+                                          maxlength="500" id="notesInput"
+                                          placeholder="Ghi chú thêm về thời gian rảnh có thể sửa chữa, hoặc các lưu ý khác..."></textarea>
+                            </div>
+                            <div class="d-flex justify-content-between mt-1">
+                                <span asp-validation-for="Notes" class="text-danger small"></span>
+                                <span class="char-count" id="notesCount">0/500</span>
+                            </div>
+                        </div>
                     </div>
 
                     <hr class="my-4 text-muted" style="opacity: 0.1;" />
@@ -338,17 +353,19 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         // Priority selector
-        var currentPriority = 'Medium';
-        document.getElementById('priorityValue').value = currentPriority;
-
         function selectPriority(val) {
             ['Low','Medium','High','Urgent'].forEach(p => {
                 document.getElementById('opt-' + p)?.classList.remove('selected');
             });
             document.getElementById('opt-' + val)?.classList.add('selected');
             document.getElementById('priorityValue').value = val;
-            currentPriority = val;
         }
+
+        // Initialize priority selection on load
+        $(document).ready(function() {
+            var modelPriority = '@Model.Priority.ToString()';
+            selectPriority(modelPriority || 'Medium');
+        });
 
         // Char counters
         function updateCount(inputId, countId) {
@@ -360,13 +377,16 @@
         }
         updateCount('titleInput', 'titleCount');
         updateCount('descInput', 'descCount');
+        updateCount('notesInput', 'notesCount');
 
         // Loading spinner and disable submit on click
         $(document).ready(function () {
             $('form').submit(function (e) {
                 if ($(this).valid()) { 
                     var btn = document.getElementById('submitBtn');
-                    btn.disabled = true;
+                    setTimeout(function() {
+                        btn.disabled = true;
+                    }, 0);
                     btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi yêu cầu...';
                 }
             });

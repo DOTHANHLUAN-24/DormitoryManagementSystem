@@ -59,7 +59,10 @@
 <div class="container-fluid">
     <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang mb-0"><i class="fas fa-info-circle me-2"></i>Chi tiết người dùng</h1>
-        <div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" asp-controller="Home" class="btn-custom-header" style="background: #f1f5f9; color: #64748b; text-decoration: none; border: 1px solid #e2e8f0;">
+                <i class="fas fa-arrow-left"></i> Quay lại trang chủ
+            </a>
             <a asp-action="EditProfile" asp-route-id="@Model.Id" class="btn-custom-header btn-edit text-decoration-none">
                 <i class="fas fa-edit"></i> Chỉnh sửa
             </a>

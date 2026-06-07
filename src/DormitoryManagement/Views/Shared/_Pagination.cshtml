@@ -57,7 +57,19 @@
             <div class="d-flex align-items-center ms-2">
                 <span class="text-muted small me-2 text-nowrap">Hiển thị:</span>
                 <select onchange="changePageSize(this.value)" class="form-select form-select-sm border border-light-subtle bg-light text-secondary shadow-none ps-2 py-1" style="width: auto; border-radius: 8px; font-size: 0.75rem; cursor: pointer; transition: all 0.2s ease; font-weight: 600; padding-right: 1.75rem !important;">
-                    @foreach (var size in new[] { 5, 10, 20, 50, 100 })
+                    @{
+                        var sizes = new[] { 5, 10, 20, 50, 100 };
+                        if (controller != null && (controller.Equals("Home", StringComparison.OrdinalIgnoreCase) || 
+                            (controller.Equals("RoomType", StringComparison.OrdinalIgnoreCase) && action != null && action.Equals("List", StringComparison.OrdinalIgnoreCase))))
+                        {
+                            sizes = new[] { 6, 12, 24, 48, 96 };
+                        }
+                        else if (controller != null && controller.Equals("Asset", StringComparison.OrdinalIgnoreCase) && action != null && action.Equals("Catalog", StringComparison.OrdinalIgnoreCase))
+                        {
+                            sizes = new[] { 8, 16, 32, 64, 128 };
+                        }
+                    }
+                    @foreach (var size in sizes)
                     {
                         if (Model.PageSize == size)
                         {

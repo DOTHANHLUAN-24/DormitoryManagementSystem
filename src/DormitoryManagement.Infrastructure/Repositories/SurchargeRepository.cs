@@ -24,7 +24,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             return await _dbSet
                 .AsNoTracking()
                 .Include(s => s.Invoice)
-                .Where(s => s.InvoiceId == invoiceId)
+                .Where(s => s.InvoiceId == invoiceId && !s.IsDeleted)
                 .OrderByDescending(s => s.CreatedDate)
                 .ToListAsync();
         }

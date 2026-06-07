@@ -15,9 +15,12 @@ namespace DormitoryManagement.Infrastructure
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            // 1. Cấu hình Database sang SQL Server
             var connectionString = configuration.GetConnectionString("DefaultConnection");
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString)
+                options.UseSqlServer(connectionString, b =>
+                    b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName))
             );
 
             // 2. Unit of Work

@@ -42,7 +42,8 @@ namespace DormitoryManagement.Domain.Interfaces.Repositories
            int pageIndex,
            int pageSize,
            Expression<Func<T, bool>>? predicate = null,
-           Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null);
+           Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+           bool includeDeleted = false);
 
         /// <summary>
         /// Kiểm tra xem có thực thể nào thỏa mãn điều kiện lọc không.

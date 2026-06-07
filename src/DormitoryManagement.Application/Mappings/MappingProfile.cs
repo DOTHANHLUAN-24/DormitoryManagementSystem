@@ -117,7 +117,7 @@ namespace DormitoryManagement.Application.Mappings
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedDate, opt => opt.Ignore())
                 .ForMember(dest => dest.LastModified, opt => opt.Ignore())
-                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(_ => true))
+                .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.IsActive))
                 .ForMember(dest => dest.IsDeleted, opt => opt.MapFrom(_ => false))
                 .ForMember(dest => dest.Owner, opt => opt.Ignore());
 

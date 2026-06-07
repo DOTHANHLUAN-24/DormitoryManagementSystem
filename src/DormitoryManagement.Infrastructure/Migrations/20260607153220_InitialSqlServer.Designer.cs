@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DormitoryManagement.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260603100030_InitialSqlServer")]
+    [Migration("20260607153220_InitialSqlServer")]
     partial class InitialSqlServer
     {
         /// <inheritdoc />
@@ -275,6 +275,9 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Priority")
                         .HasColumnType("int");
@@ -728,6 +731,11 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("VehicleType")
                         .IsRequired()

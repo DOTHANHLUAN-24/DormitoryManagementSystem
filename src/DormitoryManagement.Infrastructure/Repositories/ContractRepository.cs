@@ -22,7 +22,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Bed)
-                .FirstOrDefaultAsync(c => c.ContractCode == contractCode);
+                .FirstOrDefaultAsync(c => c.ContractCode == contractCode && !c.IsDeleted);
         }
 
         /// <summary>
@@ -35,6 +35,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
             var query = _dbSet
                 .Include(c => c.User)
                 .Include(c => c.Bed)
+                .Where(c => !c.IsDeleted)
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
@@ -64,7 +65,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(c => c.Bed)
                     .ThenInclude(b => b.Room)
                         .ThenInclude(r => r.RoomType)
-                .Where(c => c.UserId == userId)
+                .Where(c => c.UserId == userId && !c.IsDeleted)
                 .OrderByDescending(c => c.CreatedDate)
                 .ToListAsync();
         }
@@ -80,7 +81,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(c => c.User)
                 .Include(c => c.Bed)
-                .FirstOrDefaultAsync(c => c.BedId == bedId);
+                .FirstOrDefaultAsync(c => c.BedId == bedId && !c.IsDeleted);
 
             // Interface yêu cầu trả về Task<Contract> chứ không phải Task<Contract?>
             // Vì vậy nếu null thì khởi tạo hợp đồng rỗng để tránh Warning/Error

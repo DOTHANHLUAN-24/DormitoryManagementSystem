@@ -1,0 +1,16 @@
+name: Keep Render Website Alive
+
+on:
+  schedule:
+    # Chạy mỗi 10 phút một lần để duy trì Render không bị sleep (free tier tắt sau 15 phút không hoạt động)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Cho phép kích hoạt thủ công từ GitHub UI
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gửi yêu cầu HTTP Ping tới Render
+        run: |
+          curl -I -s https://dormitorymanagementsystem.onrender.com | head -n 1
+          echo "Đã gửi ping tới Render lúc: $(date)"
