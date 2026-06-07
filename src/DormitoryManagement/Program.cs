@@ -134,7 +134,14 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+        
+        app.MapGet("/ping", async context =>
+        {
+            var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogInformation(">>> Render Keep-Alive Ping received at {Time} (UTC) from {IP} <<<", DateTime.UtcNow, context.Connection.RemoteIpAddress);
+            context.Response.StatusCode = 200;
+            await context.Response.WriteAsync("pong");
+        });
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
