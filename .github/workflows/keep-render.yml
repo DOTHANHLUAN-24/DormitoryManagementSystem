@@ -12,5 +12,7 @@ jobs:
     steps:
       - name: Gửi yêu cầu HTTP Ping tới Render
         run: |
-          curl -I -s https://dormitorymanagementsystem.onrender.com | head -n 1
-          echo "Đã gửi ping tới Render lúc: $(date)"
+          echo "Bắt đầu ping Render..."
+          RESPONSE=$(curl -s -w " [%{http_code}]" https://dormitorymanagementsystem.onrender.com/ping)
+          echo "Kết quả từ Render: $RESPONSE"
+          echo "Đã hoàn thành ping lúc: $(date)"
