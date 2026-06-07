@@ -21,6 +21,8 @@ namespace DormitoryManagement.Application.Dtos.Responses.Vehicles
 
         public bool IsActive { get; set; } = true;
 
+        public string Status { get; set; } = "Pending";
+
         public DateTime CreatedDate { get; set; }
 
         public DateTime? LastModified { get; set; }

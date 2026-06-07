@@ -29,7 +29,8 @@ namespace DormitoryManagement.Application.Services.Implements
             string? vehicleType = null,
             bool? isActive = null,
             bool? isDeleted = false,
-            Guid? ownerId = null)
+            Guid? ownerId = null,
+            string? status = null)
         {
             var search = searchTerm?.Trim();
 
@@ -40,7 +41,8 @@ namespace DormitoryManagement.Application.Services.Implements
                  v.Owner.FullName.Contains(search) ||
                  v.Owner.Code.Contains(search)) &&
                 (string.IsNullOrEmpty(vehicleType) || v.VehicleType == vehicleType) &&
-                (!ownerId.HasValue || v.OwnerId == ownerId.Value);
+                (!ownerId.HasValue || v.OwnerId == ownerId.Value) &&
+                (string.IsNullOrEmpty(status) || v.Status == status);
 
             var result = await _vehicleRepository.GetByStatusPagedAsync(
                 pageIndex,
@@ -83,8 +85,9 @@ namespace DormitoryManagement.Application.Services.Implements
             vehicle.Id = Guid.NewGuid();
             vehicle.CreatedDate = DateTime.Now;
             vehicle.LastModified = null;
-            vehicle.IsActive = true;
+            vehicle.IsActive = request.IsActive;
             vehicle.IsDeleted = false;
+            vehicle.Status = request.Status;
 
             await _vehicleRepository.AddAsync(vehicle);
             return await _unitOfWork.SaveChangesAsync() > 0;
@@ -110,6 +113,7 @@ namespace DormitoryManagement.Application.Services.Implements
 
             // ensure flags
             vehicle.IsActive = request.IsActive;
+            vehicle.Status = request.Status;
             // IsDeleted giữ nguyên trạng thái (soft-delete)
             vehicle.IsDeleted = vehicle.IsDeleted;
 
