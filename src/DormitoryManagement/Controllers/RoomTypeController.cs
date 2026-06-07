@@ -39,8 +39,15 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> List(int page = 1, string search = "")
         {
-            Logger.LogInformation("Đang tải danh sách loại phòng công khai trang {Page}, tìm kiếm: '{Search}'", page, search);
             int pageSize = 6;
+            if (Request.Query.TryGetValue("pageSize", out var qsPageSize) && int.TryParse(qsPageSize, out int ps) && ps > 0)
+            {
+                pageSize = ps;
+            }
+            else if (Request.Query.TryGetValue("PageSize", out var qsPageSize2) && int.TryParse(qsPageSize2, out int ps2) && ps2 > 0)
+            {
+                pageSize = ps2;
+            }
 
             var result = await _roomTypeRepository.GetPagedAsync(
                 pageIndex: page,

@@ -309,8 +309,15 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Catalog(int page = 1, string search = "", string statusFilter = "")
         {
-            Logger.LogInformation("Đang truy cập danh mục tài sản công khai trang {Page}, tìm kiếm: '{Search}', trạng thái: '{StatusFilter}'", page, search, statusFilter);
             int pageSize = 8;
+            if (Request.Query.TryGetValue("pageSize", out var qsPageSize) && int.TryParse(qsPageSize, out int ps) && ps > 0)
+            {
+                pageSize = ps;
+            }
+            else if (Request.Query.TryGetValue("PageSize", out var qsPageSize2) && int.TryParse(qsPageSize2, out int ps2) && ps2 > 0)
+            {
+                pageSize = ps2;
+            }
             AssetStatus? status = Enum.TryParse<AssetStatus>(statusFilter, out var s) ? s : null;
             var result = await _assetService.GetPagedAssetsAsync(page, pageSize, search, status);
             ViewBag.Search = search;
