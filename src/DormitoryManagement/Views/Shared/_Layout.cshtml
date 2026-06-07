@@ -10,7 +10,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
     <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
@@ -216,11 +217,11 @@
             if ($breadcrumb.length) {
                 let $header = $('header').first();
                 if (!$header.length) {
-                    const $title = $('.tieu-de-trang, h1, h2, h3, h4').filter(function() {
+                    const $title = $('.tieu-de-trang, h1, h2, h3, h4').filter(function () {
                         return $(this).closest('.card, .table, .table-responsive, .modal, .dropdown-menu, .dropdown').length === 0;
                     }).first();
                     if ($title.length) {
-                        $header = $title.closest('.row, [class*="mb-"], [class*="pb-"]');
+                        $header = $title.closest('.row, [class*="mb-"]:not(h1,h2,h3,h4,h5,h6,.tieu-de-trang), [class*="pb-"]:not(h1,h2,h3,h4,h5,h6,.tieu-de-trang)');
                         if (!$header.length) {
                             $header = $title.parent();
                         }
@@ -266,7 +267,7 @@
                         title: 'Lỗi nhập liệu!',
                         html: '@Html.Raw(errors)',
                         confirmButtonColor: '#ef4444'
-                        });
+                            });
             </text>
         }
 

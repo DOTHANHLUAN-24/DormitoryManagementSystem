@@ -3,14 +3,19 @@
 
 @{
     ViewData["Title"] = $"Chi tiết Tài sản - {Model.AssetName}";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Quản lý tài sản", Url.Action("Index", "Asset") ?? ""),
+        ($"Chi tiết tài sản: {Model.AssetName}", "")
+    };
 }
 
 @section Styles {
     <style>
         .tieu-de-trang { font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #1e293b, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .detail-card { border-radius: 20px; background: #fff; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: none; }
-        .detail-header { background: linear-gradient(135deg, #0f172a, #1e40af); border-radius: 20px 20px 0 0; padding: 28px 32px; }
-        .asset-code-large { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #93c5fd; background: rgba(147,197,253,0.1); padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(147,197,253,0.2); display: inline-block; }
+        .detail-header { background: linear-gradient(135deg, #0f172a, #0284c7); border-radius: 20px 20px 0 0; padding: 28px 32px; }
+        .asset-code-large { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(56,189,248,0.2); display: inline-block; }
         .asset-title { font-size: 1.8rem; font-weight: 800; color: white; margin: 10px 0 4px; }
         .asset-subtitle { color: #94a3b8; font-size: 14px; }
         .info-section { padding: 28px 32px; }
@@ -22,12 +27,12 @@
         .status-broken  { background: #fef2f2; color: #dc2626; }
         .status-repair  { background: #fffbeb; color: #d97706; }
         .status-lost    { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }
-        .price-highlight { background: linear-gradient(135deg, #eff6ff, #dbeafe); border-radius: 16px; padding: 20px 24px; text-align: center; }
-        .price-big { font-size: 2rem; font-weight: 800; color: #1d4ed8; }
+        .price-highlight { background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border-radius: 16px; padding: 20px 24px; text-align: center; }
+        .price-big { font-size: 2rem; font-weight: 800; color: #0284c7; }
         .price-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
         .btn-action { height: 42px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; padding: 0 20px; transition: all 0.2s; text-decoration: none; border: none; }
-        .btn-edit { background: #eff6ff; color: #2563eb; }
-        .btn-edit:hover { background: #dbeafe; color: #1d4ed8; transform: translateY(-1px); }
+        .btn-edit { background: #f0f9ff; color: #0284c7; }
+        .btn-edit:hover { background: #e0f2fe; color: #0369a1; transform: translateY(-1px); }
         .btn-delete { background: #fef2f2; color: #dc2626; cursor: pointer; }
         .btn-delete:hover { background: #fee2e2; color: #b91c1c; transform: translateY(-1px); }
         .btn-back { background: white; color: #64748b; border: 1px solid #e2e8f0; }
@@ -39,12 +44,14 @@
 @Html.AntiForgeryToken()
 
 <div class="container-fluid">
-    <div class="d-flex align-items-center mb-4 gap-3">
-        <a asp-action="Index" class="btn-action btn-back">
-            <i class="fas fa-arrow-left"></i> Quay lại
-        </a>
+    <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang mb-0"><i class="fas fa-box me-2"></i>Chi tiết Tài sản</h1>
-    </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-action btn-back">
+                <i class="fas fa-arrow-left"></i> Quay lại danh sách
+            </a>
+        </div>
+    </header>
 
     <div class="row g-4">
         <div class="col-lg-8">
@@ -149,7 +156,7 @@
         <!-- Panel phải: Giá đền bù -->
         <div class="col-lg-4">
             <div class="detail-card p-4">
-                <h6 class="fw-bold mb-3 text-dark"><i class="fas fa-receipt me-2 text-primary"></i>Giá trị đền bù</h6>
+                <h6 class="fw-bold mb-3 text-dark"><i class="fas fa-receipt me-2" style="color: #0ea5e9;"></i>Giá trị đền bù</h6>
                 <div class="price-highlight mb-4">
                     <div class="price-label">Mức bồi thường khi hỏng/mất</div>
                     @if (Model.ReplacementCost > 0)

@@ -4,6 +4,11 @@
 
 @{
     ViewData["Title"] = "Thùng rác Tài sản";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Quản lý tài sản", Url.Action("Index", "Asset") ?? ""),
+        ("Thùng rác tài sản", "")
+    };
 }
 
 @section Styles {
