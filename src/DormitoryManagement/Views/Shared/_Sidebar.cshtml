@@ -161,7 +161,7 @@
         </a>
 
         <div class="collapse submenu @(isUserGroup ? "show" : "")" id="userMenu">
-            <a asp-controller="User" asp-action="Index" class="@(isUserGroup && currentAction == "Index" ? "active" : "")">
+            <a asp-controller="User" asp-action="Index" class="@(isUserGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                 <i class="fas fa-list me-2"></i> Danh sách người dùng
             </a>
             <a asp-controller="User" asp-action="Create"
@@ -196,7 +196,7 @@
 
         <div class="collapse submenu @(isContractGroup ? "show" : "")" id="contractMenu">
             <a asp-controller="Contract" asp-action="Index"
-                class="@(isContractGroup && currentAction == "Index" ? "active" : "")">
+                class="@(isContractGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                 <i class="fas fa-list me-2"></i> Danh sách hợp đồng
             </a>
             <a asp-controller="Contract" asp-action="Pending"
@@ -227,7 +227,7 @@
 
         <div class="collapse submenu @(isVisitorGroup ? "show" : "")" id="visitorMenu">
             <a asp-controller="Visitor" asp-action="Index"
-                class="@(isVisitorGroup && currentAction == "Index" ? "active" : "")">
+                class="@(isVisitorGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                 <i class="fas fa-list me-2"></i> Danh sách khách đến
             </a>
             <a asp-controller="Visitor" asp-action="Create"
@@ -271,7 +271,7 @@
             </a>
             <div class="collapse submenu-l3 @(isBlockGroup ? "show" : "")" id="blockMenu">
                 <a asp-controller="Block" asp-action="Index"
-                    class="@(isBlockGroup && currentAction == "Index" ? "active" : "")">
+                    class="@(isBlockGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                     <i class="fas fa-list me-2"></i> Danh sách tòa nhà
                 </a>
                 <a asp-controller="Block" asp-action="Create"
@@ -304,7 +304,7 @@
                 </a>
                 <div class="collapse submenu-l4 @(isRoomOnlyGroup ? "show" : "")" id="roomMenu">
                     <a asp-controller="Room" asp-action="Index"
-                        class="@(isRoomOnlyGroup && currentAction == "Index" ? "active" : "")">
+                        class="@(isRoomOnlyGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                         <i class="fas fa-list me-2"></i> Danh sách phòng
                     </a>
                     <a asp-controller="Room" asp-action="Create"
@@ -325,7 +325,7 @@
                 </a>
                 <div class="collapse submenu-l4 @(isRoomTypeGroup ? "show" : "")" id="roomTypeMenu">
                     <a asp-controller="RoomType" asp-action="Index"
-                        class="@(isRoomTypeGroup && currentAction == "Index" ? "active" : "")">
+                        class="@(isRoomTypeGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                         <i class="fas fa-list me-2"></i> Danh sách loại phòng
                     </a>
                     <a asp-controller="RoomType" asp-action="Create"
@@ -348,7 +348,7 @@
             </a>
             <div class="collapse submenu-l3 @(isAssetGroup ? "show" : "")" id="assetMenu">
                 <a asp-controller="Asset" asp-action="Index"
-                    class="@(isAssetGroup && currentAction == "Index" ? "active" : "")">
+                    class="@(isAssetGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                     <i class="fas fa-list me-2"></i> Danh sách tài sản
                 </a>
                 <a asp-controller="Asset" asp-action="Create"
@@ -376,7 +376,7 @@
 
         <div class="collapse submenu @(isServiceGroup ? "show" : "")" id="serviceMenu">
             <a asp-controller="Utility" asp-action="Index"
-                class="@(currentController == "Utility" && currentAction == "Index" ? "active" : "")">
+                class="@(currentController == "Utility" && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                 <i class="fas fa-list-ul me-2"></i> Danh sách dịch vụ
             </a>
             <a asp-controller="Utility" asp-action="Create"
@@ -410,7 +410,7 @@
 
         <div class="collapse submenu @(isSurchargeGroup ? "show" : "")" id="surchargeMenu">
             <a asp-controller="Surcharge" asp-action="Index"
-                class="@(isSurchargeGroup && currentAction == "Index" ? "active" : "")">
+                class="@(isSurchargeGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                 <i class="fas fa-list me-2"></i> Danh sách phụ phí
             </a>
             <a asp-controller="Surcharge" asp-action="Create"
@@ -461,7 +461,7 @@
             </a>
             <div class="collapse submenu-l3 @(isViolationGroup ? "show" : "")" id="violationSubMenu">
                 <a asp-controller="Violation" asp-action="Index"
-                    class="@(isViolationGroup && currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) ? "active" : "")">
+                    class="@(isViolationGroup && (currentAction.Equals("Index", StringComparison.OrdinalIgnoreCase) || currentAction.Equals("Details", StringComparison.OrdinalIgnoreCase) || currentAction.Equals("Edit", StringComparison.OrdinalIgnoreCase)) ? "active" : "")">
                     <i class="fas fa-list me-2"></i> Danh sách vi phạm
                 </a>
                 <a asp-controller="Violation" asp-action="Create"
@@ -482,7 +482,7 @@
             </a>
             <div class="collapse submenu-l3 @(isVehicleGroup ? "show" : "")" id="vehicleSubMenu">
                 <a asp-controller="Vehicle" asp-action="Index"
-                    class="@(isVehicleGroup && (currentAction == "Index" || currentAction == "Edit") ? "active" : "")">
+                    class="@(isVehicleGroup && (currentAction == "Index" || currentAction == "Details" || currentAction == "Edit") ? "active" : "")">
                     <i class="fas fa-list me-2"></i> Danh sách xe
                 </a>
                 <a asp-controller="Vehicle" asp-action="Create"

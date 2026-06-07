@@ -220,7 +220,7 @@
                         return $(this).closest('.card, .table, .table-responsive, .modal, .dropdown-menu, .dropdown').length === 0;
                     }).first();
                     if ($title.length) {
-                        $header = $title.closest('.row, [class*="mb-"], [class*="pb-"]');
+                        $header = $title.closest('.row, [class*="mb-"]:not(h1,h2,h3,h4,h5,h6,.tieu-de-trang), [class*="pb-"]:not(h1,h2,h3,h4,h5,h6,.tieu-de-trang)');
                         if (!$header.length) {
                             $header = $title.parent();
                         }
