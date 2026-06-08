@@ -18,7 +18,8 @@ namespace DormitoryManagement.Infrastructure.ExternalServices
             DisplayName = config["MailSettings:DisplayName"] ?? string.Empty,
             Password = config["MailSettings:Password"] ?? string.Empty,
             Host = config["MailSettings:Host"] ?? string.Empty,
-            Port = int.TryParse(config["MailSettings:Port"], out int port) ? port : 587
+            Port = int.TryParse(config["MailSettings:Port"], out int port) ? port : 587,
+            Username = config["MailSettings:Username"]
         };
 
         /// <summary>
@@ -45,8 +46,12 @@ namespace DormitoryManagement.Infrastructure.ExternalServices
             email.Body = builder.ToMessageBody();
 
             using var smtp = new SmtpClient();
-            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, SecureSocketOptions.StartTls);
-            await smtp.AuthenticateAsync(_mailSettings.Mail, _mailSettings.Password);
+            var socketOption = _mailSettings.Port == 465 ? SecureSocketOptions.SslOnConnect : SecureSocketOptions.StartTls;
+            await smtp.ConnectAsync(_mailSettings.Host, _mailSettings.Port, socketOption);
+            
+            var smtpUsername = !string.IsNullOrEmpty(_mailSettings.Username) ? _mailSettings.Username : _mailSettings.Mail;
+            await smtp.AuthenticateAsync(smtpUsername, _mailSettings.Password);
+            
             await smtp.SendAsync(email);
             await smtp.DisconnectAsync(true);
         }
