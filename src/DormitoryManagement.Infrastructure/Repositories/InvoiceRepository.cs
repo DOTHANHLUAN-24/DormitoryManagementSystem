@@ -1,4 +1,5 @@
 using DormitoryManagement.Domain.Entities;
+using DormitoryManagement.Domain.Enums;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using DormitoryManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +31,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
                 .Include(i => i.Payments)
-                .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode);
+                .FirstOrDefaultAsync(i => i.InvoiceCode == invoiceCode && !i.IsDeleted);
         }
 
         /// <summary>
@@ -39,7 +40,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
         /// <param name="searchString">Từ khóa tìm kiếm (mã hóa đơn hoặc tiêu đề)</param>
         /// <param name="status">Trạng thái hóa đơn cần lọc</param>
         /// <returns>Đối tượng IQueryable chứa danh sách hóa đơn</returns>
-        public IQueryable<Invoice> GetPagingQuery(string searchString, DormitoryManagement.Domain.Enums.InvoiceStatus? status = null)
+        public IQueryable<Invoice> GetPagingQuery(string searchString, InvoiceStatus? status = null)
         {
             var query = _dbSet
                 .Include(i => i.Contract)
@@ -47,6 +48,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.Contract)
                     .ThenInclude(c => c.Bed)
                 .Include(i => i.Payments)
+                .Where(i => !i.IsDeleted)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchString))
@@ -58,7 +60,24 @@ namespace DormitoryManagement.Infrastructure.Repositories
 
             if (status.HasValue)
             {
-                query = query.Where(i => i.Status == status.Value);
+                var today = DateTime.Today;
+                if (status.Value == InvoiceStatus.Overdue)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.Overdue
+                        || (i.Status != InvoiceStatus.Paid && i.Status != InvoiceStatus.Overdue && i.DueDate.Date < today));
+                }
+                else if (status.Value == InvoiceStatus.Unpaid)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.Unpaid && i.DueDate.Date >= today);
+                }
+                else if (status.Value == InvoiceStatus.PartiallyPaid)
+                {
+                    query = query.Where(i => i.Status == InvoiceStatus.PartiallyPaid && i.DueDate.Date >= today);
+                }
+                else
+                {
+                    query = query.Where(i => i.Status == status.Value);
+                }
             }
 
             return query.OrderByDescending(i => i.CreatedDate);
@@ -83,9 +102,25 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .Include(i => i.UtilityUsages)
                     .ThenInclude(u => u.Utility)
                 .Include(i => i.Surcharges)
-                .Where(i => i.ContractId == contractId)
+                .Where(i => i.ContractId == contractId && !i.IsDeleted)
                 .OrderByDescending(i => i.CreatedDate)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Lấy hóa đơn theo Id kèm đầy đủ thông tin liên kết (Contract, User, Bed, Room, RoomType, Payments).
+        /// </summary>
+        public override async Task<Invoice?> GetByIdAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.User)
+                .Include(i => i.Contract)
+                    .ThenInclude(c => c.Bed)
+                        .ThenInclude(b => b.Room)
+                            .ThenInclude(r => r.RoomType)
+                .Include(i => i.Payments)
+                .FirstOrDefaultAsync(i => i.Id == id);
         }
     }
 }

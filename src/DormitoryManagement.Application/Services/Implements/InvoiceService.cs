@@ -72,7 +72,17 @@ namespace DormitoryManagement.Application.Services.Implements
         /// </summary>
         public async Task<bool> UpdateInvoiceAsync(Invoice invoice)
         {
-            await _invoiceRepository.UpdateAsync(invoice);
+            var existingInvoice = await _invoiceRepository.GetQuery().FirstOrDefaultAsync(x => x.Id == invoice.Id);
+            if (existingInvoice == null) return false;
+
+            existingInvoice.Title = invoice.Title;
+            existingInvoice.BillingMonth = invoice.BillingMonth;
+            existingInvoice.BillingYear = invoice.BillingYear;
+            existingInvoice.DueDate = invoice.DueDate;
+            existingInvoice.TotalAmount = invoice.TotalAmount;
+            existingInvoice.Status = invoice.Status;
+            
+            await _invoiceRepository.UpdateAsync(existingInvoice);
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
 

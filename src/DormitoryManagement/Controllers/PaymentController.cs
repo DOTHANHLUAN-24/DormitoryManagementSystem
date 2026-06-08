@@ -79,7 +79,11 @@ namespace DormitoryManagement.Controllers
             {
                 ModelState.AddModelError(nameof(amountPaid), "Số tiền thanh toán phải lớn hơn 0.");
             }
-            if (string.IsNullOrWhiteSpace(transactionCode))
+            if (method == PaymentMethod.Cash && string.IsNullOrWhiteSpace(transactionCode))
+            {
+                transactionCode = $"CASH-{DateTime.Now:yyyyMMddHHmmss}-{new Random().Next(1000, 9999)}";
+            }
+            else if (string.IsNullOrWhiteSpace(transactionCode))
             {
                 ModelState.AddModelError(nameof(transactionCode), "Mã giao dịch/đối soát không được để trống.");
             }

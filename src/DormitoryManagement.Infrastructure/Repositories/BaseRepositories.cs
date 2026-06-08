@@ -80,9 +80,15 @@ namespace DormitoryManagement.Infrastructure.Repositories
              int pageIndex,
              int pageSize,
              Expression<Func<T, bool>>? predicate = null,
-             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null)
+             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+             bool includeDeleted = false)
         {
             IQueryable<T> query = _dbSet.AsNoTracking();
+
+            if (!includeDeleted)
+            {
+                query = query.Where(x => !x.IsDeleted);
+            }
 
             // Lọc theo điều kiện nếu có
             if (predicate != null)

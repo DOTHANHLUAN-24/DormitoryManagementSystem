@@ -17,8 +17,8 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator.Business
                 {
                     var vehicleType = ctx.Faker.PickRandom(vehicleTypes);
                     string licensePlate = vehicleType == "Xe đạp"
-                        ? $"XD-{ctx.Faker.Random.Number(1000, 9999)}"
-                        : $"{ctx.Faker.Random.Number(29, 99)}-{ctx.Faker.Random.Char('A', 'Z')}{ctx.Faker.Random.Number(1, 9)} {ctx.Faker.Random.Number(100, 999)}.{ctx.Faker.Random.Number(10, 99)}";
+                        ? "-"
+                        : $"{ctx.Faker.Random.Number(29, 99)}{ctx.Faker.Random.Char('A', 'Z')}{ctx.Faker.Random.Number(1, 9)}-{ctx.Faker.Random.Number(100, 999)}.{ctx.Faker.Random.Number(10, 99)}";
 
                     ctx.Vehicles.Add(new Vehicle
                     {
@@ -27,7 +27,8 @@ namespace DormitoryManagement.Infrastructure.Data.DataGenerator.Business
                         VehicleType = vehicleType,
                         LicensePlate = licensePlate,
                         IsActive = true,
-                        IsDeleted = false
+                        IsDeleted = false,
+                        Status = "Approved"
                     });
                 }
             }

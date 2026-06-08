@@ -8,6 +8,14 @@ namespace DormitoryManagement.Infrastructure.Repositories
 {
     public class MaintenanceRequestRepository(ApplicationDbContext db) : BaseRepository<MaintenanceRequest>(db), IMaintenanceRequestRepository
     {
+        public override async Task<MaintenanceRequest?> GetByIdAsync(Guid id)
+        {
+            return await _dbSet
+                .Include(m => m.Room).ThenInclude(r => r.Block)
+                .Include(m => m.Requester)
+                .Include(m => m.Handler)
+                .FirstOrDefaultAsync(m => m.Id == id);
+        }
 
         public async Task<IEnumerable<MaintenanceRequest>> GetRequestsByRoomIdAsync(Guid roomId)
         {

@@ -18,5 +18,9 @@ namespace DormitoryManagement.Application.Dtos.Requests.Vehicles
 
         [Required(ErrorMessage = "Chủ sở hữu không được để trống")]
         public Guid OwnerId { get; set; }
+
+        public string Status { get; set; } = "Approved";
+
+        public bool IsActive { get; set; } = true;
     }
 }

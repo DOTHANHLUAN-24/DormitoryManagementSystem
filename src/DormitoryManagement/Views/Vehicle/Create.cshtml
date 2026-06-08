@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Đăng ký phương tiện";
+    var isStudent = User.IsInRole("Student");
 }
 
 @section Styles {
@@ -157,28 +158,35 @@
 
                     <form asp-action="Create" method="post">
                         <div class="row g-5">
-                            <!-- CỘT TRÁI: THÔNG TIN CHỦ XE -->
-                            <div class="col-md-6 border-end-md pe-md-4">
-                                <div class="section-title">
-                                    <div class="section-icon"><i class="fas fa-user"></i></div>
-                                    Thông tin chủ sở hữu
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label" asp-for="OwnerId">Chủ sở hữu (Sinh viên/Nhân viên) <span class="text-danger">*</span></label>
-                                    <select asp-for="OwnerId" class="form-select input-custom select2" required>
-                                        <option value="">-- Tìm kiếm người dùng --</option>
-                                    </select>
-                                    <span asp-validation-for="OwnerId" class="text-danger small mt-1 d-block"></span>
-                                    <small class="text-muted mt-2 d-block">Nhập MSSV/Mã NV hoặc Tên để tìm kiếm nhanh.</small>
-                                </div>
+                            @if (!isStudent)
+                            {
+                                <!-- CỘT TRÁI: THÔNG TIN CHỦ XE -->
+                                <div class="col-md-6 border-end-md pe-md-4">
+                                    <div class="section-title">
+                                        <div class="section-icon"><i class="fas fa-user"></i></div>
+                                        Thông tin chủ sở hữu
+                                    </div>
+                                    <div class="mb-4">
+                                        <label class="form-label" asp-for="OwnerId">Chủ sở hữu (Sinh viên/Nhân viên) <span class="text-danger">*</span></label>
+                                        <select asp-for="OwnerId" class="form-select input-custom select2" required>
+                                            <option value="">-- Tìm kiếm người dùng --</option>
+                                        </select>
+                                        <span asp-validation-for="OwnerId" class="text-danger small mt-1 d-block"></span>
+                                        <small class="text-muted mt-2 d-block">Nhập MSSV/Mã NV hoặc Tên để tìm kiếm nhanh.</small>
+                                    </div>
 
-                                <div class="p-3 bg-light rounded-3 small text-muted border">
-                                    <i class="fas fa-info-circle me-1"></i> <strong>Lưu ý:</strong> Một người dùng có thể đăng ký nhiều phương tiện nhưng phải tuân thủ nội quy bãi xe của ký túc xá.
+                                    <div class="p-3 bg-light rounded-3 small text-muted border">
+                                        <i class="fas fa-info-circle me-1"></i> <strong>Lưu ý:</strong> Một người dùng có thể đăng ký nhiều phương tiện nhưng phải tuân thủ nội quy bãi xe của ký túc xá.
+                                    </div>
                                 </div>
-                            </div>
+                            }
+                            else
+                            {
+                                <input type="hidden" asp-for="OwnerId" />
+                            }
 
                             <!-- CỘT PHẢI: CHI TIẾT XE -->
-                            <div class="col-md-6 ps-md-4">
+                            <div class="@(isStudent ? "col-md-12" : "col-md-6 ps-md-4")">
                                 <div class="section-title">
                                     <div class="section-icon green"><i class="fas fa-info"></i></div>
                                     Chi tiết phương tiện
@@ -186,7 +194,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-6 mb-4">
                                         <label class="form-label" asp-for="VehicleType">Loại phương tiện <span class="text-danger">*</span></label>
-                                        <select asp-for="VehicleType" class="form-select input-custom" required>
+                                        <select asp-for="VehicleType" class="form-select input-custom" required id="VehicleType">
                                             <option value="Xe máy">Xe máy</option>
                                             <option value="Xe máy điện">Xe máy điện</option>
                                             <option value="Xe đạp điện">Xe đạp điện</option>
@@ -195,12 +203,19 @@
                                         </select>
                                         <span asp-validation-for="VehicleType" class="text-danger small mt-1 d-block"></span>
                                     </div>
-                                    <div class="col-md-6 mb-4">
+                                    <div class="col-md-6 mb-4 license-plate-group">
                                         <label class="form-label" asp-for="LicensePlate">Biển số xe <span class="text-danger">*</span></label>
-                                        <input asp-for="LicensePlate" class="form-control input-custom" placeholder="29A-123.45" required />
+                                        <input asp-for="LicensePlate" class="form-control input-custom" placeholder="29A-123.45" id="LicensePlate" />
                                         <span asp-validation-for="LicensePlate" class="text-danger small mt-1 d-block"></span>
                                     </div>
                                 </div>
+                                
+                                @if (isStudent)
+                                {
+                                    <div class="p-3 bg-light rounded-3 small text-muted border mt-3">
+                                        <i class="fas fa-info-circle me-1"></i> <strong>Lưu ý:</strong> Bạn có thể đăng ký phương tiện cá nhân của mình. Vui lòng điền đúng thông tin biển số xe để thuận tiện cho việc kiểm soát ra vào.
+                                    </div>
+                                }
                             </div>
                         </div>
 
@@ -223,6 +238,27 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // Hiển thị / Ẩn Biển số xe dựa vào Loại phương tiện
+            function toggleLicensePlate() {
+                var vehicleType = $('#VehicleType').val();
+                if (vehicleType === 'Xe đạp') {
+                    $('.license-plate-group').hide();
+                    $('#LicensePlate').removeAttr('required');
+                } else {
+                    $('.license-plate-group').show();
+                    $('#LicensePlate').attr('required', 'required');
+                }
+            }
+
+            // Gọi hàm lúc khởi tạo
+            toggleLicensePlate();
+
+            // Gọi hàm khi thay đổi
+            $('#VehicleType').on('change', toggleLicensePlate);
+
+            @if (!isStudent)
+            {
+            <text>
             $('.select2').select2({
                 theme: 'bootstrap-5',
                 placeholder: 'Nhập MSSV hoặc Tên để tìm kiếm...',
@@ -251,6 +287,8 @@
                     searching: function () { return "Đang tìm kiếm..."; }
                 }
             });
+            </text>
+            }
         });
     </script>
 }

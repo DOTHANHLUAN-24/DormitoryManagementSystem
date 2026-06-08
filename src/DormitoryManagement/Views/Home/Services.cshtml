@@ -344,9 +344,15 @@
                             </div>
                             
                             <div class="w-100 mt-auto">
-                                @if (latestRequest == null || latestRequest.Status == "Rejected" || (isApproved && isExpired))
+                                @if (normalizedName.Contains("xe"))
                                 {
-                                    <button type="button" class="btn btn-service-action" onclick="onRegisterService('@item.Id', '@item.UtilityName')">
+                                    <button type="button" class="btn btn-service-action" onclick="openStudentVehicleModal()">
+                                        <i class="fas fa-motorcycle"></i> Đăng ký & Quản lý xe
+                                    </button>
+                                }
+                                else if (latestRequest == null || latestRequest.Status == "Rejected" || (isApproved && isExpired))
+                                {
+                                    <button type="button" class="btn btn-service-action" onclick="openRegisterModal('@item.Id', '@item.UtilityName')">
                                         <i class="fas fa-plus-circle"></i> Đăng ký sử dụng
                                     </button>
                                 }
@@ -368,7 +374,7 @@
                                         <div class="alert alert-danger py-2 px-3 mb-2 text-start w-100" style="border-radius: 12px; font-size: 0.78rem; border: 1px dashed #ef4444; background-color: #fef2f2; color: #ef4444; line-height: 1.3;">
                                             <i class="fas fa-exclamation-triangle me-1"></i> Sắp hết hạn (còn @((expirationDate.Value - DateTime.Now).Days) ngày). Bạn có muốn gia hạn không?
                                         </div>
-                                        <button type="button" class="btn btn-danger w-100 py-2" style="border-radius: 12px; font-weight: 700; font-size: 0.85rem;" onclick="onRegisterService('@item.Id', '@item.UtilityName')">
+                                        <button type="button" class="btn btn-danger w-100 py-2" style="border-radius: 12px; font-weight: 700; font-size: 0.85rem;" onclick="openRegisterModal('@item.Id', '@item.UtilityName')">
                                             <i class="fas fa-sync-alt me-1"></i> Đăng ký gia hạn
                                         </button>
                                     }
@@ -525,77 +531,368 @@
     </div>
 </div>
 
+<!-- Modal Đăng Ký Dịch Vụ -->
+<div class="modal fade" id="registerServiceModal" tabindex="-1" aria-labelledby="registerServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold" id="registerServiceModalLabel">Đăng ký dịch vụ</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p id="registerServiceText" class="mb-3 text-muted">Nhập số lượng sử dụng cho phòng của bạn:</p>
+                <input type="hidden" id="registerUtilityId" />
+                <div class="form-group">
+                    <input type="number" id="registerQuantity" class="form-control form-control-lg" value="1" min="1" step="1" />
+                    <div class="invalid-feedback">Vui lòng nhập số lượng hợp lệ (tối thiểu là 1).</div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+                <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary rounded-3 px-4" style="background-color: #0f6b6d; border-color: #0f6b6d;" onclick="submitServiceRegistration()">Đăng ký ngay</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Đăng ký & Quản lý Phương tiện -->
+<div class="modal fade" id="studentVehicleModal" tabindex="-1" aria-labelledby="studentVehicleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-header border-bottom pb-3">
+                <h5 class="modal-title fw-bold text-dark" id="studentVehicleModalLabel">
+                    <i class="fas fa-motorcycle text-primary me-2"></i>Đăng ký & Quản lý phương tiện cá nhân
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <!-- Navigation Tabs inside Modal -->
+                <ul class="nav nav-pills mb-4" id="vehicleModalTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold px-4 py-2 me-2" id="my-vehicles-tab" data-bs-toggle="pill" data-bs-target="#my-vehicles" type="button" role="tab" aria-controls="my-vehicles" aria-selected="true" style="border-radius: 8px;">
+                            <i class="fas fa-list me-2"></i>Xe của tôi
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold px-4 py-2" id="register-new-tab" data-bs-toggle="pill" data-bs-target="#register-new" type="button" role="tab" aria-controls="register-new" aria-selected="false" style="border-radius: 8px;">
+                            <i class="fas fa-plus-circle me-2"></i>Đăng ký xe mới
+                        </button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="vehicleModalTabContent">
+                    <!-- Tab 1: List of Vehicles -->
+                    <div class="tab-pane fade show active" id="my-vehicles" role="tabpanel" aria-labelledby="my-vehicles-tab">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0" id="studentVehiclesTable">
+                                <thead class="bg-light">
+                                    <tr>
+                                        <th>Loại xe</th>
+                                        <th>Biển số xe</th>
+                                        <th>Ngày đăng ký</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-end">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Dynamic content loaded via AJAX -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab 2: Register New Vehicle Form -->
+                    <div class="tab-pane fade" id="register-new" role="tabpanel" aria-labelledby="register-new-tab">
+                        <form id="registerVehicleForm">
+                            <div class="mb-3">
+                                <label for="studentVehicleType" class="form-label fw-bold">Loại phương tiện <span class="text-danger">*</span></label>
+                                <select class="form-select" id="studentVehicleType" required>
+                                    <option value="Xe máy" selected>Xe máy</option>
+                                    <option value="Xe máy điện">Xe máy điện</option>
+                                    <option value="Xe đạp điện">Xe đạp điện</option>
+                                    <option value="Xe đạp">Xe đạp</option>
+                                    <option value="Ô tô">Ô tô</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3" id="licensePlateGroup">
+                                <label for="studentLicensePlate" class="form-label fw-bold">Biển số xe <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="studentLicensePlate" placeholder="Ví dụ: 29A1-123.45" required>
+                                <div class="form-text text-muted">Nhập chính xác biển số xe để phục vụ kiểm soát ra vào.</div>
+                            </div>
+                            
+                            <div class="mb-3 d-none" id="bicycleNoteGroup">
+                                <div class="alert alert-info py-2 px-3 mb-0" style="border-radius: 12px; font-size: 0.85rem;">
+                                    <i class="fas fa-info-circle me-1"></i> Đối với <strong>Xe đạp</strong>, hệ thống sẽ tự động tạo mã nhận diện và bạn không cần nhập biển số xe.
+                                </div>
+                            </div>
+                            
+                            <div class="text-end pt-3">
+                                <button type="button" class="btn btn-light rounded-3 me-2" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-primary rounded-3 px-4" style="background-color: #0f6b6d; border-color: #0f6b6d;">Gửi yêu cầu đăng ký</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
-        function onRegisterService(utilityId, serviceName) {
+        function openRegisterModal(utilityId, serviceName) {
+            $('#registerUtilityId').val(utilityId);
+            $('#registerServiceText').text('Nhập số lượng sử dụng dịch vụ "' + serviceName + '" cho phòng của bạn:');
+            $('#registerQuantity').val(1).removeClass('is-invalid');
+            
+            var modal = new bootstrap.Modal(document.getElementById('registerServiceModal'));
+            modal.show();
+        }
+
+        function submitServiceRegistration() {
+            var utilityId = $('#registerUtilityId').val();
+            var qtyStr = $('#registerQuantity').val();
+            var qty = parseInt(qtyStr);
+
+            if (!qty || qty < 1) {
+                $('#registerQuantity').addClass('is-invalid');
+                return;
+            }
+            $('#registerQuantity').removeClass('is-invalid');
+
+            var modal = bootstrap.Modal.getInstance(document.getElementById('registerServiceModal'));
+            modal.hide();
+
             Swal.fire({
-                title: 'Đăng ký dịch vụ',
-                text: 'Nhập số lượng sử dụng dịch vụ "' + serviceName + '" cho phòng của bạn:',
-                input: 'number',
-                inputValue: 1,
-                inputAttributes: {
-                    min: 1,
-                    step: 1
+                title: 'Đang xử lý...',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            const token = $('input[name="__RequestVerificationToken"]').val();
+
+            $.ajax({
+                url: '/Utility/RegisterService',
+                type: 'POST',
+                data: {
+                    utilityId: utilityId,
+                    quantity: qty,
+                    notes: '',
+                    __RequestVerificationToken: token
                 },
-                showCancelButton: true,
-                confirmButtonColor: '#0f6b6d',
-                cancelButtonColor: '#64748b',
-                confirmButtonText: 'Đăng ký ngay',
-                cancelButtonText: 'Đóng',
-                reverseButtons: true,
-                inputValidator: (value) => {
-                    if (!value || value < 1) {
-                        return 'Vui lòng nhập số lượng hợp lệ (tối thiểu là 1)!'
+                success: function (res) {
+                    if (res.success) {
+                        Swal.fire({
+                            title: 'Đăng ký thành công!',
+                            text: res.message,
+                            icon: 'success',
+                            confirmButtonColor: '#0f6b6d',
+                            confirmButtonText: 'Đồng ý'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Thất bại!',
+                            text: res.message || 'Có lỗi xảy ra.',
+                            icon: 'error',
+                            confirmButtonColor: '#0f6b6d',
+                            confirmButtonText: 'Đóng'
+                        });
                     }
+                },
+                error: function () {
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Không thể kết nối đến máy chủ.',
+                        icon: 'error',
+                        confirmButtonColor: '#0f6b6d',
+                        confirmButtonText: 'Đóng'
+                    });
                 }
+            });
+        }
+
+        function openStudentVehicleModal() {
+            loadStudentVehicles();
+            var modal = new bootstrap.Modal(document.getElementById('studentVehicleModal'));
+            modal.show();
+        }
+
+        function loadStudentVehicles() {
+            $('#studentVehiclesTable tbody').html('<tr><td colspan="5" class="text-center py-4"><i class="fas fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</td></tr>');
+            $.ajax({
+                url: '/Vehicle/GetMyVehicles',
+                type: 'GET',
+                success: function (res) {
+                    if (res.success) {
+                        var html = '';
+                        if (res.items && res.items.length > 0) {
+                            res.items.forEach(function (item) {
+                                var statusBadge = '';
+                                if (item.status === 'Pending') {
+                                    statusBadge = '<span class="badge bg-warning text-dark px-2.5 py-1.5 rounded-3" style="font-size: 0.8rem;"><i class="fas fa-clock me-1"></i>Chờ duyệt</span>';
+                                } else if (item.status === 'Approved') {
+                                    if (item.isActive) {
+                                        statusBadge = '<span class="badge bg-success text-white px-2.5 py-1.5 rounded-3" style="font-size: 0.8rem;"><i class="fas fa-check-circle me-1"></i>Hoạt động</span>';
+                                    } else {
+                                        statusBadge = '<span class="badge bg-secondary text-white px-2.5 py-1.5 rounded-3" style="font-size: 0.8rem;"><i class="fas fa-pause-circle me-1"></i>Tạm ngưng</span>';
+                                    }
+                                } else if (item.status === 'Rejected') {
+                                    statusBadge = '<span class="badge bg-danger text-white px-2.5 py-1.5 rounded-3" style="font-size: 0.8rem;"><i class="fas fa-times-circle me-1"></i>Từ chối</span>';
+                                }
+
+                                var deleteBtn = '';
+                                deleteBtn = '<button type="button" class="btn btn-sm btn-outline-danger rounded-3" onclick="deleteStudentVehicle(\'' + item.id + '\', \'' + item.licensePlate + '\')"><i class="fas fa-trash"></i></button>';
+
+                                html += '<tr>' +
+                                    '<td class="fw-bold">' + item.vehicleType + '</td>' +
+                                    '<td><span class="badge bg-light text-dark border font-monospace px-2 py-1" style="font-size: 0.85rem;">' + item.licensePlate + '</span></td>' +
+                                    '<td class="text-muted">' + new Date(item.createdDate).toLocaleDateString('vi-VN') + '</td>' +
+                                    '<td>' + statusBadge + '</td>' +
+                                    '<td class="text-end">' + deleteBtn + '</td>' +
+                                    '</tr>';
+                            });
+                        } else {
+                            html = '<tr><td colspan="5" class="text-center py-4 text-muted"><i class="fas fa-info-circle me-1"></i>Bạn chưa đăng ký phương tiện nào.</td></tr>';
+                        }
+                        $('#studentVehiclesTable tbody').html(html);
+                    } else {
+                        $('#studentVehiclesTable tbody').html('<tr><td colspan="5" class="text-center text-danger py-4">Lỗi: ' + (res.message || 'Không thể tải dữ liệu.') + '</td></tr>');
+                    }
+                },
+                error: function () {
+                    $('#studentVehiclesTable tbody').html('<tr><td colspan="5" class="text-center text-danger py-4">Không thể kết nối đến máy chủ.</td></tr>');
+                }
+            });
+        }
+
+        // Lắng nghe sự kiện đổi loại xe để ẩn/hiện biển số xe
+        $(document).on('change', '#studentVehicleType', function () {
+            var val = $(this).val();
+            if (val === 'Xe đạp') {
+                $('#licensePlateGroup').addClass('d-none');
+                $('#studentLicensePlate').removeAttr('required').val('');
+                $('#bicycleNoteGroup').removeClass('d-none');
+            } else {
+                $('#licensePlateGroup').removeClass('d-none');
+                $('#studentLicensePlate').attr('required', 'required');
+                $('#bicycleNoteGroup').addClass('d-none');
+            }
+        });
+
+        $(document).ready(function () {
+            // Xử lý gửi form đăng ký xe qua AJAX
+            $('#registerVehicleForm').on('submit', function (e) {
+                e.preventDefault();
+                
+                var vehicleType = $('#studentVehicleType').val();
+                var licensePlate = $('#studentLicensePlate').val();
+                
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+
+                const token = $('input[name="__RequestVerificationToken"]').val();
+
+                $.ajax({
+                    url: '/Vehicle/RegisterVehicle',
+                    type: 'POST',
+                    data: {
+                        vehicleType: vehicleType,
+                        licensePlate: licensePlate,
+                        __RequestVerificationToken: token
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: res.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            
+                            // Reset form và chuyển về tab danh sách
+                            $('#registerVehicleForm')[0].reset();
+                            $('#licensePlateGroup').removeClass('d-none');
+                            $('#studentLicensePlate').attr('required', 'required');
+                            $('#bicycleNoteGroup').addClass('d-none');
+                            
+                            // Kích hoạt lại tab 1
+                            var triggerEl = document.querySelector('#my-vehicles-tab');
+                            var tab = new bootstrap.Tab(triggerEl);
+                            tab.show();
+                            
+                            // Reload danh sách xe
+                            loadStudentVehicles();
+                        } else {
+                            Swal.fire('Thất bại', res.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ.', 'error');
+                    }
+                });
+            });
+
+            // Tự động mở modal nếu URL chứa param openVehicle
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('openVehicle') === 'true') {
+                // Đợi một chút để trang load hoàn toàn rồi mở modal
+                setTimeout(function() {
+                    openStudentVehicleModal();
+                }, 300);
+            }
+        });
+
+        function deleteStudentVehicle(id, licensePlate) {
+            Swal.fire({
+                title: 'Hủy/Xóa đăng ký xe?',
+                html: 'Bạn có chắc chắn muốn xóa phương tiện <b>' + licensePlate + '</b> khỏi danh sách của mình?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const qty = parseInt(result.value) || 1;
-
                     Swal.fire({
                         title: 'Đang xử lý...',
                         allowOutsideClick: false,
                         didOpen: () => { Swal.showLoading(); }
                     });
-
+                    
                     const token = $('input[name="__RequestVerificationToken"]').val();
-
+                    
                     $.ajax({
-                        url: '/Utility/RegisterService',
+                        url: '/Vehicle/SoftDelete/' + id,
                         type: 'POST',
+                        headers: { "RequestVerificationToken": token },
                         data: {
-                            utilityId: utilityId,
-                            quantity: qty,
-                            notes: '',
                             __RequestVerificationToken: token
                         },
                         success: function (res) {
                             if (res.success) {
                                 Swal.fire({
-                                    title: 'Đăng ký thành công!',
-                                    text: res.message,
                                     icon: 'success',
-                                    confirmButtonColor: '#0f6b6d',
-                                    confirmButtonText: 'Đồng ý'
+                                    title: 'Đã xóa',
+                                    text: res.message,
+                                    timer: 1500,
+                                    showConfirmButton: false
                                 });
+                                loadStudentVehicles();
                             } else {
-                                Swal.fire({
-                                    title: 'Thất bại!',
-                                    text: res.message || 'Có lỗi xảy ra.',
-                                    icon: 'error',
-                                    confirmButtonColor: '#0f6b6d',
-                                    confirmButtonText: 'Đóng'
-                                });
+                                Swal.fire('Thất bại', res.message, 'error');
                             }
                         },
                         error: function () {
-                            Swal.fire({
-                                title: 'Lỗi!',
-                                text: 'Không thể kết nối đến máy chủ.',
-                                icon: 'error',
-                                confirmButtonColor: '#0f6b6d',
-                                confirmButtonText: 'Đóng'
-                            });
+                            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ.', 'error');
                         }
                     });
                 }

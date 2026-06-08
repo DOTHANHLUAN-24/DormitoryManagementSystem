@@ -19,7 +19,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
         {
             return await _dbSet
                 .Include(v => v.Owner)
-                .FirstOrDefaultAsync(v => v.Id == id && !v.IsDeleted);
+                .FirstOrDefaultAsync(v => v.Id == id);
         }
 
         /// <summary>

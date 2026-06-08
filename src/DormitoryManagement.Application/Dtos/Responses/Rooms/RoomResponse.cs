@@ -23,5 +23,7 @@ namespace DormitoryManagement.Application.Dtos.Responses.Rooms
         public int MaxOccupants { get; set; }
 
         public string Description { get; set; } = string.Empty;
+
+        public bool IsActive { get; set; }
     }
 }

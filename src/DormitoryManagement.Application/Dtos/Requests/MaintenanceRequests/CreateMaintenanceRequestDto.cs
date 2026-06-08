@@ -31,5 +31,10 @@ namespace DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests
         /// </summary>
         [Required(ErrorMessage = "Phòng không được để trống")]
         public Guid RoomId { get; set; }
+
+        /// <summary>
+        /// Ghi chú thêm (nếu có).
+        /// </summary>
+        public string? Notes { get; set; }
     }
 }

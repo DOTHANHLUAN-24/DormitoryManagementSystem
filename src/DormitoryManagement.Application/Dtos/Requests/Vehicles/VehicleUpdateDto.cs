@@ -26,5 +26,8 @@ namespace DormitoryManagement.Application.Dtos.Requests.Vehicles
         /// Trạng thái hoạt động của phương tiện.
         /// </summary>
         public bool IsActive { get; set; } = true;
+
+        [Required(ErrorMessage = "Trạng thái không được để trống")]
+        public string Status { get; set; } = "Pending";
     }
 }

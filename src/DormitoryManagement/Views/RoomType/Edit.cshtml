@@ -52,6 +52,25 @@
                     
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
 
+                    @{
+                        var occupiedRooms = Model.Rooms?.Where(r => r.Beds.Any(b => b.Status == DormitoryManagement.Domain.Enums.BedStatus.Occupied)).ToList() ?? new List<DormitoryManagement.Domain.Entities.Room>();
+                        var hasOccupiedRooms = occupiedRooms.Any();
+                    }
+                    @if (hasOccupiedRooms)
+                    {
+                        <div class="alert alert-warning rounded-3 mb-4 d-flex gap-3 align-items-start" role="alert" style="background-color: #fffbeb; border: 1px solid #fde68a; color: #b45309;">
+                            <i class="fas fa-exclamation-triangle mt-1" style="color: #d97706;"></i>
+                            <div>
+                                <strong class="d-block mb-1">Cảnh báo: Loại phòng này đang có sinh viên cư trú!</strong>
+                                <span class="small">
+                                    Có sinh viên đang ở trong các phòng thuộc loại này: 
+                                    @string.Join(", ", occupiedRooms.Select(r => $"Phòng {r.RoomNumber} ({r.Block?.BlockName ?? ""})")) . 
+                                    Vui lòng hạn chế thay đổi giá cơ bản hoặc sức chứa, và không được tắt hoạt động của loại phòng này.
+                                </span>
+                            </div>
+                        </div>
+                    }
+
                     <div class="row">
                         <!-- Tên loại phòng -->
                         <div class="col-md-12 mb-4">

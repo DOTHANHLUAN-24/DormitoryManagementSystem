@@ -1,8 +1,10 @@
 using DormitoryManagement.Application.Dtos.Requests.MaintenanceRequests;
 using DormitoryManagement.Application.Services.Interfaces;
 using DormitoryManagement.Domain.Enums;
+using DormitoryManagement.Domain.Entities;
 using DormitoryManagement.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -87,7 +89,7 @@ namespace DormitoryManagement.Controllers
         /// Form tạo yêu cầu bảo trì mới (GET – Student/Admin/Staff).
         /// </summary>
         [HttpGet("Create")]
-        [Authorize(Roles = "Admin, ManagementStaff, Student")]
+        [Authorize]
         public async Task<IActionResult> Create()
         {
             var userId = GetCurrentUserId();
@@ -97,7 +99,21 @@ namespace DormitoryManagement.Controllers
                 return Unauthorized();
             }
 
-            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<User>>();
+            var dbUser = await userManager.FindByIdAsync(userId.Value.ToString());
+            if (dbUser != null)
+            {
+                var userRoles = await userManager.GetRolesAsync(dbUser);
+                Logger.LogWarning("DB User Diagnostics: ID = '{Id}', Username = '{UserName}', RoleProperty = '{RoleProperty}', IdentityRoles = '{IdentityRoles}'", 
+                    dbUser.Id, dbUser.UserName, dbUser.Role, string.Join(", ", userRoles));
+            }
+
+            foreach (var claim in User.Claims)
+            {
+                Logger.LogInformation("Claim: Type = '{Type}', Value = '{Value}'", claim.Type, claim.Value);
+            }
+
+            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("TechnicalStaff");
             ViewBag.IsAdminOrStaff = isAdminOrStaff;
 
             if (isAdminOrStaff)
@@ -115,7 +131,8 @@ namespace DormitoryManagement.Controllers
                 var room = await GetActiveRoomForUserAsync(userId.Value);
                 if (room == null)
                 {
-                    Logger.LogWarning("Sinh viên {UserId} chưa có phòng hoạt động.", userId);
+                    var roles = string.Join(", ", User.Claims.Where(c => c.Type == ClaimTypes.Role || c.Type == "role").Select(c => c.Value));
+                    Logger.LogWarning("Sinh viên {UserId} chưa có phòng hoạt động. Roles: {Roles}", userId, roles);
                     TempData["Error"] = "Bạn chưa được xếp phòng hoặc không có hợp đồng hợp lệ để báo sửa chữa.";
                     return RedirectToAction(nameof(MyRequests));
                 }
@@ -129,7 +146,7 @@ namespace DormitoryManagement.Controllers
         /// Xử lý gửi yêu cầu bảo trì mới (POST – Student/Admin/Staff).
         /// </summary>
         [HttpPost("Create")]
-        [Authorize(Roles = "Admin, ManagementStaff, Student")]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateMaintenanceRequestDto dto)
         {
@@ -140,7 +157,7 @@ namespace DormitoryManagement.Controllers
                 return Unauthorized();
             }
 
-            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff");
+            var isAdminOrStaff = User.IsInRole("Admin") || User.IsInRole("ManagementStaff") || User.IsInRole("TechnicalStaff");
             ViewBag.IsAdminOrStaff = isAdminOrStaff;
 
             if (!ModelState.IsValid)
@@ -244,7 +261,9 @@ namespace DormitoryManagement.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateStatus(Guid id, string status)
         {
-            var handlerId = GetCurrentUserId();
+            var currentUserId = GetCurrentUserId();
+            var isTechStaff = User.IsInRole("TechnicalStaff");
+            Guid? handlerIdToAssign = isTechStaff ? currentUserId : null;
 
             if (!Enum.TryParse<MaintenanceStatus>(status, out var parsedStatus))
             {
@@ -252,9 +271,9 @@ namespace DormitoryManagement.Controllers
                 return Json(new { success = false, message = "Trạng thái không hợp lệ." });
             }
 
-            Logger.LogInformation("Cập nhật trạng thái yêu cầu {Id} → {Status} bởi {HandlerId}", id, parsedStatus, handlerId);
-            var dto = new UpdateMaintenanceStatusDto { Status = parsedStatus, HandlerId = handlerId };
-            var success = await _service.UpdateStatusAsync(id, dto, handlerId);
+            Logger.LogInformation("Cập nhật trạng thái yêu cầu {Id} → {Status} bởi {UserId}", id, parsedStatus, currentUserId);
+            var dto = new UpdateMaintenanceStatusDto { Status = parsedStatus, HandlerId = handlerIdToAssign };
+            var success = await _service.UpdateStatusAsync(id, dto, handlerIdToAssign);
 
             return Json(success
                 ? new { success = true, message = "Cập nhật trạng thái thành công!" }

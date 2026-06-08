@@ -39,8 +39,15 @@ namespace DormitoryManagement.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> List(int page = 1, string search = "")
         {
-            Logger.LogInformation("Đang tải danh sách loại phòng công khai trang {Page}, tìm kiếm: '{Search}'", page, search);
             int pageSize = 6;
+            if (Request.Query.TryGetValue("pageSize", out var qsPageSize) && int.TryParse(qsPageSize, out int ps) && ps > 0)
+            {
+                pageSize = ps;
+            }
+            else if (Request.Query.TryGetValue("PageSize", out var qsPageSize2) && int.TryParse(qsPageSize2, out int ps2) && ps2 > 0)
+            {
+                pageSize = ps2;
+            }
 
             var result = await _roomTypeRepository.GetPagedAsync(
                 pageIndex: page,
@@ -109,7 +116,7 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             Logger.LogInformation("Đang tải trang chỉnh sửa loại phòng ID: {Id}", id);
-            var roomType = await _roomTypeRepository.GetByIdAsync(id);
+            var roomType = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);
             if (roomType == null)
             {
                 Logger.LogWarning("Không tìm thấy loại phòng ID: {Id} để chỉnh sửa.", id);
@@ -184,28 +191,34 @@ namespace DormitoryManagement.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             Logger.LogInformation("Đang yêu cầu xóa loại phòng ID: {Id}", id);
-            var roomType = await _roomTypeRepository.GetByIdAsync(id);
-            if (roomType == null)
+            try
             {
-                Logger.LogWarning("Không tìm thấy loại phòng ID: {Id} để xóa.", id);
-                return NotFound();
-            }
+                var roomType = await _roomTypeRepository.GetByIdAsync(id);
+                if (roomType == null)
+                {
+                    Logger.LogWarning("Không tìm thấy loại phòng ID: {Id} để xóa.", id);
+                    return Json(new { success = false, message = "Không tìm thấy loại phòng." });
+                }
 
-            // Quy trình nghiệp vụ: Kiểm tra xem loại phòng này có đang chứa phòng nào không
-            var withRooms = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);
-            if (withRooms != null && withRooms.Rooms.Any(r => !r.IsDeleted))
+                // Quy trình nghiệp vụ: Kiểm tra xem loại phòng này có đang chứa phòng nào không
+                var withRooms = await _roomTypeRepository.GetRoomTypeWithRoomsAsync(id);
+                if (withRooms != null && withRooms.Rooms.Any(r => !r.IsDeleted))
+                {
+                    Logger.LogWarning("Không thể xóa loại phòng ID: {Id} vì vẫn còn phòng đang thuộc loại phòng này.", id);
+                    return Json(new { success = false, message = "Không thể xóa loại phòng này vì đang có phòng thuộc danh mục này." });
+                }
+
+                await _roomTypeRepository.DeleteAsync(roomType, isSoftDelete: true);
+                await _unitOfWork.SaveChangesAsync();
+
+                Logger.LogInformation("Xóa mềm loại phòng ID: {Id} thành công.", id);
+                return Json(new { success = true, message = "Xóa loại phòng thành công!" });
+            }
+            catch (Exception ex)
             {
-                Logger.LogWarning("Không thể xóa loại phòng ID: {Id} vì vẫn còn phòng đang thuộc loại phòng này.", id);
-                TempData["Error"] = "Không thể xóa loại phòng này vì đang có phòng thuộc danh mục này.";
-                return RedirectToAction(nameof(Index));
+                Logger.LogError(ex, "Lỗi xảy ra khi xóa loại phòng ID: {Id}.", id);
+                return Json(new { success = false, message = "Lỗi hệ thống: " + ex.Message });
             }
-
-            await _roomTypeRepository.DeleteAsync(roomType, isSoftDelete: true);
-            await _unitOfWork.SaveChangesAsync();
-
-            Logger.LogInformation("Xóa mềm loại phòng ID: {Id} thành công.", id);
-            TempData["Success"] = "Xóa loại phòng thành công!";
-            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet("RecycleBin")]
@@ -219,7 +232,8 @@ namespace DormitoryManagement.Controllers
                 pageIndex: page,
                 pageSize: pageSize,
                 predicate: x => (string.IsNullOrEmpty(search) || x.TypeName.Contains(search)) && x.IsDeleted,
-                orderBy: x => x.OrderByDescending(rt => rt.LastModified)
+                orderBy: x => x.OrderByDescending(rt => rt.LastModified),
+                includeDeleted: true
             );
 
             ViewBag.Search = search;

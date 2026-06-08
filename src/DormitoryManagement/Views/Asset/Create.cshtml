@@ -3,6 +3,11 @@
 
 @{
     ViewData["Title"] = "Thêm tài sản mới";
+    ViewData["Breadcrumbs"] = new List<(string Name, string Url)>
+    {
+        ("Quản lý tài sản", Url.Action("Index", "Asset") ?? ""),
+        ("Thêm tài sản mới", "")
+    };
 }
 
 @section Styles {
@@ -26,10 +31,12 @@
 }
 
 <div class="container-fluid">
-    <div class="d-flex align-items-center mb-4 gap-3">
-        <a asp-action="Index" class="btn-cancel"><i class="fas fa-arrow-left me-2"></i>Quay lại</a>
+    <header class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="tieu-de-trang mb-0"><i class="fas fa-plus-circle me-2"></i>Thêm tài sản mới</h1>
-    </div>
+        <div class="d-flex gap-2">
+            <a asp-action="Index" class="btn-cancel"><i class="fas fa-arrow-left me-2"></i>Quay lại danh sách</a>
+        </div>
+    </header>
 
     <div class="row justify-content-center">
         <div class="col-xl-8 col-lg-10">
@@ -131,4 +138,20 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                if ($(this).valid()) {
+                    Swal.fire({
+                        title: 'Đang lưu dữ liệu...',
+                        html: 'Vui lòng chờ trong giây lát',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 }

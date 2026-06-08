@@ -36,7 +36,7 @@ namespace DormitoryManagement.Infrastructure.Repositories
                 .AsNoTracking()
                 .Include(p => p.Invoice)
                 .Where(p => p.InvoiceId == invoiceId)
-                .OrderByDescending(p => p.PaymentDate)
+                .OrderByDescending(p => p.CreatedDate)
                 .ToListAsync();
         }
     }

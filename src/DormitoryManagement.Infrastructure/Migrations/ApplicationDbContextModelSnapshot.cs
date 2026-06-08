@@ -273,6 +273,9 @@ namespace DormitoryManagement.Infrastructure.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Priority")
                         .HasColumnType("int");
 
@@ -725,6 +728,11 @@ namespace DormitoryManagement.Infrastructure.Migrations
 
                     b.Property<Guid>("OwnerId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("VehicleType")
                         .IsRequired()
