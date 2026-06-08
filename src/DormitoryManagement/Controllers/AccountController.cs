@@ -223,6 +223,9 @@ namespace DormitoryManagement.Controllers
                 <p>Nếu không phải bạn yêu cầu, hãy bỏ qua mail này.</p>
             </div>";
 
+            // Ghi nhận link khôi phục mật khẩu ra log hệ thống (Hỗ trợ test nhanh trên Render Free Tier khi cổng SMTP bị chặn)
+            Logger.LogWarning(">>> LINK KHÔI PHỤC MẬT KHẨU (Email: {Email}): {Url} <<<", request.Email, callbackUrl);
+
             try
             {
                 await _emailService.SendEmailAsync(request.Email, "Khôi phục mật khẩu DMS", content);
@@ -231,7 +234,7 @@ namespace DormitoryManagement.Controllers
             catch (Exception ex)
             {
                 Logger.LogError(ex, "Lỗi xảy ra khi gửi email khôi phục mật khẩu đến {Email}.", request.Email);
-                ModelState.AddModelError(string.Empty, $"Lỗi gửi Email (Kiểm tra lại cấu hình SMTP): {ex.Message}");
+                ModelState.AddModelError(string.Empty, $"Lỗi gửi Email (Kiểm tra lại cấu hình SMTP hoặc xem link reset trong Render Log): {ex.Message}");
                 return View(request);
             }
 
