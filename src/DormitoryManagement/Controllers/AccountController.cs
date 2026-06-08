@@ -210,8 +210,11 @@ namespace DormitoryManagement.Controllers
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            
+            // Render chạy sau Proxy nên Request.Scheme trả về http. Chúng ta ép sang https nếu chạy trên Render để tránh lỗi cookie/antiforgery
+            var scheme = Request.Host.Host.Contains("onrender.com") ? "https" : Request.Scheme;
             var callbackUrl = Url.Action("ResetPassword", "Account",
-                new { token, email = request.Email }, Request.Scheme);
+                new { token, email = request.Email }, scheme);
 
             // Nội dung Email HTML custom
             string content = $@"
@@ -226,17 +229,19 @@ namespace DormitoryManagement.Controllers
             // Ghi nhận link khôi phục mật khẩu ra log hệ thống (Hỗ trợ test nhanh trên Render Free Tier khi cổng SMTP bị chặn)
             Logger.LogWarning(">>> LINK KHÔI PHỤC MẬT KHẨU (Email: {Email}): {Url} <<<", request.Email, callbackUrl);
 
-            try
+            // Chạy ngầm việc gửi email dưới nền để tránh treo Request dẫn tới Render timeout và restart container làm mất Key Data Protection
+            _ = Task.Run(async () =>
             {
-                await _emailService.SendEmailAsync(request.Email, "Khôi phục mật khẩu DMS", content);
-                Logger.LogInformation("Đã gửi email hướng dẫn khôi phục mật khẩu đến {Email}.", request.Email);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, "Lỗi xảy ra khi gửi email khôi phục mật khẩu đến {Email}.", request.Email);
-                ModelState.AddModelError(string.Empty, $"Lỗi gửi Email (Kiểm tra lại cấu hình SMTP hoặc xem link reset trong Render Log): {ex.Message}");
-                return View(request);
-            }
+                try
+                {
+                    await _emailService.SendEmailAsync(request.Email, "Khôi phục mật khẩu DMS", content);
+                    Logger.LogInformation("Đã gửi email hướng dẫn khôi phục mật khẩu đến {Email} thành công.", request.Email);
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Lỗi gửi email ngầm (Do SMTP bị chặn trên Render hoặc cấu hình sai): {Message}", ex.Message);
+                }
+            });
 
             return RedirectToAction("ForgotPasswordConfirmation");
         }
