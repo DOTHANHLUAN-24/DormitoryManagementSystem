@@ -2,9 +2,9 @@ name: Keep Render Website Alive
 
 on:
   schedule:
-    # Chạy mỗi 10 phút một lần để duy trì Render không bị sleep (free tier tắt sau 15 phút không hoạt động)
-    - cron: '*/10 * * * *'
-  workflow_dispatch: # Cho phép kích hoạt thủ công từ GitHub UI
+    # Hạ xuống 5 phút một lần để bù trừ cho việc GitHub Actions thường xuyên bị delay
+    - cron: '*/5 * * * *'
+  workflow_dispatch: 
 
 jobs:
   ping:
@@ -13,6 +13,7 @@ jobs:
       - name: Gửi yêu cầu HTTP Ping tới Render
         run: |
           echo "Bắt đầu ping Render..."
-          RESPONSE=$(curl -s -w " [%{http_code}]" https://dormitorymanagementsystem.onrender.com/ping)
+          # Đổi endpoint bên dưới thành endpoint thực tế đang chạy trên web của bạn (ví dụ: /swagger/index.html hoặc /api/values nếu có)
+          RESPONSE=$(curl -v -w " [%{http_code}]" https://dormitorymanagementsystem.onrender.com/ping)
           echo "Kết quả từ Render: $RESPONSE"
           echo "Đã hoàn thành ping lúc: $(date)"
