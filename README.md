@@ -1,84 +1,79 @@
-# 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System)
+# 🏢 Hệ Thống Quản Lý Ký Túc Xá (Dormitory Management System - DMS)
 
-Chào mừng bạn đến với dự án **Hệ Thống Quản Lý Ký Túc Xá**. Đây là đồ án chuyên đề chuyên ngành Công nghệ phần mềm, được xây dựng nhằm số hóa và tự động hóa toàn bộ quy trình quản lý ký túc xá, thay thế cho các phương pháp quản lý thủ công truyền thống qua sổ sách hay file Excel.
+[![Framework](https://img.shields.io/badge/.NET-8.0-blueviolet.svg?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/8.0)
+[![Database](https://img.shields.io/badge/Database-SQL_Server-blue.svg?style=flat-square&logo=microsoft-sql-server)](https://www.microsoft.com/en-us/sql-server/)
+[![Architecture](https://img.shields.io/badge/Architecture-Clean_Architecture-green.svg?style=flat-square)](#-cấu-trúc-dự-án-clean-architecture)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
+Chào mừng bạn đến với dự án **Hệ Thống Quản Lý Ký Túc Xá (DMS)**. Đây là đồ án chuyên đề chuyên ngành Công nghệ phần mềm, được xây dựng nhằm số hóa và tự động hóa toàn bộ quy trình quản lý ký túc xá học sinh - sinh viên, thay thế cho các phương pháp quản lý thủ công truyền thống qua sổ sách hoặc file Excel.
 
 ---
 
 ## 🎯 Mục Tiêu Dự Án
 
-Hệ thống cung cấp giải pháp toàn diện giúp Ban quản lý và Sinh viên nội trú tương tác dễ dàng:
-
-- **Tự động hóa** quy trình đăng ký, xét duyệt và phân bổ phòng.
-- **Quản lý tập trung** thông tin sinh viên, hợp đồng, cơ sở vật chất (phòng, giường, tài sản).
-- **Minh bạch tài chính** trong việc ghi nhận chỉ số, tính toán và thanh toán hóa đơn điện, nước, tiền phòng.
-- **Tối ưu hóa vận hành** qua việc theo dõi yêu cầu bảo trì, vi phạm kỷ luật và quản lý khách ra vào.
+Hệ thống cung cấp giải pháp toàn diện và tối ưu giúp Ban quản lý ký túc xá và Sinh viên nội trú dễ dàng quản lý và tương tác:
+*   **Tự động hóa:** Quy trình đăng ký trực tuyến, xét duyệt tự động, và phân bổ phòng/giường.
+*   **Quản lý tập trung:** Quản lý cơ sở dữ liệu tập trung về sinh viên, hợp đồng thuê, hạ tầng phòng ở (tòa nhà, phòng, giường, tài sản).
+*   **Minh bạch tài chính:** Tự động hóa việc ghi nhận chỉ số điện nước hàng tháng, tạo lập hóa đơn, quản lý phụ phí và ghi nhận lịch sử thanh toán trực quan.
+*   **Tối ưu hóa vận hành:** Theo dõi các yêu cầu bảo trì sửa chữa của phòng, quản lý vi phạm nội quy, quản lý phương tiện gửi xe, và nhật ký khách ra vào.
 
 ---
 
-## 🚀 Các Chức Năng Chính
+## 🚀 Các Chức Năng Chính Theo Phân Quyền (RBAC)
 
-Hệ thống được thiết kế tối ưu hóa trải nghiệm cho từng nhóm đối tượng người dùng qua các trang Dashboard chuyên biệt:
+Hệ thống được thiết kế tối ưu hóa trải nghiệm cho từng nhóm đối tượng người dùng qua các trang Dashboard và tính năng chuyên biệt:
 
-### 🧑‍🎓 Sinh Viên Nội Trú (Student Portal)
+### 🧑‍🎓 1. Cổng Sinh Viên (Student Portal)
+*   **Đăng ký thuê phòng:** Chọn giường trống trực tuyến và theo dõi tiến độ phê duyệt hợp đồng.
+*   **Quản lý phòng ở:** Xem thông tin phòng hiện tại, giường số mấy, danh sách bạn cùng phòng và thông tin liên hệ.
+*   **Hóa đơn & Thanh toán:** Theo dõi lịch sử hóa đơn hàng tháng trực quan thông qua biểu đồ tiền phòng, tiền điện, tiền nước.
+*   **Yêu cầu bảo trì:** Báo cáo các sự cố hỏng hóc thiết bị (bóng đèn, điều hòa, khóa cửa...) trong phòng trực tiếp đến bộ phận kỹ thuật.
+*   **Lịch sử vi phạm:** Xem danh sách biên bản vi phạm nội quy và tiến độ xử lý/đóng phạt hành chính.
 
-- Đăng ký thuê phòng và theo dõi tình trạng phê duyệt hợp đồng.
-- Xem chi tiết thông tin phòng ở hiện tại, số giường và danh sách bạn cùng phòng.
-- Theo dõi lịch sử hóa đơn hàng tháng trực quan thông qua biểu đồ tiền phòng, tiền điện, tiền nước.
-- Báo cáo sự cố, yêu cầu sửa chữa thiết bị hỏng hóc trong phòng.
-- Xem lịch sử vi phạm nội quy và theo dõi tình trạng xử lý biên bản vi phạm.
+### 🏢 2. Cổng Nhân Viên Quản Lý (Management Portal)
+*   **Sơ đồ phòng ở trực quan:** Quản lý danh sách tòa nhà (Block), loại phòng, phòng ở và chi tiết từng giường trống theo thời gian thực.
+*   **Hợp đồng & Đăng ký:** Tiếp nhận và duyệt đăng ký phòng của sinh viên, tạo mới, gia hạn, hoặc thanh lý hợp đồng thuê.
+*   **Hóa đơn & Dịch vụ:** Ghi nhận chỉ số điện/nước định kỳ, tự động tính toán chi phí, lập hóa đơn tự động và theo dõi công nợ, doanh thu trực quan qua biểu đồ Dashboard.
+*   **Quản lý phụ trợ:** Quản lý danh sách xe gửi, ghi nhận khách ra vào ký túc xá (Visitor log).
 
-### 🏢 Nhân Viên Quản Lý (Management Portal)
+### 🛠️ 3. Cổng Nhân Viên Kỹ Thuật (Maintenance Portal)
+*   **Tiếp nhận sự cố:** Theo dõi danh sách yêu cầu sửa chữa thiết bị từ các phòng được phân công.
+*   **Cập nhật tiến độ:** Đổi trạng thái xử lý sự cố (Mở $\to$ Đang xử lý $\to$ Đã sửa xong $\to$ Đóng).
+*   **Thống kê cá nhân:** Xem số lượng công việc cần hoàn thành trong ngày để tối ưu thời gian xử lý.
 
-- Quản lý sơ đồ phòng ở, tòa nhà (Block), loại phòng và giường trống theo thời gian thực.
-- Quản lý thông tin sinh viên nội trú và quá trình gửi phương tiện.
-- Phê duyệt đăng ký phòng, tạo mới, gia hạn hoặc thanh lý hợp đồng thuê.
-- Ghi chỉ số điện/nước định kỳ, tạo hóa đơn tự động và theo dõi công nợ, doanh thu trực quan qua biểu đồ Dashboard.
-- Quản lý khách ra vào ký túc xá (Visitor logs).
+### 👑 4. Quản Trị Hệ Thống (Admin Panel)
+*   **CRUD thực thể:** Quản trị toàn bộ các thực thể dữ liệu trong hệ thống.
+*   **Phân quyền (RBAC):** Quản lý tài khoản, gán quyền chi tiết (Admin, Manager, Student, Guard, Tech, Accountant).
+*   **Bảo mật:** Khóa/mở khóa tài khoản, giám sát hoạt động hệ thống.
 
-### 🛠️ Nhân Viên Kỹ Thuật (Maintenance Portal)
+---
 
-- Theo dõi danh sách yêu cầu bảo trì từ sinh viên và ban quản lý.
-- Cập nhật trạng thái xử lý sự cố (Mở, Đang xử lý, Đã hoàn thành, Đóng).
-- Xem thống kê các yêu cầu kỹ thuật cần giải quyết để tối ưu hóa công việc.
+## 🎨 Giao Diện Responsive & Trải Nghiệm Di Động (Responsive UI)
 
-### 👑 Quản Trị Hệ Thống (Admin Panel)
-
-- CRUD toàn bộ các thực thể dữ liệu trong hệ thống.
-- Quản lý tài khoản người dùng, phân vai trò chi tiết (RBAC).
-- Cấu hình các tham số hệ thống, khóa/mở khóa tài khoản người dùng.
-
-### 📱 Giao Diện Responsive & Trải Nghiệm Di Động (Responsive UI)
-
-- **Thiết kế Thích ứng (Responsive Design):** Bố cục tự động co giãn và tối ưu hóa trên mọi kích thước màn hình từ Desktop, Tablet đến Smartphone (từ 360px trở lên).
-- **Thanh menu kéo trượt (Overlay Drawer):** Trên các thiết bị di động, thanh Sidebar được ẩn gọn gàng và có thể kéo trượt mượt mà bằng nút điều hướng góc trên, kèm theo lớp phủ mờ (`backdrop-filter: blur`) hiện đại.
-- **Bảng dữ liệu & Biểu mẫu thích ứng:** Các bảng dữ liệu được hỗ trợ vuốt cuộn ngang mượt mà. Hệ thống lưới tự động chuyển sang dạng cột dọc cho các biểu mẫu và thanh lọc tìm kiếm trên di động để tăng không gian nhập liệu.
+*   **Thiết kế Thích ứng (Responsive Design):** Bố cục tự động co giãn và tối ưu hóa trên mọi kích thước màn hình từ Desktop, Tablet đến Smartphone (từ 360px trở lên).
+*   **Thanh menu kéo trượt (Overlay Drawer):** Trên các thiết bị di động, thanh Sidebar được ẩn gọn gàng và có thể kéo trượt mượt mà bằng nút điều hướng góc trên, kèm theo lớp phủ mờ (`backdrop-filter: blur`) hiện đại.
+*   **Bảng dữ liệu & Biểu mẫu thích ứng:** Các bảng dữ liệu được hỗ trợ vuốt cuộn ngang mượt mà. Hệ thống lưới tự động chuyển sang dạng cột dọc cho các biểu mẫu và thanh lọc tìm kiếm trên di động để tăng không gian nhập liệu.
 
 ---
 
 ## 💻 Công Nghệ Và Nền Tảng Sử Dụng
 
-Dự án được xây dựng dựa trên các tiêu chuẩn và công nghệ hiện đại, đảm bảo tính mở rộng và bảo mật cao:
+### 🏗️ Kiến Trúc Xác Thực & Phân Quyền
+*   **Xác thực kết hợp (Hybrid Authentication):** Hệ thống kết hợp giữa mô hình ứng dụng **ASP.NET Core MVC** truyền thống (phục vụ giao diện người dùng trực quan qua các Views) và **Web API** (cung cấp các API endpoints bảo mật cho tích hợp dịch vụ).
+*   **JWT Cookie Authentication:** Cơ chế đăng nhập dựa trên **ASP.NET Core Identity** kết hợp với **JWT Token**. Sau khi đăng nhập thành công, JWT Token sẽ được lưu tự động dưới dạng HTTP-only Cookie (`JWTToken`). Nhờ đó, các yêu cầu từ giao diện MVC và các cuộc gọi API từ client đều được xác thực đồng bộ và bảo mật cao.
 
-### Kiến Trúc Xác Thực & Phân Quyền
+### 💾 Backend & Cơ Sở Dữ Liệu
+*   **Ngôn ngữ lập trình:** C# (.NET 8)
+*   **Mô hình thiết kế:** Clean Architecture (Kiến trúc sạch) tách biệt 4 lớp chính.
+*   **Mẫu thiết kế áp dụng:** Repository Pattern & Unit of Work nhằm tách biệt business logic và infrastructure.
+*   **Cơ sở dữ liệu:** Microsoft SQL Server.
+*   **ORM:** Entity Framework Core (Code First) hỗ trợ quản lý migrations phiên bản DB.
 
-- **Xác thực kết hợp (Hybrid Authentication):** Hệ thống kết hợp giữa mô hình ứng dụng **ASP.NET Core MVC** truyền thống (phục vụ giao diện người dùng trực quan qua các Views) và **Web API** (cung cấp các API endpoints bảo mật cho tích hợp dịch vụ).
-- **JWT Cookie Authentication:** Cơ chế đăng nhập dựa trên **ASP.NET Core Identity** kết hợp với **JWT Token**. Sau khi đăng nhập thành công, JWT Token sẽ được lưu tự động dưới dạng HTTP-only Cookie (`JWTToken`). Nhờ đó, các yêu cầu từ giao diện MVC và các cuộc gọi API từ client đều được xác thực đồng bộ và bảo mật cao.
-
-### Backend & Cơ sở dữ liệu
-
-- **Ngôn ngữ:** C#
-- **Framework:** ASP.NET Core 8
-- **Kiến trúc:** Clean Architecture (Kiến trúc sạch) kết hợp Repository Pattern & Unit of Work nhằm tách biệt business logic và infrastructure.
-- **Cơ sở dữ liệu:** SQL Server
-- **ORM:** Entity Framework Core (Code First)
-
-### Thư viện & Công cụ hỗ trợ
-
-- **Validation:** FluentValidation (Kiểm tra tính hợp lệ của dữ liệu đầu vào)
-- **Mapping:** AutoMapper (Tự động ánh xạ dữ liệu giữa Entities và DTOs)
-- **Logging:** Serilog (Ghi log lỗi và thông tin vận hành hệ thống)
-- **Testing & API Docs:** Postman, Swagger
-- **Quản lý mã nguồn:** Git & GitHub
+### 🛠️ Thư Viện Hỗ Trợ
+*   **Validation:** FluentValidation (Kiểm tra dữ liệu đầu vào chuẩn xác, ngăn ngừa dữ liệu lỗi vào DB).
+*   **Mapping:** AutoMapper (Tự động ánh xạ dữ liệu giữa Entities và DTOs).
+*   **Logging:** Serilog (Ghi log lỗi và dấu vết vận hành hệ thống).
+*   **UI Libraries:** Bootstrap 5, FontAwesome 6, Chart.js, SweetAlert2, Select2.
 
 ---
 
@@ -90,11 +85,11 @@ Dự án được phân tách thành các layer độc lập nhằm tách biệt
 DormitoryManagementSystem/
 │
 ├── src/
-│   ├── DormitoryManagement/                  (MVC & API - Startup project / Controller & Presentation Layer)
-│   ├── DormitoryManagement.Application/      (Business Logic, Services, Interfaces, DTOs, AutoMapper, FluentValidation)
-│   ├── DormitoryManagement.Infrastructure/   (Data Access, DbContext, EF Migrations, Repositories, DbSeeder, MailService)
-│   ├── DormitoryManagement.Domain/           (Entities, Enums, Core Interfaces)
-│   └── DormitoryManagement.Common/           (Shared utilities, Helpers, Constants)
+│   ├── DormitoryManagement/                  (Presentation - Startup project / Razor Views & Controllers)
+│   ├── DormitoryManagement.Application/      (Application - Services, Interfaces, DTOs, AutoMapper, FluentValidation)
+│   ├── DormitoryManagement.Infrastructure/   (Infrastructure - DbContext, EF Migrations, Repositories, DbSeeder, Mail)
+│   ├── DormitoryManagement.Domain/           (Domain - Entities, Enums, Core Interfaces, BaseEntity)
+│   └── DormitoryManagement.Common/           (Common - Shared utilities, Helpers, Constants)
 ```
 
 ---
@@ -102,41 +97,42 @@ DormitoryManagementSystem/
 ## ⚙️ Hướng Dẫn Cài Đặt (Getting Started)
 
 ### 1. Yêu cầu hệ thống
+*   [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+*   [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (hoặc SQL LocalDB)
+*   Visual Studio 2022 hoặc VS Code (cài đặt C# Dev Kit extension)
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
-- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) (hoặc SQL LocalDB)
-- Visual Studio 2022 / VS Code
+### 2. Cài đặt và khởi chạy bằng lệnh CLI
 
-### 2. Cài đặt và khởi chạy
-
-**Bước 1:** Clone repository về máy:
-
+**Bước 1: Clone repository về máy và di chuyển vào thư mục nguồn**
 ```bash
 git clone <repository_url>
-cd DormitoryManagementSystem/src
+cd DormitoryManagementSystem
 ```
 
-**Bước 2:** Tạo và cấu hình tệp cấu hình `appsettings.json`:
-- Sao chép tệp `appsettings.Example.json` thành một tệp mới tên là `appsettings.json` trong thư mục `src/DormitoryManagement/`.
-- Mở tệp `appsettings.json` vừa tạo và cập nhật các thông số:
-  - **Chuỗi kết nối cơ sở dữ liệu (SQL Server)**: Cập nhật đường dẫn SQL Server tại mục `ConnectionStrings:DefaultConnection`. Ví dụ đối với SQL Server cục bộ: `"Server=.;Database=DormitoryDb;Trusted_Connection=True;TrustServerCertificate=True;"`.
-  - **Cấu hình Mail & JWT**: Thay đổi cấu hình tại `MailSettings` (để kiểm thử dịch vụ gửi email tự động) và `JwtSettings` (để thiết lập mã khóa xác thực token) nếu cần thiết.
+**Bước 2: Cấu hình tệp `appsettings.json`**
+1. Vào thư mục [src/DormitoryManagement/](file:///d:/ChuyenDe/DormitoryManagementSystem/src/DormitoryManagement/).
+2. Sao chép tệp `appsettings.Example.json` thành một tệp mới tên là `appsettings.json`.
+3. Mở tệp `appsettings.json` vừa tạo và cập nhật chuỗi kết nối SQL Server tại mục:
+   ```json
+   "ConnectionStrings": {
+     "DefaultConnection": "Server=.;Database=DormitoryDb;Trusted_Connection=True;TrustServerCertificate=True;"
+   }
+   ```
+*(Lưu ý: Thay đổi `Server=.` bằng tên instance SQL Server của bạn nếu cần thiết)*
 
-**Bước 3:** Cập nhật cơ sở dữ liệu bằng EF Core Tools:
-
-*(Lưu ý: Nếu máy của bạn chưa cài đặt công cụ EF Core CLI, hãy cài đặt bằng lệnh: `dotnet tool install --global dotnet-ef`)*
-
+**Bước 3: Thực hiện Migration cập nhật Database**
+*(Nếu chưa cài đặt công cụ EF CLI, chạy lệnh: `dotnet tool install --global dotnet-ef`)*
 ```bash
-dotnet ef database update --project DormitoryManagement.Infrastructure --startup-project DormitoryManagement
+dotnet ef database update --project src/DormitoryManagement.Infrastructure --startup-project src/DormitoryManagement
 ```
 
-**Bước 4:** Khởi chạy ứng dụng:
-
+**Bước 4: Khởi chạy dự án**
 ```bash
-dotnet run --project DormitoryManagement
+dotnet run --project src/DormitoryManagement
 ```
+*Sau khi chạy thành công, truy cập ứng dụng tại địa chỉ: `http://localhost:5273`.*
 
-*Sau khi chạy, truy cập vào `https://localhost:<port>/` để truy cập giao diện MVC hoặc `https://localhost:<port>/swagger` để thử nghiệm các API.*
+---
 
 ### 🐳 3. Khởi chạy dự án bằng Docker (Tùy chọn)
 
@@ -161,7 +157,7 @@ docker run -d -p 8080:10000 --name dormitory-app dormitory-system
 
 Hệ thống được cung cấp sẵn một tập hợp tài khoản mẫu phục vụ việc kiểm thử các luồng chức năng và phân quyền (RBAC):
 
-| Vai trò (Role) | Username | Password (Mật khẩu) | Mô tả / Chức năng kiểm thử |
+| Vai trò (Role) | Username (Tên đăng nhập) | Password (Mật khẩu) | Mô tả / Chức năng kiểm thử |
 | :--- | :--- | :--- | :--- |
 | **Admin** | `admin` | `Admin@123` | Quản trị viên tối cao: Quản lý người dùng, phân quyền, cấu hình hệ thống. |
 | **Management Staff** | `manager1`<br>`manager2` | `Manager@123` | Nhân viên quản lý: Phê duyệt hợp đồng, ghi điện nước, thu phí, quản lý phòng/giường. |
@@ -173,34 +169,30 @@ Hệ thống được cung cấp sẵn một tập hợp tài khoản mẫu ph�
 ## 🔄 Quy Trình Làm Việc Nhóm (Git Workflow)
 
 Chúng tôi áp dụng mô hình Agile (Scrum) và tuân thủ các nguyên tắc làm việc với Git:
-
-1. Cập nhật code mới nhất: `git checkout main` -> `git pull`
-2. Tạo nhánh tính năng mới: `git checkout -b feature/<tên-chức-năng>`
-3. Commit code với thông điệp rõ ràng theo chuẩn Conventional Commits.
-4. Push lên remote và tạo Pull Request (PR) để merge vào nhánh `main`.
-
-*Chi tiết về quy tắc đặt tên nhánh, commit message và tiêu chuẩn code, vui lòng xem tại [Hướng Dẫn Đóng Góp](./src/DormitoryManagement/Docs/HowToContribute.md) (Contributing Guide).*
+1.  Cập nhật code mới nhất từ nhánh chính: `git checkout main` $\to$ `git pull`
+2.  Tạo nhánh tính năng mới: `git checkout -b feature/<tên-chức-năng>`
+3.  Commit code với thông điệp rõ ràng theo chuẩn **Conventional Commits**.
+4.  Push lên remote repository và tạo Pull Request (PR) để review trước khi merge vào nhánh `main`.
 
 ---
 
-## 📚 Tài Liệu Thiết Kế & Vận Hành (Documentation)
+## 📚 Thư Mục Tài Liệu Dự Án (Documentation)
 
-Dưới đây là các tài liệu kỹ thuật chi tiết của dự án nằm trong thư mục `Docs/`:
-
-- 📄 [Phân Tích và Thiết Kế Hệ Thống](./src/DormitoryManagement/Docs/PhanTichVaThietKeHeThong.md) - Tài liệu SRS chi tiết về kiến trúc dự án và thiết kế cơ sở dữ liệu.
-- 📄 [Chi Tiết Phân Quyền & Thuật Toán](./src/DormitoryManagement/Docs/phanQuyen.md) - Mô tả thuật toán xếp phòng, tính tiền điện nước, tính công nợ và cơ chế Xóa mềm (Soft Delete).
-- 📄 [Yêu Cầu Chức Năng & Phi Chức Năng](./src/DormitoryManagement/Docs/FunctionAndNonFunction.md) - Đặc tả yêu cầu phần mềm chi tiết.
-- 📄 [Hướng Dẫn Đóng Góp Mã Nguồn](./src/DormitoryManagement/Docs/HowToContribute.md) - Quy tắc Git branch, commit message và Coding Convention của nhóm.
-- 📄 [Hướng Dẫn Sử Dụng VS Code để Migration](./src/DormitoryManagement/Docs/EFCoreMigrationGuide/UsingVSCode.md) - Các bước cấu hình và chạy Entity Framework Core Migration trên Visual Studio Code.
+Hệ thống tài liệu hướng dẫn đặc tả kiến trúc, luồng xử lý và dữ liệu của dự án nằm trong thư mục `Docs/`:
+*   📄 [Phân Tích và Thiết Kế Hệ Thống](./src/DormitoryManagement/Docs/PhanTichVaThietKeHeThong.md) - Tài liệu SRS chi tiết về kiến trúc dự án và thiết kế cơ sở dữ liệu.
+*   📄 [Chi Tiết Phân Quyền & Thuật Toán](./src/DormitoryManagement/Docs/phanQuyen.md) - Mô tả thuật toán xếp phòng, tính tiền điện nước, tính công nợ và cơ chế Xóa mềm (Soft Delete).
+*   📄 [Yêu Cầu Chức Năng & Phi Chức Năng](./src/DormitoryManagement/Docs/FunctionAndNonFunction.md) - Đặc tả yêu cầu phần mềm chi tiết.
+*   📄 [Hướng Dẫn Đóng Góp Mã Nguồn](./src/DormitoryManagement/Docs/HowToContribute.md) - Quy tắc Git branch, commit message và Coding Convention của nhóm.
+*   📄 [Hướng Dẫn Sử Dụng VS Code để Migration](./src/DormitoryManagement/Docs/EFCoreMigrationGuide/UsingVSCode.md) - Các bước cấu hình và chạy Entity Framework Core Migration trên Visual Studio Code.
 
 ---
 
 ## 👥 Đội Ngũ Phát Triển (Nhóm 02)
 
-- **Đỗ Thành Luân** (Trưởng nhóm - 2221050046)
-- **Lê Thị Cẩm Tú** (2321050008)
-- **Đỗ Quang Huy** (2221050047)
-- **Vũ Thị Kim Oanh** (2221050566)
+*   **Đỗ Thành Luân** (Trưởng nhóm - 2221050046)
+*   **Lê Thị Cẩm Tú** (2321050008)
+*   **Đỗ Quang Huy** (2221050047)
+*   **Vũ Thị Kim Oanh** (2221050566)
 
 **Giảng viên hướng dẫn:** Thầy Ngô Ngọc Anh  
 *Trường Đại học Mỏ - Địa chất | Hà Nội, Năm 2026*
